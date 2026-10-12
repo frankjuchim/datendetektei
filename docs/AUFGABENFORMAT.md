@@ -390,8 +390,8 @@ ausgeliefert (sie sind die Lösung).
 - Optional je Teil: `frage` (Mini-Markdown, darf Lücken enthalten) und `inhalt` (Blöcke) – werden über dem Teil
   angezeigt. Beginnt `frage` mit „a)“, entfällt die automatische Überschrift „Teil a)“.
 - `block` in `lines`/`zeilen` bezieht sich immer auf `inhalt` der **Aufgabe**.
-- Schrittprüfung: `{ "antwort": <Teilantwort>, "teilweise": true, "teil": k }` nur für `order` → `{ ok,
-  ersteFalschePosition, vollstaendig }`.
+- Schrittprüfung: `{ "antwort": <Teilantwort>, "teilweise": true, "teil": k }` nur für `order` → `ok` und
+  Rückmeldung `{ ersteFalschePosition, vollstaendig }`.
 - **Bug-Hunt gestuft:** Beginnt eine mehrteilige Aufgabe mit `lines`, zeigt der Client die späteren Teile erst, wenn
   Teil a) richtig ist; dafür ist `teilweise: true, teil: 0` auch für diesen `lines`-Teil erlaubt (`{ ok }`, falsch =
   Fehlversuch). Im Verhör wird Teil a) ohne Rückmeldung „festgelegt“. Teil b) beginnt mit „b)“.
