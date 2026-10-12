@@ -35,8 +35,8 @@
   ],
   "boss": {
     "id": "A9-V",
-    "titel": "Probeverhör Eisdiele",
-    "kontextDb": "eisdiele",
+    "titel": "Probeverhör Schulkiosk",
+    "kontextDb": "verhoer/kiosk",
     "rahmensatz": "Bevor du allein ermittelst, prüfe ich, ob du auch in einer fremden Datenbank sauber abfragst.",
     "abimodus": "streng",
     "dauerMin": 20,
@@ -443,16 +443,16 @@
       "kategorie": "Schlüssel",
       "fallen": ["P8"],
       "inhalt": [
-        { "t": "text", "md": "**Geben Sie an**, welches Attribut Primärschlüssel der Relation Sorte ist." },
-        { "t": "schema", "relationen": [ { "name": "Sorte", "attribute": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ] } ] }
+        { "t": "text", "md": "**Geben Sie an**, welches Attribut Primärschlüssel der Relation Produkt ist." },
+        { "t": "schema", "relationen": [ { "name": "Produkt", "attribute": [ { "name": "ProduktNr", "pk": true }, { "name": "Bezeichnung" }, { "name": "Kategorie" }, { "name": "Preis" } ] } ] }
       ],
       "interaktion": {
         "kind": "choice",
         "mehrfach": false,
-        "optionen": [ { "id": "a", "code": "SorteNr" }, { "id": "b", "code": "Name" }, { "id": "c", "code": "Preis" } ]
+        "optionen": [ { "id": "a", "code": "ProduktNr" }, { "id": "b", "code": "Bezeichnung" }, { "id": "c", "code": "Preis" } ]
       },
       "loesung": { "richtig": ["a"] },
-      "erklaerung": [ { "t": "text", "md": "Unterstrichen ist SorteNr." } ]
+      "erklaerung": [ { "t": "text", "md": "Unterstrichen ist ProduktNr." } ]
     },
     {
       "id": "A9-V-02",
@@ -462,30 +462,30 @@
       "kategorie": "SQL Verbund",
       "fallen": ["P2"],
       "inhalt": [
-        { "t": "text", "md": "Die Tabelle Sorte hat 10, die Tabelle Verkauf 57 Datensätze. **Geben Sie an**, wie viele Zeilen die folgende Abfrage liefert: [[g1]]" },
-        { "t": "sql", "sql": "SELECT *\nFROM Sorte, Verkauf" }
+        { "t": "text", "md": "Die Tabelle Produkt hat 14, die Tabelle Helfer 10 Datensätze. **Geben Sie an**, wie viele Zeilen die folgende Abfrage liefert: [[g1]]" },
+        { "t": "sql", "sql": "SELECT *\nFROM Produkt, Helfer" }
       ],
       "interaktion": { "kind": "gaps", "felder": { "g1": { "typ": "zahl", "breite": 5 } } },
-      "loesung": { "g1": ["570"] },
-      "erklaerung": [ { "t": "text", "md": "Ohne Verbundbedingung entsteht das Kreuzprodukt: 10 · 57 = 570." } ]
+      "loesung": { "g1": ["140"] },
+      "erklaerung": [ { "t": "text", "md": "Ohne Verbundbedingung entsteht das Kreuzprodukt: 14 · 10 = 140." } ]
     },
     {
       "id": "A9-V-03",
-      "titel": "Vegane Preise",
+      "titel": "Getränkepreise",
       "stufe": 2,
       "punkte": 20,
       "kategorie": "SQL eine Tabelle",
       "fallen": [],
-      "inhalt": [ { "t": "text", "md": "**Entwerfen Sie** eine Abfrage, die Name und Preis aller veganen Sorten ausgibt, absteigend nach Preis sortiert." } ],
+      "inhalt": [ { "t": "text", "md": "**Entwerfen Sie** eine Abfrage, die Bezeichnung und Preis aller Getränke ausgibt, absteigend nach Preis sortiert." } ],
       "interaktion": {
         "kind": "sql",
-        "datenbank": "eisdiele",
-        "varianten": [],
+        "datenbank": "verhoer/kiosk",
+        "varianten": ["null", "gleichnamig"],
         "sortierung": [ { "spalte": "Preis", "richtung": "DESC" } ],
         "abimodus": "streng"
       },
-      "loesung": { "sql": "SELECT Name, Preis\nFROM Sorte\nWHERE Vegan = 'ja'\nORDER BY Preis DESC" },
-      "erklaerung": [ { "t": "text", "md": "Filter auf `Vegan = 'ja'`, Sortierung mit `DESC`." } ]
+      "loesung": { "sql": "SELECT Bezeichnung, Preis\nFROM Produkt\nWHERE Kategorie = 'Getränk'\nORDER BY Preis DESC" },
+      "erklaerung": [ { "t": "text", "md": "Filter auf `Kategorie = 'Getränk'`, Sortierung mit `DESC`." } ]
     },
     {
       "id": "A9-V-04",
@@ -496,32 +496,36 @@
       "fallen": ["P6"],
       "inhalt": [
         { "t": "text", "md": "**Geben Sie an**, welche Datensätze die folgende Bedingung erfüllen." },
-        { "t": "sql", "sql": "WHERE Preis >= 1.7 AND Vegan = 'nein' OR Name LIKE 'Z%'", "nummern": false },
+        { "t": "sql", "sql": "WHERE Preis >= 1.5 AND Kategorie = 'Snack' OR Bezeichnung LIKE 'A%'", "nummern": false },
         {
           "t": "dbtabelle",
-          "tabelle": "Sorte",
-          "kopf": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ],
+          "tabelle": "Produkt",
+          "kopf": [ { "name": "ProduktNr", "pk": true }, { "name": "Bezeichnung" }, { "name": "Kategorie" }, { "name": "Preis" } ],
           "zeilen": [
-            [1, "Vanille", 1.5, "nein"],
-            [2, "Schokolade", 1.5, "nein"],
-            [3, "Erdbeere", 1.6, "ja"],
-            [4, "Zitrone", 1.4, "ja"],
-            [5, "Haselnuss", 1.7, "nein"],
-            [6, "Sanddorn-Mango", 1.8, "ja"],
-            [7, "Stracciatella", 1.7, "nein"],
-            [8, "Karamell", 1.8, "nein"],
-            [9, "Pistazie", 2, "nein"],
-            [10, "Schoko-Minze", 1.7, "nein"]
+            [1, "Käsebrötchen", "Brötchen", 1.5],
+            [2, "Salamibrötchen", "Brötchen", 1.75],
+            [3, "Laugenbrezel", "Brötchen", 1.25],
+            [4, "Vollkornbrötchen mit Ei", "Brötchen", 2],
+            [5, "Wasser 0,5 l", "Getränk", 0.75],
+            [6, "Apfelschorle 0,5 l", "Getränk", 1.25],
+            [7, "Kakao 0,25 l", "Getränk", 1],
+            [8, "Eistee 0,5 l", "Getränk", 1.25],
+            [9, "Müsliriegel", "Snack", 1],
+            [10, "Muffin", "Snack", 1.5],
+            [11, "Pizzaschnecke", "Snack", 2],
+            [12, "Apfel", "Obst", 0.5],
+            [13, "Banane", "Obst", 0.5],
+            [14, "Obstbecher", "Obst", 1.75]
           ],
-          "quelle": { "datenbank": "eisdiele", "sql": "SELECT SorteNr, Name, Preis, Vegan FROM Sorte" }
+          "quelle": { "datenbank": "verhoer/kiosk", "sql": "SELECT ProduktNr, Bezeichnung, Kategorie, Preis FROM Produkt ORDER BY ProduktNr" }
         }
       ],
       "interaktion": { "kind": "zeilen", "block": 2, "mehrfach": true },
       "loesung": {
-        "zeilen": [3, 4, 6, 7, 8, 9],
-        "quelleSql": "SELECT SorteNr, Name, Preis, Vegan FROM Sorte WHERE Preis >= 1.7 AND Vegan = 'nein' OR Name LIKE 'Z%'"
+        "zeilen": [5, 9, 10, 11],
+        "quelleSql": "SELECT ProduktNr, Bezeichnung, Kategorie, Preis FROM Produkt WHERE Preis >= 1.5 AND Kategorie = 'Snack' OR Bezeichnung LIKE 'A%'"
       },
-      "erklaerung": [ { "t": "text", "md": "AND bindet stärker: `(Preis >= 1.7 AND Vegan = 'nein') OR Name LIKE 'Z%'` – Zitrone ist dabei, obwohl sie billig und vegan ist." } ]
+      "erklaerung": [ { "t": "text", "md": "AND bindet stärker: `(Preis >= 1.5 AND Kategorie = 'Snack') OR Bezeichnung LIKE 'A%'` – der Apfel ist dabei, obwohl er billig und kein Snack ist." } ]
     }
   ]
 }
