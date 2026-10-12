@@ -15,9 +15,21 @@ const STANDARD_EINSTELLUNGEN = Object.freeze({
 /**
  * Tabellen mit Daten je Konto bzw. je Kurs, in Löschreihenfolge (abhängige zuerst; die Stammzeile zuletzt).
  * Spätere Phasen hängen hier ihre Lernstand-Tabellen an, damit Löschungen (Vertrag §6) vollständig bleiben.
+ * Die Lernstand-Tabellen werden ausdrücklich vor der Stammzeile geleert (nicht per ON DELETE CASCADE), damit die
+ * gemeldete Anzahl gelöschter Zeilen vollständig ist. fehlabfragen haben kein sub und hängen nur am Kurs.
  */
-const KONTO_TABELLEN = ['mitgliedschaften', 'konten'];
-const KURS_TABELLEN = ['mitgliedschaften', 'kurse'];
+const LERNSTAND_TABELLEN = Object.freeze([
+  'fortschritt',
+  'fallen_zaehler',
+  'abzeichen',
+  'erfolge',
+  'verhoer_versuche',
+  'leitner',
+  'training',
+  'kernpunkte'
+]);
+const KONTO_TABELLEN = Object.freeze([...LERNSTAND_TABELLEN, 'mitgliedschaften', 'konten']);
+const KURS_TABELLEN = Object.freeze([...LERNSTAND_TABELLEN, 'fehlabfragen', 'mitgliedschaften', 'kurse']);
 
 /** ISO-Zeitstempel ohne Millisekunden, z. B. 2026-10-11T10:00:00Z (Format Vertrag §6). */
 function isoZeit(ms) {
@@ -108,6 +120,7 @@ function kursUebersicht(db, kursId, jetzt = Date.now) {
 
 module.exports = {
   STANDARD_EINSTELLUNGEN,
+  LERNSTAND_TABELLEN,
   KONTO_TABELLEN,
   KURS_TABELLEN,
   isoZeit,

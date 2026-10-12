@@ -1,7 +1,8 @@
 'use strict';
-// App-Fabrik: erzeugeApp(konfig, db[, { datenbanken, sandbox }]) liefert eine Express-App ohne Port (testbar mit
-// supertest). datenbanken = ladeDatenbanken() aus src/sql/datenbanken.js (optional; ohne sie gibt es /db/ und /api/db/
-// nicht). sandbox = erzeugeSandbox() aus src/sql/sandbox.js (optional; ohne sie gibt es POST /api/sql/ausfuehren nicht).
+// App-Fabrik: erzeugeApp(konfig, db[, { datenbanken, sandbox, inhalte }]) liefert eine Express-App ohne Port (testbar
+// mit supertest). datenbanken = ladeDatenbanken() aus src/sql/datenbanken.js (optional; ohne sie gibt es /db/ und
+// /api/db/ nicht). sandbox = erzeugeSandbox() aus src/sql/sandbox.js (optional; ohne sie gibt es POST /api/sql/ausfuehren
+// nicht). inhalte = erzeugeInhalte(db) aus src/services/inhalte.js (optional; ohne sie meldet das Manifest den Standard-umfang).
 
 const path = require('node:path');
 const express = require('express');
@@ -16,13 +17,14 @@ const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
-function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null } = {}) {
+function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = null } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', konfig.trustProxy || 0);
   app.locals.konfig = konfig;
   app.locals.db = db;
   app.locals.datenbanken = datenbanken;
+  app.locals.inhalte = inhalte;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -41,7 +43,7 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null } = {}) {
     res.json({ status: 'ok', version: VERSION });
   });
 
-  app.get('/api/plattform', manifestRoute(konfig));
+  app.get('/api/plattform', manifestRoute(konfig, inhalte ? inhalte.umfang : undefined));
   app.use(ssoRouten(konfig, db));
   app.use(seitenRouten());
 
