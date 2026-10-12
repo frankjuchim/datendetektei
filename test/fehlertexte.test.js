@@ -76,6 +76,17 @@ test('interne Codes der Sandbox: Zeitlimit, Zeilenlimit, verbotene Anweisung, L�
   assert.equal(ordneZu({ code: 'ZEITLIMIT' }).code, 'ZEITLIMIT');
 });
 
+test('interne Codes der Sandbox: Absturz und beendet (Pr체fer, Task 10)', () => {
+  assert.equal(ordneZu({ code: 'ABSTURZ' }).code, 'ABSTURZ');
+  assert.match(체bersetze({ code: 'ABSTURZ' }), /noch einmal/);
+  assert.equal(ordneZu({ code: 'BEENDET' }).code, 'BEENDET');
+  assert.match(체bersetze({ code: 'BEENDET' }), /gerade nicht/);
+  for (const c of ['ABSTURZ', 'BEENDET']) {
+    assert.ok(fehlertexte.INTERNE_CODES.includes(c));
+    assert.doesNotMatch(체bersetze({ code: c }), ENGLISCH);
+  }
+});
+
 test('Error-Objekte (better-sqlite3) werden 체ber message 체bersetzt', () => {
   const e = new Error('no such column: Farbe');
   e.code = 'SQLITE_ERROR';
