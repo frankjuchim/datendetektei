@@ -6,6 +6,7 @@ const express = require('express');
 const { sicherheitsHeader, pruefeHerkunft, rateLimit } = require('./kern/sicherheit');
 const { ssoRouten } = require('./routes/sso');
 const { verbundRouten } = require('./routes/verbund');
+const { manifestRoute } = require('./kern/manifest');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -34,6 +35,7 @@ function erzeugeApp(konfig, db) {
     res.json({ status: 'ok', version: VERSION });
   });
 
+  app.get('/api/plattform', manifestRoute(konfig));
   app.use(ssoRouten(konfig, db));
 
   app.use(express.static(PUBLIC_DIR, { maxAge: '1h', index: false }));
