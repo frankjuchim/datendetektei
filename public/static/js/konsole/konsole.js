@@ -81,11 +81,12 @@ async function start() {
   const parameter = new URLSearchParams(window.location.search);
   const ohneWasm = parameter.get('ohneWasm') === '1';
 
-  const [{ erzeugeEditor }, { zeigeSchema, zeigeSchemaFehler }, ergebnis, { erzeugeAusfuehrer }] = await Promise.all([
+  const [{ erzeugeEditor }, { zeigeSchema, zeigeSchemaFehler }, ergebnis, { erzeugeAusfuehrer }, W] = await Promise.all([
     import(mitVersion('./editor.js')),
     import(mitVersion('./schema.js')),
     import(mitVersion('./ergebnis.js')),
-    import(mitVersion('./ausfuehren.js'))
+    import(mitVersion('./ausfuehren.js')),
+    import(mitVersion('./werkzeuge.js'))
   ]);
 
   document.title = `Freie Ermittlung: ${info.titel} – Datendetektei`;
@@ -191,6 +192,21 @@ async function start() {
     if (!an && document.activeElement === knopfAbbrechen) $('sql-eingabe').focus();
   }
 
+  /** Links aus einer Diagnose in Spurenbrett, Zeitlupe bzw. Sortierfächer – mit der Abfrage, die gerade lief. */
+  function werkzeugZusatz(sql) {
+    const gezeigt = new Set(); // je Werkzeug nur ein Knopf (KEIN_VERBUND und KREUZPRODUKT kommen oft zusammen)
+    return (d) =>
+      W.linkLeiste(
+        W.werkzeugLinks(d, {
+          db: name,
+          sql,
+          schema,
+          zurueck: window.location.pathname,
+          vorher: () => speicherSchreiben(entwurfSchluessel, editor.wert())
+        }).filter((l) => !gezeigt.has(l.werkzeug) && gezeigt.add(l.werkzeug))
+      );
+  }
+
   async function ausfuehren() {
     if (laeuft) return;
     const sql = editor.wert();
@@ -222,10 +238,10 @@ async function start() {
     }
     if (antwort && typeof antwort.fehler === 'string') {
       const text = antwort.abgebrochen || antwort.deutsch ? antwort.fehler : deutsch(antwort.fehler);
-      ergebnis.zeigeFehler(ergebnisFlaeche, text, { art: antwort.abgebrochen ? 'hinweis' : 'fehler', hinweise: aktuelle });
+      ergebnis.zeigeFehler(ergebnisFlaeche, text, { art: antwort.abgebrochen ? 'hinweis' : 'fehler', hinweise: aktuelle, zusatz: werkzeugZusatz(sql) });
       return;
     }
-    ergebnis.zeigeErgebnis(ergebnisFlaeche, antwort, { quelle, hinweise: aktuelle });
+    ergebnis.zeigeErgebnis(ergebnisFlaeche, antwort, { quelle, hinweise: aktuelle, zusatz: werkzeugZusatz(sql) });
   }
 
   knopfAusfuehren.addEventListener('click', () => ausfuehren());
@@ -235,12 +251,7 @@ async function start() {
   // Zeitlupe (Phase 4): Abfrage über sessionStorage übergeben (nie über die URL), gleiche Registerkarte.
   $('k-zeitlupe').addEventListener('click', () => {
     speicherSchreiben(entwurfSchluessel, editor.wert()); // Entwurf sofort sichern (Rücksprung)
-    try {
-      window.sessionStorage.setItem('dd_zeitlupe', JSON.stringify({ db: name, sql: editor.wert(), zurueck: window.location.pathname }));
-    } catch {
-      /* privater Modus – die Zeitlupe zeigt dann die Beispielabfrage */
-    }
-    window.location.assign(`/werkzeug/zeitlupe?db=${encodeURIComponent(name)}`);
+    W.oeffneWerkzeug('zeitlupe', { db: name, sql: editor.wert(), zurueck: window.location.pathname });
   });
   document.documentElement.dataset.konsole = 'bereit';
 }

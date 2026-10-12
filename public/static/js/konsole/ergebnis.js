@@ -28,8 +28,11 @@ function mitCode(text) {
   return frag;
 }
 
-/** Diagnose-Block (Parser-/Regel-Hinweise oder ein Fehler). eintraege = [{ falle?, text, zeile? }] */
-function diagnose(eintraege, art) {
+/**
+ * Diagnose-Block (Parser-/Regel-Hinweise oder ein Fehler). eintraege = [{ code?, falle?, text, zeile? }]
+ * zusatz(eintrag) → Knoten oder null: z. B. Links in die Verstehenshilfen (konsole/werkzeuge.js), unter der Zeile.
+ */
+function diagnose(eintraege, art, zusatz = null) {
   const box = el('div', 'diagnose' + (art === 'hinweis' ? ' hinweis' : ''));
   box.setAttribute('role', art === 'hinweis' ? 'note' : 'alert');
   for (const d of eintraege) {
@@ -44,14 +47,16 @@ function diagnose(eintraege, art) {
     text.appendChild(mitCode(d.text));
     zeile.appendChild(text);
     box.appendChild(zeile);
+    const extra = typeof zusatz === 'function' ? zusatz(d) : null;
+    if (extra) box.appendChild(extra);
   }
   return box;
 }
 
-function hinweisBlock(hinweise) {
+function hinweisBlock(hinweise, zusatz) {
   if (!Array.isArray(hinweise) || hinweise.length === 0) return null;
   const art = hinweise.some((h) => h.art === 'fehler') ? 'fehler' : 'hinweis';
-  return diagnose(hinweise, art);
+  return diagnose(hinweise, art, zusatz);
 }
 
 function quelleText(quelle) {
@@ -84,17 +89,17 @@ export function zeigeLaeuft(container) {
 }
 
 /** Fehler (art 'fehler') oder Abbruch (art 'hinweis') plus ggf. Parser-/Regel-Hinweise. */
-export function zeigeFehler(container, text, { art = 'fehler', hinweise = [] } = {}) {
+export function zeigeFehler(container, text, { art = 'fehler', hinweise = [], zusatz = null } = {}) {
   const frag = document.createDocumentFragment();
   frag.appendChild(diagnose([{ text }], art));
-  const h = hinweisBlock(hinweise);
+  const h = hinweisBlock(hinweise, zusatz);
   if (h) frag.appendChild(h);
   container.replaceChildren(frag);
   container.removeAttribute('aria-busy');
 }
 
-/** ergebnis = { spalten, zeilen, gesamt, ms, abgeschnitten? }, quelle = 'browser' | 'server' */
-export function zeigeErgebnis(container, ergebnis, { quelle = 'browser', hinweise = [] } = {}) {
+/** ergebnis = { spalten, zeilen, gesamt, ms, abgeschnitten? }, quelle = 'browser' | 'server', zusatz wie diagnose() */
+export function zeigeErgebnis(container, ergebnis, { quelle = 'browser', hinweise = [], zusatz = null } = {}) {
   const { spalten = [], zeilen = [], gesamt = zeilen.length, ms, abgeschnitten = false } = ergebnis;
   const frag = document.createDocumentFragment();
 
@@ -109,7 +114,7 @@ export function zeigeErgebnis(container, ergebnis, { quelle = 'browser', hinweis
   kopf.appendChild(rechts);
   frag.appendChild(kopf);
 
-  const h = hinweisBlock(hinweise);
+  const h = hinweisBlock(hinweise, zusatz);
   if (h) frag.appendChild(h);
 
   if (gesamt === 0) {

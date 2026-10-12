@@ -56,7 +56,8 @@
           "name": "stadtfest"
         },
         {
-          "t": "sql",
+          "t": "zeitlupe",
+          "datenbank": "stadtfest",
           "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS Kartenbons\nFROM Helfer, Bon\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.Zahlart = 'Karte'\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING COUNT(*) >= 10\nORDER BY Kartenbons DESC"
         },
         {
@@ -542,6 +543,15 @@
         {
           "t": "text",
           "md": "Fünf Produkte, also fünf Fächer und fünf Ergebniszeilen. Im Fach von Produkt 11 (Kaffee) liegen drei Positionen mit den Mengen 3, 1 und 2: `COUNT(*)` = 3, aber `SUM(Menge)` = 6 (P4)."
+        },
+        {
+          "t": "text",
+          "md": "Zur Kontrolle dieselbe Abfrage in den Sortierfächern: Jedes Fach wird zu einer Ergebniszeile. Die übrigen Positionen der Kasse landen im Korb, weil WHERE sie vor dem Gruppieren aussortiert."
+        },
+        {
+          "t": "sortierfaecher",
+          "datenbank": "stadtfest",
+          "sql": "SELECT ProduktNr, COUNT(*) AS Positionen, SUM(Menge) AS Stueck\nFROM Position\nWHERE BonNr BETWEEN 444 AND 451\nGROUP BY ProduktNr"
         }
       ]
     },

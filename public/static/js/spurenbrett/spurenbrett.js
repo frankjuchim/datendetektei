@@ -64,7 +64,7 @@ function genannteNamen(bedingung) {
 
 async function start() {
   const R = await import('../kern/render.js' + V);
-  const { erzeugeAusfuehrer } = await import('../konsole/ausfuehren.js' + V);
+  const { erzeugeAusfuehrer, werkzeugBereit } = await import('../konsole/ausfuehren.js' + V);
   const { el, h, svg, icon, sqlHervorheben } = R;
   const visual = window.DD_SQL_VISUAL;
 
@@ -138,12 +138,12 @@ async function start() {
   }
   const schemaVon = (name) => schema.find((t) => klein(t.tabelle) === klein(name)) || null;
 
-  const ausfuehrer = erzeugeAusfuehrer({ dbUrl: `/db/${db}.sqlite` });
+  const ausfuehrer = erzeugeAusfuehrer({ dbUrl: `/db/${db}.sqlite`, ohneWasm: parameter.get('ohneWasm') === '1' });
   const fuehreAus = (sql) => ausfuehrer.fuehreAus(sql);
-  try {
-    await ausfuehrer.bereit;
-  } catch {
-    brettHinweis(TEXT_KEIN_SQL);
+  const startFehler = await werkzeugBereit(ausfuehrer);
+  if (startFehler) {
+    // WebAssembly fehlt → einheitlicher Hinweis aller Werkzeuge (kein Server-Rückfall); sonst kam die DB nicht an
+    brettHinweis(startFehler.art === 'wasm' ? startFehler.text : TEXT_KEIN_SQL);
     return;
   }
 

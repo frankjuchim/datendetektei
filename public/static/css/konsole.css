@@ -168,6 +168,11 @@
 .diagnose-ort { font-family: var(--schrift-mono); font-size: var(--t-xs); opacity: 0.85; }
 .diagnose code { color: var(--konsole-code); font-family: var(--schrift-mono); }
 .diagnose a { color: var(--konsole-link); }
+/* Links aus der Diagnose in die Verstehenshilfen (Phase 4) */
+.diagnose-werkzeuge { display: flex; flex-wrap: wrap; gap: var(--a-2); margin: 2px 0 var(--a-1); }
+.diagnose .knopf.diagnose-werkzeug { background: transparent; color: var(--konsole-link); border-color: currentColor; }
+.diagnose .knopf.diagnose-werkzeug:hover { background: var(--konsole-hover); color: var(--konsole-text); }
+.diagnose .knopf.diagnose-werkzeug:focus-visible { outline: 3px solid var(--konsole-leise); outline-offset: 2px; }
 .falle {
   flex: none; display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px;
   border-radius: var(--radius-pille); font-family: var(--schrift-mono); font-size: 0.75rem; font-weight: 600;

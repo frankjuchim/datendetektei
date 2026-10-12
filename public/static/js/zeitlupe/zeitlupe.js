@@ -11,7 +11,7 @@
 // ohne Übergänge). Ausgaben nur als Textknoten.
 
 const V = new URL(import.meta.url).search;
-const [R, { erzeugeEditor }, { erzeugeAusfuehrer }] = await Promise.all([
+const [R, { erzeugeEditor }, { erzeugeAusfuehrer, werkzeugBereit }] = await Promise.all([
   import('../kern/render.js' + V),
   import('../konsole/editor.js' + V),
   import('../konsole/ausfuehren.js' + V)
@@ -64,7 +64,13 @@ function leseUebergabe() {
     if (!roh) return null;
     const o = JSON.parse(roh);
     if (!o || typeof o !== 'object' || typeof o.db !== 'string' || typeof o.sql !== 'string' || o.sql.length > MAX_SQL) return null;
-    return { db: o.db, sql: o.sql, zurueck: typeof o.zurueck === 'string' ? o.zurueck : null, eingabe: o.eingabe === true };
+    return {
+      db: o.db,
+      sql: o.sql,
+      zurueck: typeof o.zurueck === 'string' ? o.zurueck : null,
+      eingabe: o.eingabe === true,
+      start: KLAUSELN.includes(o.start) ? o.start : null
+    };
   } catch {
     return null;
   }
@@ -206,19 +212,14 @@ async function start() {
     editor.fokus();
   });
 
-  const ausfuehrer = erzeugeAusfuehrer({ dbUrl: `/db/${encodeURIComponent(db)}.sqlite` });
+  const ausfuehrer = erzeugeAusfuehrer({ dbUrl: `/db/${encodeURIComponent(db)}.sqlite`, ohneWasm: parameter.get('ohneWasm') === '1' });
   const modus = $('zl-modus');
   modus.textContent = 'Datenbank wird geladen …';
-  const bereit = ausfuehrer.bereit.then(
-    () => {
-      modus.textContent = 'rechnet im Browser';
-      return true;
-    },
-    () => {
-      modus.textContent = '';
-      return false;
-    }
-  );
+  // null = bereit, sonst { art: 'laden' | 'wasm', text } (einheitlicher WebAssembly-Hinweis, kein Server-Rückfall)
+  const startFehler = werkzeugBereit(ausfuehrer).then((f) => {
+    modus.textContent = f ? '' : 'rechnet im Browser';
+    return f;
+  });
 
   /* ---------- Zustand und Darstellung ---------- */
 
@@ -250,7 +251,10 @@ async function start() {
     meldung(TEXT_LAEUFT, 'laeuft');
     let ergebnis;
     try {
-      if (!(await bereit)) {
+      const f = await startFehler;
+      if (f && f.art === 'wasm') {
+        ergebnis = { fehler: f.text };
+      } else if (f) {
         ergebnis = { fehler: ich || db === OHNE_ANMELDUNG ? TEXT_LADEFEHLER : TEXT_ANMELDEN };
       } else {
         ergebnis = await visual.zeitlupe(sql, ausfuehrer.fuehreAus, { uebersetze: deutsch });
@@ -544,6 +548,11 @@ async function start() {
   });
 
   await starte();
+  // Block „zeitlupe“ mit start: gleich bei dieser Klausel beginnen (sonst Schritt 1)
+  if (passend && uebergabe.start) {
+    const i = schritte.findIndex((s) => s.klausel === uebergabe.start);
+    if (i > 0) zeige(i, false);
+  }
 }
 
 start();

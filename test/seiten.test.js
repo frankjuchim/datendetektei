@@ -264,15 +264,42 @@ test('Zeitlupe-Modul: ES-Modul mit Versions-Import, Übergabe über sessionStora
 test('Zeitlupe-Knopf: Konsole und Lern-Konsole übergeben die Abfrage, das Verhör (ohne DB) hat keinen', () => {
   const konsole = fs.readFileSync(path.join(STATIC, 'js', 'konsole', 'konsole.js'), 'utf8');
   const lern = fs.readFileSync(path.join(STATIC, 'js', 'lernen', 'konsole_lern.js'), 'utf8');
+  const werkzeuge = fs.readFileSync(path.join(STATIC, 'js', 'konsole', 'werkzeuge.js'), 'utf8');
+  // Übergabe an einer Stelle (konsole/werkzeuge.js): sessionStorage, nie die URL
+  assert.match(werkzeuge, /'dd_zeitlupe'/);
+  assert.match(werkzeuge, /sessionStorage/);
+  assert.match(werkzeuge, /\/werkzeug\/\$\{werkzeug\}\?db=/);
   for (const [name, js] of [['konsole', konsole], ['konsole_lern', lern]]) {
-    assert.match(js, /'dd_zeitlupe'/, name);
-    assert.match(js, /sessionStorage/, name);
-    assert.match(js, /\/werkzeug\/zeitlupe\?db=/, name);
+    assert.match(js, /oeffneWerkzeug\('zeitlupe', \{ db: \w+, sql: editor\.wert\(\)/, name);
   }
   // Lern-Konsole: Knopf nur mit ausführbarer Übungs-DB und Aufgaben-Aktionen (nie im Verhör: datenbank = null)
   assert.match(lern, /if \(mitAusfuehren && aktionen\)[\s\S]{0,200}knoepfe\.zeitlupe = knopf\('Zeitlupe', 'knopf', 'i-zeitlupe'\)/);
   const verhoer = fs.readFileSync(path.join(STATIC, 'js', 'lernen', 'verhoer.js'), 'utf8');
   assert.doesNotMatch(verhoer, /zeitlupe/i);
+});
+
+test('Diagnose-Links: Zuordnung Code → Werkzeug, nur mit Übungs-DB, mit der eigenen Abfrage', () => {
+  const werkzeuge = fs.readFileSync(path.join(STATIC, 'js', 'konsole', 'werkzeuge.js'), 'utf8');
+  assert.match(werkzeuge, /SPURENBRETT = new Set\(\['KREUZPRODUKT', 'KEIN_VERBUND'\]\)/);
+  assert.match(werkzeuge, /ZEITLUPE = new Set\(\['KREUZPRODUKT', 'KEIN_VERBUND', 'WHERE_MIT_AGG', 'HAVING_OHNE_AGG', 'ALIAS_IN_HAVING'\]\)/);
+  assert.match(werkzeuge, /SORTIERFAECHER = new Set\(\['GB_REGEL', 'ANDERE_WERTE'\]\)/);
+  assert.match(werkzeuge, /info\.gruppiert/, 'Sortierfächer nur bei GROUP BY bzw. Aggregat');
+  for (const s of ["'dd_zeitlupe'", "'dd_spurenbrett'", "'dd_sortierfaecher'"]) assert.ok(werkzeuge.includes(s), s);
+  assert.doesNotMatch(werkzeuge, /\.loesung\b|aufgabe\./, 'nie die Musterlösung');
+  const lern = fs.readFileSync(path.join(STATIC, 'js', 'lernen', 'konsole_lern.js'), 'utf8');
+  assert.match(lern, /function werkzeugZusatz\(sql\) \{\s*if \(!mitAusfuehren\) return null;/, 'im Verhör (ohne DB) keine Links');
+  const konsole = fs.readFileSync(path.join(STATIC, 'js', 'konsole', 'konsole.js'), 'utf8');
+  assert.match(konsole, /zusatz: werkzeugZusatz\(sql\)/);
+});
+
+test('Werkzeuge ohne WebAssembly: einheitlicher Hinweis in Zeitlupe, Spurenbrett und Sortierfächern', () => {
+  const ausfuehren = fs.readFileSync(path.join(STATIC, 'js', 'konsole', 'ausfuehren.js'), 'utf8');
+  assert.match(ausfuehren, /TEXT_WERKZEUG_OHNE_WASM =\s*'Dieses Werkzeug braucht WebAssembly im Browser\./);
+  for (const w of ['zeitlupe', 'spurenbrett', 'sortierfaecher']) {
+    const js = fs.readFileSync(path.join(STATIC, 'js', w, `${w}.js`), 'utf8');
+    assert.match(js, /werkzeugBereit\(ausfuehrer\)/, w);
+    assert.match(js, /ohneWasm: parameter\.get\('ohneWasm'\) === '1'/, w);
+  }
 });
 
 test('zeitlupe.css: Gruppenfarben nur aus Tokens, reduzierte Bewegung, Handy 4+3 Reiter', () => {

@@ -1,15 +1,16 @@
 // Ermittlungskonsole für Aufgaben (DESIGN.md §4.10, §5.3, §5.9): baut die Konsole aus Phase 2 (Editor, Schema-Browser,
 // Ergebnis, Ausführer im Web Worker mit Server-Fallback) als Baustein auf. In Ermittlungen mit den Knöpfen
-// Ausführen · Prüfen · Tipp · Lösung (Zeitlupe folgt in Phase 4), im Verhör nur der Editor (kein Ausführen, kein
-// Prüfen – Abimodus streng). Der Entwurf liegt nur im localStorage dieses Geräts.
+// Ausführen · Prüfen · Zeitlupe · Tipp · Lösung (Diagnosen verlinken in die Verstehenshilfen), im Verhör nur der
+// Editor (kein Ausführen, kein Prüfen, keine Werkzeuge – Abimodus streng). Der Entwurf liegt nur im localStorage dieses Geräts.
 
 const V = new URL(import.meta.url).search;
-const [R, { erzeugeEditor }, { zeigeSchema, zeigeSchemaFehler }, ergebnis, { erzeugeAusfuehrer }] = await Promise.all([
+const [R, { erzeugeEditor }, { zeigeSchema, zeigeSchemaFehler }, ergebnis, { erzeugeAusfuehrer }, W] = await Promise.all([
   import('../kern/render.js' + V),
   import('../konsole/editor.js' + V),
   import('../konsole/schema.js' + V),
   import('../konsole/ergebnis.js' + V),
-  import('../konsole/ausfuehren.js' + V)
+  import('../konsole/ausfuehren.js' + V),
+  import('../konsole/werkzeuge.js' + V)
 ]);
 const { el, h, knopf } = R;
 
@@ -212,12 +213,26 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
   function oeffneZeitlupe() {
     if (!mitAusfuehren) return;
     if (entwurf) schreib(entwurf, editor.wert()); // Entwurf sofort sichern (Rücksprung)
-    try {
-      window.sessionStorage.setItem('dd_zeitlupe', JSON.stringify({ db: datenbank, sql: editor.wert(), zurueck: window.location.pathname }));
-    } catch {
-      /* privater Modus */
-    }
-    window.location.assign(`/werkzeug/zeitlupe?db=${encodeURIComponent(datenbank)}`);
+    W.oeffneWerkzeug('zeitlupe', { db: datenbank, sql: editor.wert(), zurueck: window.location.pathname });
+  }
+
+  /**
+   * Links aus einer Diagnose in die Verstehenshilfen – nur mit Übungs-DB (Ermittlung), nie im Verhör. Übergeben wird
+   * die Abfrage, zu der die Diagnose gehört (die eigene Abfrage, nie die Musterlösung).
+   */
+  function werkzeugZusatz(sql) {
+    if (!mitAusfuehren) return null;
+    const gezeigt = new Set(); // je Werkzeug nur ein Knopf (KEIN_VERBUND und KREUZPRODUKT kommen oft zusammen)
+    return (d) =>
+      W.linkLeiste(
+        W.werkzeugLinks(d, {
+          db: datenbank,
+          sql,
+          schema,
+          zurueck: window.location.pathname,
+          vorher: () => entwurf && schreib(entwurf, editor.wert())
+        }).filter((l) => !gezeigt.has(l.werkzeug) && gezeigt.add(l.werkzeug))
+      );
   }
 
   async function aufDemServer(sql, signal) {
@@ -274,10 +289,10 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
     }
     if (antwort && typeof antwort.fehler === 'string') {
       const text = antwort.abgebrochen || antwort.deutsch ? antwort.fehler : deutsch(antwort.fehler);
-      ergebnis.zeigeFehler(ergebnisFlaeche, text, { art: antwort.abgebrochen ? 'hinweis' : 'fehler', hinweise: aktuelle });
+      ergebnis.zeigeFehler(ergebnisFlaeche, text, { art: antwort.abgebrochen ? 'hinweis' : 'fehler', hinweise: aktuelle, zusatz: werkzeugZusatz(sql) });
       return;
     }
-    ergebnis.zeigeErgebnis(ergebnisFlaeche, antwort, { quelle, hinweise: aktuelle });
+    ergebnis.zeigeErgebnis(ergebnisFlaeche, antwort, { quelle, hinweise: aktuelle, zusatz: werkzeugZusatz(sql) });
   }
 
   return {
@@ -290,9 +305,13 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
     },
     fokus: () => editor.fokus(),
     knoepfe,
-    /** Diagnose des Server-Prüfers im Ergebnisbereich zeigen (dunkle Diagnose, ohne Lösungsdaten). */
-    zeigeDiagnose(diagnose, kopfText) {
+    /**
+     * Diagnose des Server-Prüfers im Ergebnisbereich zeigen (dunkle Diagnose, ohne Lösungsdaten). sql = die geprüfte
+     * Abfrage (Standard: der Editor-Inhalt) für die Links in die Verstehenshilfen.
+     */
+    zeigeDiagnose(diagnose, kopfText, sql = editor.wert()) {
       if (!ergebnisFlaeche) return;
+      const zusatz = werkzeugZusatz(sql);
       const frag = document.createDocumentFragment();
       if (kopfText) frag.appendChild(h('div', 'ergebnis-kopf', h('p', null, el('strong', null, kopfText)), el('p', null, 'Geprüft auf dem Server')));
       if (Array.isArray(diagnose) && diagnose.length) {
@@ -306,6 +325,8 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
           t.appendChild(R.mitCode(x.text));
           z.appendChild(t);
           d.appendChild(z);
+          const links = zusatz ? zusatz(x) : null;
+          if (links) d.appendChild(links);
         }
         frag.appendChild(d);
       }

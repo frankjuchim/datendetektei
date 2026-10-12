@@ -385,12 +385,14 @@ async function start() {
 
   const z = { r: null, sql: '', schritte: [], index: 0, modus: 'count', uhr: null, spans: {} };
 
-  const { erzeugeAusfuehrer } = await import('../konsole/ausfuehren.js' + V);
+  const { erzeugeAusfuehrer, werkzeugBereit } = await import('../konsole/ausfuehren.js' + V);
   // Schema (PK/FK) nur für die Auswahl der Kartenspalten; fehlt es, zeigen die Karten alle relevanten Spalten.
   const schema = await fetch(`/api/db/${name}/schema`, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
     .then((antwort) => (antwort.ok ? antwort.json() : null))
     .catch(() => null);
-  const ausfuehrer = erzeugeAusfuehrer({ dbUrl: `/db/${name}.sqlite` });
+  const ausfuehrer = erzeugeAusfuehrer({ dbUrl: `/db/${name}.sqlite`, ohneWasm: parameter.get('ohneWasm') === '1' });
+  // null = bereit, sonst { art: 'laden' | 'wasm', text } (einheitlicher WebAssembly-Hinweis, kein Server-Rückfall)
+  const startFehler = werkzeugBereit(ausfuehrer);
 
   function zeigeMeldung(text, art) {
     meldung.replaceChildren();
@@ -574,7 +576,9 @@ async function start() {
     zeigeMeldung(TEXT_LAEUFT, 'laeuft');
     let r;
     try {
-      r = visual ? await visual.sortierfaecher(sql, ausfuehrer.fuehreAus) : { fehler: 'Die Sortierfächer konnten nicht geladen werden. Lade die Seite neu.' };
+      const f = await startFehler;
+      if (f && f.art === 'wasm') r = { fehler: f.text };
+      else r = visual ? await visual.sortierfaecher(sql, ausfuehrer.fuehreAus) : { fehler: 'Die Sortierfächer konnten nicht geladen werden. Lade die Seite neu.' };
     } catch {
       r = { fehler: 'Diese Abfrage kann hier nicht einsortiert werden.' };
     }

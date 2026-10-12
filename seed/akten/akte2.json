@@ -491,7 +491,33 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Auf dem Spurenbrett ist jedes der sechs Räder mit jeder der vier Stationen durch einen Faden verbunden – das ist das Kreuzprodukt `FROM Rad, Station`. Tippe alle Fäden (Zeilen) an, die die Verbundbedingung erfüllen:"
+          "md": "Auf dem Spurenbrett ist jedes der sechs Räder mit jeder der vier Stationen durch einen Faden verbunden – das ist das Kreuzprodukt `FROM Rad, Station`. Jeder Faden ist eine Zeile der Tabelle darunter. Tippe alle Fäden (Zeilen) an, die die Verbundbedingung erfüllen:"
+        },
+        {
+          "t": "spurenbrett",
+          "datenbank": "stadtrad",
+          "tabellen": [
+            {
+              "name": "Rad",
+              "zeilen": [
+                2,
+                3,
+                10,
+                13,
+                14,
+                31
+              ]
+            },
+            {
+              "name": "Station",
+              "zeilen": [
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ]
         },
         {
           "t": "sql",
@@ -697,7 +723,7 @@
       ],
       "interaktion": {
         "kind": "zeilen",
-        "block": 2,
+        "block": 3,
         "mehrfach": true
       },
       "loesung": {
@@ -718,6 +744,33 @@
         {
           "t": "text",
           "md": "Von 24 Fäden bleiben 5 – je Rad mit Station genau einer. **Rad 10** steht mit `StationID` NULL in der Werkstatt: Kein Vergleich mit NULL ist wahr, also bleibt kein Faden. **Alte Werft** taucht nicht auf, weil keines dieser Räder auf sie verweist. Ohne die Verbundbedingung bleiben alle 24 Zeilen stehen (P2: Kreuzprodukt)."
+        },
+        {
+          "t": "spurenbrett",
+          "datenbank": "stadtrad",
+          "tabellen": [
+            {
+              "name": "Rad",
+              "zeilen": [
+                2,
+                3,
+                10,
+                13,
+                14,
+                31
+              ]
+            },
+            {
+              "name": "Station",
+              "zeilen": [
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ],
+          "bedingung": "Rad.StationID = Station.StationID"
         }
       ]
     },
