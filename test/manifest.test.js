@@ -19,7 +19,7 @@ function erwartet(basis, portal) {
     niveaus: ['eA', 'gA'],
     beschreibung: 'SQL, Schlüssel und Anomalien, ER-Modell und Datenschutz – als Ermittlungsfälle mit Live-SQL.',
     farbe: '#B3261E',
-    version: '0.2.0',
+    version: '0.3.0',
     basis,
     icon: '/static/favicon.svg',
     urls: {

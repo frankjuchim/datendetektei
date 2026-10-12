@@ -244,6 +244,92 @@ test('Konsolen-Module sind ES-Module ohne Inline-Styles', () => {
   }
 });
 
+/* ---------- Schülerseiten (Phase 3 Task 9) ---------- */
+
+const SCHUELER_SEITEN = [
+  { pfad: '/akte/1', skript: 'akte' },
+  { pfad: '/akte/7', skript: 'akte' },
+  { pfad: '/ermittlung/A1-E1', skript: 'ermittlung' },
+  { pfad: '/ermittlung/A12-E3', skript: 'ermittlung' },
+  { pfad: '/verhoer/1', skript: 'verhoer' },
+  { pfad: '/warmup', skript: 'warmup' },
+  { pfad: '/training', skript: 'training' }
+];
+
+for (const { pfad } of SCHUELER_SEITEN) {
+  test(`${pfad} ohne Sitzung: 302 auf /sso/start?ziel=…`, async () => {
+    const { app } = testApp();
+    const res = await request(app).get(pfad);
+    assert.equal(res.status, 302);
+    assert.equal(res.headers.location, '/sso/start?ziel=' + encodeURIComponent(pfad));
+  });
+}
+
+test('Schülerseiten: 200 für Schüler, Lehrkraft und Admin, mit Seitenmodul und gemeinsamen Bausteinen', async () => {
+  for (const nutzer of [{}, LEHRKRAFT, ADMIN]) {
+    const t = testApp();
+    const cookie = await anmelden(t, nutzer);
+    for (const { pfad, skript } of SCHUELER_SEITEN) {
+      const res = await request(t.app).get(pfad).set('Cookie', cookie);
+      assert.equal(res.status, 200, `${nutzer.rolle || 'schueler'} ${pfad}`);
+      assert.match(res.headers['content-type'], /text\/html/);
+      assert.equal(res.headers['cache-control'], 'no-cache');
+      assert.match(res.text, new RegExp(`<script type="module" src="/static/js/lernen/${skript}\\.js\\?v=`), pfad);
+      assert.match(res.text, /\/static\/css\/lernen\.css\?v=/, pfad);
+      assert.match(res.text, /\/static\/js\/kern\/kopfzeile\.js\?v=/, pfad);
+      assert.match(res.text, /id="seite"/, pfad);
+    }
+  }
+});
+
+test('Schülerseiten mit ungültigem Parameter: 404 (auch angemeldet)', async () => {
+  const t = testApp();
+  const cookie = await anmelden(t);
+  for (const pfad of ['/akte/0', '/akte/8', '/akte/x', '/akte/01', '/akte/1/2', '/ermittlung/A1', '/ermittlung/a1-e1',
+    '/ermittlung/A1-E1-01', '/verhoer/0', '/verhoer/abc', '/akte.html', '/ermittlung.html', '/warmup.html']) {
+    const res = await request(t.app).get(pfad).set('Cookie', cookie);
+    assert.equal(res.status, 404, pfad);
+  }
+});
+
+test('Startseite: Stadtplan-Bereich für Angemeldete, Lernmodul und SQL-Hervorhebung', async () => {
+  const { app } = testApp();
+  const res = await request(app).get('/');
+  assert.match(res.text, /id="stadtplan-bereich"[^>]*hidden/);
+  assert.match(res.text, /<script type="module" src="\/static\/js\/lernen\/stadtplan\.js\?v=/);
+  assert.match(res.text, /\/static\/css\/lernen\.css\?v=/);
+});
+
+test('Ermittlung und Verhör laden Parser, Regeln, Fehlertexte und die Konsolen-Styles', async () => {
+  const t = testApp();
+  const cookie = await anmelden(t);
+  for (const pfad of ['/ermittlung/A1-E1', '/verhoer/1', '/warmup', '/training']) {
+    const res = await request(t.app).get(pfad).set('Cookie', cookie);
+    for (const datei of ['parser', 'regeln', 'fehlertexte']) {
+      assert.match(res.text, new RegExp(`<script src="/static/js/sql/${datei}\\.js\\?v=[^"]+" defer></script>`), `${pfad} ${datei}`);
+    }
+    assert.match(res.text, /\/static\/css\/konsole\.css\?v=/, pfad);
+  }
+});
+
+test('Lern-Module: ES-Module, nur Textknoten, Mischen von choice/order/match', () => {
+  const ordner = path.join(STATIC, 'js', 'lernen');
+  // Module laden ihre Bausteine mit derselben ?v=-Version wie die Seite (import(… + V), V aus import.meta.url)
+  for (const datei of ['stadtplan', 'akte', 'ermittlung', 'verhoer', 'warmup', 'training', 'konsole_lern']) {
+    const js = fs.readFileSync(path.join(ordner, datei + '.js'), 'utf8');
+    assert.match(js, /new URL\(import\.meta\.url\)\.search/, datei);
+    assert.match(js, /import\('\.\.\/kern\/render\.js' \+ V\)/, datei);
+    assert.doesNotMatch(js, /^import .* from /m, `${datei}: statischer Import ohne Version`);
+  }
+  for (const datei of ['api', 'render', 'interaktionen']) {
+    const js = fs.readFileSync(path.join(STATIC, 'js', 'kern', datei + '.js'), 'utf8');
+    assert.match(js, /^export /m, datei);
+    assert.doesNotMatch(js, /setAttribute\(\s*['"]style['"]/, datei);
+  }
+  const ia = fs.readFileSync(path.join(STATIC, 'js', 'kern', 'interaktionen.js'), 'utf8');
+  for (const art of ['choice', 'order', 'match']) assert.match(ia, new RegExp(`mische\\([^)]*\\)[^\\n]*// ${art}`), art);
+});
+
 /* ---------- API ---------- */
 
 test('GET /api/akten ist öffentlich und liefert die Akten', async () => {
@@ -283,7 +369,7 @@ test('Browser-Skripte schreiben nie HTML aus Zeichenketten (kein innerHTML)', ()
 });
 
 test('?v= in allen HTML-Seiten gleich der package.json-Version', () => {
-  assert.equal(VERSION, '0.2.0');
+  assert.equal(VERSION, '0.3.0');
   let anzahl = 0;
   for (const datei of htmlDateien()) {
     const html = fs.readFileSync(path.join(PUBLIC, datei), 'utf8');

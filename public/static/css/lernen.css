@@ -1,0 +1,559 @@
+/* Schülerseiten (Plan Phase 3 Task 9; DESIGN.md §4, §5.1–5.3, §5.9, §6, §7): Stadtplan, Akte, Ermittlung mit
+   Aufgabenkarte und Interaktionen, Verhör, Warm-up, Trainingsplatz. Nur Tokens – keine Farbliterale. */
+
+/* ---------- Rahmen ---------- */
+.lernen-seite { gap: var(--a-5); }
+.seite { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.laedt { color: var(--tinte-2); font-family: var(--schrift-mono); font-size: var(--t-s); padding: var(--a-5) 0; }
+.mono { font-family: var(--schrift-mono); font-size: var(--t-xs); }
+
+.lern-nav {
+  display: flex; gap: var(--a-1); overflow-x: auto; scrollbar-width: thin; min-width: 0;
+  border-bottom: 1px solid var(--rand); margin-top: calc(-1 * var(--a-3));
+}
+.lern-nav a {
+  display: inline-flex; align-items: center; gap: var(--a-2); flex: none;
+  min-height: 44px; padding: 0 var(--a-3); margin-bottom: -1px;
+  color: var(--tinte-2); text-decoration: none; font-weight: 600; font-size: var(--t-s);
+  border-bottom: 3px solid transparent;
+}
+.lern-nav a:hover { color: var(--tinte); background: var(--flaeche); }
+.lern-nav a[aria-current="page"] { color: var(--tinte); border-bottom-color: var(--siegelrot); }
+
+.vorschau-banner { justify-content: space-between; }
+.banner-link { color: inherit; display: inline-flex; align-items: center; min-height: 44px; }
+.kurs-wechsel { align-self: flex-start; }
+
+.leer-karte { max-width: 720px; }
+.leer-karte .aktendeckel-innen { padding: var(--a-6); }
+.kurs-wahl { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--a-2); }
+.kurs-wahl-knopf {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--a-3);
+  min-height: 52px; padding: var(--a-2) var(--a-4); border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); text-decoration: none; font-weight: 600;
+}
+.kurs-wahl-knopf:hover { background: var(--flaeche); }
+
+.meldung { font-size: var(--t-s); color: var(--siegelrot-text); font-weight: 600; min-height: 0; }
+.meldung:empty { display: none; }
+
+/* Toast (DESIGN §4.15) */
+.toast {
+  position: fixed; right: var(--a-5); bottom: calc(var(--a-5) + env(safe-area-inset-bottom, 0px)); z-index: 60;
+  max-width: min(420px, calc(100vw - 2 * var(--a-4)));
+  padding: var(--a-3) var(--a-4); border-radius: var(--radius);
+  background: var(--tinte); color: var(--papier); box-shadow: var(--schatten-2);
+  font-weight: 600; font-size: var(--t-s);
+  opacity: 0; transform: translateY(8px); pointer-events: none;
+  transition: opacity var(--dauer) var(--kurve), transform var(--dauer) var(--kurve);
+}
+.toast.sichtbar { opacity: 1; transform: none; }
+
+/* ---------- Bausteine ---------- */
+svg.ring { flex: none; }
+.ring circle { fill: none; stroke-width: 6; }
+.ring .spur { stroke: var(--flaeche-2); }
+.ring .wert { stroke: var(--messing-grafik); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 600ms var(--kurve); }
+.ring.geschlossen .wert { stroke: var(--gruen); }
+.ring text { font-family: var(--schrift-mono); font-size: 13px; font-weight: 600; fill: var(--tinte); text-anchor: middle; dominant-baseline: central; }
+
+.sterne { display: inline-flex; gap: 2px; align-items: center; }
+.sterne svg.icon { width: 16px; height: 16px; stroke-width: 1.6; }
+.sterne .voll { fill: var(--messing-grafik); stroke: var(--messing-grafik); }
+.sterne .leer { fill: none; stroke: var(--rand-stark); }
+
+.falle.hell { background: var(--rot-flaeche); color: var(--siegelrot-text); }
+
+.karte-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: var(--a-2); flex-wrap: wrap; }
+.karte h2 { font-size: var(--t-l); display: flex; align-items: center; gap: var(--a-2); }
+.status-zahl { font-family: var(--schrift-titel); font-weight: 700; font-size: 2.25rem; line-height: 1; }
+
+.briefing { margin: 0; padding-left: var(--a-4); border-left: 3px solid var(--siegelrot); color: var(--tinte); max-width: 68ch; }
+.briefing cite { display: block; margin-top: var(--a-1); font-style: normal; font-size: var(--t-s); color: var(--tinte-2); }
+
+/* Kacheln der Aufgaben (DESIGN §5.2: 44 × 44) */
+.kacheln { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--a-2); }
+.kachel {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); color: var(--tinte);
+  font-family: var(--schrift-mono); font-size: var(--t-s); font-weight: 600; text-decoration: none; cursor: pointer;
+}
+.kachel:hover { background: var(--flaeche); color: var(--tinte); }
+.kachel.erledigt { background: var(--gruen-flaeche); border-color: var(--gruen); color: var(--gruen); }
+.kachel.angesehen { background: var(--flaeche-2); color: var(--tinte-3); border-style: dashed; }
+.kachel.cc { border-style: dashed; color: var(--messing-text); }
+.kachel.beantwortet { background: var(--flaeche-2); }
+.kachel[aria-current="step"] { border: 2px solid var(--siegelrot); box-shadow: 0 0 0 1px var(--siegelrot); }
+
+/* ---------- Stadtplan (DESIGN §5.1) ---------- */
+.stadtplan-bereich { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.stadtplan-raster { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--a-5); align-items: start; }
+.plan-spalte, .seitenspalte { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.karte-plan { padding: 0; overflow: hidden; }
+.plan-scroll { overflow-x: auto; scrollbar-width: thin; }
+.plan-scroll:focus-visible { outline: 3px solid var(--fokus); outline-offset: -3px; }
+.plan-svg { display: block; width: 100%; height: auto; }
+.plan-svg .plan-grund { fill: var(--papier); }
+.plan-svg .gruen { fill: var(--gruenanlage); }
+.plan-svg .block { fill: var(--block); }
+.plan-svg .strasse { stroke: var(--strasse); fill: none; stroke-linecap: round; }
+.plan-svg .strasse-rand { stroke: var(--rand); fill: none; stroke-linecap: round; }
+.plan-svg .wasser { fill: none; stroke: var(--wasser); stroke-width: 46; stroke-linecap: round; }
+.plan-svg .wasser-rand { fill: none; stroke: var(--wasser-rand); stroke-width: 52; stroke-linecap: round; }
+.plan-svg .flussname { font-family: var(--schrift-titel); font-style: italic; font-size: 18px; letter-spacing: 0.4em; fill: var(--blau); opacity: .8; }
+.plan-svg .viertel { font-family: var(--schrift-mono); font-size: 11px; letter-spacing: 0.2em; fill: var(--tinte-3); text-transform: uppercase; }
+.plan-svg .ort { cursor: pointer; }
+.plan-svg .ort .teller { fill: var(--karte); stroke: var(--rand-stark); stroke-width: 1.5; }
+.plan-svg .ort .spur { fill: none; stroke: var(--flaeche-2); stroke-width: 6; }
+.plan-svg .ort .wert { fill: none; stroke: var(--messing-grafik); stroke-width: 6; stroke-linecap: round; }
+.plan-svg .ort .zweit { stroke-width: 4; }
+.plan-svg .ort .wert.zweit { stroke: var(--blau); }
+.plan-svg .ort .nr { font-family: var(--schrift-titel); font-weight: 700; font-size: 22px; fill: var(--tinte); text-anchor: middle; dominant-baseline: central; }
+.plan-svg .ort .nr.klein { font-size: 16px; }
+.plan-svg .ort .schild { fill: var(--karte); stroke: var(--rand); }
+.plan-svg .ort .schild-text { font-family: var(--schrift-titel); font-weight: 600; font-size: 15px; fill: var(--tinte); text-anchor: middle; }
+.plan-svg .ort .schild-meta { font-family: var(--schrift-mono); font-size: 10.5px; fill: var(--tinte-2); text-anchor: middle; letter-spacing: 0.05em; }
+.plan-svg .ort .schloss { fill: none; stroke: var(--tinte-3); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.plan-svg .ort.fertig .teller { stroke: var(--gruen); stroke-width: 2.5; }
+.plan-svg .ort .haken { fill: var(--gruen); }
+.plan-svg .ort .haken-strich { fill: none; stroke: var(--karte); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.plan-svg .ort .auswahl { display: none; fill: none; }
+.plan-svg .ort.gewaehlt .auswahl { display: inline; stroke: var(--siegelrot); stroke-width: 2.5; stroke-dasharray: 5 4; }
+.plan-svg .ort:hover .teller { stroke: var(--siegelrot); }
+.plan-svg .ort:focus { outline: none; }
+.plan-svg .ort:focus-visible .auswahl { display: inline; stroke: var(--fokus); stroke-width: 3; stroke-dasharray: none; }
+.plan-svg .nebel-wolke { fill: var(--nebel); opacity: .9; }
+.plan-svg .gesperrt .teller { fill: var(--flaeche); stroke-dasharray: 4 3; }
+.plan-svg .gesperrt .schild-text { fill: var(--tinte-2); }
+.plan-svg .falter { opacity: .55; }
+.plan-svg .falter use { fill: none; stroke: var(--tinte); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.plan-svg .faden { stroke: var(--siegelrot); stroke-width: 1.6; fill: none; stroke-dasharray: 2 5; opacity: .75; }
+.plan-legende { display: flex; flex-wrap: wrap; gap: var(--a-2) var(--a-5); padding: var(--a-3) var(--a-5); border-top: 1px solid var(--rand); font-size: var(--t-s); color: var(--tinte-2); align-items: center; }
+.plan-legende span { display: inline-flex; align-items: center; gap: var(--a-2); }
+.lg-punkt { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--messing-grafik); background: var(--karte); }
+.lg-punkt.fertig { border-color: var(--gruen); }
+.lg-punkt.nebel { border: 2px dashed var(--rand-stark); background: var(--flaeche); }
+.lg-faden { display: inline-block; width: 24px; border-top: 2px dotted var(--siegelrot); }
+.plan-liste { display: none; }
+.akte-karte.gesperrt { color: var(--tinte-3); }
+a.akte-karte { display: block; color: var(--tinte); text-decoration: none; }
+a.akte-karte:hover { border-color: var(--rand-stark); }
+.akte-kopf .etikett { margin-top: 2px; }
+
+.status-kopf { display: flex; align-items: center; gap: var(--a-3); }
+.rang-abzeichen { width: 56px; height: 56px; flex: none; }
+.rang-aussen { fill: var(--messing-flaeche); stroke: var(--messing-grafik); stroke-width: 2.5; }
+.rang-innen { fill: none; stroke: var(--messing-grafik); stroke-width: 1; stroke-dasharray: 2 2.5; }
+.rang-stern { fill: var(--messing-grafik); stroke: none; }
+.rang-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+.rang-punkte { margin-left: auto; text-align: right; }
+.rang-karte { display: flex; flex-direction: column; gap: var(--a-3); }
+.leiste { height: 10px; border-radius: var(--radius-pille); background: var(--flaeche-2); overflow: hidden; }
+.leiste i { display: block; height: 100%; width: var(--wert, 0%); background: var(--messing-grafik); border-radius: inherit; transition: width 600ms var(--kurve); }
+.rang-skala { display: flex; justify-content: space-between; font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-3); }
+
+.seitenspalte .steckbrief dd { margin-bottom: var(--a-1); }
+.steckbrief dd.bekannt { color: var(--tinte); letter-spacing: 0; font-weight: 600; }
+.steckbrief-falter { fill: none; stroke: var(--tinte); stroke-width: 1.6; }
+.steckbrief .steckbrief-koerper { grid-template-columns: 96px minmax(0, 1fr); }
+
+.akte-detail .aktendeckel-innen { gap: var(--a-5); }
+.akte-detail-teil { display: flex; flex-direction: column; gap: var(--a-3); }
+.akte-detail-teil + .akte-detail-teil { border-top: 1px dashed var(--rand); padding-top: var(--a-4); }
+.akte-detail-kopf { display: flex; align-items: center; gap: var(--a-3); flex-wrap: wrap; }
+.akte-detail-kopf h2 { font-size: var(--t-l); }
+.akte-detail .briefing { font-size: var(--t-s); }
+.ermittlungsliste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.ermittlungsliste li { display: flex; justify-content: space-between; align-items: center; gap: var(--a-2); min-height: 44px; border-top: 1px dashed var(--rand); }
+.ermittlungsliste li:first-child { border-top: 0; }
+.ermittlung-link { display: inline-flex; align-items: center; gap: var(--a-2); min-height: 44px; color: var(--tinte); text-decoration: none; min-width: 0; }
+.ermittlung-link:hover { text-decoration: underline; }
+.ermittlungsliste .nummer { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-3); min-width: 2.2em; }
+.laeuft { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pille); background: var(--messing-flaeche); color: var(--messing-text); }
+.akte-detail .knopf-reihe .knopf { flex: 1 1 auto; }
+
+.bilanz-raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+.fallen-karte, .abzeichen-karte { display: flex; flex-direction: column; gap: var(--a-3); }
+.fallen-liste, .abzeichen-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--a-2); }
+.fallen-liste li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--a-2); align-items: center; font-size: var(--t-s); }
+.falle-anzahl { font-family: var(--schrift-mono); font-weight: 600; color: var(--siegelrot-text); }
+.abzeichen-liste li { display: flex; align-items: center; gap: var(--a-2); font-size: var(--t-s); font-weight: 600; }
+.abzeichen-liste .icon { color: var(--messing-grafik); }
+.abzeichen-neu { font-weight: 600; color: var(--messing-text); }
+
+/* Pinnwand (DESIGN §4.3, §4.4) */
+.pinnwand-bereich { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.pinnwand {
+  list-style: none; margin: 0; padding: var(--a-4); display: flex; gap: var(--a-4); overflow-x: auto; scrollbar-width: thin;
+  background-color: var(--kork); border-radius: var(--radius); border: 6px solid var(--flaeche-2);
+  background-image: radial-gradient(var(--kork-punkt) 1px, transparent 1.5px);
+  background-size: 9px 9px;
+}
+.polaroid {
+  position: relative; flex: none; width: 96px; padding: 8px 8px 0; background: var(--polaroid); color: var(--polaroid-text);
+  box-shadow: var(--schatten-2); transform: rotate(-2.5deg); display: flex; flex-direction: column; align-items: center;
+}
+.polaroid:nth-child(even) { transform: rotate(2deg); }
+.polaroid-bild { display: grid; place-items: center; width: 80px; height: 72px; background: var(--polaroid-bild); color: var(--polaroid); }
+.polaroid-bild .icon { width: 32px; height: 32px; }
+.polaroid-text { font-family: var(--schrift-titel); font-weight: 600; font-size: 0.8125rem; text-align: center; padding: 6px 0 8px; line-height: 1.1; }
+.polaroid .nadel { position: absolute; top: -6px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--nadel-licht), var(--nadel) 55%, var(--nadel-schatten)); }
+.polaroid.leer { background: transparent; box-shadow: none; transform: none; border: 2px dashed var(--tinte-3); padding: 8px; height: 112px; justify-content: center; color: var(--tinte-2); }
+.polaroid-frage { font-family: var(--schrift-titel); font-weight: 700; font-size: 1.75rem; color: var(--tinte-2); }
+.polaroid.einzeln { align-self: flex-start; }
+
+/* ---------- Akte (DESIGN §5.2) ---------- */
+.akte-kopf-karte .aktendeckel-innen { padding: var(--a-5) var(--a-6); }
+.akte-kopf-karte .akte-detail-kopf { gap: var(--a-4); }
+.akte-kopf-karte .akte-detail-kopf .stempel { margin-left: auto; }
+.ermittlungen-raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: var(--a-6) var(--a-5); }
+.ermittlung-karte .aktendeckel-innen { gap: var(--a-3); }
+.ermittlung-karte-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--a-3); }
+.ermittlung-karte h2 { font-size: var(--t-l); }
+.titel-link { color: var(--tinte); text-decoration: none; }
+.titel-link:hover { text-decoration: underline; }
+.akte-unten { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+.verhoer-karte, .werkzeug-karte { display: flex; flex-direction: column; gap: var(--a-3); }
+.verhoer-karte h2 .icon { color: var(--siegelrot-text); }
+
+/* ---------- Ermittlung (DESIGN §5.3) ---------- */
+.ermittlung-kopf { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--a-3) var(--a-5); }
+.ermittlung-kopf .kacheln { justify-content: flex-end; }
+.etikett-link { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.etikett-link:hover { color: var(--tinte); }
+.ermittlung-stand { font-size: var(--t-s); color: var(--tinte-2); }
+.briefing-box { border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); }
+.briefing-box > summary {
+  display: flex; align-items: center; gap: var(--a-2); min-height: 48px; padding: 0 var(--a-4);
+  cursor: pointer; font-weight: 600; list-style: none;
+}
+.briefing-box > summary::-webkit-details-marker { display: none; }
+.briefing-box > summary::after { content: "▸"; margin-left: auto; color: var(--tinte-3); transition: transform var(--dauer) var(--kurve); }
+.briefing-box[open] > summary::after { transform: rotate(90deg); }
+.briefing-box > summary:hover { background: var(--flaeche); }
+.briefing-innen { padding: 0 var(--a-4) var(--a-4); display: flex; flex-direction: column; gap: var(--a-4); }
+
+.ermittlung-raster { display: grid; gap: var(--a-5); align-items: start; }
+.ermittlung-raster.mit-konsole {
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  grid-template-areas: "aufgabe arbeit" "rueck arbeit";
+  grid-template-rows: auto 1fr;
+}
+.ermittlung-raster.ohne-konsole { grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); grid-template-areas: "aufgabe rueck"; }
+.ermittlung-raster .aufgabe-karte { grid-area: aufgabe; }
+.ermittlung-raster .arbeit { grid-area: arbeit; min-width: 0; }
+.ermittlung-raster .rueckmeldung-bereich { grid-area: rueck; }
+.rueckmeldung-bereich { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.tipps { display: flex; flex-direction: column; gap: var(--a-3); }
+.tipps:empty, .feedback-platz:empty, .bestaetigung-platz:empty { display: none; }
+.ermittlung-nav { display: flex; flex-wrap: wrap; gap: var(--a-2); justify-content: space-between; border-top: 1px solid var(--rand); padding-top: var(--a-3); }
+
+.aufgabe-karte .aktendeckel-innen { gap: var(--a-4); }
+.aufgabe-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-3); }
+.aufgabe-meta .punkte { font-family: var(--schrift-mono); font-size: var(--t-s); }
+.aufgabe-meta .stempel { margin-left: auto; }
+.aufgabe-titel { font-size: var(--t-l); }
+.aufgabe-titel:focus { outline: none; }
+.aufgabe-inhalt, .bloecke { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.aufgabe-knoepfe { padding-top: var(--a-2); border-top: 1px solid var(--rand); }
+
+/* Mini-Markdown */
+.md { display: flex; flex-direction: column; gap: var(--a-2); max-width: 72ch; }
+.md ul { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.md code, .relation, .option-code, .puzzle-code {
+  font-family: var(--schrift-mono); font-size: 0.9em; background: var(--flaeche); border-radius: var(--radius-klein); padding: 1px 4px;
+}
+span.md { display: inline; }
+.notiz .notiz-inhalt { grid-row: span 2; font-size: var(--t-s); }
+.notiz .notiz-inhalt strong:first-child { color: var(--blau); }
+
+/* Code- und SQL-Blöcke (dunkel wie die Konsole, damit die SQL-Farben lesbar sind) */
+.code-huelle { overflow-x: auto; min-width: 0; border-radius: var(--radius); background: var(--konsole); scrollbar-width: thin; }
+.code-block { display: flex; flex-direction: column; min-width: max-content; padding: var(--a-2) 0; font-family: var(--schrift-mono); font-size: 0.875rem; line-height: 1.6; color: var(--konsole-text); }
+.code-zeile { display: flex; align-items: center; gap: var(--a-3); padding: 0 var(--a-4) 0 var(--a-3); min-height: 1.6em; white-space: pre; text-align: left; }
+.code-block:not(.mit-nummern) .code-zeile { padding-left: var(--a-4); }
+.code-nr { flex: none; min-width: 1.6em; text-align: right; color: var(--konsole-leise); font-size: 0.75rem; user-select: none; -webkit-user-select: none; }
+.code-zeile.markiert { background: var(--konsole-hover); box-shadow: inset 3px 0 0 var(--sql-aggregat); }
+.code-block.waehlbar .code-zeile {
+  min-height: 44px; width: 100%; border: 0; border-left: 3px solid transparent; background: transparent; color: inherit;
+  font: inherit; cursor: pointer;
+}
+.code-block.waehlbar .code-zeile:hover { background: var(--konsole-hover); }
+.code-block.waehlbar .code-zeile:focus-visible { outline: 2px solid var(--konsole-leise); outline-offset: -2px; }
+.code-block.waehlbar .code-zeile.gewaehlt { background: var(--konsole-hinweis-flaeche); border-left-color: var(--konsole-hinweis); }
+.code-block.waehlbar .code-zeile.falsch { background: var(--konsole-fehler-flaeche); border-left-color: var(--konsole-ausfuehren); }
+.code-block.waehlbar .code-zeile.loesung { background: var(--konsole-tabelle-kopf); border-left-color: var(--konsole-pruefen); }
+.code-block.waehlbar .code-zeile:disabled { cursor: default; }
+.code-block .luecke { background: var(--konsole-flaeche); color: var(--konsole-text); border-color: var(--konsole-knopf-rand); }
+
+/* Schema in Kurzschreibweise, Tabellen */
+.schema-block { display: flex; flex-direction: column; gap: var(--a-1); padding: var(--a-3) var(--a-4); background: var(--flaeche); border-radius: var(--radius); overflow-x: auto; }
+.schema-block .relation { background: none; padding: 0; white-space: nowrap; font-size: 0.9375rem; }
+.relation-name { font-weight: 600; }
+.relation .pk, .dbtabelle .pk, table.daten th .pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.fk-pfeil { color: var(--siegelrot-text); font-weight: 600; margin-right: 1px; }
+.dbtabelle caption { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-2); padding: var(--a-2) var(--a-3); }
+table.daten thead th .pk { text-decoration-color: currentColor; }
+table.daten td.zahl, table.daten th.zahl { text-align: right; }
+table.daten .null { font-family: var(--schrift-mono); font-style: italic; text-transform: uppercase; color: var(--tinte-3); font-size: 0.8125rem; }
+.dbtabelle td.markiert, .dbtabelle tr.markiert td { background: var(--messing-flaeche); }
+.dbtabelle .farbe-rot.markiert, .dbtabelle tr.farbe-rot td { background: var(--rot-flaeche); }
+.dbtabelle .farbe-gruen.markiert, .dbtabelle tr.farbe-gruen td { background: var(--gruen-flaeche); }
+.dbtabelle .farbe-blau.markiert, .dbtabelle tr.farbe-blau td { background: var(--blau-flaeche); }
+.dbtabelle .farbe-grau.markiert, .dbtabelle tr.farbe-grau td { background: var(--flaeche-2); }
+.dbtabelle .marke {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: var(--a-2); padding: 0 4px;
+  border-radius: var(--radius-pille); background: var(--siegelrot); color: var(--auf-akzent);
+  font-family: var(--schrift-mono); font-size: 0.6875rem; font-weight: 700; vertical-align: 1px; line-height: 1;
+}
+.dbtabelle.waehlbar tbody tr { cursor: pointer; }
+.dbtabelle.waehlbar tbody tr:hover td { background: var(--flaeche); }
+.dbtabelle.waehlbar tbody tr.gewaehlt td { background: var(--blau-flaeche); }
+.dbtabelle.waehlbar tbody tr.falsch td { background: var(--rot-flaeche); }
+.dbtabelle.waehlbar tbody tr.loesung td { background: var(--gruen-flaeche); }
+.dbtabelle .wahl-spalte { width: 52px; padding: 0 var(--a-1); vertical-align: middle; }
+.zeilen-knopf { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.zeilen-haken { width: 20px; height: 20px; border: 2px solid var(--rand-stark); border-radius: var(--radius-klein); background: var(--karte); }
+.zeilen-knopf[aria-pressed="true"] .zeilen-haken { background: var(--blau); border-color: var(--blau); box-shadow: inset 0 0 0 3px var(--karte); }
+.loesung .zeilen-knopf[aria-pressed="false"] .zeilen-haken { border-color: var(--gruen); }
+
+/* Datenbank-Kachel */
+.db-kachel { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--flaeche); }
+.db-kachel-kopf { display: flex; align-items: center; gap: var(--a-3); }
+.db-kachel-kopf .icon { color: var(--blau); width: 28px; height: 28px; }
+.db-kachel-titel { display: flex; flex-direction: column; }
+.db-kachel-titel strong { font-family: var(--schrift-titel); font-size: var(--t-l); }
+.db-kachel-tabellen { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--a-1); overflow-x: auto; }
+.db-kachel-tabellen li { display: flex; flex-wrap: wrap; gap: var(--a-1) var(--a-3); align-items: baseline; }
+.db-kachel-tabellen .relation { background: none; padding: 0; }
+.db-zeilen { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-3); }
+
+/* ---------- Interaktionen ---------- */
+.teil { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); min-width: 0; }
+.teil.einzeln { padding: 0; border: 0; background: none; }
+.teil-kopf { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-2); }
+.teil-hinweis { font-size: var(--t-s); color: var(--tinte-2); }
+.teil-meldung { font-size: var(--t-s); font-weight: 600; color: var(--siegelrot-text); }
+.teil-meldung:empty { display: none; }
+.teil.ok { border-color: var(--gruen); }
+.teil.falsch { border-color: var(--siegelrot); }
+.stufe-versteckt { display: none !important; }
+.stufe-box { display: flex; flex-direction: column; gap: var(--a-2); align-items: flex-start; padding-top: var(--a-2); border-top: 1px dashed var(--rand); }
+
+.luecke {
+  width: calc(var(--breite, 8ch) + 1.4em); max-width: 100%; min-height: 36px; margin: 2px 2px; padding: 2px 6px;
+  border: 1.5px solid var(--rand-stark); border-radius: var(--radius-klein); background: var(--karte); color: var(--tinte);
+  font-family: var(--schrift-mono); font-size: 0.9375rem; vertical-align: baseline;
+}
+select.luecke { width: auto; min-height: 40px; }
+.luecke:focus-visible { outline: 3px solid var(--fokus); outline-offset: 1px; }
+.luecke.ok { border-color: var(--gruen); background: var(--gruen-flaeche); }
+.luecke.falsch { border-color: var(--siegelrot); background: var(--rot-flaeche); }
+.luecke.loesung { border-color: var(--gruen); background: var(--gruen-flaeche); font-weight: 600; }
+.luecke-leer { font-family: var(--schrift-mono); color: var(--tinte-3); }
+
+.optionen { display: flex; flex-direction: column; gap: var(--a-2); }
+.option {
+  display: flex; align-items: center; gap: var(--a-3); width: 100%; min-height: 48px; padding: var(--a-2) var(--a-4);
+  border: 1.5px solid var(--rand); border-radius: var(--radius); background: var(--karte); color: var(--tinte);
+  font: inherit; text-align: left; cursor: pointer;
+}
+.option:hover { background: var(--flaeche); }
+.option-marke { flex: none; width: 20px; height: 20px; border: 2px solid var(--rand-stark); border-radius: 50%; background: var(--karte); }
+.option.mehrfach .option-marke { border-radius: var(--radius-klein); }
+.option[aria-checked="true"] { border-color: var(--blau); background: var(--blau-flaeche); }
+.option[aria-checked="true"] .option-marke { background: var(--blau); border-color: var(--blau); box-shadow: inset 0 0 0 3px var(--karte); }
+.option.falsch { border-color: var(--siegelrot); background: var(--rot-flaeche); }
+.option.loesung { border-color: var(--gruen); background: var(--gruen-flaeche); }
+.option:disabled { cursor: default; }
+.option-text { min-width: 0; overflow-wrap: anywhere; }
+
+.puzzle { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--a-4); }
+.puzzle > div:last-child:empty { display: none; }
+.puzzle > div:last-child:not(.puzzle-spalte) { grid-column: 1 / -1; }
+.puzzle-spalte { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.puzzle-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--a-2); min-height: 52px; }
+.puzzle-liste.folge { padding: var(--a-2); border: 1.5px dashed var(--rand-stark); border-radius: var(--radius); }
+.puzzle-teil {
+  display: flex; align-items: center; gap: var(--a-2); width: 100%; min-height: 44px; padding: var(--a-1) var(--a-2) var(--a-1) var(--a-3);
+  border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); color: var(--tinte); font: inherit; text-align: left;
+}
+button.puzzle-teil { cursor: pointer; }
+button.puzzle-teil:hover { background: var(--flaeche); }
+.puzzle-teil code, .puzzle-teil .md { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.puzzle-pfeil { color: var(--tinte-3); }
+.puzzle-pos { font-family: var(--schrift-mono); font-weight: 600; color: var(--tinte-3); min-width: 1.4em; }
+.puzzle-knoepfe { display: inline-flex; flex: none; }
+.puzzle-teil.richtig { border-color: var(--gruen); background: var(--gruen-flaeche); }
+.puzzle-teil.falsch { border-color: var(--siegelrot); background: var(--rot-flaeche); }
+.knopf-icon.klein { width: 44px; height: 44px; font-size: var(--t-s); }
+.knopf-icon:disabled { opacity: .35; cursor: not-allowed; }
+
+.match { display: flex; flex-direction: column; gap: var(--a-3); }
+.match-zeile { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--a-2) var(--a-4); align-items: center; padding: var(--a-2) var(--a-3); border: 1px solid var(--rand); border-radius: var(--radius); }
+.match-zeile.ok { border-color: var(--gruen); background: var(--gruen-flaeche); }
+.match-zeile.falsch { border-color: var(--siegelrot); background: var(--rot-flaeche); }
+.match-segment .segment-knopf { font-weight: 500; }
+
+.teil-ergebnis { display: flex; flex-direction: column; gap: var(--a-3); align-items: flex-start; }
+.teil-ergebnis .tabelle-rahmen { align-self: stretch; }
+.ergebnis-eingabe td { padding: var(--a-1); }
+.ergebnis-eingabe .nr-spalte { width: 44px; text-align: center; font-family: var(--schrift-mono); color: var(--tinte-3); vertical-align: middle; }
+.zelle-eingabe {
+  width: 100%; min-width: 7ch; min-height: 40px; padding: 4px 8px; border: 1px solid var(--rand-stark); border-radius: var(--radius-klein);
+  background: var(--karte); color: var(--tinte); font-family: var(--schrift-mono); font-size: 0.9375rem;
+}
+.ergebnis-eingabe.falsch .zelle-eingabe { border-color: var(--siegelrot); }
+.ergebnis-eingabe.loesung .zelle-eingabe { border-color: var(--gruen); background: var(--gruen-flaeche); color: var(--tinte); opacity: 1; }
+
+.teil-kernpunkte { display: flex; flex-direction: column; gap: var(--a-2); }
+.freitext-label { font-size: var(--t-s); color: var(--tinte-2); }
+.freitext, .sql-einfach {
+  width: 100%; min-height: 120px; padding: var(--a-3); border: 1.5px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); font: inherit; resize: vertical;
+}
+.sql-einfach { font-family: var(--schrift-mono); }
+.kernpunkte { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.kernpunkte li { display: flex; gap: var(--a-2); align-items: flex-start; min-height: 44px; padding: var(--a-2); border-radius: var(--radius); background: var(--flaeche); }
+.kernpunkte input { width: 22px; height: 22px; margin: 2px 0 0; flex: none; accent-color: var(--gruen); }
+
+/* ---------- Rückmeldung (DESIGN §4.15) ---------- */
+.feedback { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1.5px solid var(--rand); border-radius: var(--radius); background: var(--karte); min-width: 0; }
+.feedback.richtig { background: var(--gruen-flaeche); border-color: var(--gruen); }
+.feedback.falsch { background: var(--rot-flaeche); border-color: var(--siegelrot); }
+.feedback.hinweis { background: var(--blau-flaeche); border-color: var(--blau); }
+.feedback.tipp { flex-direction: row; align-items: flex-start; gap: var(--a-3); }
+.feedback.tipp > .icon { color: var(--blau); margin-top: 2px; }
+.feedback-inhalt { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.feedback-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: var(--t-l); }
+.feedback-zusatz { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+.feedback-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--a-3); }
+.feedback-kopf .stempel { flex: none; margin-top: var(--a-1); }
+.diagnose-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--a-2); font-size: var(--t-s); }
+.diagnose-liste li { display: flex; gap: var(--a-2); align-items: baseline; }
+.diagnose-liste code { font-family: var(--schrift-mono); background: var(--karte); padding: 0 3px; border-radius: var(--radius-klein); }
+.bestaetigung { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border-radius: var(--radius); background: var(--messing-flaeche); color: var(--tinte); font-weight: 600; }
+.loesung-karte { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); min-width: 0; }
+.fallen-zeile { display: flex; flex-wrap: wrap; gap: var(--a-2); align-items: center; }
+.weiter { padding-top: var(--a-1); }
+
+/* Konsole im Lernkontext */
+.konsole-knoepfe .knopf.pruefen { background: var(--konsole-pruefen); border-color: var(--konsole-pruefen); color: var(--konsole-knopf-text); }
+.konsole-knoepfe .knopf.pruefen:hover { filter: brightness(1.08); background: var(--konsole-pruefen); color: var(--konsole-knopf-text); }
+.konsole-knoepfe .knopf[disabled] { opacity: .45; }
+.konsole-fuss { padding: var(--a-2) var(--a-4) var(--a-3); border-top: 1px solid var(--konsole-rand); }
+.konsole-koerper.ohne-schema { grid-template-columns: minmax(0, 1fr); }
+@container (max-width: 640px) {
+  .konsole-knoepfe .knopf.pruefen { grid-column: 1 / -1; min-height: 52px; }
+}
+
+/* ---------- Verhör (DESIGN §5.9) ---------- */
+.verhoer-karte-gross { background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius); overflow: hidden; box-shadow: var(--schatten-1); }
+.verhoer-band {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--a-4); flex-wrap: wrap;
+  padding: var(--a-4) var(--a-5); background: var(--konsole); color: var(--konsole-text);
+}
+.verhoer-etikett { font-family: var(--schrift-mono); font-size: var(--t-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--konsole-leise); }
+.verhoer-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: var(--t-xl); letter-spacing: 0.04em; text-transform: uppercase; }
+.verhoer-timer { display: flex; align-items: center; gap: var(--a-3); }
+.verhoer-timer .ring .spur { stroke: var(--konsole-rand); }
+.verhoer-timer .ring .wert { stroke: var(--messing); transition: none; }
+.timer-zeit { font-family: var(--schrift-mono); font-weight: 600; font-size: 1.75rem; }
+.verhoer-timer.knapp .timer-zeit { color: var(--konsole-falle-text); }
+.verhoer-timer.knapp .ring .wert { stroke: var(--konsole-ausfuehren); }
+.verhoer-innen { display: flex; flex-direction: column; gap: var(--a-4); padding: var(--a-5); }
+.verhoer-fakten { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--a-1) var(--a-4); margin: 0; }
+.verhoer-fakten dt { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-3); padding-top: 3px; }
+.verhoer-fakten dd { margin: 0; }
+.bester-versuch { display: flex; flex-wrap: wrap; gap: var(--a-3); align-items: center; }
+.verhoer-raster { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: var(--a-6); padding: var(--a-5); align-items: start; }
+.verhoer-aufgabe { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.verhoer-seite { display: flex; flex-direction: column; gap: var(--a-3); position: sticky; top: calc(var(--kopf-hoehe) + var(--a-4)); }
+.verhoer-seite > .stempel { align-self: flex-start; margin-bottom: var(--a-2); }
+.verhoer-aufgabe .lern-konsole { margin-top: var(--a-1); }
+.ergebnis-kopfzeile { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--a-4); }
+.ergebnis-kopfzeile h2 { font-size: var(--t-xl); }
+.ergebnis-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.ergebnis-liste li { display: grid; grid-template-columns: 2em minmax(0, 1fr) auto; gap: var(--a-2); align-items: center; min-height: 44px; border-top: 1px solid var(--rand); }
+.ergebnis-liste li:first-child { border-top: 0; }
+.ergebnis-liste .richtig .ergebnis-zeichen { color: var(--gruen); font-weight: 700; }
+.ergebnis-liste .falsch .ergebnis-zeichen { color: var(--siegelrot-text); font-weight: 700; }
+
+/* ---------- Warm-up ---------- */
+.warmup-raster, .training-raster { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--a-5); align-items: start; }
+.warmup-haupt { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.filter-leiste { display: flex; flex-wrap: wrap; gap: var(--a-3); }
+.auswahl-feld { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 220px; }
+.auswahl-label { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-2); }
+.auswahl { min-height: 44px; padding: 0 var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); color: var(--tinte); max-width: 100%; }
+.karteikarte {
+  display: flex; flex-direction: column; gap: var(--a-4); padding: var(--a-5); background: var(--karte);
+  border: 1px solid var(--rand); border-radius: var(--radius-klein); box-shadow: var(--schatten-1); min-width: 0;
+}
+.karteikarte-kopf { display: flex; flex-direction: column; gap: var(--a-1); padding-bottom: var(--a-3); border-bottom: 2px solid var(--siegelrot); }
+.karteikarte-kopf h2 { font-size: var(--t-xl); }
+.karteikarte-kopf h2:focus { outline: none; }
+.karteikarte-inhalt, .karteikarte-loesung { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.karteikarte-loesung:empty { display: none; }
+.karteikarte-loesung { padding-top: var(--a-3); border-top: 1px dashed var(--rand); }
+.karteikarte.leer { color: var(--tinte-2); align-items: flex-start; }
+.einschaetzung-frage { font-weight: 600; }
+.statistik-karte { display: flex; flex-direction: column; gap: var(--a-3); }
+.faecher { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--a-2); align-items: end; }
+.fach { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.fach-saeule { display: flex; align-items: flex-end; width: 100%; height: 80px; background: var(--flaeche); border-radius: var(--radius-klein); overflow: hidden; }
+.fach-balken { display: block; width: 100%; height: var(--wert, 0%); background: var(--messing-grafik); }
+.fach-zahl { font-family: var(--schrift-mono); font-weight: 600; font-size: var(--t-s); }
+.fach-name { font-family: var(--schrift-mono); font-size: 0.6875rem; color: var(--tinte-3); white-space: nowrap; }
+
+/* ---------- Trainingsplatz ---------- */
+.typ-wahl { align-self: flex-start; }
+.typ-wahl .segment-knopf { min-height: 48px; }
+.training-platz { min-width: 0; display: flex; flex-direction: column; gap: var(--a-4); }
+.tages-karte { display: flex; flex-direction: column; gap: var(--a-2); }
+
+/* ---------- Responsive (DESIGN §6) ---------- */
+@media (max-width: 1179px) {
+  .ermittlung-raster.mit-konsole { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); }
+}
+@media (max-width: 1099px) {
+  .ermittlung-raster.mit-konsole, .ermittlung-raster.ohne-konsole {
+    grid-template-columns: minmax(0, 1fr); grid-template-areas: "aufgabe" "arbeit" "rueck"; grid-template-rows: none;
+  }
+  .ermittlung-raster.ohne-konsole { grid-template-areas: "aufgabe" "rueck"; }
+}
+@media (max-width: 1023px) {
+  .stadtplan-raster { grid-template-columns: minmax(0, 1fr); }
+  .seitenspalte { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .verhoer-raster { grid-template-columns: minmax(0, 1fr); }
+  .verhoer-seite { position: static; order: -1; }
+  .warmup-raster, .training-raster { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767px) {
+  .seitenspalte { grid-template-columns: minmax(0, 1fr); }
+  .akte-unten, .bilanz-raster { grid-template-columns: minmax(0, 1fr); }
+  .puzzle { grid-template-columns: minmax(0, 1fr); }
+  .match-zeile { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 699px) {
+  .lern-nav { margin-top: 0; }
+  .lern-nav a { padding: 0 var(--a-2); }
+  .plan-scroll .plan-svg { min-width: 640px; }
+  .plan-liste { display: grid; }
+  .plan-legende { padding: var(--a-3) var(--a-4); gap: var(--a-1) var(--a-4); }
+  .akte-kopf-karte .aktendeckel-innen, .leer-karte .aktendeckel-innen { padding: var(--a-4); }
+  .ermittlung-kopf .kacheln { justify-content: flex-start; }
+  .verhoer-band, .verhoer-innen, .verhoer-raster { padding: var(--a-4); }
+  .verhoer-titel { font-size: var(--t-l); }
+  .ergebnis-kopfzeile, .feedback-kopf { flex-direction: column; }
+  .karteikarte { padding: var(--a-4); }
+  .toast { left: var(--a-4); right: var(--a-4); }
+}
+
+/* ---------- Bewegung (DESIGN §7) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ring .wert, .leiste i, .toast { transition: none; }
+}
+
+/* Unsichtbare Screenreader-Texte (.nur-sr, position: absolute) bleiben in ihrem scrollenden Container */
+.schema-block, .db-kachel-tabellen, .tabelle-rahmen, .code-huelle, .relation { position: relative; }
