@@ -54,7 +54,7 @@ scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 3; spätere Phasen ergänzen hier)
+## Befehle (Stand Phase 4; spätere Phasen ergänzen hier)
 
 ```
 npm install
