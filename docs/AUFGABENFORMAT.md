@@ -483,3 +483,37 @@ Beispiel: `test/fixtures/warmup_beispiel.json`.
 | `minuten` | ja | Bearbeitungszeit 1–15 |
 | `kompetenz` | ja | Liste von Kompetenz-IDs `DB-K01` … `DB-K48` (Kurzform `K01` erlaubt) |
 | `falle` | nein | Liste aus `P1` … `P10` (leer oder `null`, wenn keine) |
+
+## 10. Gastmodus: Probefall (`seed/gast/probefall.json`)
+
+Der Probefall „Eisdiele Weserstedt“ (Spec §7.12, STORY.md §11) ist ein **eigenes kleines Format**: Er wird nicht in
+die Plattform-DB eingespielt, nichts daran wird gespeichert (keine Fehlversuche, keine Tipps, keine Punkte).
+Die Aufgaben selbst haben dasselbe Format wie Akten-Aufgaben (§4–§7).
+
+```json
+{ "version": 1, "titel": "Probefall Eisdiele Weserstedt", "datenbank": "eisdiele",
+  "briefing": "Pia Wendland … (höchstens drei Sätze)",
+  "intro": [ { "t": "schema", "relationen": [ … ] }, { "t": "hinweis", "md": "…" } ],
+  "aufgaben": [ { "id": "G-01", "titel": "…", "stufe": 1, "kategorie": "SQL eine Tabelle",
+                  "kompetenzen": ["DB-K15"], "fallen": ["P5"], "inhalt": [ … ],
+                  "interaktion": { "kind": "sql", "datenbank": "eisdiele" },
+                  "loesung": { "sql": "SELECT …" }, "tipps": ["…"], "erklaerung": [ … ] } ] }
+```
+
+| Feld | Regel |
+|---|---|
+| `version` | immer `1` |
+| `datenbank` | immer `eisdiele`; jede Datenbank-Angabe der Aufgaben (`sql.datenbank`, `loesung.datenbank`, `quelle.datenbank`, Block `datenbank`) muss `eisdiele` sein |
+| `briefing`, `intro` | wie bei einer Ermittlung (§2) |
+| `aufgaben` | **genau 6** Aufgaben, ids `G-<nn>`; Mix aus `sql` (2–3), `zeilen`, `ergebnis`, `choice`; kein `kernpunkte` |
+
+**Nie echte Aufgaben** (Spec §6.4): Der Validator (`validiereProbefall`, läuft in `npm run validate`) lehnt eine id aus
+`seed/akten` und jeden Text (ab 20 Zeichen, Groß/Klein und Leerraum egal) ab, der in einer Akten-Aufgabe vorkommt
+(Titel, Inhalt, Interaktion, Lösung, Tipps, Erklärung). Die Aufgaben selbst prüft er intern als Test-Akte (welt 9, eine
+Ermittlung) mit allen Regeln aus §8 – jede SQL-Lösung läuft also in der Sandbox, ist im Abimodus `streng` regelfrei und
+wird vom Prüfer erkannt; `ergebnis`/`zeilen` mit `quelleSql` werden gegen die DB geprüft.
+
+**API (ohne Anmeldung, Rate-Limit je IP):** `GET /api/gast/probefall` (öffentliche Sicht wie §4.2, mit `tippsAnzahl`),
+`POST /api/gast/aufgaben/:id/pruefen` `{ antwort }` → `{ ok, rueckmeldung, geloest, loesung? }` (Lösung und Erklärung
+nur nach dem Lösen), `POST …/tipp` `{ nr }` → `{ nr, tipp, anzahl }`, `POST …/loesung` → `{ loesung, erklaerung }`
+(nur auf ausdrücklichen Wunsch – im Gastmodus erlaubt, weil es reine Demo-Aufgaben sind).

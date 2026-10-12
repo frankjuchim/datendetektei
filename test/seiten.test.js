@@ -64,26 +64,30 @@ test('Startseite: Anmelden über InfoLabs und Gastmodus', async () => {
   assert.match(res.text, /Die Akten öffnen bald/);
 });
 
-test('Gast zeigt den Platzhalter „Probefall Eisdiele folgt“', async () => {
+test('Gast zeigt den Probefall Eisdiele (Inhalte per gast.js aus /api/gast/probefall)', async () => {
   const { app } = testApp();
   const res = await request(app).get('/gast');
-  assert.match(res.text, /Probefall Eisdiele folgt/);
+  assert.match(res.text, /Probefall „Eisdiele Weserstedt“/);
+  assert.match(res.text, /\/static\/js\/gast\.js\?v=/);
 });
 
-test('Themen: alle Akten, Niveau-Übersicht (Akte 5 nur eA)', async () => {
+test('Themen: Seite aus dem Seed (themen.js), Niveau-Übersicht #niveaus über /api/themen (Akte 5 nur eA)', async () => {
   const { app } = testApp();
   const res = await request(app).get('/themen');
-  for (const a of AKTEN) assert.ok(res.text.includes(a.titel), `Akte ${a.nr} „${a.titel}“ fehlt`);
   assert.match(res.text, /id="niveaus"/);
   assert.match(res.text, /Was ist für welches Niveau\?/);
-  // Tabelle: je Akte eine Zeile mit data-akte und data-niveaus wie in AKTEN
+  assert.match(res.text, /\/static\/js\/themen\.js\?v=/);
+  const api = await request(app).get('/api/themen');
   for (const a of AKTEN) {
-    const m = res.text.match(new RegExp(`<tr data-akte="${a.nr}" data-niveaus="([^"]*)"`));
-    assert.ok(m, `Niveau-Zeile für Akte ${a.nr} fehlt`);
-    assert.equal(m[1], a.niveaus.join(' '));
+    assert.ok(api.body.akten.some((x) => x.nr === a.nr && x.titel === a.titel), `Akte ${a.nr} „${a.titel}“ fehlt`);
+    const zeile = api.body.niveaus.find((n) => n.akte === a.nr);
+    assert.ok(zeile, `Niveau-Zeile für Akte ${a.nr} fehlt`);
+    assert.equal(zeile.eA, a.niveaus.includes('eA'));
+    assert.equal(zeile.gA, a.niveaus.includes('gA'));
   }
-  assert.match(res.text, /DS 9/);
-  assert.match(res.text, /DS 13/);
+  const ds = api.body.niveaus.map((n) => n.ds).join(' ');
+  assert.match(ds, /DS 9/);
+  assert.match(ds, /DS 13/);
 });
 
 test('Datenschutz verweist auf das Portal und enthält Platzhalter der Schule', async () => {

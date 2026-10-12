@@ -5,7 +5,8 @@
 // nicht). inhalte = erzeugeInhalte(db) aus src/services/inhalte.js (optional; ohne sie meldet das Manifest den Standard-umfang
 // und es gibt keine Lern-API). pruefer = erzeugePruefer({ sandbox, schemata }) aus src/sql/pruefer.js (optional; ohne ihn
 // sind sql-Aufgaben nicht prüfbar). warmupKarten = ladeWarmupKarten() aus src/services/warmup.js (optional; ohne sie
-// gibt es keinen Warm-up-Trainer). Die Dienste stand und lernen liegen in app.locals (Tests).
+// gibt es keinen Warm-up-Trainer). gastOptionen gehen an erzeugeGast (src/services/gast.js, z. B. materialVerzeichnis).
+// Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
 const express = require('express');
@@ -18,6 +19,10 @@ const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
 const { lehrkraftRouten } = require('./routes/lehrkraft');
+const { gastRouten } = require('./routes/gast');
+const { themenRouten } = require('./routes/themen');
+const { erzeugeGast } = require('./services/gast');
+const { erzeugeThemen } = require('./services/themen');
 const { erzeugeStand } = require('./services/stand');
 const { erzeugeLernen } = require('./services/lernen');
 const { erzeugeVerhoer } = require('./services/verhoer');
@@ -30,7 +35,11 @@ const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
-function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null } = {}) {
+function erzeugeApp(
+  konfig,
+  db,
+  { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null, gastOptionen = {} } = {}
+) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', konfig.trustProxy || 0);
@@ -78,6 +87,9 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
+  // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
+  app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen }), pruefer, konfig }));
+  app.use(themenRouten({ themen: erzeugeThemen({ inhalte }) }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());

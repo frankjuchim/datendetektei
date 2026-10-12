@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 // Inhalts-Validator (docs/AUFGABENFORMAT.md §8, Plan Phase 3 Task 3).
-//   npm run validate                    → prüft seed/akten/*.json und seed/warmup/*.json
+//   npm run validate                    → prüft seed/akten/*.json, seed/warmup/*.json und den Probefall
+//                                         seed/gast/probefall.json (eigene Aufgaben, keine Texte aus seed/akten)
 //   node scripts/validate.js <datei> …  → prüft einzelne Dateien
 //   Optionen: --json (maschinenlesbar), --ohne-hinweise (nur Fehler)
 // Baut dazu die Übungs- und Verhör-DBs (ladeDatenbanken), eine Sandbox mit zwei Prozessen und den SQL-Prüfer.
@@ -12,9 +13,10 @@ const path = require('node:path');
 const { ladeDatenbanken } = require('../src/sql/datenbanken');
 const { erzeugeSandbox } = require('../src/sql/sandbox');
 const { erzeugePruefer } = require('../src/sql/pruefer');
-const { validiereAkten, formatiere } = require('../src/content/validator');
+const { validiereAkten, validiereProbefall, formatiere } = require('../src/content/validator');
 
 const SEED = path.join(__dirname, '..', 'seed');
+const PROBEFALL = path.join(SEED, 'gast', 'probefall.json');
 
 function jsonDateien(ordner) {
   if (!fs.existsSync(ordner)) return [];
@@ -49,7 +51,8 @@ async function main() {
   }
 
   let ergebnis = { fehler: [], hinweise: [], aufgaben: 0, karten: 0 };
-  if (dateien.length) {
+  const mitProbefall = ohneArgumente && fs.existsSync(PROBEFALL);
+  if (dateien.length || mitProbefall) {
     const datenbanken = ladeDatenbanken(undefined, { log: () => {} });
     const roh = {};
     const schemata = {};
@@ -61,6 +64,13 @@ async function main() {
     try {
       const sqlPruefer = erzeugePruefer({ sandbox, schemata });
       ergebnis = await validiereAkten(dateien, { datenbanken, sandbox, sqlPruefer });
+      if (mitProbefall) {
+        const akten = dateien.filter((d) => !/^warmup/i.test(d.name));
+        const r = await validiereProbefall(fs.readFileSync(PROBEFALL, 'utf8'), { datenbanken, sandbox, sqlPruefer }, { akten, datei: 'gast/probefall.json' });
+        ergebnis.fehler.push(...r.fehler);
+        ergebnis.hinweise.push(...r.hinweise);
+        ergebnis.aufgaben += r.aufgaben;
+      }
     } finally {
       sandbox.beende();
     }
