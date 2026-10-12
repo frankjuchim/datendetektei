@@ -1,0 +1,527 @@
+{
+  "version": 2,
+  "welt": 9,
+  "titel": "Probeakte (nur Tests)",
+  "farbe": "#8C2F39",
+  "levels": [
+    {
+      "id": "A9-E1",
+      "nr": "9.1",
+      "titel": "Die Probe-Ermittlung",
+      "ds": [1, 2],
+      "ab": "AB 9.1 Probe-Ermittlung (nur Tests)",
+      "niveau": "alle",
+      "briefing": "Willkommen in der Probeakte. Hier steht jede Block- und Interaktionsart einmal – zum Testen von Renderer, Prüfer und Validator.",
+      "intro": [
+        { "t": "datenbank", "name": "fundbuero" },
+        { "t": "hinweis", "md": "**Ermittler-Notiz:** Text steht in `'…'`, NULL prüfst du mit `IS NULL`." }
+      ],
+      "coldCase": "A9-E1-CC",
+      "aufgaben": [
+        "A9-E1-01", "A9-E1-02", "A9-E1-03", "A9-E1-04", "A9-E1-05", "A9-E1-06",
+        "A9-E1-07", "A9-E1-08", "A9-E1-09", "A9-E1-10", "A9-E1-11", "A9-E1-12"
+      ]
+    },
+    {
+      "id": "A9-E2",
+      "nr": "9.2",
+      "titel": "Kugeln zählen (nur eA)",
+      "ds": [5],
+      "niveau": "eA",
+      "briefing": "Die Eisdiele braucht eine Auswertung. Diesmal zählst du nicht Zeilen, sondern summierst.",
+      "intro": [ { "t": "datenbank", "name": "eisdiele" } ],
+      "aufgaben": ["A9-E2-01", "A9-E2-02"]
+    }
+  ],
+  "boss": {
+    "id": "A9-V",
+    "titel": "Probeverhör Eisdiele",
+    "kontextDb": "eisdiele",
+    "rahmensatz": "Bevor du allein ermittelst, prüfe ich, ob du auch in einer fremden Datenbank sauber abfragst.",
+    "abimodus": "streng",
+    "dauerMin": 20,
+    "anzahl": 3,
+    "mix": { "1": 1, "2": 1, "3": 1 },
+    "maxJeKind": { "choice": 1 },
+    "pool": ["A9-V-01", "A9-V-02", "A9-V-03", "A9-V-04"]
+  },
+  "aufgaben": [
+    {
+      "id": "A9-E1-01",
+      "titel": "Was ist markiert?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Relationales Modell",
+      "fallen": [],
+      "inhalt": [
+        { "t": "text", "md": "Ein Ausschnitt aus dem Fundbuch. Welcher Fachbegriff bezeichnet die mit **A** markierte Stelle?" },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Fundsache",
+          "kopf": [
+            { "name": "FundNr", "pk": true },
+            { "name": "Bezeichnung" },
+            { "name": "Kategorie" },
+            { "name": "Farbe" }
+          ],
+          "zeilen": [
+            [34, "Smartphone", "Elektronik", null],
+            [35, "Spielzeugauto", "Spielzeug", "schwarz"],
+            [36, "Messing-Kompass", "Wertsachen", "gold"],
+            [37, "Kompass-Anhänger", "Schmuck", "silber"]
+          ],
+          "markiert": [ { "zeile": 2, "spalte": 3, "marke": "A" } ],
+          "quelle": {
+            "datenbank": "fundbuero",
+            "sql": "SELECT FundNr, Bezeichnung, Kategorie, Farbe FROM Fundsache WHERE FundNr BETWEEN 34 AND 37"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          { "id": "a", "md": "Tabelle" },
+          { "id": "b", "md": "Datensatz" },
+          { "id": "c", "md": "Attribut" },
+          { "id": "d", "md": "Attributwert" }
+        ]
+      },
+      "loesung": { "richtig": ["d"] },
+      "tipps": ["Markiert ist eine einzelne Zelle, nicht eine ganze Zeile oder Spalte."],
+      "erklaerung": [
+        { "t": "text", "md": "Eine einzelne Zelle enthält einen **Attributwert** – hier den Wert `gold` des Attributs Farbe im Datensatz 36." }
+      ]
+    },
+    {
+      "id": "A9-E1-02",
+      "titel": "Wertvolle Wertsachen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": ["P6"],
+      "inhalt": [
+        { "t": "text", "md": "Gib Bezeichnung und Wert aller Fundsachen der Kategorie Wertsachen aus, die **mindestens** 100 € wert sind – die wertvollsten zuerst." }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": ["grenze", "gleichstand"],
+        "sortierung": [ { "spalte": "Wert", "richtung": "DESC" } ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE Kategorie = 'Wertsachen'\n  AND Wert >= 100\nORDER BY Wert DESC"
+      },
+      "tipps": [
+        "„Mindestens 100“ heißt: 100 gehört dazu.",
+        "Absteigend sortierst du mit `ORDER BY … DESC`."
+      ],
+      "erklaerung": [
+        { "t": "sql", "sql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE Kategorie = 'Wertsachen'\n  AND Wert >= 100\nORDER BY Wert DESC", "markiere": [4] },
+        { "t": "text", "md": "`>=` schließt die Grenze 100 ein; `>` würde einen Datensatz mit genau 100 € verlieren." }
+      ]
+    },
+    {
+      "id": "A9-E1-03",
+      "titel": "Finderlohn",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": ["P7"],
+      "inhalt": [
+        { "t": "text", "md": "Berechne für Schmuck und Wertsachen den Finderlohn (5 % des Werts). Gib Bezeichnung und `Finderlohn` aus – nur die drei höchsten Finderlöhne.\n\nDie berechnete Spalte muss **Finderlohn** heißen." }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [],
+        "sortierung": [ { "spalte": "Finderlohn", "richtung": "DESC" } ],
+        "aliasPflicht": true
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Wert * 0.05 AS Finderlohn\nFROM Fundsache\nWHERE Kategorie IN ('Schmuck', 'Wertsachen')\nORDER BY Finderlohn DESC\nLIMIT 3"
+      },
+      "erklaerung": [
+        { "t": "sql", "sql": "SELECT Bezeichnung, Wert * 0.05 AS Finderlohn\nFROM Fundsache\nWHERE Kategorie IN ('Schmuck', 'Wertsachen')\nORDER BY Finderlohn DESC\nLIMIT 3", "nummern": false }
+      ]
+    },
+    {
+      "id": "A9-E1-04",
+      "titel": "Puzzle der Ermittlungsakte",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": ["P5"],
+      "inhalt": [
+        { "t": "text", "md": "Bringe die Bausteine in eine gültige Reihenfolge. Ein Baustein gehört nicht dazu." },
+        { "t": "code", "code": "Gesucht: Bezeichnung und Farbe aller Schirme,\ndie neuesten Funde zuerst.", "nummern": false }
+      ],
+      "interaktion": {
+        "kind": "order",
+        "teile": [
+          { "id": "a", "code": "SELECT Bezeichnung, Farbe" },
+          { "id": "b", "code": "FROM Fundsache" },
+          { "id": "c", "code": "WHERE Bezeichnung = 'Regenschirm'" },
+          { "id": "d", "code": "ORDER BY Funddatum DESC" },
+          { "id": "x", "code": "WHERE Bezeichnung = Regenschirm" }
+        ]
+      },
+      "loesung": { "reihenfolgen": [ ["a", "b", "c", "d"] ] },
+      "erklaerung": [
+        { "t": "text", "md": "Text steht in Hochkommata: `'Regenschirm'`. Ohne sie hält SQLite `Regenschirm` für einen Spaltennamen." }
+      ]
+    },
+    {
+      "id": "A9-E1-05",
+      "titel": "Wer steht auf?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "fallen": ["P6"],
+      "inhalt": [
+        { "t": "text", "md": "Tippe alle Datensätze an, die diese Bedingung erfüllen:" },
+        { "t": "sql", "sql": "WHERE Kategorie = 'Schmuck' OR Kategorie = 'Wertsachen' AND Wert > 100", "nummern": false },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Fundsache",
+          "kopf": [
+            { "name": "FundNr", "pk": true },
+            { "name": "Bezeichnung" },
+            { "name": "Kategorie" },
+            { "name": "Wert" }
+          ],
+          "zeilen": [
+            [30, "Kopfhörer", "Elektronik", 111],
+            [31, "Brillenetui", "Sonstiges", 5],
+            [32, "Fahrradschlüssel", "Schlüssel", null],
+            [33, "Notizbuch", "Dokumente", 12],
+            [34, "Smartphone", "Elektronik", 27],
+            [35, "Spielzeugauto", "Spielzeug", 20],
+            [36, "Messing-Kompass", "Wertsachen", 450],
+            [37, "Kompass-Anhänger", "Schmuck", 25]
+          ],
+          "quelle": {
+            "datenbank": "fundbuero",
+            "sql": "SELECT FundNr, Bezeichnung, Kategorie, Wert FROM Fundsache WHERE FundNr BETWEEN 30 AND 37"
+          }
+        }
+      ],
+      "interaktion": { "kind": "zeilen", "block": 2, "mehrfach": true },
+      "loesung": {
+        "zeilen": [6, 7],
+        "quelleSql": "SELECT FundNr, Bezeichnung, Kategorie, Wert FROM Fundsache WHERE FundNr BETWEEN 30 AND 37 AND (Kategorie = 'Schmuck' OR Kategorie = 'Wertsachen' AND Wert > 100)"
+      },
+      "tipps": ["AND bindet stärker als OR – wie Punkt vor Strich."],
+      "erklaerung": [
+        { "t": "text", "md": "Gelesen wird `Kategorie = 'Schmuck' OR (Kategorie = 'Wertsachen' AND Wert > 100)`: Jeder Schmuck erfüllt die Bedingung, auch der Kompass-Anhänger für 25 €." }
+      ]
+    },
+    {
+      "id": "A9-E1-06",
+      "titel": "Reihenfolge vorhersagen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "fallen": [],
+      "inhalt": [
+        { "t": "text", "md": "Welche Ergebnistabelle liefert diese Abfrage? Die Reihenfolge zählt." },
+        { "t": "sql", "sql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE Kategorie = 'Wertsachen'\nORDER BY Wert DESC, Bezeichnung", "markiere": [4] }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": ["Bezeichnung", "Wert"],
+        "zeilenAnzahl": 3,
+        "reihenfolge": true
+      },
+      "loesung": {
+        "zeilen": [ ["Messing-Kompass", 450], ["Kamera", 390], ["Fernglas", 180] ],
+        "quelleSql": "SELECT Bezeichnung, Wert FROM Fundsache WHERE Kategorie = 'Wertsachen' ORDER BY Wert DESC, Bezeichnung",
+        "datenbank": "fundbuero"
+      },
+      "erklaerung": [
+        { "t": "tabelle", "kopf": ["Bezeichnung", "Wert"], "zeilen": [ ["Messing-Kompass", "450"], ["Kamera", "390"], ["Fernglas", "180"] ] }
+      ]
+    },
+    {
+      "id": "A9-E1-07",
+      "titel": "Die Messing-Spur",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": ["P5", "P6"],
+      "inhalt": [
+        { "t": "text", "md": "Ergänze die Abfrage: alle Messing-Fundsachen ab 400 €, die schon abgeholt wurden." },
+        { "t": "sql", "sql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Bezeichnung LIKE [[g1]]\n  AND Wert [[g2]] 400\n  AND [[g3]] AbgeholtAm IS NULL" },
+        { "t": "text", "md": "Wie viele Datensätze liefert die Abfrage? [[g4]]" },
+        { "t": "tabelle", "kopf": ["Bedeutung", "Platzhalter"], "zeilen": [ ["beliebig viele Zeichen", "%"], ["genau ein Zeichen", "[[g5]]"] ] }
+      ],
+      "interaktion": {
+        "kind": "gaps",
+        "felder": {
+          "g1": { "typ": "text", "breite": 14 },
+          "g2": { "typ": "auswahl", "optionen": [">", ">=", "<", "<="] },
+          "g3": { "typ": "text", "norm": "text", "breite": 5 },
+          "g4": { "typ": "zahl", "breite": 3 },
+          "g5": { "typ": "text", "norm": "exakt", "breite": 2 }
+        }
+      },
+      "loesung": { "g1": ["'%Messing%'"], "g2": [">="], "g3": ["NOT"], "g4": ["1"], "g5": ["_"] },
+      "erklaerung": [
+        { "t": "sql", "sql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'\n  AND Wert >= 400\n  AND NOT AbgeholtAm IS NULL" }
+      ]
+    },
+    {
+      "id": "A9-E1-08",
+      "titel": "Fehler im Protokoll",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": ["P5"],
+      "inhalt": [
+        { "t": "text", "md": "Tippe die drei Zeilen an, die nicht EH-konform oder fehlerhaft notiert sind." },
+        { "t": "sql", "sql": "SELECT Bezeichnung, Fundort\nFROM Fundsache\nWHERE Kategorie <> 'Kleidung'\n  AND AbgeholtAm = NULL\n  AND Funddatum >= 2026-06-01\nORDER BY Funddatum" }
+      ],
+      "interaktion": { "kind": "lines", "block": 1, "anzahl": 3 },
+      "loesung": { "zeilen": [3, 4, 5] },
+      "erklaerung": [
+        { "t": "text", "md": "Zeile 3: im Abitur `!=`. Zeile 4: `IS NULL` statt `= NULL`. Zeile 5: Datum als Text `'2026-06-01'`." }
+      ]
+    },
+    {
+      "id": "A9-E1-09",
+      "titel": "Wer macht was?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "fallen": [],
+      "inhalt": [ { "t": "text", "md": "Ordne jedem Teil der Abfrage seine Aufgabe zu." } ],
+      "interaktion": {
+        "kind": "match",
+        "elemente": [
+          { "id": "e1", "md": "`WHERE`" },
+          { "id": "e2", "md": "`ORDER BY`" },
+          { "id": "e3", "md": "`SELECT`" },
+          { "id": "e4", "md": "`DISTINCT`" }
+        ],
+        "kategorien": [
+          { "id": "f", "md": "filtert Datensätze" },
+          { "id": "s", "md": "sortiert das Ergebnis" },
+          { "id": "p", "md": "wählt Spalten aus" },
+          { "id": "d", "md": "entfernt doppelte Zeilen" }
+        ]
+      },
+      "loesung": { "e1": "f", "e2": "s", "e3": "p", "e4": "d" },
+      "erklaerung": [ { "t": "text", "md": "SELECT projiziert, WHERE selektiert, ORDER BY sortiert, DISTINCT entfernt Duplikate." } ]
+    },
+    {
+      "id": "A9-E1-10",
+      "titel": "Klammern retten den Fall",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": ["P6"],
+      "inhalt": [
+        { "t": "text", "md": "Gesucht sind Schmuck und Wertsachen, die jeweils **mehr als 100 €** wert sind. Die Abfrage liefert aber zu viel." },
+        { "t": "sql", "sql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE Kategorie = 'Schmuck' OR Kategorie = 'Wertsachen'\n  AND Wert > 100" }
+      ],
+      "interaktion": [
+        { "kind": "lines", "block": 1, "anzahl": 1, "frage": "a) Tippe die Zeile an, in der der Fehler entsteht." },
+        {
+          "kind": "gaps",
+          "felder": { "g1": { "typ": "text", "breite": 2 }, "g2": { "typ": "text", "breite": 2 } },
+          "frage": "b) Setze die Klammern: `WHERE [[g1]]Kategorie = 'Schmuck' OR Kategorie = 'Wertsachen'[[g2]]`"
+        }
+      ],
+      "loesung": [ { "zeilen": [3] }, { "g1": ["("], "g2": [")"] } ],
+      "tipps": ["AND bindet stärker als OR."],
+      "erklaerung": [
+        { "t": "sql", "sql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE (Kategorie = 'Schmuck' OR Kategorie = 'Wertsachen')\n  AND Wert > 100", "markiere": [3] }
+      ]
+    },
+    {
+      "id": "A9-E1-11",
+      "titel": "Erläutere die Abfrage",
+      "stufe": 1,
+      "punkte": 0,
+      "kategorie": "Abfrage analysieren",
+      "fallen": ["P10"],
+      "inhalt": [
+        { "t": "text", "md": "Erläutere im Sachzusammenhang, was diese Abfrage liefert. Schreib deine Antwort auf – sie bleibt auf deinem Gerät." },
+        { "t": "sql", "sql": "SELECT Stadtteil, Bezeichnung\nFROM Fundsache\nWHERE AbgeholtAm IS NULL\nORDER BY Stadtteil" }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "nennt den Sachzusammenhang: **noch nicht abgeholte** Fundsachen",
+          "nennt die ausgegebenen Angaben: Stadtteil und Bezeichnung",
+          "nennt die Sortierung: alphabetisch nach Stadtteil"
+        ]
+      },
+      "erklaerung": [ { "t": "text", "md": "Eine Erläuterung bleibt nicht bei „zählt Zeilen“ stehen, sondern sagt, **was** die Zeilen im Fundbuch bedeuten." } ]
+    },
+    {
+      "id": "A9-E1-12",
+      "titel": "Zwei Tabellen, ein Schlüssel",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Schlüssel",
+      "fallen": ["P8"],
+      "inhalt": [
+        { "t": "text", "md": "Das Schema der Eisdiele. Welche Aussagen stimmen?" },
+        {
+          "t": "schema",
+          "relationen": [
+            { "name": "Sorte", "attribute": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ] },
+            { "name": "Verkauf", "attribute": [ { "name": "VerkaufNr", "pk": true }, { "name": "SorteNr", "fk": "Sorte" }, { "name": "Datum" }, { "name": "Kugeln" } ] }
+          ]
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": true,
+        "optionen": [
+          { "id": "a", "md": "`SorteNr` ist in Verkauf ein Fremdschlüssel." },
+          { "id": "b", "md": "`Name` ist der Primärschlüssel von Sorte." },
+          { "id": "c", "md": "Jeder Verkauf gehört zu genau einer Sorte." },
+          { "id": "d", "md": "Eine Sorte kann nur ein einziges Mal verkauft werden." }
+        ]
+      },
+      "loesung": { "richtig": ["a", "c"] },
+      "erklaerung": [ { "t": "text", "md": "Der Fremdschlüssel ↑SorteNr verweist auf den Primärschlüssel von Sorte; ohne ihn wüsste ein Verkauf nicht, welche Sorte er betrifft." } ]
+    },
+    {
+      "id": "A9-E1-CC",
+      "titel": "Cold Case: Der Schatten-Finder",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": ["P6"],
+      "inhalt": [ { "t": "text", "md": "Freie Ermittlung ohne Punkte: Welche Einträge im Feld Finder enthalten `alter`?" } ],
+      "interaktion": { "kind": "sql", "datenbank": "fundbuero", "varianten": ["null"] },
+      "loesung": { "sql": "SELECT FundNr, Bezeichnung, Finder\nFROM Fundsache\nWHERE Finder LIKE '%alter%'" },
+      "erklaerung": [ { "t": "text", "md": "*N. Falter* – schnell gesprochen klingt das wie *Nachtfalter*." } ]
+    },
+    {
+      "id": "A9-E2-01",
+      "titel": "Kugeln je Sorte",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Aggregation",
+      "fallen": ["P3", "P4"],
+      "inhalt": [ { "t": "text", "md": "Gib für jede verkaufte Sorte den Namen und die Summe der verkauften Kugeln aus. Die Summe heißt **Kugeln**." } ],
+      "interaktion": { "kind": "sql", "datenbank": "eisdiele", "varianten": [], "aliasPflicht": true },
+      "loesung": { "sql": "SELECT s.Name, SUM(v.Kugeln) AS Kugeln\nFROM Sorte s, Verkauf v\nWHERE s.SorteNr = v.SorteNr\nGROUP BY s.SorteNr, s.Name" },
+      "erklaerung": [ { "t": "text", "md": "Gruppiert wird nach dem Schlüssel **und** dem Namen (GROUP-BY-Regel); `SUM` zählt Kugeln, `COUNT(*)` würde Verkäufe zählen." } ]
+    },
+    {
+      "id": "A9-E2-02",
+      "titel": "Vegane Sorten",
+      "stufe": 1,
+      "punkte": 10,
+      "niveau": "alle",
+      "kategorie": "Abfrage analysieren",
+      "fallen": [],
+      "inhalt": [
+        { "t": "text", "md": "Welche Zeilen liefert die Abfrage? Die Reihenfolge ist egal; füge so viele Zeilen hinzu, wie du brauchst." },
+        { "t": "sql", "sql": "SELECT Name\nFROM Sorte\nWHERE Vegan = 'ja'" }
+      ],
+      "interaktion": { "kind": "ergebnis", "kopf": ["Name"], "freieZeilen": true, "reihenfolge": false },
+      "loesung": {
+        "zeilen": [ ["Erdbeere"], ["Zitrone"], ["Sanddorn-Mango"] ],
+        "quelleSql": "SELECT Name FROM Sorte WHERE Vegan = 'ja'",
+        "datenbank": "eisdiele"
+      },
+      "erklaerung": [ { "t": "text", "md": "Drei Sorten sind vegan." } ]
+    },
+    {
+      "id": "A9-V-01",
+      "titel": "Primärschlüssel",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "fallen": ["P8"],
+      "inhalt": [
+        { "t": "text", "md": "**Geben Sie an**, welches Attribut Primärschlüssel der Relation Sorte ist." },
+        { "t": "schema", "relationen": [ { "name": "Sorte", "attribute": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ] } ] }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [ { "id": "a", "code": "SorteNr" }, { "id": "b", "code": "Name" }, { "id": "c", "code": "Preis" } ]
+      },
+      "loesung": { "richtig": ["a"] },
+      "erklaerung": [ { "t": "text", "md": "Unterstrichen ist SorteNr." } ]
+    },
+    {
+      "id": "A9-V-02",
+      "titel": "Kreuzprodukt",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "fallen": ["P2"],
+      "inhalt": [
+        { "t": "text", "md": "Die Tabelle Sorte hat 10, die Tabelle Verkauf 57 Datensätze. **Geben Sie an**, wie viele Zeilen die folgende Abfrage liefert: [[g1]]" },
+        { "t": "sql", "sql": "SELECT *\nFROM Sorte, Verkauf" }
+      ],
+      "interaktion": { "kind": "gaps", "felder": { "g1": { "typ": "zahl", "breite": 5 } } },
+      "loesung": { "g1": ["570"] },
+      "erklaerung": [ { "t": "text", "md": "Ohne Verbundbedingung entsteht das Kreuzprodukt: 10 · 57 = 570." } ]
+    },
+    {
+      "id": "A9-V-03",
+      "titel": "Vegane Preise",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "fallen": [],
+      "inhalt": [ { "t": "text", "md": "**Entwerfen Sie** eine Abfrage, die Name und Preis aller veganen Sorten ausgibt, absteigend nach Preis sortiert." } ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "eisdiele",
+        "varianten": [],
+        "sortierung": [ { "spalte": "Preis", "richtung": "DESC" } ],
+        "abimodus": "streng"
+      },
+      "loesung": { "sql": "SELECT Name, Preis\nFROM Sorte\nWHERE Vegan = 'ja'\nORDER BY Preis DESC" },
+      "erklaerung": [ { "t": "text", "md": "Filter auf `Vegan = 'ja'`, Sortierung mit `DESC`." } ]
+    },
+    {
+      "id": "A9-V-04",
+      "titel": "Bedingungslogik",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Abfrage analysieren",
+      "fallen": ["P6"],
+      "inhalt": [
+        { "t": "text", "md": "**Geben Sie an**, welche Datensätze die folgende Bedingung erfüllen." },
+        { "t": "sql", "sql": "WHERE Preis >= 1.7 AND Vegan = 'nein' OR Name LIKE 'Z%'", "nummern": false },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Sorte",
+          "kopf": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ],
+          "zeilen": [
+            [1, "Vanille", 1.5, "nein"],
+            [2, "Schokolade", 1.5, "nein"],
+            [3, "Erdbeere", 1.6, "ja"],
+            [4, "Zitrone", 1.4, "ja"],
+            [5, "Haselnuss", 1.7, "nein"],
+            [6, "Sanddorn-Mango", 1.8, "ja"],
+            [7, "Stracciatella", 1.7, "nein"],
+            [8, "Karamell", 1.8, "nein"],
+            [9, "Pistazie", 2, "nein"],
+            [10, "Schoko-Minze", 1.7, "nein"]
+          ],
+          "quelle": { "datenbank": "eisdiele", "sql": "SELECT SorteNr, Name, Preis, Vegan FROM Sorte" }
+        }
+      ],
+      "interaktion": { "kind": "zeilen", "block": 2, "mehrfach": true },
+      "loesung": {
+        "zeilen": [3, 4, 6, 7, 8, 9],
+        "quelleSql": "SELECT SorteNr, Name, Preis, Vegan FROM Sorte WHERE Preis >= 1.7 AND Vegan = 'nein' OR Name LIKE 'Z%'"
+      },
+      "erklaerung": [ { "t": "text", "md": "AND bindet stärker: `(Preis >= 1.7 AND Vegan = 'nein') OR Name LIKE 'Z%'` – Zitrone ist dabei, obwohl sie billig und vegan ist." } ]
+    }
+  ]
+}
