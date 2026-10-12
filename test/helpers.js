@@ -3,6 +3,7 @@
 
 const crypto = require('node:crypto');
 const { erzeugeApp } = require('../src/app');
+const { oeffneDb } = require('../src/db');
 
 /** Frisches Ed25519-Schlüsselpaar (nur für Tests) als PEM. */
 function neuesSchluesselpaar() {
@@ -31,11 +32,11 @@ function testKonfig(ueberschreiben = {}) {
   };
 }
 
-/** App für supertest: frisches Schlüsselpaar, PORTAL_PUBLIC_KEY = dessen öffentlicher Teil. */
+/** App für supertest: In-Memory-DB, frisches Schlüsselpaar, PORTAL_PUBLIC_KEY = dessen öffentlicher Teil. */
 function testApp(ueberschreiben = {}) {
   const schluessel = neuesSchluesselpaar();
   const konfig = testKonfig({ portalPublicKey: schluessel.publicPem, ...ueberschreiben });
-  const db = null;
+  const db = oeffneDb(':memory:');
   const app = erzeugeApp(konfig, db);
   return { app, db, konfig, schluessel };
 }
