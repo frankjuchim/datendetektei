@@ -42,6 +42,12 @@ nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
 - *CSP:* zusätzlich `'wasm-unsafe-eval'` und `worker-src 'self'` für die SQL-Engine im Browser (sql.js). Das ist keine
   Inline-Ausnahme; ohne WASM greift ein asm.js-Fallback.
 
+## Entwicklung
+
+`npm install`, `npm test`, `npm run dev` (Port 3000, Daten in `./data`, ohne echtes Portal). `npm run dev` nutzt das
+Schlüsselpaar `test/fixtures/dev_portal_{public,private}.pem` – **nur für Entwicklung und Tests**: Der private
+Schlüssel liegt öffentlich im Repo und ist damit wertlos; im Betrieb nie verwenden.
+
 ## Betrieb (CapRover)
 
 Umgebungsvariablen (Vertrag §8):
