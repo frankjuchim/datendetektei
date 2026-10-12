@@ -49,7 +49,7 @@ function erzeugeApp(konfig, db) {
       res.status(404).json({ error: 'Nicht gefunden.' });
       return;
     }
-    res.status(404).sendFile(path.join(PUBLIC_DIR, '404.html'));
+    res.status(404).sendFile('404.html', { root: PUBLIC_DIR });
   });
 
   // Fehler: nie Details ausgeben.

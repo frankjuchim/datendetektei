@@ -19,7 +19,7 @@ const OEFFENTLICH = {
 function seite(datei) {
   return function sende(req, res) {
     res.set('Cache-Control', 'no-cache');
-    res.sendFile(path.join(PUBLIC_DIR, datei));
+    res.sendFile(datei, { root: PUBLIC_DIR });
   };
 }
 
