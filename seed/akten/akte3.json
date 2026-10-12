@@ -1,0 +1,3196 @@
+{
+  "version": 2,
+  "welt": 3,
+  "titel": "Die Stadtfest-Kasse",
+  "farbe": "#9C5B12",
+  "levels": [
+    {
+      "id": "A3-E1",
+      "nr": "3.1",
+      "titel": "Kassensturz",
+      "ds": [
+        5
+      ],
+      "ab": "AB 3.1 Kassensturz",
+      "niveau": "alle",
+      "briefing": "In der Stadtfest-Kasse fehlen 312,50 €, und der Festausschuss braucht Zahlen statt Zeilen. Nutze COUNT, SUM, AVG, MIN und MAX und gruppiere mit GROUP BY. Denk dran: Bons zählen ist nicht dasselbe wie Mengen summieren!",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "stadtfest"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Stand.StandNr, Stand.Name, AVG(Produkt.Preis) AS Durchschnittspreis\nFROM Stand, Produkt\nWHERE Stand.StandNr = Produkt.StandNr\nGROUP BY Stand.StandNr, Stand.Name"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:** Ohne GROUP BY fasst eine Aggregatfunktion die ganze Tabelle zu **einer** Ergebniszeile zusammen; mit GROUP BY entsteht je Gruppe (Fach) eine Zeile.\n\n- **GROUP-BY-Regel:** Jede Spalte im SELECT ist entweder aggregiert oder in GROUP BY aufgezählt.\n- Nach dem **Schlüssel** gruppieren und den Namen zusätzlich in GROUP BY aufnehmen – am Stadtfest halfen zwei Personen mit genau demselben Namen.\n- `COUNT(*)` zählt Zeilen, `COUNT(Spalte)` zählt Nicht-NULL-Werte, `SUM(Menge)` addiert Stückzahlen.\n- „Anzahl Käufe“ = `COUNT(*)`, „Anzahl verkaufter Stück“ = `SUM(Menge)`."
+        }
+      ],
+      "coldCase": "A3-E1-CC",
+      "aufgaben": [
+        "A3-E1-01",
+        "A3-E1-02",
+        "A3-E1-03",
+        "A3-E1-04",
+        "A3-E1-05",
+        "A3-E1-06",
+        "A3-E1-07",
+        "A3-E1-08"
+      ]
+    },
+    {
+      "id": "A3-E2",
+      "nr": "3.2",
+      "titel": "Die Statistik lügt nicht",
+      "ds": [
+        6
+      ],
+      "ab": "AB 3.2 Die Statistik lügt nicht",
+      "niveau": "alle",
+      "briefing": "Finde heraus, wann und bei wem am Kaffeemobil die Positionen mit Menge 0 entstanden sind. Filtere Zeilen mit WHERE und Gruppen mit HAVING, und schau in der Zeitlupe nach, wenn eine Summe plötzlich zu groß wird. Am Ende beschreibst du dein Vorgehen in Worten – wie im Abitur.",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "stadtfest"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS Kartenbons\nFROM Helfer, Bon\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.Zahlart = 'Karte'\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING COUNT(*) >= 10\nORDER BY Kartenbons DESC"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:** Auswertungsreihenfolge: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.\n\n- WHERE filtert **Zeilen vor** dem Gruppieren, HAVING filtert **Gruppen danach** (Aggregat wiederholen, kein Alias in HAVING).\n- Top-n: `ORDER BY … DESC LIMIT n` – nur eindeutig, wenn an Platz n kein Gleichstand besteht.\n- **Vervielfachung:** Wer Bon, Position und Schicht ohne passende Bedingung verbindet, bekommt jede Position mehrfach – die Summe wird zu groß. Nur Tabellen verbinden, die für die Frage nötig sind.\n- **Analyse im Sachzusammenhang:** „Die Abfrage liefert für jede/n … die/den …, aber nur …, sortiert nach …“ – nicht „zählt Zeilen und gruppiert“.\n- **Vorgehen in Worten:** benötigte Tabellen → Verbund → Zeilenfilter → Gruppierung → Gruppenfilter → Sortierung/Begrenzung."
+        }
+      ],
+      "coldCase": "A3-E2-CC",
+      "aufgaben": [
+        "A3-E2-01",
+        "A3-E2-02",
+        "A3-E2-03",
+        "A3-E2-04",
+        "A3-E2-05",
+        "A3-E2-06",
+        "A3-E2-07",
+        "A3-E2-08"
+      ]
+    }
+  ],
+  "boss": {
+    "id": "A3-V",
+    "titel": "Verhör 3 · Schulkiosk",
+    "kontextDb": "verhoer/kiosk",
+    "rahmensatz": "Kassen lügen nicht, aber Abfragen manchmal – beweis mir, dass deine es nicht tun.",
+    "abimodus": "streng",
+    "dauerMin": 20,
+    "anzahl": 6,
+    "mix": {
+      "1": 2,
+      "2": 3,
+      "3": 1
+    },
+    "maxJeKind": {
+      "choice": 2
+    },
+    "pool": [
+      "A3-V-01",
+      "A3-V-02",
+      "A3-V-03",
+      "A3-V-04",
+      "A3-V-05",
+      "A3-V-06",
+      "A3-V-07",
+      "A3-V-08",
+      "A3-V-09",
+      "A3-V-10",
+      "A3-V-11",
+      "A3-V-12"
+    ]
+  },
+  "aufgaben": [
+    {
+      "id": "A3-E1-01",
+      "titel": "Welche Funktion?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K25"
+      ],
+      "fallen": [
+        "P4"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Frauke Melchers vom Festausschuss hat vier Fragen an die Kassendaten. Wähle zu jeder Frage die passende Aggregatfunktion."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "a) Wie viele Bons wurden am Stadtfest gedruckt?",
+          "optionen": [
+            {
+              "id": "count",
+              "code": "COUNT"
+            },
+            {
+              "id": "sum",
+              "code": "SUM"
+            },
+            {
+              "id": "avg",
+              "code": "AVG"
+            },
+            {
+              "id": "min",
+              "code": "MIN"
+            },
+            {
+              "id": "max",
+              "code": "MAX"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) Wie viele Bratwürste wurden verkauft? (Jede Position hat eine `Menge`.)",
+          "optionen": [
+            {
+              "id": "count",
+              "code": "COUNT"
+            },
+            {
+              "id": "sum",
+              "code": "SUM"
+            },
+            {
+              "id": "avg",
+              "code": "AVG"
+            },
+            {
+              "id": "min",
+              "code": "MIN"
+            },
+            {
+              "id": "max",
+              "code": "MAX"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "c) Was kostet das teuerste Produkt?",
+          "optionen": [
+            {
+              "id": "count",
+              "code": "COUNT"
+            },
+            {
+              "id": "sum",
+              "code": "SUM"
+            },
+            {
+              "id": "avg",
+              "code": "AVG"
+            },
+            {
+              "id": "min",
+              "code": "MIN"
+            },
+            {
+              "id": "max",
+              "code": "MAX"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "d) Was kostet ein Produkt im Durchschnitt?",
+          "optionen": [
+            {
+              "id": "count",
+              "code": "COUNT"
+            },
+            {
+              "id": "sum",
+              "code": "SUM"
+            },
+            {
+              "id": "avg",
+              "code": "AVG"
+            },
+            {
+              "id": "min",
+              "code": "MIN"
+            },
+            {
+              "id": "max",
+              "code": "MAX"
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "count"
+          ]
+        },
+        {
+          "richtig": [
+            "sum"
+          ]
+        },
+        {
+          "richtig": [
+            "max"
+          ]
+        },
+        {
+          "richtig": [
+            "avg"
+          ]
+        }
+      ],
+      "tipps": [
+        "Eine einzige Position kann drei Bratwürste enthalten – zählen und summieren ist nicht dasselbe."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) `COUNT(*)` zählt Bons (Zeilen). b) `SUM(Menge)` addiert die Stückzahlen – `COUNT` würde nur Positionen zählen (P4). c) `MAX(Preis)` liefert den höchsten Preis. d) `AVG(Preis)` bildet den Durchschnitt."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-02",
+      "titel": "Erster und letzter Bon",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K25"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wie viele Bons wurden am Stadtfest insgesamt gedruckt, und wann wurden der erste und der letzte Bon gedruckt? Gib die Anzahl sowie den frühesten und den spätesten Zeitpunkt in **einer** Ergebniszeile aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT COUNT(*) AS Bons, MIN(Zeitpunkt) AS ErsterBon, MAX(Zeitpunkt) AS LetzterBon\nFROM Bon"
+      },
+      "tipps": [
+        "Ohne `GROUP BY` fasst eine Aggregatfunktion die ganze Tabelle zu einer Zeile zusammen.",
+        "Auch Zeitpunkte haben ein Minimum und ein Maximum."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT COUNT(*) AS Bons, MIN(Zeitpunkt) AS ErsterBon, MAX(Zeitpunkt) AS LetzterBon\nFROM Bon",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Ohne `GROUP BY` entsteht genau **eine** Ergebniszeile: 554 Bons, der erste am Freitag um 16:02, der letzte am Samstag um 23:57. Weil Zeitpunkte als Text `JJJJ-MM-TT hh:mm` gespeichert sind, liefern `MIN` und `MAX` den frühesten und den spätesten Zeitpunkt."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-03",
+      "titel": "Wie viele Bratwürste?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K25",
+        "DB-K23"
+      ],
+      "fallen": [
+        "P4"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Grillhütte will wissen, wie viele **Bratwürste** am ganzen Stadtfest verkauft wurden. Die Bezeichnung steht in `Produkt`, die verkaufte Menge in `Position`."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT SUM(Position.Menge) AS Bratwuerste\nFROM Position, Produkt\nWHERE Position.ProduktNr = Produkt.ProduktNr\n  AND Produkt.Bezeichnung = 'Bratwurst'"
+      },
+      "tipps": [
+        "Verbinde `Position` und `Produkt` über die ProduktNr.",
+        "Gefragt ist die Stückzahl – nicht die Zahl der Positionen."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT SUM(Position.Menge) AS Bratwuerste\nFROM Position, Produkt\nWHERE Position.ProduktNr = Produkt.ProduktNr\n  AND Produkt.Bezeichnung = 'Bratwurst'",
+          "markiere": [
+            1
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: 76 Bratwürste. `COUNT(*)` hätte 38 geliefert – die Zahl der Positionen, in denen Bratwurst vorkommt. Eine Position kann mehrere Bratwürste enthalten (P4: COUNT ↔ SUM)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-04",
+      "titel": "Sortierfächer",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P4"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Bons 444 bis 451 vom Kaffeemobil enthalten diese zehn Positionen:"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Position",
+          "kopf": [
+            {
+              "name": "BonNr",
+              "pk": true,
+              "fk": "Bon"
+            },
+            {
+              "name": "ProduktNr",
+              "pk": true,
+              "fk": "Produkt"
+            },
+            {
+              "name": "Menge"
+            }
+          ],
+          "zeilen": [
+            [
+              444,
+              16,
+              2
+            ],
+            [
+              445,
+              12,
+              2
+            ],
+            [
+              446,
+              11,
+              3
+            ],
+            [
+              447,
+              13,
+              1
+            ],
+            [
+              447,
+              16,
+              1
+            ],
+            [
+              448,
+              14,
+              2
+            ],
+            [
+              449,
+              11,
+              1
+            ],
+            [
+              450,
+              12,
+              1
+            ],
+            [
+              450,
+              13,
+              1
+            ],
+            [
+              451,
+              11,
+              2
+            ]
+          ],
+          "quelle": {
+            "datenbank": "stadtfest",
+            "sql": "SELECT BonNr, ProduktNr, Menge FROM Position WHERE BonNr BETWEEN 444 AND 451 ORDER BY BonNr, ProduktNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Gib das Ergebnis dieser Abfrage an. Sortiere die Positionen in Gedanken in Fächer – ein Fach je ProduktNr. Die Reihenfolge der Zeilen ist egal."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT ProduktNr, COUNT(*) AS Positionen, SUM(Menge) AS Stueck\nFROM Position\nWHERE BonNr BETWEEN 444 AND 451\nGROUP BY ProduktNr"
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "ProduktNr",
+          "Positionen",
+          "Stueck"
+        ],
+        "zeilenAnzahl": 5,
+        "reihenfolge": false
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            11,
+            3,
+            6
+          ],
+          [
+            12,
+            2,
+            3
+          ],
+          [
+            13,
+            2,
+            2
+          ],
+          [
+            14,
+            1,
+            2
+          ],
+          [
+            16,
+            2,
+            3
+          ]
+        ],
+        "quelleSql": "SELECT ProduktNr, COUNT(*) AS Positionen, SUM(Menge) AS Stueck\nFROM Position\nWHERE BonNr BETWEEN 444 AND 451\nGROUP BY ProduktNr",
+        "datenbank": "stadtfest"
+      },
+      "tipps": [
+        "Jedes Fach (jede ProduktNr) wird zu genau einer Ergebniszeile.",
+        "`COUNT(*)` zählt die Positionen im Fach, `SUM(Menge)` addiert ihre Mengen."
+      ],
+      "erklaerung": [
+        {
+          "t": "tabelle",
+          "kopf": [
+            "ProduktNr",
+            "Positionen",
+            "Stueck"
+          ],
+          "zeilen": [
+            [
+              "11",
+              "3",
+              "6"
+            ],
+            [
+              "12",
+              "2",
+              "3"
+            ],
+            [
+              "13",
+              "2",
+              "2"
+            ],
+            [
+              "14",
+              "1",
+              "2"
+            ],
+            [
+              "16",
+              "2",
+              "3"
+            ]
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Fünf Produkte, also fünf Fächer und fünf Ergebniszeilen. Im Fach von Produkt 11 (Kaffee) liegen drei Positionen mit den Mengen 3, 1 und 2: `COUNT(*)` = 3, aber `SUM(Menge)` = 6 (P4)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-05",
+      "titel": "Bons je Stand",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K23"
+      ],
+      "fallen": [
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wie viele Bons hat jeder Stand gedruckt? Gib StandNr, Name und die Anzahl der Bons aus – der Stand mit den meisten Bons zuerst."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [
+          "leer"
+        ],
+        "sortierung": [
+          {
+            "spalte": 3,
+            "richtung": "DESC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS AnzahlBons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.StandNr, Stand.Name\nORDER BY AnzahlBons DESC"
+      },
+      "tipps": [
+        "Gruppiere nach dem Schlüssel `Stand.StandNr` – und nimm `Stand.Name` mit in `GROUP BY`, weil er im SELECT steht.",
+        "Absteigend sortierst du mit `ORDER BY … DESC`; der Alias darf in ORDER BY stehen."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS AnzahlBons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.StandNr, Stand.Name\nORDER BY AnzahlBons DESC",
+          "markiere": [
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "GROUP-BY-Regel (P3): Jede Spalte im SELECT ist aggregiert oder steht in `GROUP BY`. Gruppiert wird nach dem Schlüssel StandNr, der Name kommt zusätzlich dazu. Das Kaffeemobil liegt mit 177 Bons vorn. Das Info-Zelt fehlt: Es hat keinen einzigen Bon, und der Verbund liefert nur Stände mit Bons."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-06",
+      "titel": "Regelverstoß",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26"
+      ],
+      "fallen": [
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Alle drei Abfragen laufen in SQLite – aber halten sie die GROUP-BY-Regel ein? Tippe in jeder Abfrage die Zeile an, die gegen die Regel verstößt. Ist eine Abfrage korrekt, tippe ihre letzte Zeile `-- korrekt` an."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bon.Zahlart,\n       Helfer.Nachname,\n       COUNT(*) AS Bons\nFROM Bon, Helfer\nWHERE Bon.HelferNr = Helfer.HelferNr\nGROUP BY Bon.Zahlart\n-- korrekt"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Helfer.HelferNr,\n       Helfer.Vorname,\n       Helfer.Nachname,\n       COUNT(*) AS Bons\nFROM Helfer, Bon\nWHERE Helfer.HelferNr = Bon.HelferNr\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\n-- korrekt"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Produkt.ProduktNr,\n       Produkt.Bezeichnung,\n       Produkt.Preis,\n       SUM(Position.Menge) AS Stueck\nFROM Produkt, Position\nWHERE Produkt.ProduktNr = Position.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\n-- korrekt"
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "lines",
+          "block": 1,
+          "anzahl": 1,
+          "frage": "a) Erste Abfrage (Bons je Zahlart)"
+        },
+        {
+          "kind": "lines",
+          "block": 2,
+          "anzahl": 1,
+          "frage": "b) Zweite Abfrage (Bons je Helfer)"
+        },
+        {
+          "kind": "lines",
+          "block": 3,
+          "anzahl": 1,
+          "frage": "c) Dritte Abfrage (Stückzahl je Produkt)"
+        }
+      ],
+      "loesung": [
+        {
+          "zeilen": [
+            2
+          ]
+        },
+        {
+          "zeilen": [
+            8
+          ]
+        },
+        {
+          "zeilen": [
+            3
+          ]
+        }
+      ],
+      "tipps": [
+        "Geh jede Spalte im SELECT durch: Ist sie aggregiert? Wenn nicht – steht sie in GROUP BY?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) `Helfer.Nachname` (Zeile 2) ist weder aggregiert noch gruppiert: Im Fach „bar“ stehen viele Nachnamen – welcher soll ausgegeben werden? b) korrekt: Schlüssel und Namen stehen in GROUP BY. c) `Produkt.Preis` (Zeile 3) fehlt in GROUP BY. Auch wenn der Preis je Produkt eindeutig ist, verlangt die GROUP-BY-Regel nach EH, dass er in GROUP BY steht (P3: läuft ≠ richtig)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-07",
+      "titel": "Umsatz je Helfer",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K25",
+        "DB-K20",
+        "DB-K24"
+      ],
+      "fallen": [
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Welchen Umsatz hat jede Person gemacht, die am Stadtfest kassiert hat? Gib HelferNr, Vorname, Nachname und den Umsatz aus. Der Umsatz ist die Summe von Menge × Preis über alle Positionen der Bons, die die Person kassiert hat."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Helfer, Bon, Position, Produkt\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname"
+      },
+      "tipps": [
+        "Du brauchst vier Tabellen: Helfer, Bon, Position, Produkt – also drei Verbundbedingungen.",
+        "Zwei Helferinnen heißen gleich. Gruppiere nach der HelferNr."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Helfer, Bon, Position, Produkt\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname",
+          "markiere": [
+            6
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Gruppiert wird nach dem Schlüssel `Helfer.HelferNr`; Vor- und Nachname stehen zusätzlich in GROUP BY (GROUP-BY-Regel). Wer nur nach Vor- und Nachnamen gruppiert, verschmilzt die beiden Helferinnen „Lotta Bödeker“ (Nr. 26 mit 68,00 € und Nr. 30 mit 67,50 €) zu einer Person mit 135,50 € (P3). Die Variante mit einem weiteren gleichnamigen Kassierer deckt das auf."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-08",
+      "titel": "Bons oder Stück?",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K25",
+        "DB-K26",
+        "DB-K21"
+      ],
+      "fallen": [
+        "P4",
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gib für jedes verkaufte Produkt ProduktNr, Bezeichnung, die Anzahl der Positionen und die verkaufte Stückzahl aus – die Produkte mit der größten Stückzahl zuerst.\n\nDie beiden berechneten Spalten müssen **Positionen** und **Stueck** heißen. Schau dir danach den Kaffee genau an."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [],
+        "sortierung": [
+          {
+            "spalte": "Stueck",
+            "richtung": "DESC"
+          }
+        ],
+        "aliasPflicht": true,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, COUNT(*) AS Positionen, SUM(Position.Menge) AS Stueck\nFROM Produkt, Position\nWHERE Produkt.ProduktNr = Position.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nORDER BY Stueck DESC"
+      },
+      "tipps": [
+        "`COUNT(*)` zählt Positionen, `SUM(Position.Menge)` addiert Stückzahlen – beides geht in derselben Abfrage.",
+        "In ORDER BY darfst du den Alias `Stueck` verwenden."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, COUNT(*) AS Positionen, SUM(Position.Menge) AS Stueck\nFROM Produkt, Position\nWHERE Produkt.ProduktNr = Position.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nORDER BY Stueck DESC",
+          "markiere": [
+            1,
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Normalerweise ist die Stückzahl größer als die Zahl der Positionen (Los: 36 Positionen, 167 Stück). Beim Kaffee ist es umgekehrt: 81 Positionen, aber nur 74 Stück – es gibt Positionen mit der Menge 0. Zählen zeigt das Problem, Summieren versteckt es (P4)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E1-CC",
+      "titel": "Cold Case: Der stille Stand",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K23"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: Ein Stand taucht in deiner Lösung zu „Bons je Stand“ gar nicht auf. Finde ihn – ohne Unterabfrage. Du darfst in der Konsole mehrere Abfragen ausführen."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "gaps",
+          "frage": "a) Die Tabelle Stand hat [[g1]] Datensätze. Die Abfrage „Bons je Stand“ liefert [[g2]] Zeilen. Es fehlt der Stand [[g3]].",
+          "felder": {
+            "g1": {
+              "typ": "zahl",
+              "breite": 3
+            },
+            "g2": {
+              "typ": "zahl",
+              "breite": 3
+            },
+            "g3": {
+              "typ": "text",
+              "norm": "text",
+              "breite": 16
+            }
+          }
+        },
+        {
+          "kind": "kernpunkte",
+          "frage": "b) Beschreibe, mit welchen Mitteln du den Stand gefunden hast, und wo das Abitur-SQL an Grenzen stößt.",
+          "kernpunkte": [
+            "vergleicht **zwei Abfragen**: alle Stände (`SELECT … FROM Stand`) und die Stände mit Bons (Verbund + GROUP BY)",
+            "erklärt, dass der **implizite Verbund** nur Stände liefert, zu denen es mindestens einen Bon gibt",
+            "nennt die Grenze: eine Abfrage, die direkt „Stände **ohne** Bon“ liefert, bräuchte eine Unterabfrage oder einen LEFT JOIN – beides gehört nicht zum Abitur-SQL"
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "g1": [
+            "8"
+          ],
+          "g2": [
+            "7"
+          ],
+          "g3": [
+            "Info-Zelt",
+            "Infozelt",
+            "Info Zelt"
+          ]
+        },
+        null
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Das **Info-Zelt** (Stand 8) hat keine Kasse und keinen Bon. Im Verbund `Stand.StandNr = Bon.StandNr` findet es keinen Partner und fällt heraus. Im Abitur-SQL hilft nur der Vergleich zweier Ergebnisse; „alle Stände, auch ohne Bon“ geht erst mit LEFT JOIN (Kür, nicht im Abitur)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-01",
+      "titel": "Die Zeitlupe ordnen",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Geschrieben wird eine Abfrage in der Reihenfolge SELECT, FROM, WHERE … – ausgewertet wird sie anders. Bring die Klauseln in die Reihenfolge, in der die Datenbank sie **auswertet** (Zeitlupe)."
+        }
+      ],
+      "interaktion": {
+        "kind": "order",
+        "teile": [
+          {
+            "id": "from",
+            "code": "FROM"
+          },
+          {
+            "id": "where",
+            "code": "WHERE"
+          },
+          {
+            "id": "group",
+            "code": "GROUP BY"
+          },
+          {
+            "id": "having",
+            "code": "HAVING"
+          },
+          {
+            "id": "select",
+            "code": "SELECT"
+          },
+          {
+            "id": "order",
+            "code": "ORDER BY"
+          },
+          {
+            "id": "limit",
+            "code": "LIMIT"
+          }
+        ]
+      },
+      "loesung": {
+        "reihenfolgen": [
+          [
+            "from",
+            "where",
+            "group",
+            "having",
+            "select",
+            "order",
+            "limit"
+          ]
+        ]
+      },
+      "tipps": [
+        "Bevor gefiltert werden kann, müssen die Tabellen da sein. Bevor Gruppen gefiltert werden, müssen sie gebildet sein."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. WHERE filtert Zeilen **vor** dem Gruppieren, HAVING filtert Gruppen **danach** (P1). Weil SELECT erst nach HAVING an der Reihe ist, kennt HAVING die Aliase aus dem SELECT noch nicht – ORDER BY dagegen schon."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-02",
+      "titel": "Vorher oder nachher?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Sechs Bedingungen aus Abfragen, die nach Stand gruppieren. Welche gehören in **HAVING** (nach dem Gruppieren)? Wähle alle aus – die übrigen gehören in WHERE."
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": true,
+        "optionen": [
+          {
+            "id": "a",
+            "code": "Position.Menge > 2"
+          },
+          {
+            "id": "b",
+            "code": "SUM(Position.Menge) > 100"
+          },
+          {
+            "id": "c",
+            "code": "Bon.Zahlart = 'bar'"
+          },
+          {
+            "id": "d",
+            "code": "COUNT(*) >= 50"
+          },
+          {
+            "id": "e",
+            "code": "Bon.Zeitpunkt LIKE '2026-08-29%'"
+          },
+          {
+            "id": "f",
+            "code": "AVG(Produkt.Preis) < 3"
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "b",
+          "d",
+          "f"
+        ]
+      },
+      "tipps": [
+        "Enthält die Bedingung eine Aggregatfunktion, kann sie erst geprüft werden, wenn die Gruppen gebildet sind."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "In HAVING stehen die Bedingungen mit Aggregatfunktion: `SUM(Position.Menge) > 100`, `COUNT(*) >= 50`, `AVG(Produkt.Preis) < 3` – sie beziehen sich auf eine ganze Gruppe. Die übrigen prüfen einen einzelnen Datensatz und gehören in WHERE (P1)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-03",
+      "titel": "Die großen Stände",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27",
+        "DB-K26"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Welche Stände haben mehr als 100 Bons gedruckt? Gib StandNr und Name aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Stand.StandNr, Stand.Name\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.StandNr, Stand.Name\nHAVING COUNT(*) > 100"
+      },
+      "tipps": [
+        "Die Bedingung „mehr als 100 Bons“ betrifft eine ganze Gruppe – sie gehört in HAVING.",
+        "In HAVING wiederholst du das Aggregat (`COUNT(*)`), keinen Alias."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Stand.StandNr, Stand.Name\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.StandNr, Stand.Name\nHAVING COUNT(*) > 100",
+          "markiere": [
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Zwei Stände: Kaffeemobil (177 Bons) und Bierwagen (103 Bons). `WHERE COUNT(*) > 100` wäre ein Fehler, denn WHERE wird vor dem Gruppieren ausgewertet (P1). `COUNT(*)` muss nicht im SELECT stehen, um in HAVING zu filtern."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-04",
+      "titel": "Die auffällige Stunde",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27",
+        "DB-K26",
+        "DB-K18"
+      ],
+      "fallen": [
+        "P1",
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wer hat am Festsamstag (2026-08-29) am Stand 'Kaffeemobil' Positionen mit der Menge 0 gebucht? Gib je Person HelferNr, Vorname, Nachname und die Anzahl solcher Positionen aus – aber nur Personen mit **mehr als 3** solchen Positionen."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [
+          "grenze"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS NullPositionen\nFROM Helfer, Bon, Position, Stand\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Bon.StandNr = Stand.StandNr\n  AND Stand.Name = 'Kaffeemobil'\n  AND Position.Menge = 0\n  AND Bon.Zeitpunkt BETWEEN '2026-08-29 00:00' AND '2026-08-29 23:59'\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING COUNT(*) > 3"
+      },
+      "tipps": [
+        "`Menge = 0`, der Stand und der Tag sind Zeilenbedingungen (WHERE), „mehr als 3“ ist eine Gruppenbedingung (HAVING).",
+        "Den ganzen Samstag erfasst `BETWEEN '2026-08-29 00:00' AND '2026-08-29 23:59'`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS NullPositionen\nFROM Helfer, Bon, Position, Stand\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Bon.StandNr = Stand.StandNr\n  AND Stand.Name = 'Kaffeemobil'\n  AND Position.Menge = 0\n  AND Bon.Zeitpunkt BETWEEN '2026-08-29 00:00' AND '2026-08-29 23:59'\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING COUNT(*) > 3",
+          "markiere": [
+            6,
+            7,
+            8,
+            10
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Übrig bleibt genau eine Person: Helferin 23, Nora Falter, mit 110 Positionen der Menge 0. WHERE filtert die Positionen vor dem Gruppieren, HAVING danach die Gruppen (P1). Ohne HAVING stünde in einer Variante der Daten auch eine Person mit einer einzigen Nullposition im Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-05",
+      "titel": "Die Top 3",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K22",
+        "DB-K21",
+        "DB-K26"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Welche drei Produkte wurden am häufigsten verkauft (nach Stückzahl)? Gib ProduktNr, Bezeichnung und die verkaufte Stückzahl aus – das meistverkaufte Produkt zuerst, **nur** die ersten drei."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [
+          "gleichnamig",
+          "gleichstand"
+        ],
+        "sortierung": [
+          {
+            "spalte": 3,
+            "richtung": "DESC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Position.Menge) AS Verkauft\nFROM Produkt, Position\nWHERE Produkt.ProduktNr = Position.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nORDER BY Verkauft DESC\nLIMIT 3"
+      },
+      "tipps": [
+        "Erst nach der Stückzahl absteigend sortieren, dann mit `LIMIT 3` abschneiden."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Position.Menge) AS Verkauft\nFROM Produkt, Position\nWHERE Produkt.ProduktNr = Position.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nORDER BY Verkauft DESC\nLIMIT 3",
+          "markiere": [
+            5,
+            6
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Top 3: Los (167), Alkoholfreies Bier (89), Currywurst (88). Platz 4 hat 76 Stück – an der Schnittkante liegt also kein Gleichstand, die Antwort ist eindeutig. Hätten Platz 3 und 4 dieselbe Stückzahl, wäre „die Top 3“ mit LIMIT Zufall (P6)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-06",
+      "titel": "Was sagt diese Abfrage?",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K28",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Analysiere die Abfrage: Beschreibe im Sachzusammenhang des Stadtfests, welche Information sie liefert. Schreib deine Antwort auf – sie bleibt auf deinem Gerät. Führe die Abfrage danach in der Konsole aus und prüfe deine Beschreibung am Ergebnis."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Kartenbons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.Zahlart = 'Karte'\nGROUP BY Stand.StandNr, Stand.Name\nHAVING COUNT(*) >= 30\nORDER BY Kartenbons DESC"
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "nennt den Sachzusammenhang: je **Stand** (Nummer und Name) die Anzahl der **mit Karte bezahlten Bons**",
+          "nennt den Zeilenfilter: nur Bons mit Zahlart Karte werden gezählt (WHERE, vor dem Gruppieren)",
+          "nennt den Gruppenfilter: nur Stände mit **mindestens 30** Kartenzahlungen (HAVING)",
+          "nennt die Sortierung: die Stände mit den meisten Kartenzahlungen zuerst",
+          "beschreibt das Ergebnis konkret (drei Stände: Kaffeemobil, Grillhütte, Bierwagen) statt nur die Syntax nachzuerzählen"
+        ]
+      },
+      "tipps": [
+        "Satzbaustein: „Die Abfrage liefert für jeden … die Anzahl der …, aber nur …, sortiert nach …“"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Musterformulierung: „Die Abfrage liefert für jeden Stand (Nummer und Name) die Anzahl der Bons, die mit Karte bezahlt wurden – aber nur für Stände mit mindestens 30 Kartenzahlungen, absteigend nach dieser Anzahl.“ „Sie verbindet, filtert, gruppiert und zählt“ ist keine Analyse, sondern eine Nacherzählung der Syntax (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-07",
+      "titel": "Dreimal zu viel",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K25",
+        "DB-K31"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gesucht ist der Fehlbetrag: die Summe der Listenpreise aller Positionen mit Menge 0 am Kaffeemobil (Stand 4) am Samstag zwischen 22:00 und 22:59 Uhr. Juri hat diese Abfrage geschrieben – sie liefert einen viel zu hohen Betrag:"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT SUM(Produkt.Preis) AS Fehlbetrag\nFROM Bon, Position, Produkt, Schicht\nWHERE Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\n  AND Bon.StandNr = Schicht.StandNr\n  AND Bon.StandNr = 4\n  AND Position.Menge = 0\n  AND Bon.Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 22:59'\n  AND Schicht.Beginn >= '2026-08-29 21:00'"
+        },
+        {
+          "t": "text",
+          "md": "Finde den Fehler und schreibe eine korrekte Abfrage für den Fehlbetrag."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtfest",
+        "varianten": [
+          "grenze"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT SUM(Produkt.Preis) AS Fehlbetrag\nFROM Bon, Position, Produkt\nWHERE Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\n  AND Bon.StandNr = 4\n  AND Position.Menge = 0\n  AND Bon.Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 22:59'"
+      },
+      "tipps": [
+        "Welche Tabelle braucht die Frage gar nicht? Jede Zeile von ihr vervielfacht die Positionen.",
+        "Bleib bei der Uhrzeit innerhalb der Stunde: `22:59` ist die letzte Minute."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT SUM(Produkt.Preis) AS Fehlbetrag\nFROM Bon, Position, Produkt\nWHERE Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\n  AND Bon.StandNr = 4\n  AND Position.Menge = 0\n  AND Bon.Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 22:59'",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: **312,50 €**. Juris Abfrage nimmt `Schicht` dazu und verbindet sie nur über den Stand: Am Samstagabend gibt es am Kaffeemobil ab 21 Uhr drei Schichten, also erscheint jede Position dreimal – 937,50 € (P2: Vervielfachung im Verbund). Für die Frage wird `Schicht` gar nicht gebraucht. Mit `23:00` als Obergrenze würde ein Bon genau um 23 Uhr mitgezählt."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-08",
+      "titel": "In Worten ermitteln",
+      "stufe": 3,
+      "punkte": 0,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K30",
+        "DB-K28"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Edda will wissen: **Wer hatte am 2026-08-29 von 22 bis 23 Uhr die Schicht am Kaffeemobil – und fallen die Positionen mit Menge 0 in genau diese Schicht?**\n\nBeschreibe in Worten, wie du vorgehst – noch ohne fertige Abfrage. Deine Antwort bleibt auf deinem Gerät."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Stand",
+              "attribute": [
+                {
+                  "name": "StandNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Art"
+                },
+                {
+                  "name": "Platz"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Jahrgang"
+                },
+                {
+                  "name": "Verein"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true,
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "StandNr",
+                  "pk": true,
+                  "fk": "Stand"
+                },
+                {
+                  "name": "Beginn",
+                  "pk": true
+                },
+                {
+                  "name": "Ende"
+                }
+              ]
+            },
+            {
+              "name": "Bon",
+              "attribute": [
+                {
+                  "name": "BonNr",
+                  "pk": true
+                },
+                {
+                  "name": "StandNr",
+                  "fk": "Stand"
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Position",
+              "attribute": [
+                {
+                  "name": "BonNr",
+                  "pk": true,
+                  "fk": "Bon"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Menge"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "Schritt 1 (Schicht finden): Tabellen **Schicht, Helfer, Stand** verbinden (HelferNr, StandNr), Zeilen filtern auf Stand Kaffeemobil und Beginn `2026-08-29 22:00`; ausgeben: Vor- und Nachname, Beginn, Ende",
+          "Schritt 2 (Positionen prüfen): Tabellen **Bon, Position** (ggf. Stand, Helfer) verbinden, filtern auf Kaffeemobil, Menge 0 und Zeitpunkte des Samstags",
+          "gruppiert die Positionen mit Menge 0 sinnvoll, z. B. nach Kassierer (HelferNr) oder nach Stunde, und zählt sie mit `COUNT(*)`",
+          "vergleicht: Liegen die Zeitpunkte zwischen Beginn und Ende der Schicht, und ist der Kassierer der Bons dieselbe Person wie in der Schicht?",
+          "verbindet nur die Tabellen, die für den jeweiligen Schritt nötig sind (Schicht nicht ohne passende Bedingung zu Bon/Position – sonst Vervielfachung)"
+        ]
+      },
+      "tipps": [
+        "Gliedere: benötigte Tabellen → Verbund → Zeilenfilter → Gruppierung → Gruppenfilter → Sortierung."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Ein gutes Vorgehen nennt für jeden Schritt die Tabellen, die Verbundbedingungen, die Filter und – falls nötig – Gruppierung und Sortierung, immer bezogen auf die Frage. „Ich mache einen SELECT“ ist kein Vorgehen (P10). Zwei kleine Abfragen sind hier sicherer als eine große, in der Schicht die Positionen vervielfacht."
+        }
+      ]
+    },
+    {
+      "id": "A3-E2-CC",
+      "titel": "Cold Case: Gleichstand an der Kante",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K22",
+        "DB-K21"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: Der Festausschuss möchte „die zwei Stände mit den meisten Kartenzahlungen“ ehren."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "datenbank": "stadtfest",
+          "varianten": [],
+          "sortierung": [
+            {
+              "spalte": 3,
+              "richtung": "DESC"
+            }
+          ],
+          "abimodus": "hinweis",
+          "frage": "a) Gib für jeden Stand StandNr, Name und die Anzahl der Bons mit Zahlart 'Karte' aus – absteigend nach dieser Anzahl. (Noch ohne LIMIT.)"
+        },
+        {
+          "kind": "kernpunkte",
+          "frage": "b) Was fällt an Platz 2 und 3 auf? Was würde `LIMIT 2` liefern? Formuliere eine Frage, die eindeutig beantwortbar ist.",
+          "kernpunkte": [
+            "erkennt den **Gleichstand**: Grillhütte und Bierwagen haben gleich viele Kartenzahlungen (je 36)",
+            "erklärt, dass `LIMIT 2` dann zufällig einen der beiden Stände abschneidet – das Ergebnis ist nicht eindeutig",
+            "formuliert eine eindeutige Frage, z. B. „alle Stände mit mindestens 36 Kartenzahlungen“ (HAVING) oder eine zweite Sortierstufe mit begründeter Regel"
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Kartenzahlungen\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.Zahlart = 'Karte'\nGROUP BY Stand.StandNr, Stand.Name\nORDER BY Kartenzahlungen DESC"
+        },
+        null
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Kaffeemobil 55, Grillhütte 36, Bierwagen 36: An der Schnittkante von `LIMIT 2` liegt ein Gleichstand. Top-n-Fragen mit LIMIT sind nur eindeutig, wenn an Platz n kein Gleichstand besteht (P6)."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-01",
+      "titel": "Kennzahlen",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K25"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die Anzahl aller Verkäufe und den Zeitpunkt des ersten Verkaufs ausgibt. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/kiosk",
+        "varianten": [
+          "null"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT COUNT(*) AS Verkaeufe, MIN(Zeitpunkt) AS ErsterVerkauf\nFROM Verkauf"
+      },
+      "tipps": [
+        "Ohne GROUP BY liefern Aggregatfunktionen genau eine Zeile."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT COUNT(*) AS Verkaeufe, MIN(Zeitpunkt) AS ErsterVerkauf\nFROM Verkauf",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: 120 Verkäufe, erster Verkauf am 2026-09-21 um 09:31."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-02",
+      "titel": "Brötchen zählen",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K25"
+      ],
+      "fallen": [
+        "P4"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, welche Abfrage die Anzahl der verkauften Brötchen (Stückzahl, nicht die Anzahl der Verkäufe) liefert. [1 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "code": "SELECT SUM(Posten.Anzahl)\nFROM Posten, Produkt\nWHERE Posten.ProduktNr = Produkt.ProduktNr\n  AND Produkt.Kategorie = 'Brötchen'"
+          },
+          {
+            "id": "b",
+            "code": "SELECT COUNT(*)\nFROM Posten, Produkt\nWHERE Posten.ProduktNr = Produkt.ProduktNr\n  AND Produkt.Kategorie = 'Brötchen'"
+          },
+          {
+            "id": "c",
+            "code": "SELECT COUNT(Posten.Anzahl)\nFROM Posten, Produkt\nWHERE Posten.ProduktNr = Produkt.ProduktNr\n  AND Produkt.Kategorie = 'Brötchen'"
+          },
+          {
+            "id": "d",
+            "code": "SELECT SUM(Posten.Anzahl)\nFROM Posten, Produkt\nWHERE Produkt.Kategorie = 'Brötchen'"
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Ein Posten kann mehrere Brötchen enthalten."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Nur `SUM(Posten.Anzahl)` mit Verbundbedingung liefert die Stückzahl (166). `COUNT(*)` und `COUNT(Posten.Anzahl)` zählen Posten (91, P4); ohne Verbundbedingung entsteht ein Kreuzprodukt."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-03",
+      "titel": "Vorher oder nachher",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "text",
+          "md": "In einer Abfrage wird nach `Produkt.Kategorie` gruppiert. **Geben Sie an**, welche der folgenden Bedingungen in der HAVING-Klausel stehen müssen. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": true,
+        "optionen": [
+          {
+            "id": "a",
+            "code": "Verkauf.Zahlart = 'Karte'"
+          },
+          {
+            "id": "b",
+            "code": "SUM(Posten.Anzahl) > 20"
+          },
+          {
+            "id": "c",
+            "code": "Produkt.Preis >= 1.00"
+          },
+          {
+            "id": "d",
+            "code": "COUNT(*) > 10"
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "b",
+          "d"
+        ]
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Bedingungen mit Aggregatfunktion (`SUM(Posten.Anzahl) > 20`, `COUNT(*) > 10`) beziehen sich auf Gruppen und gehören in HAVING; Bedingungen an einzelne Datensätze gehören in WHERE (P1)."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-04",
+      "titel": "Gruppenergebnis",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K29"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gegeben ist ein Ausschnitt der Tabelle Posten (alle Posten der Verkäufe 1 bis 4):"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Posten",
+          "kopf": [
+            {
+              "name": "VerkaufNr",
+              "pk": true,
+              "fk": "Verkauf"
+            },
+            {
+              "name": "ProduktNr",
+              "pk": true,
+              "fk": "Produkt"
+            },
+            {
+              "name": "Anzahl"
+            }
+          ],
+          "zeilen": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              1,
+              3,
+              2
+            ],
+            [
+              2,
+              3,
+              4
+            ],
+            [
+              2,
+              9,
+              1
+            ],
+            [
+              2,
+              13,
+              1
+            ],
+            [
+              3,
+              8,
+              2
+            ],
+            [
+              4,
+              1,
+              1
+            ],
+            [
+              4,
+              2,
+              1
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/kiosk",
+            "sql": "SELECT VerkaufNr, ProduktNr, Anzahl FROM Posten WHERE VerkaufNr <= 4 ORDER BY VerkaufNr, ProduktNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** das Ergebnis der folgenden Abfrage **an**. Die Reihenfolge der Zeilen ist beliebig. [2 BE]"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT ProduktNr, SUM(Anzahl) AS Stueck\nFROM Posten\nWHERE VerkaufNr <= 4\nGROUP BY ProduktNr"
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "ProduktNr",
+          "Stueck"
+        ],
+        "zeilenAnzahl": 6,
+        "reihenfolge": false
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            13,
+            1
+          ]
+        ],
+        "quelleSql": "SELECT ProduktNr, SUM(Anzahl) AS Stueck\nFROM Posten\nWHERE VerkaufNr <= 4\nGROUP BY ProduktNr",
+        "datenbank": "verhoer/kiosk"
+      },
+      "erklaerung": [
+        {
+          "t": "tabelle",
+          "kopf": [
+            "ProduktNr",
+            "Stueck"
+          ],
+          "zeilen": [
+            [
+              "1",
+              "1"
+            ],
+            [
+              "2",
+              "4"
+            ],
+            [
+              "3",
+              "6"
+            ],
+            [
+              "8",
+              "2"
+            ],
+            [
+              "9",
+              "1"
+            ],
+            [
+              "13",
+              "1"
+            ]
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Je ProduktNr eine Zeile; summiert wird die Anzahl der zugehörigen Posten."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-05",
+      "titel": "Sortiment",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26"
+      ],
+      "fallen": [
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die je Kategorie die Kategorie und die Anzahl der Produkte ausgibt. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/kiosk",
+        "varianten": [
+          "null",
+          "gleichnamig"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Kategorie, COUNT(*) AS Anzahl\nFROM Produkt\nGROUP BY Kategorie"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Kategorie, COUNT(*) AS Anzahl\nFROM Produkt\nGROUP BY Kategorie",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: Brötchen 4, Getränk 4, Obst 3, Snack 3. `COUNT(*)` zählt alle Produkte – `COUNT(Preis)` würde Produkte ohne festgelegten Preis übersehen."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-06",
+      "titel": "Stückzahlen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K23"
+      ],
+      "fallen": [
+        "P3",
+        "P4"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die je Produkt die Produktnummer, die Bezeichnung und die verkaufte Stückzahl ausgibt. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/kiosk",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Posten.Anzahl) AS Stueck\nFROM Produkt, Posten\nWHERE Produkt.ProduktNr = Posten.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Posten.Anzahl) AS Stueck\nFROM Produkt, Posten\nWHERE Produkt.ProduktNr = Posten.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Gruppiert wird nach dem Schlüssel ProduktNr (Bezeichnungen sind nicht eindeutig, P3); die Stückzahl ist `SUM(Posten.Anzahl)`, nicht `COUNT(*)` (P4). Ein nie verkauftes Produkt erscheint im Verbund nicht."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-07",
+      "titel": "Teure Kategorien",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die alle Kategorien mit einem durchschnittlichen Preis über 1,50 € ausgibt, jeweils mit dem Durchschnittspreis. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/kiosk",
+        "varianten": [
+          "null"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Kategorie, AVG(Preis) AS Durchschnittspreis\nFROM Produkt\nGROUP BY Kategorie\nHAVING AVG(Preis) > 1.50"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Kategorie, AVG(Preis) AS Durchschnittspreis\nFROM Produkt\nGROUP BY Kategorie\nHAVING AVG(Preis) > 1.50",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Nur Brötchen (1,625 €). Die Bedingung betrifft den Durchschnitt einer Gruppe und gehört deshalb in HAVING – `WHERE Preis > 1.50` würde stattdessen einzelne Produkte filtern und Brötchen, Obst und Snack liefern (P1). Snack liegt mit genau 1,50 € nicht darüber."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-08",
+      "titel": "Bestseller",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K22",
+        "DB-K21"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die drei Produkte mit dem höchsten Umsatz (Anzahl × Preis) mit Produktnummer, Bezeichnung und Umsatz ausgibt, absteigend nach Umsatz. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/kiosk",
+        "varianten": [
+          "null",
+          "gleichnamig"
+        ],
+        "abimodus": "streng",
+        "sortierung": [
+          {
+            "spalte": 3,
+            "richtung": "DESC"
+          }
+        ]
+      },
+      "loesung": {
+        "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Posten.Anzahl * Produkt.Preis) AS Umsatz\nFROM Produkt, Posten\nWHERE Produkt.ProduktNr = Posten.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nORDER BY Umsatz DESC\nLIMIT 3"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Posten.Anzahl * Produkt.Preis) AS Umsatz\nFROM Produkt, Posten\nWHERE Produkt.ProduktNr = Posten.ProduktNr\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nORDER BY Umsatz DESC\nLIMIT 3",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Salamibrötchen (89,25 €), Laugenbrezel (76,25 €), Käsebrötchen (57,00 €); Platz 4 hat 40,00 € – kein Gleichstand an der Schnittkante."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-09",
+      "titel": "Analyse",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K28"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Schicht.Datum, Schicht.Pause, COUNT(*) AS Kartenzahlungen\nFROM Schicht, Verkauf\nWHERE Schicht.SchichtNr = Verkauf.SchichtNr\n  AND Verkauf.Zahlart = 'Karte'\nGROUP BY Schicht.Datum, Schicht.Pause\nHAVING COUNT(*) >= 5\nORDER BY Kartenzahlungen DESC"
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, welche Beschreibung die Information, die die Abfrage liefert, im Sachzusammenhang zutreffend wiedergibt. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Für jede große Pause der Woche (Datum und Pause) wird die Anzahl der mit der Schülerkarte bezahlten Verkäufe ausgegeben – nur Pausen mit mindestens fünf Kartenzahlungen, die Pausen mit den meisten Kartenzahlungen zuerst."
+          },
+          {
+            "id": "b",
+            "md": "Für jede Pause wird die Anzahl **aller** Verkäufe ausgegeben, sofern mindestens fünf davon mit der Schülerkarte bezahlt wurden, absteigend sortiert."
+          },
+          {
+            "id": "c",
+            "md": "Die Abfrage verbindet Schicht und Verkauf, filtert nach der Zahlart, gruppiert nach Datum und Pause, filtert mit HAVING und sortiert absteigend."
+          },
+          {
+            "id": "d",
+            "md": "Für jeden Tag wird ausgegeben, wie viele Helferinnen und Helfer Kartenzahlungen kassiert haben – nur Tage mit mindestens fünf solchen Personen."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) beschreibt Gruppe (Pause), Zeilenfilter (Karte), Gruppenfilter (mindestens fünf) und Sortierung im Sachzusammenhang. c) erzählt nur die Syntax nach (P10); b) übersieht, dass WHERE vor dem Zählen filtert; d) zählt Verkäufe, nicht Personen."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-10",
+      "titel": "Zu hohe Summe",
+      "stufe": 2,
+      "punkte": 20,
+      "niveau": "eA",
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K31"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Die folgende Abfrage soll den Umsatz mit Obstbechern ermitteln, die am 2026-09-25 in der 2. großen Pause mit der Schülerkarte bezahlt wurden. Sie liefert 14,00 €, obwohl in dieser Pause nur ein Obstbecher (1,75 €) mit Karte bezahlt wurde."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT SUM(Posten.Anzahl * Produkt.Preis) AS Umsatz\nFROM Verkauf, Posten, Produkt\nWHERE Posten.ProduktNr = Produkt.ProduktNr\n  AND Produkt.Bezeichnung = 'Obstbecher'\n  AND Verkauf.Zahlart = 'Karte'\n  AND Verkauf.Zeitpunkt >= '2026-09-25 11:00'"
+        },
+        {
+          "t": "text",
+          "md": "**Beurteilen** Sie, welche Aussage den Fehler zutreffend erklärt. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Die Verbundbedingung `Posten.VerkaufNr = Verkauf.VerkaufNr` fehlt: Jeder Obstbecher-Posten der ganzen Woche wird mit jeder Kartenzahlung der Pause kombiniert."
+          },
+          {
+            "id": "b",
+            "md": "Statt `SUM(…)` müsste `COUNT(*)` verwendet werden, weil Verkäufe gezählt werden sollen."
+          },
+          {
+            "id": "c",
+            "md": "Es fehlt `GROUP BY Produkt.Bezeichnung`; ohne GROUP BY werden die Werte mehrfach addiert."
+          },
+          {
+            "id": "d",
+            "md": "Die Bedingung `Verkauf.Zeitpunkt >= '2026-09-25 11:00'` schließt die Verkäufe der 1. Pause nicht aus."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Ohne `Posten.VerkaufNr = Verkauf.VerkaufNr` entsteht ein Kreuzprodukt zwischen den passenden Verkäufen (zwei Kartenzahlungen) und allen Obstbecher-Posten der Woche (4 Stück): 2 × 4 × 1,75 € = 14,00 € (P2)."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-11",
+      "titel": "Umsatz je Helfer",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K24"
+      ],
+      "fallen": [
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die je Helferin bzw. Helfer die Helfernummer, den Vor- und den Nachnamen sowie den Gesamtumsatz (Anzahl × Preis) ausgibt – nur für Personen mit einem Umsatz von mehr als 50 €. [5 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/kiosk",
+        "varianten": [
+          "null",
+          "gleichnamig"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, SUM(Posten.Anzahl * Produkt.Preis) AS Umsatz\nFROM Helfer, Schicht, Verkauf, Posten, Produkt\nWHERE Helfer.HelferNr = Schicht.HelferNr\n  AND Schicht.SchichtNr = Verkauf.SchichtNr\n  AND Verkauf.VerkaufNr = Posten.VerkaufNr\n  AND Posten.ProduktNr = Produkt.ProduktNr\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING SUM(Posten.Anzahl * Produkt.Preis) > 50"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, SUM(Posten.Anzahl * Produkt.Preis) AS Umsatz\nFROM Helfer, Schicht, Verkauf, Posten, Produkt\nWHERE Helfer.HelferNr = Schicht.HelferNr\n  AND Schicht.SchichtNr = Verkauf.SchichtNr\n  AND Verkauf.VerkaufNr = Posten.VerkaufNr\n  AND Posten.ProduktNr = Produkt.ProduktNr\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING SUM(Posten.Anzahl * Produkt.Preis) > 50",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Verbund über fünf Tabellen, gruppiert nach dem Schlüssel HelferNr (zwei Helferinnen heißen gleich, P3), Gruppenfilter mit wiederholtem Aggregat in HAVING. Ergebnis: Mats Glander (75,25 €) und Ella Hemmen (61,25 €)."
+        }
+      ]
+    },
+    {
+      "id": "A3-V-12",
+      "titel": "Vorgehen",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K30"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kiosk-AG einer Gesamtschule erfasst ihre Verkäufe in einer Datenbank. Jeder Verkauf gehört zu einer Schicht und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar (`'bar'`) oder mit der Schülerkarte (`'Karte'`). Kategorien: `'Brötchen'`, `'Getränk'`, `'Snack'`, `'Obst'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Produkt",
+              "attribute": [
+                {
+                  "name": "ProduktNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Helfer",
+              "attribute": [
+                {
+                  "name": "HelferNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Schicht",
+              "attribute": [
+                {
+                  "name": "SchichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "HelferNr",
+                  "fk": "Helfer"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Pause"
+                }
+              ]
+            },
+            {
+              "name": "Verkauf",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true
+                },
+                {
+                  "name": "SchichtNr",
+                  "fk": "Schicht"
+                },
+                {
+                  "name": "Zeitpunkt"
+                },
+                {
+                  "name": "Zahlart"
+                }
+              ]
+            },
+            {
+              "name": "Posten",
+              "attribute": [
+                {
+                  "name": "VerkaufNr",
+                  "pk": true,
+                  "fk": "Verkauf"
+                },
+                {
+                  "name": "ProduktNr",
+                  "pk": true,
+                  "fk": "Produkt"
+                },
+                {
+                  "name": "Anzahl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Frage der Kiosk-AG: „Welche Kategorien brachten bei Kartenzahlungen mehr als 30 € Umsatz ein? Die umsatzstärkste Kategorie zuerst.“\n\n**Bringen Sie** die Schritte zur Beantwortung der Frage **in** eine sinnvolle Reihenfolge. Ein Schritt gehört nicht dazu. [4 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "order",
+        "teile": [
+          {
+            "id": "a",
+            "md": "Benötigte Tabellen bestimmen: Verkauf, Posten, Produkt"
+          },
+          {
+            "id": "b",
+            "md": "Verbundbedingungen angeben: Verkauf und Posten über VerkaufNr, Posten und Produkt über ProduktNr"
+          },
+          {
+            "id": "c",
+            "md": "Zeilen filtern: nur Verkäufe mit Zahlart `'Karte'`"
+          },
+          {
+            "id": "d",
+            "md": "Nach Kategorie gruppieren und je Gruppe die Summe von Anzahl × Preis bilden"
+          },
+          {
+            "id": "e",
+            "md": "Gruppen filtern: nur Kategorien mit einer Summe über 30 €"
+          },
+          {
+            "id": "f",
+            "md": "Nach der Summe absteigend sortieren"
+          },
+          {
+            "id": "x",
+            "md": "Die Tabellen Schicht und Helfer hinzunehmen, damit alle Verkäufe erfasst werden"
+          }
+        ]
+      },
+      "loesung": {
+        "reihenfolgen": [
+          [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f"
+          ],
+          [
+            "a",
+            "c",
+            "b",
+            "d",
+            "e",
+            "f"
+          ]
+        ]
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Tabellen → Verbund → Zeilenfilter → Gruppierung → Gruppenfilter → Sortierung. Schicht und Helfer werden für die Frage nicht gebraucht. Ergebnis: Brötchen (105,75 €) und Snack (37,50 €)."
+        }
+      ]
+    }
+  ]
+}
