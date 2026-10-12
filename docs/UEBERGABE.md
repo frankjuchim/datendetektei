@@ -14,8 +14,8 @@ Dieses Repo enthält den vollständigen Planungsstand (Phase 0). Ab hier arbeite
    git remote add origin git@github.com:frankjuchim/datendetektei.git
    git push -u origin main
    ```
-3. **CapRover noch nicht verbinden.** Die App wird erst in Phase 1, Task 10 angelegt; Deploy läuft dann nur über die
-   GitHub Action nach grüner Prüfung (kein CapRover-Webhook).
+3. **CapRover noch nicht verbinden.** Die App wird erst in Phase 1, Task 10 angelegt (inzwischen erledigt: Deploy per
+   CapRover-Webhook auf `main`, Spec §18).
 4. **Claude-Code-Session** auf dem Repo starten (Cloud oder lokal) und den Startprompt unten einfügen.
 
 ## 2. Startprompt für Claude Code
@@ -43,9 +43,9 @@ für Phase 2 und lege ihn mir vor.
 
 | Wann | Was |
 |---|---|
-| Task 10 | CapRover-App `datendetektei` anlegen: Persistent Directory `/app/data`, HTTPS, Domain `datendetektei.frankjuchim.de`, Umgebungsvariablen laut README („Betrieb“), App-Token erzeugen. GitHub-Secrets `CAPROVER_URL`, `CAPROVER_APP_TOKEN` setzen. |
+| Task 10 | CapRover-App `datendetektei` anlegen: Persistent Directory `/app/data`, HTTPS, Domain `datendetektei.frankjuchim.de`, Umgebungsvariablen laut README („Betrieb“), Webhook auf `main` (Spec §18). |
 | Task 11 | Im Portal (Superadmin): Plattform eintragen, Rücksprung `https://datendetektei.frankjuchim.de/sso/ende` bestätigen, Testkurs anlegen, Plattform für den Kurs freischalten, Testschüler + Testlehrkraft. |
-| beliebig | `docs/VERTRAG_VORSCHLAG_1.2.md` prüfen und in `frankjuchim/labs` übernehmen (kann eine Claude-Code-Session im labs-Repo erledigen). |
+| beliebig | `docs/VERTRAG_VORSCHLAG_1.3.md` prüfen und in `frankjuchim/labs` übernehmen (kann eine Claude-Code-Session im labs-Repo erledigen). |
 
 ## 4. Offene Punkte (blockieren Phase 1 nicht)
 
@@ -66,5 +66,5 @@ für Phase 2 und lege ihn mir vor.
 | `docs/KOMPETENZMATRIX.md` | DB-K01…K48 × Aufgaben, Fallen- und Abi-Abdeckung |
 | `docs/STORY.md` | Story-Bibel (Phantom, Briefings, Schlussplädoyer, Debatte, Escape Room) |
 | `docs/DESIGN.md`, `docs/prototyp/` | Design-System, klickbarer Prototyp, Screenshots |
-| `docs/VERTRAG_VORSCHLAG_1.2.md` | Änderungsvorschlag für den Verbund-Vertrag |
+| `docs/VERTRAG_VORSCHLAG_1.3.md` | Änderungsvorschlag für den Verbund-Vertrag |
 | `seed/datenbanken/` | 7 Datenbanken (Schema, Pflicht-Datensätze, Varianten, Generator-Vorgaben) + Verhör-/Klausur-Kontexte; alle Schemata und Beispielabfragen maschinell geprüft |

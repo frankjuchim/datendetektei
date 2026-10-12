@@ -30,7 +30,7 @@ und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, wa
 ## Verbund InfoLabs
 
 Verbindlich ist der Vertrag [`frankjuchim/labs/VERTRAG.md`](https://github.com/frankjuchim/labs/blob/main/VERTRAG.md)
-(Version 1.1) mit der Anschlussanleitung `docs/INTEGRATION.md`. Die Plattform baut kein eigenes Login: Single Sign-on
+(Version 1.2) mit der Anschlussanleitung `docs/INTEGRATION.md`. Die Plattform baut kein eigenes Login: Single Sign-on
 nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
 
 **Begründete Abweichungen von SOLL-Regeln (Vertrag §9):**
@@ -38,9 +38,15 @@ nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
   `#B3261E`), weil Setting und Werkzeuge (Akten, Pinnwand, Konsole) eine eigene, zusammenhängende Bildsprache brauchen.
   Kontraste sind nach WCAG AA geprüft; der Link „⌂ Portal“ steht in der Kopfzeile.
 - *Empfehlung §13.2 (Kopie von Algo Quest):* eigene Codebasis mit gemeinsamem Kern in `src/kern/`
-  (Vorschlag für Vertrag 1.2: [`docs/VERTRAG_VORSCHLAG_1.2.md`](docs/VERTRAG_VORSCHLAG_1.2.md)).
+  (Vorschlag für Vertrag 1.3: [`docs/VERTRAG_VORSCHLAG_1.3.md`](docs/VERTRAG_VORSCHLAG_1.3.md)).
 - *CSP:* zusätzlich `'wasm-unsafe-eval'` und `worker-src 'self'` für die SQL-Engine im Browser (sql.js). Das ist keine
   Inline-Ausnahme; ohne WASM greift ein asm.js-Fallback.
+
+## Entwicklung
+
+`npm install`, `npm test`, `npm run dev` (Port 3000, Daten in `./data`, ohne echtes Portal). `npm run dev` nutzt das
+Schlüsselpaar `test/fixtures/dev_portal_{public,private}.pem` – **nur für Entwicklung und Tests**: Der private
+Schlüssel liegt öffentlich im Repo und ist damit wertlos; im Betrieb nie verwenden.
 
 ## Betrieb (CapRover)
 
@@ -60,6 +66,15 @@ Umgebungsvariablen (Vertrag §8):
 
 Nach dem ersten Deploy: Superadmin trägt die Plattform im Portal unter „Plattformen“ ein, bestätigt die
 Rücksprung-Adresse `https://datendetektei.frankjuchim.de/sso/ende` und schaltet Lehrkräfte frei.
+
+Vorlage für die Variablen: [`.env.example`](.env.example). Container: `Dockerfile` (Node 22, läuft als `node`,
+Port 80, `HEALTHCHECK` auf `/healthz`, `TZ=Europe/Berlin`), `captain-definition`; Persistent Directory `/app/data`.
+
+**Deploy per Webhook:** `main` ist über einen GitHub-Webhook direkt mit CapRover verbunden – jeder Push auf `main`
+startet sofort den Live-Build (wie bei Algo Quest und dem Portal). Die GitHub Action „Prüfung“
+(`.github/workflows/pruefung.yml`: Tests, App-Start, `vertrag_pruefen.js`, Kontrastprüfung, Docker-Build und
+Container-Start) läuft bei jedem Push, blockiert den Deploy aber nicht. Deshalb nur auf Feature-Branches arbeiten und
+erst nach grüner Prüfung und Freigabe nach `main` übernehmen.
 
 ## Lizenz
 

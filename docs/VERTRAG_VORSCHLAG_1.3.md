@@ -1,11 +1,14 @@
-# Vorschlag: VERTRAG.md Version 1.2 (für `frankjuchim/labs`)
+# Vorschlag: VERTRAG.md Version 1.3 (für `frankjuchim/labs`)
 
 **Anlass:** Die Datendetektei ist die zweite Plattform mit SSO im Verbund. Sie entsteht als eigenes Produkt (eigene
 Codebasis, eigenes Design) statt als Kopie von Algo Quest, erfüllt aber alle MUSS-Regeln §5–§10. Damit das nicht still
 vom Vertrag abweicht, schlägt dieses Dokument die folgenden Änderungen vor. Alle Änderungen sind **Nebenversion**
 (keine bestehende Plattform wird ungültig).
 
-**Vorgehen:** Frank übernimmt die Texte (ggf. angepasst) in `labs/VERTRAG.md`, erhöht die Version auf 1.2, trägt §14
+> **Hinweis (2026-10-12):** Version 1.2 ist im Portal-Repo inzwischen vergeben (Anforderungsniveaus eA/gA). Dieser
+> Vorschlag zielt deshalb auf **1.3** und setzt v1.2 voraus.
+
+**Vorgehen:** Frank übernimmt die Texte (ggf. angepasst) in `labs/VERTRAG.md`, erhöht die Version auf 1.3, trägt §14
 ein und passt bei Bedarf `scripts/vertrag_pruefen.js` an (hier nicht nötig: keine neuen Pflichtfelder).
 
 ---
@@ -54,7 +57,7 @@ Umbenennen). Die Testplattform verhält sich bereits so.
 
 | Version | Datum | Änderung |
 |---|---|---|
-| 1.2 | `<Datum der Annahme>` | §13.2 eigene Codebasis zulässig (Kern in eigenem Ordner); §7 Liste bekannter Fähigkeiten (u. a. `sql-konsole`, `live`); §6 Klarstellung unbekannter Kurs bei `kurs-aendern`; §9 Sandbox-Regel für ausgeführten Schüler-Code |
+| 1.3 | `<Datum der Annahme>` | §13.2 eigene Codebasis zulässig (Kern in eigenem Ordner); §7 Liste bekannter Fähigkeiten (u. a. `sql-konsole`, `live`); §6 Klarstellung unbekannter Kurs bei `kurs-aendern`; §9 Sandbox-Regel für ausgeführten Schüler-Code |
 
 ---
 

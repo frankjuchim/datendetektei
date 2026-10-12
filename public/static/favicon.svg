@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <title>Datendetektei</title>
+  <circle cx="20" cy="20" r="18.5" fill="#FFFDF8"/>
+  <circle cx="20" cy="20" r="17.25" fill="none" stroke="#B3261E" stroke-width="2.5"/>
+  <circle cx="18" cy="18" r="6.5" fill="none" stroke="#1C2B3A" stroke-width="2.8"/>
+  <path d="m22.8 22.8 6.4 6.4" stroke="#1C2B3A" stroke-width="3.4" stroke-linecap="round"/>
+</svg>

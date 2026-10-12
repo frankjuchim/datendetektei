@@ -1,0 +1,244 @@
+/* Komponenten (DESIGN.md §4) und Seitenbausteine der Phase 1. Nur Tokens – keine Farbliterale. */
+
+/* ---------- Knöpfe (4.11) ---------- */
+.knopf {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--a-2);
+  min-height: 44px; padding: 0 var(--a-4);
+  border-radius: var(--radius); border: 1px solid var(--rand-stark);
+  background: var(--karte); color: var(--tinte);
+  font-weight: 600; font-size: var(--t-s); letter-spacing: 0.01em; line-height: 1.2;
+  text-decoration: none; text-align: center; cursor: pointer;
+  transition: background var(--dauer), transform 80ms;
+}
+.knopf:hover { background: var(--flaeche); color: var(--tinte); }
+.knopf:active { transform: translateY(1px); }
+.knopf[disabled], .knopf[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.knopf.primaer { background: var(--siegelrot); border-color: var(--siegelrot); color: var(--auf-akzent); }
+.knopf.primaer:hover { filter: brightness(1.08); color: var(--auf-akzent); }
+.knopf.gruen { background: var(--gruen); border-color: var(--gruen); color: var(--auf-akzent); }
+.knopf.leise { border-color: transparent; background: transparent; color: var(--tinte-2); }
+.knopf.leise:hover { background: var(--flaeche); color: var(--tinte); }
+.knopf.gross { min-height: 52px; padding: 0 var(--a-5); font-size: var(--t-m); }
+.knopf-reihe { display: flex; flex-wrap: wrap; gap: var(--a-3); align-items: center; }
+
+/* ---------- Karten und Aktendeckel (4.1) ---------- */
+.karte {
+  background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius);
+  padding: var(--a-5); min-width: 0;
+}
+.aktendeckel {
+  position: relative; margin-top: 23px; min-width: 0;
+  background: var(--karte); border: 1px solid var(--rand);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  box-shadow: var(--schatten-1);
+}
+.aktendeckel > .reiter {
+  position: absolute; top: -23px; left: -1px; height: 23px; max-width: calc(100% + 2px);
+  padding: 0 var(--a-4);
+  display: flex; align-items: center; gap: var(--a-2);
+  background: var(--karte); border: 1px solid var(--rand); border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  font-family: var(--schrift-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--tinte-2); white-space: nowrap; overflow: hidden;
+}
+.aktendeckel > .reiter::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 3px; background: var(--karte);
+}
+.aktendeckel > .reiter.rot { color: var(--siegelrot-text); }
+.aktendeckel-innen { padding: var(--a-5); display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+
+/* ---------- Stempel (4.2) ---------- */
+.stempel {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--schrift-titel); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 1rem; line-height: 1; padding: 6px 10px 5px;
+  border: 2.5px solid currentColor; border-radius: var(--radius-stempel);
+  box-shadow: inset 0 0 0 1px currentColor;
+  transform: rotate(-4deg); color: var(--siegelrot-text); white-space: nowrap;
+}
+.stempel.klein { font-size: 0.75rem; padding: 3px 6px 2px; border-width: 2px; box-shadow: none; transform: rotate(-3deg); }
+.stempel.gross { font-size: 1.75rem; padding: 8px 16px 6px; border-width: 3.5px; }
+.stempel.geloest { color: var(--gruen); }
+.stempel.angesehen { color: var(--tinte-3); }
+.stempel.abi { color: var(--siegelrot-text); }
+.stempel.kuer { color: var(--messing-text); }
+.stempel.auftritt { animation: stempeln 420ms var(--kurve) both; }
+@keyframes stempeln {
+  0% { transform: rotate(-4deg) scale(1.9); opacity: 0; }
+  60% { transform: rotate(-4deg) scale(.94); opacity: 1; }
+  100% { transform: rotate(-4deg) scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stempel.auftritt { animation: none; }
+}
+
+/* ---------- Merkkasten „Ermittler-Notiz“ (4.6) ---------- */
+.notiz {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--a-1) var(--a-3);
+  padding: var(--a-4); border-radius: var(--radius); background: var(--blau-flaeche); color: var(--tinte);
+}
+.notiz > .icon { color: var(--blau); grid-row: span 2; margin-top: 2px; }
+.notiz-titel {
+  font-family: var(--schrift-titel); font-weight: 600; font-size: 0.875rem;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--blau);
+}
+.notiz p { font-size: var(--t-s); }
+
+/* ---------- Banner (Gast, 5.13) ---------- */
+.banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-4);
+  padding: var(--a-3) var(--a-4); border-radius: var(--radius);
+  background: var(--messing-flaeche); color: var(--messing-text);
+  font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.banner .icon { color: var(--messing-text); }
+
+/* ---------- Niveau-Plaketten (Vertrag §9) ---------- */
+.niveaus { display: inline-flex; gap: var(--a-1); flex-wrap: wrap; }
+.niveau {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 8px;
+  border-radius: var(--radius-pille); border: 1px solid var(--rand-stark);
+  font-family: var(--schrift-mono); font-size: 0.75rem; font-weight: 600; color: var(--tinte-2);
+}
+.niveau.ea { border-color: var(--blau); color: var(--blau); background: var(--blau-flaeche); }
+.niveau.ga { border-color: var(--gruen); color: var(--gruen); background: var(--gruen-flaeche); }
+
+/* ---------- Tabellen (4.13) ---------- */
+.tabelle-rahmen { overflow-x: auto; min-width: 0; border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); }
+table.daten { width: 100%; border-collapse: collapse; font-size: var(--t-s); font-variant-numeric: tabular-nums; }
+table.daten caption { text-align: left; padding: var(--a-3) var(--a-4); font-weight: 600; }
+table.daten th, table.daten td { padding: var(--a-2) var(--a-3); text-align: left; vertical-align: top; border-top: 1px solid var(--rand); }
+table.daten thead th {
+  background: var(--flaeche); border-top: 0;
+  font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+}
+table.daten tbody th { font-weight: 600; }
+table.daten .mitte { text-align: center; }
+.ja { color: var(--gruen); font-weight: 600; }
+.nein { color: var(--tinte-3); }
+
+/* ---------- Startseite ---------- */
+.start-raster {
+  display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--a-5); align-items: start;
+}
+.start-hero .aktendeckel-innen { padding: var(--a-6); gap: var(--a-5); }
+.start-hero h1 { font-size: var(--t-xxl); line-height: 1.05; }
+.start-hero .untertitel { font-family: var(--schrift-titel); font-weight: 500; font-size: var(--t-l); color: var(--tinte-2); }
+.start-hero .briefing {
+  margin: 0; max-width: 62ch; padding-left: var(--a-4); border-left: 3px solid var(--siegelrot); color: var(--tinte);
+}
+.start-hero .briefing cite { display: block; margin-top: var(--a-2); font-style: normal; font-size: var(--t-s); color: var(--tinte-2); }
+.hero-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--a-4); }
+.hero-kopf .stempel { flex: none; margin-top: var(--a-2); }
+.link-ziel { display: inline-flex; align-items: center; min-height: 44px; }
+.hinweis-klein { font-size: var(--t-s); color: var(--tinte-2); max-width: 62ch; }
+
+/* Steckbrief (4.16) */
+.steckbrief { padding: var(--a-5); display: flex; flex-direction: column; gap: var(--a-4); box-shadow: var(--schatten-1); border-radius: var(--radius-klein); }
+.steckbrief-titel {
+  text-align: center; font-family: var(--schrift-titel); font-weight: 700; font-size: 2rem;
+  letter-spacing: 0.18em; text-transform: uppercase; line-height: 1;
+}
+.steckbrief-unter { text-align: center; padding-bottom: var(--a-3); border-bottom: 2px solid var(--tinte); }
+.steckbrief-koerper { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--a-4); align-items: start; }
+.steckbrief-bild { width: 96px; height: 128px; background: var(--flaeche); border: 1px solid var(--rand); border-radius: var(--radius-klein); }
+.silhouette-kopf, .silhouette-koerper { fill: var(--tinte-3); }
+.silhouette-frage { fill: var(--flaeche); font-family: var(--schrift-titel); font-weight: 700; font-size: 26px; }
+.steckbrief dl { display: grid; gap: var(--a-1); }
+.steckbrief dt { font-family: var(--schrift-mono); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tinte-3); }
+.steckbrief dd { margin: 0 0 var(--a-2); color: var(--tinte-3); letter-spacing: 0.2em; }
+
+/* Aktenliste (Start) */
+.akten-liste {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--a-5) var(--a-4);
+}
+.akte-karte .aktendeckel-innen { padding: var(--a-4); gap: var(--a-3); }
+.akte-kopf { display: flex; align-items: center; gap: var(--a-3); }
+.teller {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; flex: none;
+  border-radius: 50%; border: 2px dashed var(--rand-stark); background: var(--nebel); color: var(--tinte-3);
+}
+.akte-karte h3 { font-size: var(--t-l); }
+.akte-status { display: flex; align-items: center; justify-content: space-between; gap: var(--a-2); font-size: var(--t-s); color: var(--tinte-2); flex-wrap: wrap; }
+
+/* ---------- Themen ---------- */
+.inhaltsverzeichnis { display: flex; flex-wrap: wrap; gap: var(--a-1) var(--a-2); list-style: none; padding: 0; }
+.inhaltsverzeichnis a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--a-3);
+  border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte);
+  color: var(--tinte); text-decoration: none; font-weight: 500; font-size: var(--t-s);
+}
+.inhaltsverzeichnis a:hover { background: var(--flaeche); }
+.akten-themen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--a-5); }
+.akte-thema { scroll-margin-top: calc(var(--kopf-hoehe) + var(--a-6)); }
+.akte-thema .kopfzeile { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--a-2); }
+.akte-thema .fach { color: var(--tinte-2); font-size: var(--t-s); }
+.ds-liste { list-style: none; padding: 0; display: flex; flex-direction: column; }
+.ds-liste li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: var(--a-1) var(--a-3); padding: var(--a-3) 0; border-top: 1px dashed var(--rand); }
+.ds-liste li:first-child { border-top: 0; padding-top: 0; }
+.ds-nr { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; color: var(--tinte-3); letter-spacing: 0.06em; padding-top: 3px; }
+.ds-titel { font-weight: 600; }
+.ds-inhalt { grid-column: 2; font-size: var(--t-s); color: var(--tinte-2); }
+.verhoer-marke { display: inline-flex; align-items: center; gap: 4px; color: var(--siegelrot-text); font-weight: 600; white-space: nowrap; }
+.verhoer-marke .icon { width: 16px; height: 16px; }
+#niveaus { scroll-margin-top: calc(var(--kopf-hoehe) + var(--a-5)); }
+
+/* ---------- Gast ---------- */
+.konsole-vorschau {
+  background: var(--konsole); color: var(--konsole-text); border-radius: var(--radius-gross);
+  box-shadow: var(--schatten-2); overflow: hidden; min-width: 0;
+}
+.konsole-kopf {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--a-3); flex-wrap: wrap;
+  padding: var(--a-3) var(--a-4); background: var(--konsole-flaeche); border-bottom: 1px solid var(--konsole-rand);
+  font-family: var(--schrift-mono); font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.konsole-kopf .led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--konsole-pruefen); margin-right: var(--a-2); }
+.konsole-kopf .chip { color: var(--konsole-leise); }
+.konsole-vorschau pre { margin: 0; padding: var(--a-4); overflow-x: auto; font-family: var(--schrift-mono); font-size: 0.9375rem; line-height: 1.6; }
+.sql-kw { color: var(--sql-schluessel); }
+.sql-str { color: var(--sql-text); }
+.sql-num { color: var(--sql-zahl); }
+.sql-agg { color: var(--sql-aggregat); }
+.sql-komm { color: var(--sql-kommentar); font-style: italic; }
+.zwei-spalten { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+
+/* ---------- Lehrkraft ---------- */
+.kurs-liste { list-style: none; padding: 0; display: flex; flex-direction: column; }
+.kurs-liste li { display: flex; justify-content: space-between; align-items: center; gap: var(--a-3); min-height: 44px; padding: var(--a-2) 0; border-top: 1px solid var(--rand); flex-wrap: wrap; }
+.kurs-liste li:first-child { border-top: 0; }
+.kurs-name { font-weight: 600; }
+.status { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.status.aktiv { color: var(--gruen); }
+.status.inaktiv { color: var(--tinte-3); }
+
+/* ---------- Fehlerseiten ---------- */
+.fehler-karte { max-width: 640px; }
+.fehler-karte .aktendeckel-innen { padding: var(--a-6); }
+.fehler-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--a-4); }
+
+/* ---------- Datenschutz ---------- */
+.platzhalter { background: var(--messing-flaeche); color: var(--messing-text); font-weight: 600; padding: 0 4px; border-radius: var(--radius-klein); }
+.text h2 { margin-top: var(--a-3); }
+.text ul { display: flex; flex-direction: column; gap: var(--a-1); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1023px) {
+  .start-raster, .zwei-spalten { grid-template-columns: minmax(0, 1fr); }
+  .akten-themen { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 699px) {
+  .start-hero .aktendeckel-innen, .fehler-karte .aktendeckel-innen { padding: var(--a-4); }
+  .aktendeckel-innen, .karte { padding: var(--a-4); }
+  .start-hero h1 { font-size: 2rem; }
+  .hero-kopf, .fehler-kopf { flex-direction: column-reverse; gap: var(--a-3); }
+  .knopf-reihe .knopf { flex: 1 1 100%; }
+  .ds-liste li { grid-template-columns: minmax(0, 1fr); }
+  .ds-inhalt { grid-column: 1; }
+  .akten-liste { grid-template-columns: minmax(0, 1fr); }
+}
+table.daten thead th.ohne-versal { text-transform: none; }
+.fehler-karte section[data-fall] { display: flex; flex-direction: column; gap: var(--a-4); }

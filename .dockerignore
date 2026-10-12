@@ -1,0 +1,12 @@
+# Ins Image kommen nur src/, public/, seed/, scripts/ (+ package*.json) – siehe Dockerfile.
+.git
+.github
+node_modules
+data
+test
+docs
+materialien
+werkzeuge
+*.log
+.DS_Store
+.env

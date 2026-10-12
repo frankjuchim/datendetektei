@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <title>Datendetektei Weserstedt – Ermitteln mit Datenbanken</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.1.0">
+  <script src="/static/js/kern/thema.js?v=0.1.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.1.0" defer></script>
+  <script src="/static/js/start.js?v=0.1.0" defer></script>
+</head>
+<body>
+  <a class="springen" href="#inhalt">Zum Inhalt springen</a>
+  <header class="kopf">
+    <a class="marke" href="/" aria-label="Datendetektei Weserstedt – zur Startseite">
+      <svg class="marke-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <span class="marke-text"><span class="marke-name">Datendetektei</span><span class="marke-ort">Weserstedt</span></span>
+    </a>
+    <div class="kopf-mitte"><span class="kopf-kurs" id="kopf-kurs"></span></div>
+    <div class="kopf-rechts">
+      <a class="portal-link" id="portal-link" href="/" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-haus"/></svg><span class="portal-text">Portal</span></a>
+      <button class="knopf-icon" id="thema-knopf" type="button" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-mond"/></svg></button>
+      <a class="knopf kopf-anmelden" id="kopf-anmelden" href="/sso/start" hidden>Anmelden</a>
+      <details class="ich" id="ich" hidden>
+        <summary class="ich-knopf"><span class="ich-initialen" id="ich-initialen" aria-hidden="true"></span><span class="ich-name" id="ich-name"></span></summary>
+        <div class="ich-menue">
+          <p class="etikett" id="ich-rolle"></p>
+          <a href="/lehrkraft" id="ich-lehrkraft" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Lehrkraft-Bereich</a>
+          <div class="trenner"></div>
+          <a href="/abmelden"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Abmelden</a>
+          <a href="/abmelden/ueberall"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Überall abmelden</a>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main class="inhalt" id="inhalt" tabindex="-1">
+    <div class="start-raster">
+      <section class="aktendeckel start-hero" aria-labelledby="titel">
+        <span class="reiter rot">Akte 0 · Aufnahme ins Ermittlerteam</span>
+        <div class="aktendeckel-innen">
+          <div class="hero-kopf">
+            <div class="seiten-kopf">
+              <span class="etikett">Detektei Lorenz · Altstadt · Weserstedt</span>
+              <h1 id="titel">Datendetektei Weserstedt</h1>
+              <p class="untertitel">Ermitteln mit Datenbanken</p>
+            </div>
+            <span class="stempel abi auftritt">Abi 2027</span>
+          </div>
+          <blockquote class="briefing">
+            <p>In Weserstedt verschwinden Dinge: Fundsachen, Lastenräder, Geld aus der Stadtfest-Kasse. Du ermittelst
+              mit SQL, Schlüsseln und ER-Modellen – Akte für Akte, bis das Phantom ein Gesicht bekommt.</p>
+            <cite>„Raten ist in diesem Haus verboten. Zählen nicht.“ – Edda Lorenz, Chefin der Detektei</cite>
+          </blockquote>
+          <div id="start-gast" class="abschnitt">
+            <div class="knopf-reihe">
+              <a class="knopf primaer gross" href="/sso/start">Anmelden über InfoLabs</a>
+              <a class="knopf gross" href="/gast">Gastmodus ausprobieren</a>
+            </div>
+            <p class="hinweis-klein">Die Anmeldung läuft über das Portal InfoLabs – mit dem Kurscode und deinem persönlichen
+              Code. Ohne Anmeldung kannst du im Gastmodus einen Probefall ansehen; dabei wird nichts gespeichert.</p>
+          </div>
+          <div id="start-angemeldet" class="abschnitt" hidden>
+            <h2>Willkommen zurück, <span id="begruessung-name"></span>.</h2>
+            <p id="start-schueler" class="hinweis-klein">Deine erste Akte liegt schon auf dem Tisch – sobald deine Lehrkraft sie freischaltet, geht es los.</p>
+            <div id="start-lehrkraft" class="knopf-reihe" hidden>
+              <a class="knopf primaer" href="/lehrkraft"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Zum Lehrkraft-Bereich</a>
+              <a class="knopf" href="/themen#niveaus">Niveau-Übersicht eA/gA</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="karte steckbrief" aria-labelledby="steckbrief-titel">
+        <p class="steckbrief-titel" id="steckbrief-titel">Gesucht</p>
+        <p class="steckbrief-unter etikett">„Das Phantom“ · 0 von 6 Hinweisen</p>
+        <div class="steckbrief-koerper">
+          <svg class="steckbrief-bild" viewBox="0 0 96 128" role="img" aria-label="Silhouette, noch unbekannt">
+            <circle class="silhouette-kopf" cx="48" cy="52" r="20"/>
+            <path class="silhouette-koerper" d="M10 128c2-28 18-44 38-44s36 16 38 44z"/>
+            <text class="silhouette-frage" x="48" y="61" text-anchor="middle">?</text>
+          </svg>
+          <dl>
+            <dt>Initialen</dt><dd aria-label="noch unbekannt">· · ·</dd>
+            <dt>Signatur</dt><dd aria-label="noch unbekannt">· · ·</dd>
+            <dt>Zugang</dt><dd aria-label="noch unbekannt">· · ·</dd>
+          </dl>
+        </div>
+      </aside>
+    </div>
+
+    <section class="abschnitt" aria-labelledby="akten-titel">
+      <div class="abschnitt-kopf">
+        <h2 id="akten-titel">Die sieben Akten</h2>
+        <a class="link-ziel" href="/themen">Was in den Akten steckt</a>
+      </div>
+      <div class="notiz">
+        <svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>
+        <p class="notiz-titel">Ermittler-Notiz</p>
+        <p>Die Akten öffnen bald. Deine Lehrkraft schaltet sie frei, sobald ihr so weit seid.</p>
+      </div>
+      <ol class="akten-liste" id="akten-liste" hidden></ol>
+    </section>
+  </main>
+  <footer class="fuss">
+    <nav aria-label="Weitere Seiten">
+      <a href="/">Start</a>
+      <a href="/themen">Themen</a>
+      <a href="/gast">Gastmodus</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a data-portal-pfad="/" href="/" hidden>Portal InfoLabs</a>
+    </nav>
+    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden</p>
+  </footer>
+</body>
+</html>

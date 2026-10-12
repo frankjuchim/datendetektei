@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon-Sprite (DESIGN.md §8): 24 × 24, Strich 1.8 px über CSS (svg.icon), currentColor. Nutzung:
+       <svg class="icon"><use href="/static/img/icons.svg#i-haus"/></svg> -->
+  <symbol id="i-plan" viewBox="0 0 24 24"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/><path d="M9 4v13.5M15 6.5V20"/></symbol>
+  <symbol id="i-ermittlung" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/><path d="M8 10.5h5M10.5 8v5"/></symbol>
+  <symbol id="i-verhoer" viewBox="0 0 24 24"><path d="M9 3h6l3 7H6z"/><path d="M12 10v2"/><path d="M7 21h10M12 14v7"/><path d="M4 13.5 6 12.5M20 13.5l-2-1"/></symbol>
+  <symbol id="i-lehrkraft" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M3 9h18M9 3v18"/><path d="M12.5 13h2M12.5 16.5h5"/></symbol>
+  <symbol id="i-haus" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-mond" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-sonne" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></symbol>
+  <symbol id="i-menue" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
+  <symbol id="i-pruefen" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2" transform="rotate(-4 12 12)"/><path d="m8 12.5 3 3 5.5-6.5"/></symbol>
+  <symbol id="i-schloss" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></symbol>
+  <symbol id="i-zurueck" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-vor" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="i-notiz" viewBox="0 0 24 24"><path d="M5 3.5h10l4 4v13H5z"/><path d="M15 3.5v4h4"/><path d="M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></symbol>
+  <symbol id="i-falter" viewBox="0 0 24 24"><path d="M12 7v12"/><path d="M12 9C9 4 3 4 3 8c0 3 4 4.5 9 4M12 9c3-5 9-5 9-1 0 3-4 4.5-9 4"/><path d="M12 12c-4 .5-6.5 2.5-5.5 5 1 2 4-.5 5.5-3M12 12c4 .5 6.5 2.5 5.5 5-1 2-4-.5-5.5-3"/><path d="M11 7 9.5 4.5M13 7l1.5-2.5"/></symbol>
+  <symbol id="i-stern" viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z"/></symbol>
+  <symbol id="i-abmelden" viewBox="0 0 24 24"><path d="M14 4h4.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M10 8l-4 4 4 4M6 12h10"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></symbol>
+</svg>

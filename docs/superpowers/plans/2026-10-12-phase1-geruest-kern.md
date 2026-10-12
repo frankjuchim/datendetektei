@@ -16,7 +16,7 @@ supertest; keine weiteren Laufzeitpakete. Fonts: `@fontsource/barlow`, `@fontsou
 `@fontsource/ibm-plex-mono` nur als devDependencies zum einmaligen Kopieren der woff2-Dateien.
 
 **Spec:** `docs/superpowers/specs/2026-10-12-datendetektei-design.md` (§2.6, §7.1, §7.13–7.16, §8, §14) und
-Vertrag `https://github.com/frankjuchim/labs/blob/main/VERTRAG.md` v1.1 + `docs/INTEGRATION.md` (beides vor Beginn
+Vertrag `https://github.com/frankjuchim/labs/blob/main/VERTRAG.md` v1.2 (Stand 2026-10-12; Spec §18) + `docs/INTEGRATION.md` (beides vor Beginn
 lesen; das labs-Repo ist öffentlich: `git clone --depth 1 https://github.com/frankjuchim/labs` in den Scratchpad).
 
 ## Global Constraints

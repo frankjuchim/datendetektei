@@ -11,11 +11,12 @@ Leistungskurs (eA, Grundkurs-Pfad gA) in Niedersachsen, Abitur ab 2027 (KC 2017 
 2. **Unterrichtsmaterial** (`materialien/`, docx/pptx = maßgebliche Fassung) und **Planung** (`docs/`).
 
 > ⚠️ Verbindlich ist der **Vertrag des Plattform-Verbunds** `https://github.com/frankjuchim/labs/blob/main/VERTRAG.md`
-> (Version 1.1) mit der Anschlussanleitung `docs/INTEGRATION.md` desselben Repos. Abweichungen nie still: als Text für
-> VERTRAG.md vorschlagen (neue Version, Eintrag in §14) – siehe `docs/VERTRAG_VORSCHLAG_1.2.md`.
+> (Version 1.2) mit der Anschlussanleitung `docs/INTEGRATION.md` desselben Repos. Abweichungen nie still: als Text für
+> VERTRAG.md vorschlagen (neue Version, Eintrag in §14) – siehe `docs/VERTRAG_VORSCHLAG_1.3.md`.
 
-> ⚠️ **Deploy:** CapRover wird ausschließlich von der GitHub Action `deploy.yml` nach grüner Prüfung auf `main`
-> angestoßen. Nur auf Feature-Branches arbeiten; nach `main` nur nach ausdrücklicher Freigabe durch Frank.
+> ⚠️ **`main` ist direkt mit CapRover verbunden (Webhook): Jeder Push auf `main` startet sofort den Live-Build –
+> auch wenn die GitHub-Prüfung rot ist.** Nur auf Feature-Branches arbeiten; nach `main` nur nach ausdrücklicher
+> Freigabe durch Frank und mit grüner Prüfung auf dem Feature-Branch.
 
 ## Quellen der Wahrheit (vor jeder Arbeit lesen, was die Aufgabe betrifft)
 
@@ -45,7 +46,7 @@ src/services/  inhalte, lernen, verhoer, warmup, training, live, auswertung, mat
 src/routes/    schueler, lehrkraft, admin, gast, live, sso, verbund
 public/        Seiten + static/{css,fonts,img,js,vendor}; sql.js vendort (sql-wasm.js/.wasm, sql-asm.js)
 seed/          akten/*.json, datenbanken/<name>/{schema,pflicht}.sql + varianten/*.sql, warmup/, gast/, arbeitsblaetter.json
-materialien/   docx/pptx je Akte (maßgeblich) + erzeugte PDFs: Arbeitsblaetter_PDF = Schülerfassungen (öffentlich, auch
+materialien/   docx/pptx je Akte (maßgeblich) + erzeugte PDFs: Arbeitsblaetter_PDF = Schülerfassungen (nur angemeldet; öffentlich nur Gast-Auswahl Gast_PDF, E13; auch
                Präsentations-Handouts), Loesungen_Portal + Lehrkraft_PDF nur Lehrkraft, Originale (docx/pptx) nur
                Superadmin – jeweils Whitelist verzeichnis.json (Spec §12.4)
 werkzeuge/     Python: *_pdf.py, material_sql_pruefen.py, materialien_pruefen.py, video_folien.py, fonts/
@@ -60,6 +61,8 @@ npm install
 npm test                 # node --test test/*.test.js
 npm run dev              # Port 3000, DATA_DIR=./data, Testschlüssel aus test/fixtures (kein echtes Portal nötig)
 npm run vertrag          # node scripts/vertrag_pruefen.js http://localhost:3000
+npm run kontrast         # WCAG-AA-Kontraste der Design-Tokens (scripts/kontrast_paare.json)
+npm run fonts            # woff2 aus @fontsource nach public/static/fonts kopieren (nur bei Font-Änderungen)
 npm run validate         # (ab Phase 2/3) Akten-JSON + SQL-Lösungen auf allen DB-Varianten
 npm run e2e              # (ab Phase 3) Playwright; Chromium unter /opt/pw-browsers bzw. PLAYWRIGHT_BROWSERS_PATH
 npm run pruefen          # alles: test, validate, Material-SQL, Materialien

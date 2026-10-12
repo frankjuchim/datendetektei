@@ -1,0 +1,30 @@
+{
+  "name": "datendetektei",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Datendetektei Weserstedt – Ermitteln mit Datenbanken (Plattform im Verbund InfoLabs)",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node scripts/dev.js",
+    "test": "node --test test/*.test.js",
+    "vertrag": "node scripts/vertrag_pruefen.js http://localhost:3000",
+    "fonts": "node scripts/fonts_kopieren.js",
+    "kontrast": "node scripts/kontrast_pruefen.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0"
+  },
+  "devDependencies": {
+    "@fontsource/barlow": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "playwright-core": "1.56.1",
+    "supertest": "^7.3.1"
+  }
+}
