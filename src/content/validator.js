@@ -996,6 +996,165 @@ async function validiereAkten(dateien, umgebung = {}) {
   return { fehler, hinweise, aufgaben, karten };
 }
 
+/* ---------- Probefall des Gastmodus (seed/gast/probefall.json, AUFGABENFORMAT „Gastmodus“) ---------- */
+
+const PROBEFALL_ID = /^G-(\d{2})$/;
+const PROBEFALL_ANZAHL = 6;
+const PROBEFALL_DB = 'eisdiele';
+/** Mindestlänge, ab der ein Text als „Aufgabentext“ zählt (kürzere Werte wie Spaltennamen kommen legitim vor). */
+const KOPIE_MIN = 20;
+
+const normKopie = (s) => String(s).normalize('NFC').replace(/\s+/g, ' ').trim().toLowerCase();
+
+/** Alle Texte (Strings) eines JSON-Werts. */
+function alleTexte(wert, out = []) {
+  if (typeof wert === 'string') out.push(wert);
+  else if (Array.isArray(wert)) wert.forEach((w) => alleTexte(w, out));
+  else if (istObjekt(wert)) Object.values(wert).forEach((w) => alleTexte(w, out));
+  return out;
+}
+
+/** Texte einer Aufgabe, die eine Kopie verraten würden (Titel, Inhalt, Interaktion, Lösung, Tipps, Erklärung). */
+function aufgabenTexte(a) {
+  return alleTexte([a.titel, a.inhalt, a.interaktion, a.loesung, a.tipps, a.erklaerung]).filter((t) => t.trim().length >= KOPIE_MIN);
+}
+
+/** Alle Datenbank-Verweise einer Aufgabe (sql.datenbank, loesung.datenbank, quelle.datenbank, Block datenbank). */
+function dbVerweise(a) {
+  const out = [];
+  const bloecke = (liste) => {
+    for (const b of Array.isArray(liste) ? liste : []) {
+      if (!istObjekt(b)) continue;
+      if (b.t === 'datenbank') out.push(b.name);
+      if (b.t === 'dbtabelle' && istObjekt(b.quelle)) out.push(b.quelle.datenbank);
+    }
+  };
+  bloecke(a.inhalt);
+  for (const t of F.teile(a)) {
+    if (!istObjekt(t.interaktion)) continue;
+    if (t.interaktion.kind === 'sql') out.push(t.interaktion.datenbank);
+    bloecke(t.interaktion.inhalt);
+    if (istObjekt(t.loesung) && t.loesung.datenbank !== undefined) out.push(t.loesung.datenbank);
+  }
+  return out;
+}
+
+/**
+ * Probefall des Gastmodus prüfen: eigenes kleines Format (version 1, genau 6 Aufgaben `G-<nn>`, nur die Eisdiele),
+ * die Aufgaben selbst wie Akten-Aufgaben (der Probefall wird dazu intern als Test-Akte welt 9 mit einer Ermittlung
+ * geprüft – inkl. SQL-Lösungen in der Sandbox, Abimodus streng, Musterantworten) und gegen die Akten: keine id und
+ * kein Text aus seed/akten (Spec §6.4: nie echte Aufgaben).
+ * @param {object|string} data Inhalt von seed/gast/probefall.json
+ * @param {{datenbanken, sandbox, sqlPruefer}} umgebung wie validiereAkten
+ * @param {{akten?: {name, json}[], datei?: string}} [opt] akten = Akten-Dateien zum Abgleich
+ * @returns {Promise<{fehler, hinweise, aufgaben}>}
+ */
+async function validiereProbefall(data, umgebung, { akten = [], datei = 'probefall.json' } = {}) {
+  const fehler = [];
+  const hinweise = [];
+  const fd = (text, id) => fehler.push(id ? { datei, id, text } : { datei, text });
+  if (typeof data === 'string') {
+    try {
+      data = JSON.parse(data);
+    } catch (e) {
+      fd(`Kein gültiges JSON: ${e.message}`);
+      return { fehler, hinweise, aufgaben: 0 };
+    }
+  }
+  if (!istObjekt(data)) {
+    fd('Die Datei muss ein JSON-Objekt { "version": 1, "titel": …, "datenbank": "eisdiele", "aufgaben": […] } enthalten.');
+    return { fehler, hinweise, aufgaben: 0 };
+  }
+  if (data.version !== 1) fd(`version muss 1 sein (gefunden: ${JSON.stringify(data.version)}).`);
+  if (!istText(data.titel)) fd('titel fehlt.');
+  if (data.datenbank !== PROBEFALL_DB) fd(`datenbank muss „${PROBEFALL_DB}“ sein (der Probefall nutzt nur die Eisdiele).`);
+  if (!Array.isArray(data.aufgaben)) {
+    fd('aufgaben muss eine Liste sein.');
+    return { fehler, hinweise, aufgaben: 0 };
+  }
+  if (data.aufgaben.length !== PROBEFALL_ANZAHL) fd(`Der Probefall hat genau ${PROBEFALL_ANZAHL} Aufgaben (gefunden: ${data.aufgaben.length}).`);
+
+  // ids und Datenbanken
+  const zuordnung = new Map(); // G-nn → A9-E1-nn
+  data.aufgaben.forEach((a, i) => {
+    const id = istObjekt(a) && typeof a.id === 'string' ? a.id : '';
+    const m = PROBEFALL_ID.exec(id);
+    if (!m) return fd(`aufgaben[${i}]: id „${id}“ hat nicht das Format G-<nn> (z. B. G-01).`);
+    if (zuordnung.has(id)) return fd(`id „${id}“ kommt doppelt vor.`, id);
+    zuordnung.set(id, `A9-E1-${m[1]}`);
+    for (const db of dbVerweise(a)) {
+      if (db !== PROBEFALL_DB) fd(`verwendet die Datenbank „${db}“ – im Probefall ist nur „${PROBEFALL_DB}“ erlaubt.`, id);
+    }
+  });
+
+  // Abgleich mit den Akten: keine id, kein Text (Spec §6.4)
+  const aktenIds = new Set();
+  const aktenTexte = new Map(); // normalisierter Text → id
+  for (const d of akten) {
+    let json = d.json;
+    if (typeof json === 'string') {
+      try {
+        json = JSON.parse(json);
+      } catch {
+        continue;
+      }
+    }
+    for (const a of istObjekt(json) && Array.isArray(json.aufgaben) ? json.aufgaben : []) {
+      if (!istObjekt(a)) continue;
+      aktenIds.add(a.id);
+      for (const t of aufgabenTexte(a)) aktenTexte.set(normKopie(t), a.id);
+    }
+  }
+  const eigeneTexte = [data.briefing, ...alleTexte(data.intro)].filter((t) => typeof t === 'string' && t.trim().length >= KOPIE_MIN);
+  for (const t of eigeneTexte) {
+    const quelle = aktenTexte.get(normKopie(t));
+    if (quelle) fd(`Text stammt aus einer Akte (seed/akten, ${quelle}): „${t.slice(0, 60)}…“ – der Probefall nutzt nur eigene Texte.`);
+  }
+  for (const a of data.aufgaben) {
+    if (!istObjekt(a)) continue;
+    if (aktenIds.has(a.id)) fd(`id „${a.id}“ ist eine Aufgabe aus seed/akten.`, a.id);
+    for (const t of aufgabenTexte(a)) {
+      const quelle = aktenTexte.get(normKopie(t));
+      if (quelle) fd(`Text stammt aus einer Akte (seed/akten, ${quelle}): „${t.slice(0, 60)}…“ – nie echte Aufgaben im Gastmodus.`, a.id);
+    }
+  }
+
+  // Aufgaben wie Akten-Aufgaben prüfen: als Test-Akte welt 9 mit einer Ermittlung.
+  const gueltig = data.aufgaben.filter((a) => istObjekt(a) && zuordnung.has(a.id));
+  const zurueck = new Map([...zuordnung].map(([g, a]) => [a, g]));
+  const akte = {
+    version: 2,
+    welt: 9,
+    titel: istText(data.titel) ? data.titel : 'Probefall',
+    farbe: '#B08D3C',
+    levels: [
+      {
+        id: 'A9-E1',
+        titel: istText(data.titel) ? data.titel : 'Probefall',
+        ...(data.briefing !== undefined ? { briefing: data.briefing } : {}),
+        ...(data.intro !== undefined ? { intro: data.intro } : {}),
+        aufgaben: gueltig.map((a) => zuordnung.get(a.id))
+      }
+    ],
+    aufgaben: gueltig.map((a) => ({ ...a, id: zuordnung.get(a.id) }))
+  };
+  if (gueltig.length) {
+    const r = await validiereAkten([{ name: datei, json: akte }], umgebung);
+    const uebersetze = (x) => {
+      let text = x.text;
+      for (const [a, g] of zurueck) text = text.split(a).join(g);
+      text = text.split('Ermittlung A9-E1').join('Probefall');
+      const out = { datei, text };
+      if (x.id) out.id = zurueck.get(x.id) || (x.id === 'A9-E1' ? undefined : x.id);
+      if (out.id === undefined) delete out.id;
+      return out;
+    };
+    for (const x of r.fehler) fehler.push(uebersetze(x));
+    for (const x of r.hinweise) if (!/welt 9/.test(x.text)) hinweise.push(uebersetze(x));
+  }
+  return { fehler, hinweise, aufgaben: data.aufgaben.length };
+}
+
 /** Ergebnis als lesbarer Text (CLI). */
 function formatiere(ergebnis, { hinweise = true } = {}) {
   const zeilen = [];
@@ -1011,4 +1170,4 @@ function formatiere(ergebnis, { hinweise = true } = {}) {
   return zeilen.join('\n');
 }
 
-module.exports = { validiereAkten, mixErfuellbar, formatiere };
+module.exports = { validiereAkten, validiereProbefall, mixErfuellbar, formatiere };

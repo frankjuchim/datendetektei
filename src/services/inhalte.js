@@ -487,4 +487,13 @@ function erzeugeInhalte(db, { log = () => {} } = {}) {
   };
 }
 
-module.exports = { ladeInhalte, erzeugeInhalte, fingerabdruck, kanonisch, STANDARD_VERZEICHNIS, STUFEN_PUNKTE };
+module.exports = {
+  ladeInhalte,
+  erzeugeInhalte,
+  fingerabdruck,
+  kanonisch,
+  oeffentlicherBlock,
+  oeffentlicheInteraktion,
+  STANDARD_VERZEICHNIS,
+  STUFEN_PUNKTE
+};

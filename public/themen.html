@@ -13,8 +13,10 @@
   <link rel="stylesheet" href="/static/css/tokens.css?v=0.2.0">
   <link rel="stylesheet" href="/static/css/basis.css?v=0.2.0">
   <link rel="stylesheet" href="/static/css/komponenten.css?v=0.2.0">
+  <link rel="stylesheet" href="/static/css/oeffentlich.css?v=0.2.0">
   <script src="/static/js/kern/thema.js?v=0.2.0"></script>
   <script src="/static/js/kern/kopfzeile.js?v=0.2.0" defer></script>
+  <script src="/static/js/themen.js?v=0.2.0" defer></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -50,7 +52,8 @@
       <span class="etikett">Themen · ohne Anmeldung</span>
       <h1>Was in den Akten steckt</h1>
       <p>Sieben Akten in 13 Doppelstunden (DS) plus zwei Kür-Doppelstunden: SQL, Schlüssel und Anomalien, ER-Modell und
-        Datenschutz – nach dem Kerncurriculum Niedersachsen für das Abitur ab 2027. Lösungen gibt es hier nicht.</p>
+        Datenschutz – nach dem Kerncurriculum Niedersachsen für das Abitur ab 2027. Die Übersicht kommt direkt aus den
+        Akten der Plattform: Ermittlungen, Kompetenzen und Fallen. Lösungen gibt es hier nicht.</p>
     </div>
     <nav aria-label="Akten">
       <ul class="inhaltsverzeichnis">
@@ -62,123 +65,25 @@
         <li><a href="#akte-6">Akte 6</a></li>
         <li><a href="#akte-7">Akte 7</a></li>
         <li><a href="#kuer">Kür</a></li>
+        <li><a href="#fallen">Fallen</a></li>
         <li><a href="#niveaus">eA und gA</a></li>
       </ul>
     </nav>
-    <div class="akten-themen">
-      <article class="aktendeckel akte-thema" id="akte-1" aria-labelledby="akte-1-titel">
-        <span class="reiter">Akte 1</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="akte-1-titel">Das Fundbüro</h2>
-            <span class="niveaus"><span class="niveau ea">eA</span><span class="niveau ga">gA</span></span>
-          </div>
-          <p class="fach">SQL in einer Tabelle</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">DS 1</span><span class="ds-titel">Ermittlung 1.1 „Der erste Auftrag“</span><span class="ds-inhalt">Tabelle, Datensatz, Attribut, Primärschlüssel; SELECT, FROM, WHERE, Vergleichsoperatoren, AND/OR/NOT, ORDER BY.</span></li>
-            <li><span class="ds-nr">DS 2</span><span class="ds-titel">Ermittlung 1.2 „Das verschwundene Fundstück“</span><span class="ds-inhalt">DISTINCT, LIKE, BETWEEN, IN, IS NULL, Berechnungen, AS, LIMIT; Literale für Text und Datum. <span class="verhoer-marke"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-verhoer"/></svg>Verhör 1</span></span></li>
-          </ol>
-        </div>
-      </article>
-      <article class="aktendeckel akte-thema" id="akte-2" aria-labelledby="akte-2-titel">
-        <span class="reiter">Akte 2</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="akte-2-titel">Spur der Räder</h2>
-            <span class="niveaus"><span class="niveau ea">eA</span><span class="niveau ga">gA</span></span>
-          </div>
-          <p class="fach">Verbund über mehrere Tabellen</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">DS 3</span><span class="ds-titel">Ermittlung 2.1 „Der rote Faden“</span><span class="ds-inhalt">Fremdschlüssel, Kurzschreibweise, Verbund mit FROM … WHERE, Kreuzprodukt erkennen, Tabellenpräfix.</span></li>
-            <li><span class="ds-nr">DS 4</span><span class="ds-titel">Ermittlung 2.2 „Nachtfahrten“</span><span class="ds-inhalt">Verbund über drei und mehr Tabellen, Tabellenaliase, zwei Fremdschlüssel auf dieselbe Tabelle, IS NULL. <span class="verhoer-marke"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-verhoer"/></svg>Verhör 2</span></span></li>
-          </ol>
-        </div>
-      </article>
-      <article class="aktendeckel akte-thema" id="akte-3" aria-labelledby="akte-3-titel">
-        <span class="reiter">Akte 3</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="akte-3-titel">Die Stadtfest-Kasse</h2>
-            <span class="niveaus"><span class="niveau ea">eA</span><span class="niveau ga">gA</span></span>
-          </div>
-          <p class="fach">Aggregation und Gruppierung</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">DS 5</span><span class="ds-titel">Ermittlung 3.1 „Kassensturz“</span><span class="ds-inhalt">Aggregatfunktionen, COUNT oder SUM, GROUP BY und die GROUP-BY-Regel.</span></li>
-            <li><span class="ds-nr">DS 6</span><span class="ds-titel">Ermittlung 3.2 „Die Statistik lügt nicht“</span><span class="ds-inhalt">HAVING oder WHERE, Top-n mit ORDER BY und LIMIT, Vervielfachung im Verbund, Abfragen analysieren. <span class="verhoer-marke"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-verhoer"/></svg>Verhör 3</span></span></li>
-          </ol>
-        </div>
-      </article>
-      <article class="aktendeckel akte-thema" id="akte-4" aria-labelledby="akte-4-titel">
-        <span class="reiter">Akte 4</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="akte-4-titel">Chaos im Vereinsarchiv</h2>
-            <span class="niveaus"><span class="niveau ea">eA</span><span class="niveau ga">gA</span></span>
-          </div>
-          <p class="fach">Redundanz, Anomalien, Schlüssel</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">DS 7</span><span class="ds-titel">Ermittlung 4.1 „Die Excel-Liste“</span><span class="ds-inhalt">Redundanz, Einfüge-, Änderungs- und Löschanomalie am konkreten Datensatz, nicht-atomare Werte.</span></li>
-            <li><span class="ds-nr">DS 8</span><span class="ds-titel">Ermittlung 4.2 „Ordnung ins Archiv“</span><span class="ds-inhalt">Schlüssel beurteilen, verlustfrei und redundanzfrei zerlegen; Kür: Normalformen. <span class="verhoer-marke"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-verhoer"/></svg>Verhör 4</span></span></li>
-          </ol>
-        </div>
-      </article>
-      <article class="aktendeckel akte-thema" id="akte-5" aria-labelledby="akte-5-titel">
-        <span class="reiter">Akte 5 · nur eA</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="akte-5-titel">Der Bauplan</h2>
-            <span class="niveaus"><span class="niveau ea">eA</span></span>
-          </div>
-          <p class="fach">ER-Modell und Überführung</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">DS 9</span><span class="ds-titel">Ermittlung 5.1 „Baupläne lesen“</span><span class="ds-inhalt">Chen-Notation, Kardinalitäten 1:1, 1:n und n:m, Beziehungsattribute.</span></li>
-            <li><span class="ds-nr">DS 10</span><span class="ds-titel">Ermittlung 5.2 „Der Architekturwettbewerb“</span><span class="ds-inhalt">ER-Modelle entwickeln, rekursive und ternäre Beziehungstypen, Modellierungen beurteilen.</span></li>
-            <li><span class="ds-nr">DS 11</span><span class="ds-titel">Ermittlung 5.3 „Vom Plan zur Datenbank“</span><span class="ds-inhalt">Überführung ins relationale Modell und Begründung der Umsetzung. <span class="verhoer-marke"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-verhoer"/></svg>Verhör 5</span></span></li>
-          </ol>
-        </div>
-      </article>
-      <article class="aktendeckel akte-thema" id="akte-6" aria-labelledby="akte-6-titel">
-        <span class="reiter">Akte 6</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="akte-6-titel">Datenspuren</h2>
-            <span class="niveaus"><span class="niveau ea">eA</span><span class="niveau ga">gA</span></span>
-          </div>
-          <p class="fach">Datenschutz und automatisierte Datenanalyse</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">DS 12</span><span class="ds-titel">Ermittlung 6.1 „Das Phantom“</span><span class="ds-inhalt">Pseudonyme Datenbestände verknüpfen, Quasi-Identifikatoren, Grundsätze der DSGVO, Datenschutz und Datensicherheit. <span class="verhoer-marke"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-verhoer"/></svg>Verhör 6</span></span></li>
-          </ol>
-        </div>
-      </article>
-      <article class="aktendeckel akte-thema" id="akte-7" aria-labelledby="akte-7-titel">
-        <span class="reiter">Akte 7</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="akte-7-titel">Generalprobe</h2>
-            <span class="niveaus"><span class="niveau ea">eA</span><span class="niveau ga">gA</span></span>
-          </div>
-          <p class="fach">Probeklausur im Abitur-Format</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">DS 13</span><span class="ds-titel">„Die Ermittlerprüfung“</span><span class="ds-inhalt">Probeklausur (eA 30 BE, gA 25 BE), Korrektur nach Kernpunkten, Fallen-Check P1–P10. <span class="verhoer-marke"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-verhoer"/></svg>Verhör 7</span></span></li>
-          </ol>
-        </div>
-      </article>
-      <article class="aktendeckel akte-thema" id="kuer" aria-labelledby="kuer-titel">
-        <span class="reiter">Kür</span>
-        <div class="aktendeckel-innen">
-          <div class="kopfzeile">
-            <h2 id="kuer-titel">Kür – wenn Zeit bleibt</h2>
-            <span class="stempel kuer klein">Kür</span>
-          </div>
-          <p class="fach">Zusatzermittlungen, deutlich markiert</p>
-          <ol class="ds-liste">
-            <li><span class="ds-nr">K1</span><span class="ds-titel">„Eigene Datenbank bauen“ (nach DS 11)</span><span class="ds-inhalt">CREATE TABLE, INSERT, referentielle Integrität, Ausblick auf JOIN … ON – nicht im Abitur.</span></li>
-            <li><span class="ds-nr">K2</span><span class="ds-titel">„Escape Room Weserstedt“ (vor DS 13)</span><span class="ds-inhalt">Live-Modus im Kurs: Teams lösen Stationen zu allen Akten.</span></li>
-          </ol>
-        </div>
-      </article>
+    <div class="akten-themen" id="akten-themen" aria-busy="true">
+      <p class="themen-laedt">Die Akten werden geladen …</p>
     </div>
-    <p class="hinweis-klein">Arbeitsblätter, Erklärvideos und Warm-up-Karten folgen hier, sobald die Akten öffnen – die Materialien gibt es nach der Anmeldung, im Gastmodus eine kleine Auswahl.</p>
+    <p class="hinweis-klein">Arbeitsblätter, Präsentations-Handouts und Warm-up-Karten gibt es nach der Anmeldung
+      über das Portal, im Gastmodus eine kleine Auswahl. Lösungen stehen hier nie.</p>
+
+    <section class="abschnitt" id="fallen" aria-labelledby="fallen-titel">
+      <div class="seiten-kopf">
+        <span class="etikett">Fallen P1–P10</span>
+        <h2 id="fallen-titel">Typische Fallen</h2>
+        <p>Jede Aufgabe nennt die Fallen, die in ihr lauern. Fehlversuche zählen je Falle – so siehst du später unter
+          „Deine Fallen“, worauf du achten musst.</p>
+      </div>
+      <ul class="fallen-liste" id="fallen-liste"></ul>
+    </section>
 
     <section class="abschnitt" id="freie-ermittlung" aria-labelledby="freie-ermittlung-titel">
       <div class="seiten-kopf">
@@ -213,71 +118,7 @@
           <thead>
             <tr><th scope="col">Akte</th><th scope="col">Thema</th><th scope="col" class="mitte">Doppelstunden</th><th scope="col" class="mitte ohne-versal">eA</th><th scope="col" class="mitte ohne-versal">gA</th></tr>
           </thead>
-          <tbody>
-            <tr data-akte="1" data-niveaus="eA gA">
-              <th scope="row">Akte 1 · Das Fundbüro</th>
-              <td>SQL in einer Tabelle</td>
-              <td class="mitte">DS 1, 2</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="ja">✔ gA</span></td>
-            </tr>
-            <tr data-akte="2" data-niveaus="eA gA">
-              <th scope="row">Akte 2 · Spur der Räder</th>
-              <td>Verbund über mehrere Tabellen</td>
-              <td class="mitte">DS 3, 4</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="ja">✔ gA</span></td>
-            </tr>
-            <tr data-akte="3" data-niveaus="eA gA">
-              <th scope="row">Akte 3 · Die Stadtfest-Kasse</th>
-              <td>Aggregation und Gruppierung</td>
-              <td class="mitte">DS 5, 6</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="ja">✔ gA</span></td>
-            </tr>
-            <tr data-akte="4" data-niveaus="eA gA">
-              <th scope="row">Akte 4 · Chaos im Vereinsarchiv</th>
-              <td>Redundanz, Anomalien, Schlüssel</td>
-              <td class="mitte">DS 7, 8</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="ja">✔ gA</span></td>
-            </tr>
-            <tr data-akte="5" data-niveaus="eA">
-              <th scope="row">Akte 5 · Der Bauplan</th>
-              <td>ER-Modell und Überführung</td>
-              <td class="mitte">DS 9, 10, 11</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="nein">– entfällt</span></td>
-            </tr>
-            <tr data-akte="6" data-niveaus="eA gA">
-              <th scope="row">Akte 6 · Datenspuren</th>
-              <td>Datenschutz und automatisierte Datenanalyse</td>
-              <td class="mitte">DS 12</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="ja">✔ gA</span></td>
-            </tr>
-            <tr data-akte="7" data-niveaus="eA gA">
-              <th scope="row">Akte 7 · Generalprobe</th>
-              <td>Probeklausur im Abitur-Format</td>
-              <td class="mitte">DS 13</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="ja">✔ gA</span></td>
-            </tr>
-            <tr data-kuer="K1">
-              <th scope="row">Kür K1 · Eigene Datenbank bauen</th>
-              <td>CREATE TABLE, INSERT (nicht im Abitur)</td>
-              <td class="mitte">nach DS 11</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="nein">– entfällt</span></td>
-            </tr>
-            <tr data-kuer="K2">
-              <th scope="row">Kür K2 · Escape Room Weserstedt</th>
-              <td>Wiederholung aller Akten im Live-Modus</td>
-              <td class="mitte">vor DS 13</td>
-              <td class="mitte"><span class="ja">✔ eA</span></td>
-              <td class="mitte"><span class="ja">✔ gA</span></td>
-            </tr>
-          </tbody>
+          <tbody id="niveaus-zeilen"></tbody>
         </table>
       </div>
     </section>
