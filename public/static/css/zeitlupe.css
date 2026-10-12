@@ -1,0 +1,167 @@
+/* Zeitlupe (DESIGN.md §5.4, §2.4, §4.13, §6, §7). Nur Tokens – keine Farbliterale. */
+
+.zeitlupe-seite { gap: var(--a-5); }
+.zl-kopf { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--a-3) var(--a-5); }
+.zl-rueck { align-self: flex-end; }
+
+/* ---------- Eingabe (Editor + DB-Auswahl, aufklappbar) ---------- */
+.zl-eingabe { min-width: 0; }
+.zl-eingabe-kopf {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-4); min-height: 44px;
+  padding: 0 var(--a-4); cursor: pointer; list-style: none;
+  border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte);
+}
+.zl-eingabe-kopf::-webkit-details-marker { display: none; }
+.zl-eingabe-kopf::before { content: "▸"; color: var(--tinte-3); transition: transform var(--dauer) var(--kurve); }
+.zl-eingabe[open] .zl-eingabe-kopf::before { transform: rotate(90deg); }
+.zl-eingabe-kopf:hover { background: var(--flaeche); }
+.zl-eingabe-kopf:focus-visible { outline: 3px solid var(--fokus); outline-offset: 2px; }
+.zl-eingabe-titel { font-weight: 600; }
+.zl-eingabe-db { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+.zl-eingabe[open] .zl-konsole { margin-top: var(--a-3); }
+.zl-konsole .konsole-koerper { grid-template-columns: minmax(0, 1fr); }
+.zl-konsole .editor-hl, .zl-konsole .editor-flaeche textarea { min-height: 150px; }
+.zl-db-wahl {
+  display: inline-flex; align-items: center; gap: var(--a-2);
+  font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--konsole-leise); text-transform: none; letter-spacing: 0;
+}
+.zl-db-wahl select {
+  min-height: 44px; padding: 0 var(--a-3); border-radius: var(--radius); font: inherit; font-size: var(--t-s);
+  color: var(--konsole-text); background: var(--konsole); border: 1px solid var(--konsole-knopf-rand);
+}
+.zl-db-wahl select:focus-visible { outline: 3px solid var(--konsole-leise); outline-offset: 2px; }
+
+/* ---------- Meldung ---------- */
+.zl-meldung:empty { display: none; }
+.zl-meldung {
+  padding: var(--a-3) var(--a-4); border-radius: var(--radius); border-left: 3px solid var(--blau);
+  background: var(--blau-flaeche); font-size: var(--t-s);
+}
+.zl-meldung.fehler { border-left-color: var(--siegelrot); background: var(--rot-flaeche); }
+.zl-meldung.laeuft { border-left-color: var(--messing-grafik); background: var(--messing-flaeche); }
+
+/* ---------- Reiter (Klauseln 1–7; Handy 4 + 3) ---------- */
+.zl-ansicht { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.zl-schritte {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--a-1);
+}
+.zl-reiter {
+  width: 100%; min-height: 56px; padding: 4px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte);
+  font-family: var(--schrift-mono); font-weight: 600; font-size: 0.8125rem; color: var(--tinte-2);
+  transition: background var(--dauer) var(--kurve), color var(--dauer) var(--kurve);
+}
+.zl-reiter small { font-weight: 400; font-size: 0.6875rem; color: var(--tinte-3); }
+.zl-reiter:hover { background: var(--flaeche); color: var(--tinte); }
+.zl-reiter.erledigt { background: var(--flaeche); color: var(--tinte); }
+.zl-reiter[aria-current="step"] { background: var(--tinte); border-color: var(--tinte); color: var(--papier); }
+.zl-reiter[aria-current="step"] small { color: var(--papier); }
+.zl-reiter[disabled] { cursor: not-allowed; opacity: .5; background: transparent; border-style: dashed; }
+.zl-reiter:focus-visible { outline: 3px solid var(--fokus); outline-offset: 2px; }
+
+/* ---------- Raster: links Abfrage + Steuerung + Merksatz, rechts Karte ---------- */
+.zl-raster {
+  display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); grid-template-rows: auto auto 1fr;
+  grid-template-areas: "sql karte" "steu karte" "merk karte"; gap: var(--a-4) var(--a-5); align-items: start;
+}
+.zl-raster > .zl-sql { grid-area: sql; }
+.zl-raster > .zl-steuerung { grid-area: steu; }
+.zl-raster > .zl-merksatz { grid-area: merk; }
+.zl-raster > .zl-karte { grid-area: karte; }
+
+/* Abfrage in Schreibreihenfolge (dunkel), Auswertungsnummer am Rand */
+.zl-sql {
+  background: var(--konsole); color: var(--konsole-text); border-radius: var(--radius);
+  padding: var(--a-4) 0; font-family: var(--schrift-mono); font-size: 0.9375rem; line-height: 1.5; min-width: 0;
+}
+.zl-zeile {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: baseline;
+  padding: 3px var(--a-4) 3px 0;
+  transition: background var(--dauer) var(--kurve), opacity var(--dauer) var(--kurve);
+}
+.zl-zeile .lauf { text-align: center; font-size: 0.6875rem; color: var(--konsole-leise); }
+.zl-zeile.aktiv { background: var(--konsole-rand); box-shadow: inset 3px 0 0 var(--konsole-ausfuehren); }
+.zl-zeile.aktiv .lauf { color: var(--sql-schluessel); font-weight: 600; }
+.zl-zeile.spaeter { opacity: .5; }
+.zl-zeile code { font-size: inherit; white-space: pre-wrap; overflow-wrap: anywhere; background: none; padding: 0; color: inherit; }
+.zl-zeile .sql-kw { font-weight: 600; }
+
+.zl-steuerung { display: flex; flex-wrap: wrap; gap: var(--a-2); align-items: center; }
+.zl-tastatur { flex-basis: 100%; font-size: var(--t-xs); color: var(--tinte-3); }
+.zl-tastatur kbd {
+  font-family: var(--schrift-mono); font-size: 0.75rem; padding: 0 5px;
+  border: 1px solid var(--rand-stark); border-radius: var(--radius-klein);
+}
+
+/* Karte rechts */
+.zl-karte { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.zl-erklaerung { display: flex; gap: var(--a-4); align-items: flex-start; }
+.zl-erklaerung-text { min-width: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.zl-zaehler {
+  display: flex; flex-direction: column; align-items: flex-start; min-width: 4ch; flex: none;
+  font-family: var(--schrift-titel); font-weight: 700; line-height: 1; color: var(--tinte);
+}
+.zl-zahl { font-size: var(--t-xxl); font-variant-numeric: tabular-nums; }
+.zl-zaehler small, .zl-rechnung {
+  font-family: var(--schrift-mono); font-weight: 500; font-size: var(--t-xs); color: var(--tinte-3);
+  letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px;
+}
+.zl-rechnung { text-transform: none; letter-spacing: 0; color: var(--tinte-2); white-space: nowrap; }
+.zl-titel { font-size: var(--t-l); overflow-wrap: anywhere; }
+.zl-text { font-size: var(--t-s); color: var(--tinte-2); max-width: 70ch; }
+
+/* Legende: Farbe + Name (+ Zeilenzahl), nie nur Farbe */
+.gruppen-legende { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--a-2) var(--a-4); font-size: var(--t-s); }
+.legende-eintrag { display: inline-flex; align-items: center; gap: 6px; }
+.legende-eintrag .farbmarke { flex: none; width: 12px; height: 12px; border-radius: 2px; background: var(--g, transparent); }
+.legende-eintrag.g-ohne .marke { border: 1px solid var(--rand-stark); }
+.legende-eintrag .anzahl { font-size: var(--t-xs); color: var(--tinte-3); }
+.legende-eintrag.weg .name { text-decoration: line-through; text-decoration-color: var(--siegelrot); color: var(--tinte-3); }
+.legende-eintrag .legende-status { font-size: var(--t-xs); font-weight: 600; color: var(--siegelrot-text); }
+.g1 { --g: var(--gruppe-1); }
+.g2 { --g: var(--gruppe-2); }
+.g3 { --g: var(--gruppe-3); }
+
+.zl-tabellen-kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2); }
+.zl-tabellen-kopf:has(> [hidden] + [hidden]) { display: none; }
+.zl-hinweis { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+
+/* Zwischentabelle (DESIGN §4.13: verworfen .weg, Gruppe mit Farbmarke + Trennlinie, neu = Aufleuchten) */
+.zl-rahmen { max-height: 70vh; overflow: auto; }
+.zl-tabelle thead th { position: sticky; top: 0; z-index: 1; }
+.zl-tabelle td.zahl { text-align: right; }
+.zl-tabelle .tabellen-grenze { border-left: 2px solid var(--rand-stark); }
+.zl-tabelle tr { transition: opacity 320ms var(--kurve); }
+.zl-tabelle tr.weg { opacity: .55; }
+.zl-tabelle tr.weg td { color: var(--tinte-3); text-decoration: line-through; text-decoration-color: var(--siegelrot); }
+.zl-tabelle tr.weg.frisch { animation: wegfallen 420ms var(--kurve); }
+@keyframes wegfallen { from { opacity: 1; } to { opacity: .55; } }
+.zl-tabelle td.gruppe-zelle { position: relative; padding-left: 22px; white-space: nowrap; }
+.zl-tabelle td.gruppe-zelle::before {
+  content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 6px; border-radius: 2px; background: var(--g, transparent);
+}
+.zl-tabelle tr.g-ohne td.gruppe-zelle::before { background: transparent; border-left: 1px dashed var(--rand-stark); }
+.zl-tabelle tr.gruppenstart td { border-top: 2px solid var(--rand-stark); }
+.zl-tabelle tr.neu td { animation: aufleuchten 900ms var(--kurve); }
+@keyframes aufleuchten { from { background: var(--messing-flaeche); } to { background: transparent; } }
+.zl-tabelle td.leer { color: var(--tinte-3); font-style: italic; }
+.zl-tabelle .null { font-family: var(--schrift-mono); font-style: italic; text-transform: uppercase; color: var(--tinte-3); }
+
+/* ---------- Responsive (DESIGN §6) ---------- */
+@media (max-width: 999px) {
+  .zl-raster { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "sql" "steu" "karte" "merk"; }
+}
+@media (max-width: 699px) {
+  .zl-schritte { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .zl-erklaerung { gap: var(--a-3); }
+  .zl-titel { font-size: var(--t-m); }
+  .zl-rahmen { max-height: 480px; }
+}
+
+/* ---------- Bewegung (DESIGN §7): Zeitlupe springt, keine Übergänge ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .zl-reiter, .zl-zeile, .zl-tabelle tr { transition: none; }
+  .zl-tabelle tr.weg.frisch, .zl-tabelle tr.neu td { animation: none; }
+}

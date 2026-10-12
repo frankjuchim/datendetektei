@@ -174,16 +174,114 @@ test('/konsole/eisdiele ohne Anmeldung: 200 mit Konsole, Modulen und SQL-Skripte
   assert.match(res.text, /Noch nichts ausgeführt\. Schreib deine Abfrage und tippe auf „Ausführen“\./);
 });
 
-test('Konsole: Prüfen, Zeitlupe, Tipp und Lösung gibt es hier noch nicht', async () => {
+test('Konsole: Zeitlupe ja (Phase 4), Prüfen, Tipp und Lösung gibt es hier nicht', async () => {
   const { app } = testApp();
   const res = await request(app).get('/konsole/eisdiele');
   assert.match(res.text, /id="k-ausfuehren"/);
   assert.match(res.text, /id="k-abbrechen"[^>]*hidden/);
   const knoepfe = [...res.text.matchAll(/<button\b[\s\S]*?<\/button>/g)].map((m) => m[0].replace(/<[^>]+>/g, ''));
-  for (const wort of ['Prüfen', 'Zeitlupe', 'Tipp', 'Lösung']) {
+  for (const wort of ['Prüfen', 'Tipp', 'Lösung']) {
     assert.ok(!knoepfe.some((k) => k.includes(wort)), wort);
   }
-  assert.doesNotMatch(res.text, /k-pruefen|k-tipp|k-loesung|k-zeitlupe/);
+  assert.doesNotMatch(res.text, /k-pruefen|k-tipp|k-loesung/);
+  assert.match(res.text, /<button class="knopf" id="k-zeitlupe" type="button"[^>]*>[\s\S]*?i-zeitlupe[\s\S]*?Zeitlupe<\/button>/);
+});
+
+/* ---------- Zeitlupe (Phase 4 Task 2) ---------- */
+
+test('/werkzeug/zeitlupe ohne Anmeldung: 302 auf /sso/start (außer mit ?db=eisdiele)', async () => {
+  const { app } = testApp();
+  for (const pfad of ['/werkzeug/zeitlupe', '/werkzeug/zeitlupe?db=stadtfest', '/werkzeug/zeitlupe?db=fundbuero']) {
+    const res = await request(app).get(pfad);
+    assert.equal(res.status, 302, pfad);
+    assert.equal(res.headers.location, '/sso/start?ziel=' + encodeURIComponent(pfad), pfad);
+  }
+  const res = await request(app).get('/werkzeug/zeitlupe?db=eisdiele');
+  assert.equal(res.status, 200);
+  assert.match(res.headers['content-type'], /text\/html/);
+  assert.equal(res.headers['cache-control'], 'no-cache');
+});
+
+test('/werkzeug/zeitlupe angemeldet: 200 für Schüler, Lehrkraft und Admin, mit und ohne db', async () => {
+  for (const nutzer of [{}, LEHRKRAFT, ADMIN]) {
+    const t = testApp();
+    const cookie = await anmelden(t, nutzer);
+    for (const pfad of ['/werkzeug/zeitlupe', ...KONSOLEN_DBS.map((n) => '/werkzeug/zeitlupe?db=' + n)]) {
+      const res = await request(t.app).get(pfad).set('Cookie', cookie);
+      assert.equal(res.status, 200, `${nutzer.rolle || 'schueler'} ${pfad}`);
+      assert.match(res.text, /id="zl-schritte"/);
+    }
+  }
+});
+
+test('/werkzeug/zeitlupe mit unbekannter oder nicht öffentlicher DB: 404 (auch angemeldet)', async () => {
+  const t = testApp();
+  const cookie = await anmelden(t);
+  for (const pfad of ['/werkzeug/zeitlupe?db=gibtsnicht', '/werkzeug/zeitlupe?db=verhoer/bibliothek', '/werkzeug/zeitlupe?db=Eisdiele',
+    '/werkzeug/zeitlupe?db=', '/werkzeug/zeitlupe?db=eisdiele&db=tus', '/werkzeug/zeitlupe/x', '/werkzeug/', '/zeitlupe.html']) {
+    const res = await request(t.app).get(pfad).set('Cookie', cookie);
+    assert.equal(res.status, 404, pfad);
+  }
+  const ohne = await request(t.app).get('/werkzeug/zeitlupe?db=bibliothek');
+  assert.equal(ohne.status, 404);
+});
+
+test('Zeitlupe-Seite: Skripte, Styles, Reiter, Zähler, Steuerung und Merksatz (DESIGN §5.4)', async () => {
+  const { app } = testApp();
+  const res = await request(app).get('/werkzeug/zeitlupe?db=eisdiele');
+  assert.match(res.text, /<script type="module" src="\/static\/js\/zeitlupe\/zeitlupe\.js\?v=/);
+  for (const datei of ['parser', 'regeln', 'fehlertexte', 'visual']) {
+    assert.match(res.text, new RegExp(`<script src="/static/js/sql/${datei}\\.js\\?v=[^"]+" defer></script>`), datei);
+  }
+  // visual.js braucht parser.js und fehlertexte.js vorher
+  assert.ok(res.text.indexOf('/static/js/sql/visual.js') > res.text.indexOf('/static/js/sql/fehlertexte.js'));
+  for (const css of ['konsole', 'zeitlupe']) assert.match(res.text, new RegExp(`/static/css/${css}\\.css\\?v=`), css);
+  assert.match(res.text, /<ol class="zl-schritte" id="zl-schritte" aria-label="[^"]+">/);
+  assert.match(res.text, /id="zl-zaehler"[^>]*aria-live="polite"/);
+  for (const id of ['zl-zurueck', 'zl-vor', 'zl-abspielen', 'zl-sql', 'zl-tabelle', 'zl-legende', 'zl-titel', 'zl-text', 'zl-db', 'zl-starten']) {
+    assert.match(res.text, new RegExp(`id="${id}"`), id);
+  }
+  assert.match(res.text, /<strong>WHERE<\/strong> filtert Zeilen <em>vor<\/em> dem Gruppieren, <strong>HAVING<\/strong> filtert Gruppen <em>danach<\/em> \(P1\)/);
+  assert.match(res.text, /aria-keyshortcuts="ArrowRight"/);
+  assert.match(res.text, /aria-keyshortcuts="ArrowLeft"/);
+});
+
+test('Zeitlupe-Modul: ES-Modul mit Versions-Import, Übergabe über sessionStorage dd_zeitlupe, ohne Inline-Styles', () => {
+  const js = fs.readFileSync(path.join(STATIC, 'js', 'zeitlupe', 'zeitlupe.js'), 'utf8');
+  assert.match(js, /new URL\(import\.meta\.url\)\.search/);
+  assert.doesNotMatch(js, /^import .* from /m);
+  assert.match(js, /sessionStorage/);
+  assert.match(js, /'dd_zeitlupe'/);
+  assert.doesNotMatch(js, /setAttribute\(\s*['"]style['"]/);
+  assert.doesNotMatch(js, /\.style\.(?!setProperty)/);
+  assert.match(js, /1800/);
+  assert.match(js, /2600/);
+  assert.match(js, /prefers-reduced-motion/);
+  // Rücksprung nur auf eigene Seiten (kein offener Redirect)
+  assert.match(js, /function sichererRuecksprung/);
+});
+
+test('Zeitlupe-Knopf: Konsole und Lern-Konsole übergeben die Abfrage, das Verhör (ohne DB) hat keinen', () => {
+  const konsole = fs.readFileSync(path.join(STATIC, 'js', 'konsole', 'konsole.js'), 'utf8');
+  const lern = fs.readFileSync(path.join(STATIC, 'js', 'lernen', 'konsole_lern.js'), 'utf8');
+  for (const [name, js] of [['konsole', konsole], ['konsole_lern', lern]]) {
+    assert.match(js, /'dd_zeitlupe'/, name);
+    assert.match(js, /sessionStorage/, name);
+    assert.match(js, /\/werkzeug\/zeitlupe\?db=/, name);
+  }
+  // Lern-Konsole: Knopf nur mit ausführbarer Übungs-DB und Aufgaben-Aktionen (nie im Verhör: datenbank = null)
+  assert.match(lern, /if \(mitAusfuehren && aktionen\)[\s\S]{0,200}knoepfe\.zeitlupe = knopf\('Zeitlupe', 'knopf', 'i-zeitlupe'\)/);
+  const verhoer = fs.readFileSync(path.join(STATIC, 'js', 'lernen', 'verhoer.js'), 'utf8');
+  assert.doesNotMatch(verhoer, /zeitlupe/i);
+});
+
+test('zeitlupe.css: Gruppenfarben nur aus Tokens, reduzierte Bewegung, Handy 4+3 Reiter', () => {
+  const css = fs.readFileSync(path.join(STATIC, 'css', 'zeitlupe.css'), 'utf8');
+  for (const n of [1, 2, 3]) assert.match(css, new RegExp(`var\\(--gruppe-${n}\\)`));
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(css, /grid-template-columns: repeat\(7, minmax\(0, 1fr\)\)/);
+  assert.match(css, /grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(css, /text-decoration: line-through/);
 });
 
 for (const name of KONSOLEN_DBS.filter((n) => n !== 'eisdiele')) {
