@@ -426,7 +426,7 @@ test('eisdiele: Abnahme erkennt Gleichstand und verkaufte Pistazie', () => {
   assert.ok(fehl.some((n) => /Zeilen Verkauf/.test(n)), fehl.join('; '));
 });
 
-test('lauf --pruefen über alle DBs: TuS/Eisdiele identisch, übrige melden „Generator fehlt“', () => {
+test('lauf --pruefen über alle DBs: mit Generator bzw. kuratiert identisch, übrige melden „Generator fehlt“', () => {
   const aus = stilleAusgabe();
   const code = bau.lauf({ pruefen: true, log: aus.log });
   const text = aus.zeilen.join('\n');
@@ -434,7 +434,9 @@ test('lauf --pruefen über alle DBs: TuS/Eisdiele identisch, übrige melden „G
   assert.match(text, /tus: .*identisch/);
   assert.match(text, /eisdiele: .*identisch/);
   for (const n of ['fundbuero', 'stadtrad', 'stadtfest', 'detektei', 'datenspuren']) {
-    assert.match(text, new RegExp(`${n}: Generator fehlt`));
+    const modul = bau.ladeModul(n);
+    const erwartet = modul && typeof modul.generiere === 'function' ? 'identisch' : 'Generator fehlt';
+    assert.match(text, new RegExp(`${n}: ${erwartet}`));
   }
 });
 
