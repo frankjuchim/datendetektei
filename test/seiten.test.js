@@ -330,6 +330,75 @@ test('Lern-Module: ES-Module, nur Textknoten, Mischen von choice/order/match', (
   for (const art of ['choice', 'order', 'match']) assert.match(ia, new RegExp(`mische\\([^)]*\\)[^\\n]*// ${art}`), art);
 });
 
+/* ---------- Werkzeug Sortierfächer (Phase 4 Task 4) ---------- */
+
+const SF = '/werkzeug/sortierfaecher';
+
+test('Sortierfächer ?db=eisdiele ohne Anmeldung: 200 mit Modul, Styles und SQL-Skripten (visual.js nach parser/fehlertexte)', async () => {
+  const { app } = testApp();
+  const res = await request(app).get(SF + '?db=eisdiele');
+  assert.equal(res.status, 200);
+  assert.match(res.headers['content-type'], /text\/html/);
+  assert.equal(res.headers['cache-control'], 'no-cache');
+  assert.match(res.text, /<script type="module" src="\/static\/js\/sortierfaecher\/sortierfaecher\.js\?v=/);
+  assert.match(res.text, /\/static\/css\/sortierfaecher\.css\?v=/);
+  assert.match(res.text, /\/static\/js\/kern\/kopfzeile\.js\?v=/);
+  const reihenfolge = ['parser', 'fehlertexte', 'visual'].map((d) => {
+    const m = new RegExp(`<script src="/static/js/sql/${d}\\.js\\?v=[^"]+" defer></script>`).exec(res.text);
+    assert.ok(m, d);
+    return m.index;
+  });
+  assert.deepEqual([...reihenfolge].sort((a, b) => a - b), reihenfolge, 'visual.js nach parser.js und fehlertexte.js');
+  for (const id of ['sf-db', 'sf-eingabe', 'sf-einsortieren', 'sf-abfrage', 'sf-korb', 'sf-faecher', 'sf-zurueck', 'sf-weiter', 'sf-abspielen']) {
+    assert.match(res.text, new RegExp(`id="${id}"`), id);
+  }
+  assert.match(res.text, /id="sf-zaehler"[^>]*aria-live="polite"/);
+});
+
+for (const pfad of [SF, SF + '?db=stadtfest', SF + '?db=fundbuero']) {
+  test(`${pfad} ohne Sitzung: 302 auf /sso/start?ziel=…`, async () => {
+    const { app } = testApp();
+    const res = await request(app).get(pfad);
+    assert.equal(res.status, 302);
+    assert.equal(res.headers.location, '/sso/start?ziel=' + encodeURIComponent(pfad));
+  });
+}
+
+test('Sortierfächer angemeldet: ohne db und mit allen sieben DBs für Schüler, Lehrkraft und Admin', async () => {
+  for (const nutzer of [{}, LEHRKRAFT, ADMIN]) {
+    const t = testApp();
+    const cookie = await anmelden(t, nutzer);
+    for (const pfad of [SF, ...KONSOLEN_DBS.map((n) => `${SF}?db=${n}`)]) {
+      const res = await request(t.app).get(pfad).set('Cookie', cookie);
+      assert.equal(res.status, 200, `${nutzer.rolle || 'schueler'} ${pfad}`);
+      assert.match(res.text, /id="sf-faecher"/);
+    }
+  }
+});
+
+test('Sortierfächer: unbekannte DB, Verhör-DB und falsche Pfade → 404 (auch angemeldet)', async () => {
+  const t = testApp();
+  const cookie = await anmelden(t);
+  for (const pfad of [SF + '?db=gibtsnicht', SF + '?db=Eisdiele', SF + '?db=verhoer/bibliothek', SF + '?db=',
+    SF + '?db=eisdiele&db=stadtfest', SF + '/x', '/werkzeug/sortierfaecher.html', '/sortierfaecher.html']) {
+    const res = await request(t.app).get(pfad).set('Cookie', cookie);
+    assert.equal(res.status, 404, pfad);
+  }
+  const ohne = await request(t.app).get(SF + '?db=gibtsnicht');
+  assert.equal(ohne.status, 404);
+});
+
+test('Sortierfächer-Modul: ES-Modul, Bausteine mit ?v=, keine Inline-Styles, Übergabe per sessionStorage', () => {
+  const js = fs.readFileSync(path.join(STATIC, 'js', 'sortierfaecher', 'sortierfaecher.js'), 'utf8');
+  assert.match(js, /^export /m);
+  assert.match(js, /new URL\(import\.meta\.url\)\.search/);
+  assert.doesNotMatch(js, /^import .* from /m, 'statischer Import ohne Version');
+  assert.doesNotMatch(js, /setAttribute\(\s*['"]style['"]/);
+  assert.match(js, /sessionStorage/);
+  assert.match(js, /'dd_sortierfaecher'/);
+  assert.match(js, /prefers-reduced-motion/);
+});
+
 /* ---------- API ---------- */
 
 test('GET /api/akten ist öffentlich und liefert die Akten', async () => {
