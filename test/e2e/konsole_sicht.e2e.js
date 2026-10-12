@@ -11,7 +11,7 @@ const path = require('node:path');
 const { chromium } = require('playwright-core');
 const { starteTestServer } = require('./testserver');
 
-const CHROMIUM = process.env.CHROMIUM_PFAD || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROMIUM = require('./chromium').chromiumPfad();
 const ZIEL = path.join(__dirname, '..', '..', 'docs', 'screenshots', 'phase2');
 const FOTOS = process.env.SCREENSHOTS === '1';
 

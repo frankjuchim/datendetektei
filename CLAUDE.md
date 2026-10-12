@@ -54,7 +54,7 @@ scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 1; spätere Phasen ergänzen hier)
+## Befehle (Stand Phase 2; spätere Phasen ergänzen hier)
 
 ```
 npm install
@@ -63,8 +63,11 @@ npm run dev              # Port 3000, DATA_DIR=./data, Testschlüssel aus test/f
 npm run vertrag          # node scripts/vertrag_pruefen.js http://localhost:3000
 npm run kontrast         # WCAG-AA-Kontraste der Design-Tokens (scripts/kontrast_paare.json)
 npm run fonts            # woff2 aus @fontsource nach public/static/fonts kopieren (nur bei Font-Änderungen)
+npm run db               # Übungs- und Verhör-DBs aus seed/datenbanken bauen → <db>/basis.sql (deterministisch)
+npm run db:pruefen       # neu bauen und byteweise mit basis.sql vergleichen, alle Varianten prüfen (CI)
+npm run sqljs            # sql.js-Vendor-Dateien nach public/static/vendor/sqljs kopieren (nur bei Versionswechsel)
 npm run validate         # (ab Phase 2/3) Akten-JSON + SQL-Lösungen auf allen DB-Varianten
-npm run e2e              # (ab Phase 3) Playwright; Chromium unter /opt/pw-browsers bzw. PLAYWRIGHT_BROWSERS_PATH
+npm run e2e              # Playwright (test/e2e/*.e2e.js); Chromium aus /opt/pw-browsers bzw. CHROMIUM_PFAD; SCREENSHOTS=1 für Fotos
 npm run pruefen          # alles: test, validate, Material-SQL, Materialien
 ```
 docx/pptx rendern: `soffice --headless --convert-to pdf --outdir <scratch> <datei>`.

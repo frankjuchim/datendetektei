@@ -11,7 +11,7 @@ const { chromium } = require('playwright-core');
 const { starteTestServer } = require('./testserver');
 const { ladeDatenbanken } = require('../../src/sql/datenbanken');
 
-const CHROMIUM = process.env.CHROMIUM_PFAD || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROMIUM = require('./chromium').chromiumPfad();
 const ENDLOS = 'WITH RECURSIVE c(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM c) SELECT COUNT(*) FROM c';
 const datenbanken = ladeDatenbanken(undefined, { log: () => {} });
 

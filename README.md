@@ -48,6 +48,17 @@ nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
 Schlüsselpaar `test/fixtures/dev_portal_{public,private}.pem` – **nur für Entwicklung und Tests**: Der private
 Schlüssel liegt öffentlich im Repo und ist damit wertlos; im Betrieb nie verwenden.
 
+## Datenbanken und SQL
+
+Die sieben Übungsdatenbanken (und die nicht öffentlichen Verhör-Kontexte) entstehen deterministisch aus
+`seed/datenbanken/<name>/` (`schema.sql`, `pflicht.sql`, Generator `scripts/db/<name>.js`): `npm run db` schreibt
+`basis.sql`, `npm run db:pruefen` baut neu und vergleicht byteweise (CI). Randfall-Varianten liegen als Delta-Skripte
+in `varianten/` und sind nie öffentlich. Öffentlich ist nur die Haupt-DB unter `/db/<name>.sqlite`.
+
+Schüler-SQL läuft im Browser (sql.js im Web Worker, Abbruch nach 3 s) und zur Prüfung auf dem Server in einer
+Sandbox aus Kindprozessen (nur lesend, 1,5 s, 5 000 Zeilen). Ist WebAssembly gesperrt, führt der Server auch
+„Ausführen“ aus. Freie Ermittlung: `/konsole/<db>` (Eisdiele ohne Anmeldung).
+
 ## Betrieb (CapRover)
 
 Umgebungsvariablen (Vertrag §8):
