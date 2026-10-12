@@ -58,4 +58,27 @@ function pruefeHerkunft(konfig) {
   };
 }
 
-module.exports = { sicherheitsHeader, pruefeHerkunft, CSP_DIREKTIVEN };
+/**
+ * Rate-Limit im Arbeitsspeicher (festes Fenster je Schlüssel; IPs nur im RAM, Spec §7.14).
+ * Über dem Limit: 429 mit Retry-After (Sekunden); /api/* als JSON, sonst als Text.
+ */
+function rateLimit({ fensterMs, max, schluessel = () => 'alle', jetzt = Date.now }) {
+  const zaehler = new Map();
+  return function begrenzer(req, res, next) {
+    const t = jetzt();
+    if (zaehler.size > 10000) for (const [k, z] of zaehler) if (z.ende <= t) zaehler.delete(k);
+    const k = String(schluessel(req));
+    let z = zaehler.get(k);
+    if (!z || z.ende <= t) {
+      z = { anzahl: 0, ende: t + fensterMs };
+      zaehler.set(k, z);
+    }
+    z.anzahl += 1;
+    if (z.anzahl <= max) return next();
+    res.set('Retry-After', String(Math.max(1, Math.ceil((z.ende - t) / 1000))));
+    if ((req.baseUrl + req.path).startsWith('/api/')) return res.status(429).json({ error: 'Zu viele Anfragen.' });
+    return res.status(429).type('text/plain; charset=utf-8').send('Zu viele Anfragen – bitte kurz warten.');
+  };
+}
+
+module.exports = { sicherheitsHeader, pruefeHerkunft, rateLimit, CSP_DIREKTIVEN };

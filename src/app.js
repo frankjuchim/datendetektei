@@ -3,8 +3,9 @@
 
 const path = require('node:path');
 const express = require('express');
-const { sicherheitsHeader, pruefeHerkunft } = require('./kern/sicherheit');
+const { sicherheitsHeader, pruefeHerkunft, rateLimit } = require('./kern/sicherheit');
 const { ssoRouten } = require('./routes/sso');
+const { verbundRouten } = require('./routes/verbund');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -17,6 +18,15 @@ function erzeugeApp(konfig, db) {
   app.locals.db = db;
 
   app.use(sicherheitsHeader());
+  // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
+  const limits = konfig.rateLimits || {};
+  const jetzt = konfig.jetzt || Date.now;
+  app.use('/sso', rateLimit({ fensterMs: 60000, max: 30, ...limits.sso, schluessel: (req) => req.ip, jetzt }));
+  app.use('/api/verbund', rateLimit({ fensterMs: 60000, max: 120, ...limits.verbund, jetzt }));
+
+  // Verbund-API vor dem allgemeinen JSON-Parser: JSON wird erst nach der Token-Prüfung gelesen.
+  app.use(verbundRouten(konfig, db));
+
   app.use(pruefeHerkunft(konfig));
   app.use(express.json({ limit: '100kb' }));
 
