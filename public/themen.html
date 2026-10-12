@@ -9,12 +9,12 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.1.0">
-  <script src="/static/js/kern/thema.js?v=0.1.0"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.1.0" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.2.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.2.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.2.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.2.0">
+  <script src="/static/js/kern/thema.js?v=0.2.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.2.0" defer></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -179,6 +179,24 @@
       </article>
     </div>
     <p class="hinweis-klein">Arbeitsblätter, Erklärvideos und Warm-up-Karten folgen hier, sobald die Akten öffnen – die Materialien gibt es nach der Anmeldung, im Gastmodus eine kleine Auswahl.</p>
+
+    <section class="abschnitt" id="freie-ermittlung" aria-labelledby="freie-ermittlung-titel">
+      <div class="seiten-kopf">
+        <span class="etikett">Ermittlungskonsole · Übungs-Datenbanken</span>
+        <h2 id="freie-ermittlung-titel">Freie Ermittlung</h2>
+        <p>Probier eigene SQL-Abfragen auf den Datenbanken der Akten aus – ohne Aufgabe, ohne Bewertung. Die Eisdiele
+          aus dem Probefall ist ohne Anmeldung offen, die übrigen Datenbanken nach der Anmeldung.</p>
+      </div>
+      <ul class="db-liste">
+        <li><a href="/konsole/eisdiele"><span class="db-name">Eisdiele</span><span class="db-akte">Probefall · <span class="db-frei">ohne Anmeldung</span></span></a></li>
+        <li><a href="/konsole/fundbuero"><span class="db-name">Fundbüro</span><span class="db-akte">Akte 1 · eine Tabelle</span></a></li>
+        <li><a href="/konsole/stadtrad"><span class="db-name">StadtRad</span><span class="db-akte">Akten 2 und 6 · Verbund</span></a></li>
+        <li><a href="/konsole/stadtfest"><span class="db-name">Stadtfest</span><span class="db-akte">Akten 3 und 6 · Gruppieren</span></a></li>
+        <li><a href="/konsole/tus"><span class="db-name">TuS Weserstedt</span><span class="db-akte">Akte 4 · Vereinsarchiv</span></a></li>
+        <li><a href="/konsole/detektei"><span class="db-name">Detektei</span><span class="db-akte">Akten 5 und 6 · Fall-Datenbank</span></a></li>
+        <li><a href="/konsole/datenspuren"><span class="db-name">Datenspuren</span><span class="db-akte">Akte 6 · Finale</span></a></li>
+      </ul>
+    </section>
 
     <section class="abschnitt" id="niveaus" aria-labelledby="niveaus-titel">
       <div class="seiten-kopf">

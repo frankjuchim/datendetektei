@@ -150,6 +150,96 @@ test('Fehlerseiten 404, 403 und SSO-Fehler im gleichen Design', () => {
   }
 });
 
+/* ---------- Ermittlungskonsole „Freie Ermittlung“ (Phase 2 Task 12) ---------- */
+
+const KONSOLEN_DBS = ['fundbuero', 'stadtrad', 'stadtfest', 'tus', 'detektei', 'datenspuren', 'eisdiele'];
+
+test('/konsole/eisdiele ohne Anmeldung: 200 mit Konsole, Modulen und SQL-Skripten', async () => {
+  const { app } = testApp();
+  const res = await request(app).get('/konsole/eisdiele');
+  assert.equal(res.status, 200);
+  assert.match(res.headers['content-type'], /text\/html/);
+  assert.match(res.text, /<script type="module" src="\/static\/js\/konsole\/konsole\.js\?v=/);
+  assert.match(res.text, /\/static\/css\/konsole\.css\?v=/);
+  for (const datei of ['parser', 'regeln', 'fehlertexte']) {
+    assert.match(res.text, new RegExp(`<script src="/static/js/sql/${datei}\\.js\\?v=[^"]+" defer></script>`), datei);
+  }
+  assert.match(res.text, /id="sql-eingabe"/);
+  assert.match(res.text, /id="schema-browser"/);
+  assert.match(res.text, /id="ergebnis"[^>]*aria-live="polite"/);
+  assert.match(res.text, /Noch nichts ausgeführt\. Schreib deine Abfrage und tippe auf „Ausführen“\./);
+});
+
+test('Konsole: Prüfen, Zeitlupe, Tipp und Lösung gibt es hier noch nicht', async () => {
+  const { app } = testApp();
+  const res = await request(app).get('/konsole/eisdiele');
+  assert.match(res.text, /id="k-ausfuehren"/);
+  assert.match(res.text, /id="k-abbrechen"[^>]*hidden/);
+  const knoepfe = [...res.text.matchAll(/<button\b[\s\S]*?<\/button>/g)].map((m) => m[0].replace(/<[^>]+>/g, ''));
+  for (const wort of ['Prüfen', 'Zeitlupe', 'Tipp', 'Lösung']) {
+    assert.ok(!knoepfe.some((k) => k.includes(wort)), wort);
+  }
+  assert.doesNotMatch(res.text, /k-pruefen|k-tipp|k-loesung|k-zeitlupe/);
+});
+
+for (const name of KONSOLEN_DBS.filter((n) => n !== 'eisdiele')) {
+  test(`/konsole/${name} ohne Anmeldung: 302 auf /sso/start?ziel=…`, async () => {
+    const { app } = testApp();
+    const res = await request(app).get('/konsole/' + name);
+    assert.equal(res.status, 302);
+    assert.equal(res.headers.location, '/sso/start?ziel=' + encodeURIComponent('/konsole/' + name));
+  });
+}
+
+test('/konsole/<db> angemeldet: alle sieben DBs für Schüler, Lehrkraft und Admin', async () => {
+  for (const nutzer of [{}, LEHRKRAFT, ADMIN]) {
+    const t = testApp();
+    const cookie = await anmelden(t, nutzer);
+    for (const name of KONSOLEN_DBS) {
+      const res = await request(t.app).get('/konsole/' + name).set('Cookie', cookie);
+      assert.equal(res.status, 200, `${nutzer.rolle || 'schueler'} ${name}`);
+      assert.match(res.text, /id="sql-eingabe"/);
+    }
+  }
+});
+
+test('/konsole mit unbekannter DB: 404 (auch angemeldet)', async () => {
+  const t = testApp();
+  const cookie = await anmelden(t);
+  for (const pfad of ['/konsole/gibtsnicht', '/konsole/Eisdiele', '/konsole/verhoer', '/konsole/', '/konsole',
+    '/konsole/eisdiele/x', '/konsole.html']) {
+    const res = await request(t.app).get(pfad).set('Cookie', cookie);
+    assert.equal(res.status, 404, pfad);
+  }
+});
+
+test('Freie Ermittlung: /themen verlinkt alle sieben Konsolen, die Eisdiele ohne Anmeldung', async () => {
+  const { app } = testApp();
+  const res = await request(app).get('/themen');
+  assert.match(res.text, /id="freie-ermittlung"/);
+  assert.match(res.text, /Freie Ermittlung/);
+  for (const name of KONSOLEN_DBS) assert.match(res.text, new RegExp(`href="/konsole/${name}"`), name);
+  assert.match(res.text, /href="\/konsole\/eisdiele"[\s\S]*?ohne Anmeldung/);
+});
+
+test('Freie Ermittlung: Startseite verlinkt die Konsolen im angemeldeten Bereich', async () => {
+  const { app } = testApp();
+  const res = await request(app).get('/');
+  const i = res.text.indexOf('id="start-angemeldet"');
+  assert.ok(i > 0);
+  const angemeldet = res.text.slice(i, res.text.indexOf('</section>', i));
+  assert.match(angemeldet, /Freie Ermittlung/);
+  for (const name of KONSOLEN_DBS) assert.match(angemeldet, new RegExp(`href="/konsole/${name}"`), name);
+});
+
+test('Konsolen-Module sind ES-Module ohne Inline-Styles', () => {
+  for (const datei of ['editor', 'schema', 'ergebnis', 'konsole']) {
+    const js = fs.readFileSync(path.join(STATIC, 'js', 'konsole', datei + '.js'), 'utf8');
+    assert.match(js, /^export /m, datei);
+    assert.doesNotMatch(js, /setAttribute\(\s*['"]style['"]/, datei);
+  }
+});
+
 /* ---------- API ---------- */
 
 test('GET /api/akten ist öffentlich und liefert die Akten', async () => {
@@ -189,7 +279,7 @@ test('Browser-Skripte schreiben nie HTML aus Zeichenketten (kein innerHTML)', ()
 });
 
 test('?v= in allen HTML-Seiten gleich der package.json-Version', () => {
-  assert.equal(VERSION, '0.1.0');
+  assert.equal(VERSION, '0.2.0');
   let anzahl = 0;
   for (const datei of htmlDateien()) {
     const html = fs.readFileSync(path.join(PUBLIC, datei), 'utf8');

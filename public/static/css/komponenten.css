@@ -242,3 +242,16 @@ table.daten .mitte { text-align: center; }
 }
 table.daten thead th.ohne-versal { text-transform: none; }
 .fehler-karte section[data-fall] { display: flex; flex-direction: column; gap: var(--a-4); }
+
+/* ---------- Freie Ermittlung: Liste der Datenbanken ---------- */
+.db-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--a-3); }
+.db-liste a {
+  display: flex; flex-direction: column; gap: 2px; min-height: 44px; height: 100%; box-sizing: border-box;
+  padding: var(--a-3) var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); text-decoration: none;
+}
+.db-liste a:hover { border-color: var(--rand-stark); background: var(--flaeche); }
+.db-liste .db-name { font-family: var(--schrift-mono); font-weight: 600; }
+.db-liste .db-akte { font-size: var(--t-xs); color: var(--tinte-2); }
+.db-liste .db-frei { color: var(--gruen); font-weight: 600; }
+.freie-ermittlung-start { display: flex; flex-direction: column; gap: var(--a-2); margin-top: var(--a-4); }
