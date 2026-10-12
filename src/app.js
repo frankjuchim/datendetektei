@@ -7,6 +7,7 @@ const { sicherheitsHeader, pruefeHerkunft, rateLimit } = require('./kern/sicherh
 const { ssoRouten } = require('./routes/sso');
 const { verbundRouten } = require('./routes/verbund');
 const { manifestRoute } = require('./kern/manifest');
+const { seitenRouten } = require('./routes/seiten');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -37,8 +38,10 @@ function erzeugeApp(konfig, db) {
 
   app.get('/api/plattform', manifestRoute(konfig));
   app.use(ssoRouten(konfig, db));
+  app.use(seitenRouten());
 
-  app.use(express.static(PUBLIC_DIR, { maxAge: '1h', index: false }));
+  // Nur public/static/ wird als Verzeichnis ausgeliefert; HTML-Seiten nur über die Routen oben.
+  app.use('/static', express.static(path.join(PUBLIC_DIR, 'static'), { maxAge: '1h', index: false }));
 
   // 404: API als JSON, sonst die statische Fehlerseite.
   app.use((req, res) => {

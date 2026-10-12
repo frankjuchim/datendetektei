@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <title>Datenschutz – Datendetektei</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.1.0">
+  <script src="/static/js/kern/thema.js?v=0.1.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.1.0" defer></script>
+</head>
+<body>
+  <a class="springen" href="#inhalt">Zum Inhalt springen</a>
+  <header class="kopf">
+    <a class="marke" href="/" aria-label="Datendetektei Weserstedt – zur Startseite">
+      <svg class="marke-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <span class="marke-text"><span class="marke-name">Datendetektei</span><span class="marke-ort">Weserstedt</span></span>
+    </a>
+    <div class="kopf-mitte"><span class="kopf-kurs" id="kopf-kurs"></span></div>
+    <div class="kopf-rechts">
+      <a class="portal-link" id="portal-link" href="/" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-haus"/></svg><span class="portal-text">Portal</span></a>
+      <button class="knopf-icon" id="thema-knopf" type="button" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-mond"/></svg></button>
+      <a class="knopf kopf-anmelden" id="kopf-anmelden" href="/sso/start" hidden>Anmelden</a>
+      <details class="ich" id="ich" hidden>
+        <summary class="ich-knopf"><span class="ich-initialen" id="ich-initialen" aria-hidden="true"></span><span class="ich-name" id="ich-name"></span></summary>
+        <div class="ich-menue">
+          <p class="etikett" id="ich-rolle"></p>
+          <a href="/lehrkraft" id="ich-lehrkraft" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Lehrkraft-Bereich</a>
+          <div class="trenner"></div>
+          <a href="/abmelden"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Abmelden</a>
+          <a href="/abmelden/ueberall"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Überall abmelden</a>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main class="inhalt" id="inhalt" tabindex="-1">
+    <div class="seiten-kopf">
+      <span class="etikett">Datenschutz</span>
+      <h1>Datenschutz in der Datendetektei</h1>
+      <p>Diese Seite ergänzt die zentrale Datenschutzerklärung des Portals InfoLabs um das, was nur die Datendetektei betrifft.</p>
+    </div>
+    <div class="karte text">
+      <h2>Zentrale Datenschutzerklärung</h2>
+      <p>Die Datendetektei ist eine Plattform im Verbund InfoLabs. Angemeldet wird ausschließlich über das Portal; dort
+        stehen Konten, Kurscodes und persönliche Codes – die Datendetektei bekommt sie nie zu sehen.
+        <a data-portal-pfad="/datenschutz" href="/datenschutz" hidden>Zur Datenschutzerklärung des Portals</a>
+        <span data-ohne-portal>Die zentrale Datenschutzerklärung findest du im Portal InfoLabs unter „Datenschutz“.</span></p>
+
+      <h2>Verantwortlich</h2>
+      <p><span class="platzhalter">[Angaben der Schule]</span> – Name und Anschrift der Schule, Kontakt der
+        Schulleitung und der oder des Datenschutzbeauftragten.</p>
+
+      <h2>Was die Datendetektei speichert</h2>
+      <ul>
+        <li>die Kennung aus dem Portal (<code>sub</code>), den Anzeigenamen und die Rolle (Schüler, Lehrkraft, Admin),</li>
+        <li>die Kurse (Kennung und Name), in denen du Mitglied bist,</li>
+        <li>den Lernstand je Kurs: Status, Fehlversuche, Tipps und Punkte je Aufgabe, Fallen-Zähler, Verhör-Versuche,
+          Warm-up- und Trainingsstand, Häkchen bei Kernpunkten,</li>
+        <li>je Kurs und Aufgabe häufige Fehlabfragen – ohne Namen oder Kennung, gezählt, höchstens 20 je Aufgabe; sie
+          werden mit dem Kurs gelöscht.</li>
+      </ul>
+
+      <h2>Was nicht gespeichert wird</h2>
+      <ul>
+        <li>keine Freitexte,</li>
+        <li>keine SQL-Entwürfe auf dem Server – sie bleiben nur im Speicher deines Geräts (<code>localStorage</code>),</li>
+        <li>keine Antworten aus Live-Runden nach Rundenende,</li>
+        <li>keine IP-Adressen (nur kurz im Arbeitsspeicher, um Missbrauch zu bremsen),</li>
+        <li>keine Kurscodes, persönlichen Codes oder Passwörter.</li>
+      </ul>
+
+      <h2>Cookies und Gerätespeicher</h2>
+      <p>Zwei technisch notwendige Cookies: <code>dd_s</code> hält die Anmeldung (Schüler 30 Tage, Lehrkräfte 8
+        Stunden), <code>dd_sso_state</code> sichert den Anmeldevorgang für höchstens 10 Minuten. Im Gerätespeicher merkt
+        sich die Seite nur die Hell/Dunkel-Wahl. Es gibt kein Tracking, keine Werbung und keine externen Dienste oder
+        Schriften.</p>
+
+      <h2>Löschung</h2>
+      <p>Wird ein Konto oder ein Kurs im Portal gelöscht, löscht die Datendetektei auf Anforderung des Portals das Konto
+        bzw. die Kursdaten mit dem zugehörigen Lernstand.</p>
+
+      <h2>Deine Rechte und Kontakt</h2>
+      <p>Auskunft, Berichtigung und Löschung: <span class="platzhalter">[Angaben der Schule]</span>.</p>
+    </div>
+  </main>
+  <footer class="fuss">
+    <nav aria-label="Weitere Seiten">
+      <a href="/">Start</a>
+      <a href="/themen">Themen</a>
+      <a href="/gast">Gastmodus</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a data-portal-pfad="/" href="/" hidden>Portal InfoLabs</a>
+    </nav>
+    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden</p>
+  </footer>
+</body>
+</html>

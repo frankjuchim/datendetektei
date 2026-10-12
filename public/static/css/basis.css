@@ -1,0 +1,239 @@
+/* Basis (DESIGN.md §2.7, §5 Rahmen, §6, §7): Reset, Typografie, Kopfzeile, Inhalt, Fußzeile.
+   Nur Tokens aus tokens.css – keine Farbliterale. */
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (min-width: 1700px) { html { font-size: 18px; } } /* Beamer 1920 */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--papier);
+  color: var(--tinte);
+  font-family: var(--schrift-text);
+  font-size: var(--t-m);
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--schrift-titel);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+  letter-spacing: 0.005em;
+}
+h1 { font-size: var(--t-xl); }
+h2 { font-size: var(--t-l); }
+h3 { font-size: 1.125rem; }
+p, ul, ol, dl, figure { margin: 0; }
+ul, ol { padding-left: 1.25em; }
+a { color: var(--blau); text-underline-offset: 0.15em; }
+a:hover { color: var(--tinte); }
+strong { font-weight: 600; }
+code, kbd, .mono { font-family: var(--schrift-mono); font-size: 0.92em; }
+button, input, select, textarea { font: inherit; color: inherit; }
+img, svg { max-width: 100%; }
+[hidden] { display: none !important; }
+
+:focus-visible { outline: 3px solid var(--fokus); outline-offset: 2px; border-radius: 2px; }
+
+.nur-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.springen {
+  position: absolute; left: var(--a-4); top: -100px; z-index: 50;
+  padding: var(--a-3) var(--a-4); background: var(--karte); color: var(--tinte);
+  border: 2px solid var(--fokus); border-radius: var(--radius); font-weight: 600;
+}
+.springen:focus { top: var(--a-2); }
+
+.etikett {
+  font-family: var(--schrift-mono);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tinte-3);
+}
+.leise { color: var(--tinte-2); }
+.zahlen { font-variant-numeric: tabular-nums; }
+
+svg.icon {
+  width: 20px; height: 20px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+svg.icon.gefuellt { fill: currentColor; stroke: none; }
+
+/* ---------- Kopfzeile (DESIGN.md §5: 60 px, klebt oben) ---------- */
+.kopf {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--a-3);
+  min-height: var(--kopf-hoehe);
+  padding-inline: var(--a-4);
+  background: var(--karte);
+  border-bottom: 1px solid var(--rand);
+  box-shadow: 0 1px 0 var(--schatten-farbe);
+}
+.marke {
+  display: flex; align-items: center; gap: var(--a-2);
+  min-height: 44px; min-width: 0;
+  color: var(--tinte); text-decoration: none;
+}
+.marke:hover { color: var(--tinte); }
+.marke-siegel { width: 36px; height: 36px; flex: none; }
+.siegel-ring { fill: none; stroke: var(--siegelrot); stroke-width: 2.5; }
+.siegel-innen { fill: none; stroke: var(--siegelrot); stroke-width: 1; stroke-dasharray: 2 2; }
+.siegel-lupe { fill: none; stroke: var(--tinte); stroke-width: 2.4; }
+.siegel-griff { fill: none; stroke: var(--tinte); stroke-width: 3; stroke-linecap: round; }
+.marke-text { display: flex; flex-direction: column; line-height: 1; min-width: 0; }
+.marke-name {
+  font-family: var(--schrift-titel); font-weight: 700; font-size: 1.375rem;
+  letter-spacing: 0.02em; text-transform: uppercase;
+}
+.marke-ort {
+  font-family: var(--schrift-mono); font-size: 0.6875rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--siegelrot-text); margin-top: 3px;
+}
+.kopf-mitte { flex: 1; min-width: 0; }
+.kopf-kurs {
+  display: block; font-size: var(--t-s); color: var(--tinte-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.kopf-kurs strong { color: var(--tinte); }
+.kopf-rechts { display: flex; align-items: center; gap: var(--a-2); flex: none; }
+
+.portal-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; min-width: 44px; padding: 0 var(--a-3);
+  color: var(--tinte-2); text-decoration: none; font-weight: 500; font-size: var(--t-s);
+  border-radius: var(--radius);
+}
+.portal-link:hover { background: var(--flaeche); color: var(--tinte); }
+
+.knopf-icon {
+  display: inline-grid; place-items: center;
+  width: 44px; height: 44px; padding: 0;
+  border-radius: var(--radius); border: 1px solid transparent; background: transparent;
+  color: var(--tinte-2); cursor: pointer;
+}
+.knopf-icon:hover { background: var(--flaeche); color: var(--tinte); }
+
+.kopf-anmelden { min-height: 44px; }
+
+/* „Ich“-Menü: Anzeigename, Abmelden, Überall abmelden */
+.ich { position: relative; padding-left: var(--a-2); border-left: 1px solid var(--rand); }
+.ich-knopf {
+  display: flex; align-items: center; gap: var(--a-2);
+  min-height: 44px; padding: 0 var(--a-2); border-radius: var(--radius);
+  cursor: pointer; list-style: none; font-weight: 600; font-size: var(--t-s);
+}
+.ich-knopf::-webkit-details-marker { display: none; }
+.ich-knopf:hover { background: var(--flaeche); }
+.ich-knopf::after {
+  content: ""; width: 7px; height: 7px; margin-left: 2px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg); transition: transform var(--dauer) var(--kurve);
+}
+.ich[open] .ich-knopf::after { transform: translateY(2px) rotate(-135deg); }
+.ich-initialen {
+  display: inline-grid; place-items: center; width: 32px; height: 32px; flex: none;
+  border-radius: 50%; border: 2px solid var(--messing-grafik); background: var(--messing-flaeche);
+  color: var(--tinte); font-family: var(--schrift-mono); font-size: 0.75rem; font-weight: 600;
+}
+.ich-name { max-width: 16ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ich-menue {
+  position: absolute; right: 0; top: calc(100% + var(--a-2)); z-index: 40;
+  min-width: 240px; padding: var(--a-2);
+  display: flex; flex-direction: column; gap: var(--a-1);
+  background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius);
+  box-shadow: var(--schatten-2);
+}
+.ich-menue .etikett { padding: var(--a-2) var(--a-3) 0; }
+.ich-menue a {
+  display: flex; align-items: center; gap: var(--a-3);
+  min-height: 44px; padding: 0 var(--a-3); border-radius: var(--radius);
+  color: var(--tinte); text-decoration: none; font-weight: 500;
+}
+.ich-menue a:hover { background: var(--flaeche); }
+.ich-menue .trenner { height: 1px; margin: var(--a-1) 0; background: var(--rand); }
+
+/* ---------- Inhalt ---------- */
+.inhalt {
+  flex: 1;
+  width: 100%;
+  max-width: calc(var(--inhalt-breite) + 2 * var(--a-6));
+  margin: 0 auto;
+  padding: var(--a-6) var(--a-6) var(--a-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--a-6);
+  min-width: 0;
+}
+.inhalt:focus { outline: none; }
+.seiten-kopf { display: flex; flex-direction: column; gap: var(--a-2); max-width: 70ch; }
+.seiten-kopf p { color: var(--tinte-2); max-width: 62ch; }
+.abschnitt { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.abschnitt-kopf { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--a-2) var(--a-4); }
+.text { max-width: 68ch; display: flex; flex-direction: column; gap: var(--a-3); }
+
+/* ---------- Fußzeile ---------- */
+.fuss {
+  border-top: 1px solid var(--rand);
+  padding: var(--a-4) var(--a-6) calc(var(--a-5) + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2) var(--a-5);
+  font-size: var(--t-s); color: var(--tinte-2);
+}
+.fuss nav { display: flex; flex-wrap: wrap; gap: 0 var(--a-1); margin-left: calc(-1 * var(--a-3)); }
+.fuss nav a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--a-3);
+  color: var(--tinte-2); text-decoration: none; border-radius: var(--radius); font-weight: 500;
+}
+.fuss nav a:hover { background: var(--flaeche); color: var(--tinte); }
+.fuss nav a[aria-current="page"] { color: var(--tinte); text-decoration: underline; text-decoration-color: var(--siegelrot); text-decoration-thickness: 2px; }
+.fuss p { font-size: var(--t-xs); color: var(--tinte-3); }
+
+/* ---------- Responsive (DESIGN.md §6) ---------- */
+@media (max-width: 1179px) {
+  .inhalt { padding: var(--a-5) var(--a-5) var(--a-7); gap: var(--a-5); }
+  .fuss { padding-inline: var(--a-5); }
+}
+@media (max-width: 699px) {
+  .kopf { gap: var(--a-1); padding-inline: var(--a-2) var(--a-1); }
+  .kopf-mitte { display: none; }
+  .kopf-rechts { margin-left: auto; gap: 0; }
+  .marke-name { font-size: 1.2rem; }
+  .marke-siegel { width: 32px; height: 32px; }
+  .portal-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  .portal-link { padding: 0; justify-content: center; }
+  .ich { border-left: 0; padding-left: 0; }
+  .ich-name { display: none; }
+  .ich-knopf::after { display: none; }
+  .ich-menue { position: fixed; left: var(--a-4); right: var(--a-4); top: calc(var(--kopf-hoehe) + env(safe-area-inset-top, 0px)); min-width: 0; }
+  .kopf-anmelden { padding: 0 var(--a-3); }
+  .inhalt { padding: var(--a-4) var(--a-4) var(--a-7); }
+  .fuss { padding-inline: var(--a-4); }
+  h1 { font-size: 1.5rem; }
+}
+@media (max-width: 359px) {
+  .marke-ort { display: none; }
+}
+
+/* ---------- Bewegung (DESIGN.md §7) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,218 @@
+/* Design-Tokens „Akten-Noir light“ (docs/DESIGN.md §2). Einzige Datei mit Farbliteralen.
+   Hell auf :root; Dunkel zweimal mit gleichen Werten: über prefers-color-scheme (außer data-theme="light")
+   und über data-theme="dark" (Umschalter in der Kopfzeile). scripts/kontrast_pruefen.js liest diese Datei. */
+
+:root {
+  color-scheme: light;
+
+  /* 2.1 Kernfarben (Spec §8) */
+  --tinte: #1C2B3A;
+  --papier: #F4EDE1;
+  --karte: #FFFDF8;
+  --siegelrot: #B3261E;
+  --messing: #B08D3C;
+  --gruen: #2F6B4F;
+  --blau: #2C5A85;
+  --konsole: #11161C;
+  --konsole-text: #D8E3D0;
+
+  /* 2.2 Abgeleitete Töne */
+  --tinte-2: #46525E;
+  --tinte-3: #58626D;
+  --flaeche: #EBE2D2;
+  --flaeche-2: #E3D8C4;
+  --rand: #D8CCB6;
+  --rand-stark: #8F8270;
+  --siegelrot-text: #B3261E;
+  --messing-text: #7A5E1F;
+  --messing-grafik: #94742B;
+  --auf-akzent: #FFFFFF;
+  --rot-flaeche: #F8E3DF;
+  --gruen-flaeche: #E0EEE5;
+  --blau-flaeche: #E2EAF3;
+  --messing-flaeche: #F3E8CD;
+  --kork: #D9BF98;
+  --kork-punkt: #C8A97C;
+  --wasser: #C9D9E3;
+  --wasser-rand: #A9C1D1;
+  --gruenanlage: #D5DFC4;
+  --strasse: #FBF7EF;
+  --block: #E6DCCB;
+  --nebel: #EFE9DF;
+  --fokus: #2C5A85;
+  --schatten-farbe: rgba(28, 43, 58, 0.14);
+  --schatten-farbe-stark: rgba(28, 43, 58, 0.24);
+
+  /* 2.3 Konsole (in beiden Themes dunkel; nur --konsole, --konsole-flaeche, --konsole-rand wechseln) */
+  --konsole-flaeche: #19212A;
+  --konsole-rand: #2A3540;
+  --konsole-leise: #8A9AA6;
+  --sql-schluessel: #F2A65A;
+  --sql-text: #9BD3A6;
+  --sql-zahl: #8CC4FF;
+  --sql-kommentar: #7F8F99;
+  --sql-aggregat: #E6C77A;
+  --konsole-ausfuehren: #E0574F;
+  --konsole-pruefen: #5FAF86;
+  --konsole-knopf-text: #141B22;
+  --konsole-falle-text: #F5A39D;
+  --konsole-falle-flaeche: #3A2226;
+
+  /* Polaroid: Rahmen immer weiß (es ist ein Foto), Bildgrund dunkel, Reißzwecke mit Verlauf */
+  --polaroid: #FFFFFF;
+  --polaroid-text: #1C2B3A;
+  --polaroid-bild: #20303F;
+  --nadel-licht: #E77A73;
+  --nadel: #B3261E;
+  --nadel-schatten: #6E1510;
+
+  /* 2.4 Daten-Farben */
+  --gruppe-1: #2A64A0;
+  --gruppe-2: #B08D3C;
+  --gruppe-3: #8A4F96;
+  --heat-1: #DCE6F0;
+  --heat-2: #AFC6DD;
+  --heat-3: #7299BF;
+  --heat-4: #3F6E9C;
+  --heat-5: #1F4A73;
+  --heat-text-hell: #1C2B3A;
+  --heat-text-dunkel: #FFFFFF;
+
+  /* 2.5 Abstände (4/8-Raster) */
+  --a-1: 4px;
+  --a-2: 8px;
+  --a-3: 12px;
+  --a-4: 16px;
+  --a-5: 24px;
+  --a-6: 32px;
+  --a-7: 48px;
+  --a-8: 64px;
+
+  /* 2.6 Radien und Schatten */
+  --radius-klein: 3px;
+  --radius: 6px;
+  --radius-gross: 10px;
+  --radius-stempel: 4px;
+  --radius-pille: 999px;
+  --schatten-1: 0 1px 0 var(--schatten-farbe), 0 2px 6px var(--schatten-farbe);
+  --schatten-2: 0 2px 0 var(--schatten-farbe), 0 8px 22px var(--schatten-farbe-stark);
+
+  /* 2.7 Typografie */
+  --schrift-text: "Barlow", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --schrift-titel: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --schrift-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --t-xs: 0.8125rem;
+  --t-s: 0.9375rem;
+  --t-m: 1.0625rem;
+  --t-l: 1.3125rem;
+  --t-xl: 1.75rem;
+  --t-xxl: 2.5rem;
+
+  /* Bewegung und Rahmen (DESIGN.md §5, §7) */
+  --dauer: 220ms;
+  --kurve: cubic-bezier(.2, .7, .2, 1);
+  --kopf-hoehe: 60px;
+  --inhalt-breite: 1320px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --tinte: #E8E1D3;
+    --papier: #141B22;
+    --karte: #1C252E;
+    --siegelrot: #E0574F;
+    --messing: #D4B062;
+    --gruen: #5FAF86;
+    --blau: #7FA9D6;
+    --konsole: #0B0F13;
+    --konsole-text: #D8E3D0;
+    --tinte-2: #BDB6A9;
+    --tinte-3: #9C978E;
+    --flaeche: #24303B;
+    --flaeche-2: #2B3845;
+    --rand: #33414E;
+    --rand-stark: #6E7B87;
+    --siegelrot-text: #EF7068;
+    --messing-text: #D4B062;
+    --messing-grafik: #D4B062;
+    --auf-akzent: #141B22;
+    --rot-flaeche: #2F1D21;
+    --gruen-flaeche: #1E3329;
+    --blau-flaeche: #1F2D3D;
+    --messing-flaeche: #3A3222;
+    --kork: #3A3127;
+    --kork-punkt: #463B2F;
+    --wasser: #1C3142;
+    --wasser-rand: #2A4559;
+    --gruenanlage: #213026;
+    --strasse: #2A3440;
+    --block: #1D2730;
+    --nebel: #222C36;
+    --fokus: #7FA9D6;
+    --schatten-farbe: rgba(0, 0, 0, 0.35);
+    --schatten-farbe-stark: rgba(0, 0, 0, 0.55);
+    --konsole-flaeche: #141A20;
+    --konsole-rand: #26313B;
+    --gruppe-1: #4F8FD6;
+    --gruppe-2: #B08A35;
+    --gruppe-3: #A874C0;
+    --heat-1: #22303E;
+    --heat-2: #2D4760;
+    --heat-3: #3F6587;
+    --heat-4: #6390BE;
+    --heat-5: #9CC0E6;
+    --heat-text-hell: #E8E1D3;
+    --heat-text-dunkel: #141B22;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --tinte: #E8E1D3;
+  --papier: #141B22;
+  --karte: #1C252E;
+  --siegelrot: #E0574F;
+  --messing: #D4B062;
+  --gruen: #5FAF86;
+  --blau: #7FA9D6;
+  --konsole: #0B0F13;
+  --konsole-text: #D8E3D0;
+  --tinte-2: #BDB6A9;
+  --tinte-3: #9C978E;
+  --flaeche: #24303B;
+  --flaeche-2: #2B3845;
+  --rand: #33414E;
+  --rand-stark: #6E7B87;
+  --siegelrot-text: #EF7068;
+  --messing-text: #D4B062;
+  --messing-grafik: #D4B062;
+  --auf-akzent: #141B22;
+  --rot-flaeche: #2F1D21;
+  --gruen-flaeche: #1E3329;
+  --blau-flaeche: #1F2D3D;
+  --messing-flaeche: #3A3222;
+  --kork: #3A3127;
+  --kork-punkt: #463B2F;
+  --wasser: #1C3142;
+  --wasser-rand: #2A4559;
+  --gruenanlage: #213026;
+  --strasse: #2A3440;
+  --block: #1D2730;
+  --nebel: #222C36;
+  --fokus: #7FA9D6;
+  --schatten-farbe: rgba(0, 0, 0, 0.35);
+  --schatten-farbe-stark: rgba(0, 0, 0, 0.55);
+  --konsole-flaeche: #141A20;
+  --konsole-rand: #26313B;
+  --gruppe-1: #4F8FD6;
+  --gruppe-2: #B08A35;
+  --gruppe-3: #A874C0;
+  --heat-1: #22303E;
+  --heat-2: #2D4760;
+  --heat-3: #3F6587;
+  --heat-4: #6390BE;
+  --heat-5: #9CC0E6;
+  --heat-text-hell: #E8E1D3;
+  --heat-text-dunkel: #141B22;
+}

@@ -4,33 +4,86 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
   <meta name="referrer" content="no-referrer">
   <title>Anmeldung – Datendetektei</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.1.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.1.0">
+  <script src="/static/js/kern/thema.js?v=0.1.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.1.0" defer></script>
+  <script src="/static/js/sso-fehler.js?v=0.1.0" defer></script>
 </head>
 <body>
-  <main id="sso-fehler" data-fehler="__FEHLER__">
-    <section data-fall="ungueltig" hidden>
-      <h1>Anmeldung abgelaufen oder ungültig</h1>
-      <p>Die Anmeldung über InfoLabs hat nicht geklappt – vielleicht hat es zu lange gedauert oder du hast die
-        Anmeldung in einem zweiten Tab neu gestartet.</p>
-      <p><a href="/sso/start">Erneut anmelden</a></p>
+  <a class="springen" href="#inhalt">Zum Inhalt springen</a>
+  <header class="kopf">
+    <a class="marke" href="/" aria-label="Datendetektei Weserstedt – zur Startseite">
+      <svg class="marke-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <span class="marke-text"><span class="marke-name">Datendetektei</span><span class="marke-ort">Weserstedt</span></span>
+    </a>
+    <div class="kopf-mitte"><span class="kopf-kurs" id="kopf-kurs"></span></div>
+    <div class="kopf-rechts">
+      <a class="portal-link" id="portal-link" href="/" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-haus"/></svg><span class="portal-text">Portal</span></a>
+      <button class="knopf-icon" id="thema-knopf" type="button" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-mond"/></svg></button>
+      <a class="knopf kopf-anmelden" id="kopf-anmelden" href="/sso/start" hidden>Anmelden</a>
+      <details class="ich" id="ich" hidden>
+        <summary class="ich-knopf"><span class="ich-initialen" id="ich-initialen" aria-hidden="true"></span><span class="ich-name" id="ich-name"></span></summary>
+        <div class="ich-menue">
+          <p class="etikett" id="ich-rolle"></p>
+          <a href="/lehrkraft" id="ich-lehrkraft" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Lehrkraft-Bereich</a>
+          <div class="trenner"></div>
+          <a href="/abmelden"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Abmelden</a>
+          <a href="/abmelden/ueberall"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Überall abmelden</a>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main class="inhalt" id="inhalt" tabindex="-1">
+    <section class="aktendeckel fehler-karte" id="sso-fehler" data-fehler="__FEHLER__" aria-live="polite">
+      <span class="reiter rot">Anmeldung über InfoLabs</span>
+      <div class="aktendeckel-innen">
+        <section data-fall="ungueltig" hidden>
+          <div class="fehler-kopf"><h1>Anmeldung abgelaufen oder ungültig</h1><span class="stempel">Abgelaufen</span></div>
+          <p>Die Anmeldung über InfoLabs hat nicht geklappt – vielleicht hat es zu lange gedauert oder du hast die
+            Anmeldung in einem zweiten Tab neu gestartet.</p>
+          <div class="knopf-reihe"><a class="knopf primaer" href="/sso/start">Erneut anmelden</a><a class="knopf" href="/">Zur Startseite</a></div>
+        </section>
+        <section data-fall="keine_berechtigung" hidden>
+          <div class="fehler-kopf"><h1>Kein Zugang</h1><span class="stempel">Gesperrt</span></div>
+          <p>Kein Zugang – deine Lehrkraft hat die Datendetektei für deinen Kurs nicht freigeschaltet.</p>
+          <div class="knopf-reihe"><a class="knopf primaer" href="__PORTAL_URL__">Zurück zum Portal</a><a class="knopf" href="/gast">Gastmodus</a></div>
+        </section>
+        <section data-fall="abgebrochen" hidden>
+          <div class="fehler-kopf"><h1>Anmeldung abgebrochen</h1></div>
+          <p>Du hast die Anmeldung abgebrochen. Ohne Anmeldung kannst du die Datendetektei im Gastmodus ausprobieren.</p>
+          <div class="knopf-reihe"><a class="knopf primaer" href="/gast">Gastmodus</a><a class="knopf" href="/">Zur Startseite</a></div>
+        </section>
+        <noscript>
+          <h1>Anmeldung nicht abgeschlossen</h1>
+          <p>Die Anmeldung über InfoLabs wurde nicht abgeschlossen.</p>
+          <p><a href="/sso/start">Erneut anmelden</a> · <a href="/">Zur Startseite</a> · <a href="/gast">Gastmodus</a></p>
+        </noscript>
+      </div>
     </section>
-    <section data-fall="keine_berechtigung" hidden>
-      <h1>Kein Zugang</h1>
-      <p>Kein Zugang – deine Lehrkraft hat die Datendetektei für deinen Kurs nicht freigeschaltet.</p>
-      <p><a href="__PORTAL_URL__">Zurück zum Portal</a></p>
-    </section>
-    <section data-fall="abgebrochen" hidden>
-      <h1>Anmeldung abgebrochen</h1>
-      <p>Du hast die Anmeldung abgebrochen. Ohne Anmeldung kannst du die Datendetektei im Gastmodus ausprobieren.</p>
-      <p><a href="/">Zur Startseite</a> · <a href="/gast">Gastmodus</a></p>
-    </section>
-    <noscript>
-      <h1>Anmeldung nicht abgeschlossen</h1>
-      <p>Die Anmeldung über InfoLabs wurde nicht abgeschlossen.</p>
-      <p><a href="/sso/start">Erneut anmelden</a> · <a href="/">Zur Startseite</a> · <a href="/gast">Gastmodus</a></p>
-    </noscript>
   </main>
-  <script src="/static/js/sso-fehler.js?v=0.1.0"></script>
+  <footer class="fuss">
+    <nav aria-label="Weitere Seiten">
+      <a href="/">Start</a>
+      <a href="/themen">Themen</a>
+      <a href="/gast">Gastmodus</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a data-portal-pfad="/" href="/" hidden>Portal InfoLabs</a>
+    </nav>
+    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden</p>
+  </footer>
 </body>
 </html>
