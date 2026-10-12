@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "karten": [
+    {
+      "id": "W-A1-01",
+      "akte": 1,
+      "kategorie": "Relationales Modell",
+      "titel": "Begriffe am Fundbuch",
+      "aufgabe": "Ein Ausschnitt des Fundbuchs:\n\n`FundNr | Bezeichnung | Kategorie | Farbe`\n`20 | Notizbuch | Dokumente | grau`\n`21 | Autoschlüssel | Schlüssel | braun`\n\nBenenne **Tabelle**, **Datensatz**, **Attribut** und **Attributwert** jeweils an einem Beispiel.",
+      "loesung": "Tabelle = Fundsache (das ganze Fundbuch) · Datensatz = eine Zeile, z. B. 21 Autoschlüssel · Attribut = eine Spalte, z. B. Farbe · Attributwert = ein Eintrag, z. B. `braun`.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K01",
+        "DB-K47"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A1-02",
+      "akte": 1,
+      "kategorie": "Abfrage analysieren",
+      "titel": "Klammer-Check",
+      "aufgabe": "Sechs Fundsachen (FundNr: Kategorie, Farbe, Wert):\n- 4: Taschen, blau, 32\n- 9: Spielzeug, rot, 3\n- 10: Kleidung, rot, 27\n- 31: Sonstiges, NULL, 5\n- 73: Sonstiges, gelb, 39\n- 80: Sonstiges, schwarz, 8\n\nWelche liefert die Bedingung? Was ändern Klammern um die OR-Bedingung?",
+      "sql": "SELECT FundNr\nFROM Fundsache\nWHERE Kategorie = 'Sonstiges' OR Farbe = 'rot' AND Wert > 10",
+      "datenbank": "fundbuero",
+      "loesung": "AND bindet stärker: `Kategorie = 'Sonstiges' OR (Farbe = 'rot' AND Wert > 10)` liefert 10, 31, 73, 80. Mit Klammern `(Kategorie = 'Sonstiges' OR Farbe = 'rot') AND Wert > 10` bleiben nur 10 und 73.",
+      "loesungSql": "SELECT FundNr\nFROM Fundsache\nWHERE FundNr IN (4, 9, 10, 31, 73, 80)\n  AND (Kategorie = 'Sonstiges' OR Farbe = 'rot')\n  AND Wert > 10",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K17",
+        "DB-K29"
+      ],
+      "falle": [
+        "P6"
+      ]
+    },
+    {
+      "id": "W-A1-03",
+      "akte": 1,
+      "kategorie": "SQL eine Tabelle",
+      "titel": "Zweistufig sortieren",
+      "aufgabe": "Notiere eine Abfrage, die Bezeichnung, Kategorie und Wert aller Fundsachen ausgibt – sortiert nach Kategorie aufsteigend, innerhalb einer Kategorie nach Wert absteigend.",
+      "datenbank": "fundbuero",
+      "loesung": "Das erste Kriterium sortiert, das zweite entscheidet nur bei Gleichstand. `DESC` gilt nur für Wert.",
+      "loesungSql": "SELECT Bezeichnung, Kategorie, Wert\nFROM Fundsache\nORDER BY Kategorie, Wert DESC",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K21",
+        "DB-K15"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A1-04",
+      "akte": 1,
+      "kategorie": "Schlüssel",
+      "titel": "Schlüsselfrage",
+      "aufgabe": "In einem Ausschnitt des Fundbuchs mit sechs Zeilen kommt jede Bezeichnung nur einmal vor. Begründe, warum Bezeichnung trotzdem kein Primärschlüssel ist.",
+      "loesung": "Ein Primärschlüssel muss für **alle möglichen** Daten eindeutig sein – nicht nur für den Ausschnitt. Morgen kann ein zweites Smartphone abgegeben werden; im ganzen Fundbuch gibt es schon mehrere. Darum ist FundNr der Primärschlüssel.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K02"
+      ],
+      "falle": [
+        "P8"
+      ]
+    },
+    {
+      "id": "W-A1-05",
+      "akte": 1,
+      "kategorie": "SQL eine Tabelle",
+      "titel": "Platzhalter",
+      "aufgabe": "Nenne zu jedem Muster ein passendes und ein unpassendes Wort: `'Sch%'`, `'%ring'`, `'M_tze'`, `'_a%'`.",
+      "loesung": "Zum Beispiel (passend – unpassend): `'Sch%'` Schal – Tasche · `'%ring'` Ohrring – Ringbuch · `'M_tze'` Mütze – Mützen (ein Zeichen zu viel) · `'_a%'` Kamera – Helm. Merke: `%` steht für beliebig viele Zeichen (auch keins), `_` für genau eines.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K19"
+      ],
+      "falle": [
+        "P6"
+      ]
+    },
+    {
+      "id": "W-A1-06",
+      "akte": 1,
+      "kategorie": "SQL eine Tabelle",
+      "titel": "Die NULL-Falle",
+      "aufgabe": "Erkläre, warum diese Abfrage keine Zeile liefert, und korrigiere die Bedingung.",
+      "sql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE AbgeholtAm = NULL",
+      "datenbank": "fundbuero",
+      "loesung": "NULL heißt „weiß keiner“ – ein Vergleich mit NULL ist nie wahr, auch nicht `NULL = NULL`. Richtig ist `IS NULL`.",
+      "loesungSql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE AbgeholtAm IS NULL",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K18"
+      ],
+      "falle": [
+        "P5"
+      ]
+    },
+    {
+      "id": "W-A1-07",
+      "akte": 1,
+      "kategorie": "SQL eine Tabelle",
+      "titel": "Grenzgänger",
+      "aufgabe": "Wird ein Fund vom `'2026-09-30'` von `BETWEEN '2026-09-01' AND '2026-09-30'` erfasst? Korrigiere außerdem die beiden falsch notierten Datumsliterale in der Abfrage.",
+      "sql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Funddatum BETWEEN 2026-09-01 AND '30.09.2026'",
+      "datenbank": "fundbuero",
+      "loesung": "Ja – BETWEEN schließt beide Grenzen ein. Ein Datum steht als Text im Format `'JJJJ-MM-TT'`: `2026-09-01` ohne Hochkommata ist eine Rechnung, `'30.09.2026'` hat das falsche Format.",
+      "loesungSql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Funddatum BETWEEN '2026-09-01' AND '2026-09-30'",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K18",
+        "DB-K32"
+      ],
+      "falle": [
+        "P5",
+        "P6"
+      ]
+    },
+    {
+      "id": "W-A1-08",
+      "akte": 1,
+      "kategorie": "SQL eine Tabelle",
+      "titel": "Top 3",
+      "aufgabe": "Notiere eine Abfrage für die drei wertvollsten **noch nicht abgeholten** Fundsachen mit Bezeichnung und Wert.",
+      "datenbank": "fundbuero",
+      "loesung": "Erst filtern (`IS NULL`), dann absteigend sortieren, dann `LIMIT 3`. LIMIT ohne ORDER BY liefert drei zufällige Zeilen.",
+      "loesungSql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE AbgeholtAm IS NULL\nORDER BY Wert DESC\nLIMIT 3",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K22",
+        "DB-K18",
+        "DB-K21"
+      ],
+      "falle": [
+        "P5"
+      ]
+    }
+  ]
+}
