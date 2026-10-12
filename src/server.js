@@ -9,6 +9,7 @@ const { ladeDatenbanken } = require('./sql/datenbanken');
 const { erzeugeSandbox } = require('./sql/sandbox');
 const { erzeugeInhalte } = require('./services/inhalte');
 const { erzeugePruefer } = require('./sql/pruefer');
+const { ladeWarmupKarten } = require('./services/warmup');
 
 let konfig;
 try {
@@ -61,7 +62,15 @@ try {
   console.error(`Akten konnten nicht geladen werden (letzter Stand bleibt): ${err.message}`);
 }
 
-const app = erzeugeApp(konfig, db, { datenbanken, sandbox, inhalte, pruefer });
+// Warm-up-Karten aus seed/warmup/*.json (bei Fehlern startet die Plattform ohne Warm-up-Trainer).
+let warmupKarten = null;
+try {
+  warmupKarten = ladeWarmupKarten();
+} catch (err) {
+  console.error(`Warm-up-Karten konnten nicht geladen werden: ${err.message}`);
+}
+
+const app = erzeugeApp(konfig, db, { datenbanken, sandbox, inhalte, pruefer, warmupKarten });
 const server = app.listen(konfig.port, () => {
   console.log(`Datendetektei läuft auf Port ${konfig.port}`);
 });
