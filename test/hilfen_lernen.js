@@ -31,7 +31,7 @@ function stubPruefer() {
 
 /**
  * Testumgebung: App + Beispielakte. opt.dateien: weitere Akten-Dateien; opt.konfig: Konfig-Überschreibungen;
- * opt.pruefer: SQL-Prüfer (Standard: Stub).
+ * opt.pruefer: SQL-Prüfer (Standard: Stub); opt.optionen: weitere App-Optionen (z. B. warmupKarten).
  */
 function umgebung(opt = {}) {
   const pruefer = opt.pruefer || stubPruefer();
@@ -39,7 +39,7 @@ function umgebung(opt = {}) {
   const t = testApp(opt.konfig || {}, (db) => {
     inhalte = erzeugeInhalte(db);
     inhalte.laden({ verzeichnis: KEINE_AKTEN, dateien: [FIXTURE, ...(opt.dateien || [])] });
-    return { inhalte, pruefer };
+    return { inhalte, pruefer, ...(opt.optionen || {}) };
   });
   return { ...t, inhalte, pruefer };
 }

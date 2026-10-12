@@ -4,7 +4,8 @@
 // /api/db/ nicht). sandbox = erzeugeSandbox() aus src/sql/sandbox.js (optional; ohne sie gibt es POST /api/sql/ausfuehren
 // nicht). inhalte = erzeugeInhalte(db) aus src/services/inhalte.js (optional; ohne sie meldet das Manifest den Standard-umfang
 // und es gibt keine Lern-API). pruefer = erzeugePruefer({ sandbox, schemata }) aus src/sql/pruefer.js (optional; ohne ihn
-// sind sql-Aufgaben nicht prüfbar). Die Dienste stand und lernen liegen in app.locals (Tests).
+// sind sql-Aufgaben nicht prüfbar). warmupKarten = ladeWarmupKarten() aus src/services/warmup.js (optional; ohne sie
+// gibt es keinen Warm-up-Trainer). Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
 const express = require('express');
@@ -18,11 +19,15 @@ const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
 const { erzeugeStand } = require('./services/stand');
 const { erzeugeLernen } = require('./services/lernen');
+const { warmupRouten } = require('./routes/warmup');
+const { trainingRouten } = require('./routes/training');
+const { erzeugeWarmup } = require('./services/warmup');
+const { erzeugeTraining } = require('./services/training');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
-function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = null, pruefer = null } = {}) {
+function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', konfig.trustProxy || 0);
@@ -35,6 +40,9 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   const lernen = inhalte ? erzeugeLernen({ db, inhalte, stand, pruefer, jetzt: uhr }) : null;
   app.locals.stand = stand;
   app.locals.lernen = lernen;
+  // Warm-up-Trainer (nur mit Karten) und Trainingsplatz T1–T3 (Plan Phase 3 Task 8).
+  const warmup = lernen && warmupKarten ? erzeugeWarmup({ db, lernen, stand, inhalte, karten: warmupKarten, jetzt: uhr }) : null;
+  const training = lernen ? erzeugeTraining({ db, lernen, geheimnis: konfig.sessionSecret, jetzt: uhr }) : null;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -58,6 +66,8 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   app.use(seitenRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
   if (lernen) app.use(schuelerRouten({ lernen, konfig }));
+  if (warmup) app.use(warmupRouten({ warmup, konfig }));
+  if (training) app.use(trainingRouten({ training, konfig }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());
