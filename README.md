@@ -59,6 +59,14 @@ Schüler-SQL läuft im Browser (sql.js im Web Worker, Abbruch nach 3 s) und zur 
 Sandbox aus Kindprozessen (nur lesend, 1,5 s, 5 000 Zeilen). Ist WebAssembly gesperrt, führt der Server auch
 „Ausführen“ aus. Freie Ermittlung: `/konsole/<db>` (Eisdiele ohne Anmeldung).
 
+## Inhalte
+
+Lab-Aufgaben, Verhöre und Warm-up-Karten liegen als JSON in `seed/akten/akte<n>.json` und `seed/warmup/warmup_a<n>.json`
+(Format: [`docs/AUFGABENFORMAT.md`](docs/AUFGABENFORMAT.md)), der Gastmodus in `seed/gast/probefall.json`. Der Server
+spielt sie beim Start per Upsert ein; `npm run validate` prüft Format, Verweise und jede SQL-Musterlösung in der Sandbox
+auf Haupt-DB und allen Varianten (EH-§8-konform). Verhör-Kontexte (eigene, nicht öffentliche DBs) liegen unter
+`seed/datenbanken/verhoer/`.
+
 ## Betrieb (CapRover)
 
 Umgebungsvariablen (Vertrag §8):

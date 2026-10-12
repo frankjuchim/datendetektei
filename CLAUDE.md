@@ -54,7 +54,7 @@ scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 2; spätere Phasen ergänzen hier)
+## Befehle (Stand Phase 3; spätere Phasen ergänzen hier)
 
 ```
 npm install
@@ -66,7 +66,8 @@ npm run fonts            # woff2 aus @fontsource nach public/static/fonts kopier
 npm run db               # Übungs- und Verhör-DBs aus seed/datenbanken bauen → <db>/basis.sql (deterministisch)
 npm run db:pruefen       # neu bauen und byteweise mit basis.sql vergleichen, alle Varianten prüfen (CI)
 npm run sqljs            # sql.js-Vendor-Dateien nach public/static/vendor/sqljs kopieren (nur bei Versionswechsel)
-npm run validate         # (ab Phase 2/3) Akten-JSON + SQL-Lösungen auf allen DB-Varianten
+npm run validate         # seed/akten, seed/warmup, seed/gast: Format + jede SQL-Lösung auf allen Varianten, EH-konform
+AKTEN_DATEIEN=test/fixtures/akte_beispiel.json npm run dev   # zusätzlich die Beispielakte (welt 9) laden
 npm run e2e              # Playwright (test/e2e/*.e2e.js); Chromium aus /opt/pw-browsers bzw. CHROMIUM_PFAD; SCREENSHOTS=1 für Fotos
 npm run pruefen          # alles: test, validate, Material-SQL, Materialien
 ```

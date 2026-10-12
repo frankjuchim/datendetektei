@@ -21,6 +21,8 @@ jobs:
       - run: npm test
       - name: Datenbanken reproduzierbar (basis.sql + Varianten)
         run: npm run db:pruefen
+      - name: Inhalte (Akten, Warm-up, Probefall – jede SQL-Lösung auf allen Varianten, EH-konform)
+        run: npm run validate
       - name: Chromium für die E2E-Tests
         run: npx playwright-core install --with-deps chromium
       - name: E2E (Konsole, Worker, Sichtprüfung)
