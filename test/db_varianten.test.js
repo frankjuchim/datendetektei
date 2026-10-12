@@ -21,6 +21,7 @@ const ERWARTET = {
   stadtfest: ['null', 'gleichnamig', 'grenze', 'gleichstand', 'leer'],
   tus: ['null', 'gleichnamig', 'grenze', 'leer'],
   detektei: ['null', 'gleichnamig', 'grenze', 'gleichstand', 'leer'],
+  datenspuren: ['null', 'gleichnamig', 'grenze', 'gleichstand', 'leer'],
   eisdiele: []
 };
 
@@ -53,7 +54,7 @@ const spalte = (db, sql, ...p) => db.prepare(sql).pluck().all(...p);
 test('varianten(): Typen je DB in fester Reihenfolge; DB ohne varianten/-Ordner hat keine', () => {
   assert.deepEqual(bau.VARIANTEN_TYPEN, ['null', 'gleichnamig', 'grenze', 'gleichstand', 'leer']);
   for (const [name, typen] of Object.entries(ERWARTET)) assert.deepEqual(bau.varianten(name), typen, name);
-  assert.deepEqual(bau.varianten('datenspuren', { quellen: fs.mkdtempSync(path.join(os.tmpdir(), 'var-')) }), []);
+  assert.deepEqual(bau.varianten('probe', { quellen: fs.mkdtempSync(path.join(os.tmpdir(), 'var-')) }), []);
 });
 
 test('varianten(): unbekannter Dateiname im varianten/-Ordner ist ein Fehler', () => {
@@ -148,6 +149,7 @@ test('lauf --pruefen baut und prüft auch alle Varianten (Exit 1 bei kaputtem De
 // ---------------------------------------------------------------- alle echten Varianten
 
 for (const [name, typen] of Object.entries(ERWARTET)) {
+  if (!RESERVIERT[name]) continue; // Datenspuren: Text-Tokens, eigener Test unten
   for (const typ of typen) {
     test(`${name}/${typ}: baut fehlerfrei, neue Schlüssel im reservierten Bereich, Haupt-Daten unverändert`, () => {
       const h = haupt(name);
@@ -578,4 +580,165 @@ test('detektei/leer: Fall 9041 ohne alles, Ermittler 902 ohne Fall, Ort 9042 ohn
   assert.ok(!jeLeitung.includes(902));
   const jeOrt = spalte(v, 'SELECT Ort.OrtNr FROM Ort, Aussage WHERE Ort.OrtNr = Aussage.OrtNr GROUP BY Ort.OrtNr');
   assert.ok(!jeOrt.includes(9042));
+});
+
+// ---------------------------------------------------------------- Datenspuren
+// Exporte ohne künstliche Ganzzahl-Schlüssel: neue Einwohner ab 9001, neue Tokens/Geräte mit Ziffernteil ab 9001
+// (z. B. 'K-9021', 'WA-9041'), die es in der Haupt-DB noch nicht gibt.
+
+const DS_TABELLEN = [
+  { tabelle: 'Einwohner', schluessel: ['EinwohnerNr'], token: null },
+  { tabelle: 'RadExport', schluessel: ['KundenToken', 'Start'], token: 'KundenToken' },
+  { tabelle: 'FestZahlung', schluessel: ['KartenToken', 'Zeitpunkt'], token: 'KartenToken' },
+  { tabelle: 'VereinExport', schluessel: ['MitgliedToken', 'Abteilung'], token: 'MitgliedToken' },
+  { tabelle: 'AppCheckin', schluessel: ['Geraet', 'Zeitpunkt'], token: 'Geraet' }
+];
+
+for (const typ of ERWARTET.datenspuren) {
+  test(`datenspuren/${typ}: baut fehlerfrei, neue Schlüssel/Tokens im reservierten Bereich, Haupt-Daten unverändert`, () => {
+    const h = haupt('datenspuren');
+    const v = variante('datenspuren', typ);
+    assert.equal(v.pragma('integrity_check', { simple: true }), 'ok');
+    let neu = 0;
+    for (const { tabelle, schluessel, token } of DS_TABELLEN) {
+      const ordnung = schluessel.map((s) => `"${s}"`).join(', ');
+      const k = (z) => JSON.stringify(schluessel.map((s) => z[s]));
+      const vorher = alle(h, `SELECT * FROM ${tabelle} ORDER BY ${ordnung}`);
+      const nachher = alle(v, `SELECT * FROM ${tabelle} ORDER BY ${ordnung}`);
+      const alt = new Map(vorher.map((z) => [k(z), z]));
+      const altTokens = token ? new Set(vorher.map((z) => z[token])) : null;
+      for (const z of nachher) {
+        if (alt.has(k(z))) {
+          assert.deepEqual(z, alt.get(k(z)), `${tabelle}: Haupt-Datensatz verändert`);
+          continue;
+        }
+        neu++;
+        if (token) {
+          assert.ok(!altTokens.has(z[token]), `${tabelle}: Token ${z[token]} gibt es schon in der Haupt-DB`);
+          assert.match(z[token], /^[A-Z]+-9[0-9A-F]{3}$/);
+          assert.ok(Number.parseInt(z[token].split('-')[1], 16) >= 0x9001, `${tabelle}: ${z[token]} unter 9001`);
+        } else {
+          assert.ok(z.EinwohnerNr >= 9001, `Einwohner ${z.EinwohnerNr} liegt nicht im reservierten Bereich`);
+        }
+      }
+      // gelöscht wird nur in „leer“ (Einwohner im Stadtteil Deichkamp)
+      const geblieben = new Set(nachher.map(k));
+      const weg = vorher.filter((z) => !geblieben.has(k(z)));
+      if (typ === 'leer' && tabelle === 'Einwohner') {
+        assert.ok(weg.length > 0 && weg.every((z) => z.Stadtteil === 'Deichkamp'));
+      } else {
+        assert.deepEqual(weg, [], `${tabelle}: Haupt-Datensätze gelöscht`);
+      }
+    }
+    assert.ok(neu > 0, 'Delta fügt keinen Datensatz hinzu');
+  });
+}
+
+test('datenspuren/null: V-9001 ohne Geburtsjahr in Tischtennis – != 1988 und = NULL verlieren ihn', () => {
+  const v = variante('datenspuren', 'null');
+  assert.deepEqual(alle(v, "SELECT * FROM VereinExport WHERE MitgliedToken = 'V-9001'"),
+    [{ MitgliedToken: 'V-9001', Geburtsjahr: null, Abteilung: 'Tischtennis', Stadtteil: 'Hafenviertel' }]);
+  const falsch = spalte(v, `SELECT MitgliedToken FROM VereinExport
+    WHERE Abteilung = 'Tischtennis' AND Geburtsjahr != 1988`);
+  const richtig = spalte(v, `SELECT MitgliedToken FROM VereinExport
+    WHERE Abteilung = 'Tischtennis' AND (Geburtsjahr != 1988 OR Geburtsjahr IS NULL)`);
+  assert.ok(richtig.includes('V-9001') && !falsch.includes('V-9001'));
+  assert.equal(richtig.length, falsch.length + 2); // V-9952 (Nora Falter) und V-9001
+  assert.equal(wert(v, 'SELECT COUNT(*) FROM VereinExport WHERE Geburtsjahr = NULL'), 0);
+  assert.deepEqual(spalte(v, 'SELECT MitgliedToken FROM VereinExport WHERE Geburtsjahr IS NULL ORDER BY 1'),
+    ['V-9001', 'V-9952']);
+  // Stufe 5 bleibt eindeutig
+  assert.deepEqual(spalte(v, `SELECT MitgliedToken FROM VereinExport
+    WHERE Geburtsjahr = 1988 AND Stadtteil = 'Hafenviertel' AND Abteilung = 'Tischtennis'`), ['V-2571']);
+});
+
+test('datenspuren/gleichnamig: zweiter Ole Brakhage (2001, Nordheide) – Suche nach Namen ist mehrdeutig', () => {
+  const v = variante('datenspuren', 'gleichnamig');
+  assert.deepEqual(alle(v, 'SELECT * FROM Einwohner WHERE EinwohnerNr = 9011'), [{
+    EinwohnerNr: 9011, Vorname: 'Ole', Nachname: 'Brakhage', Jahrgang: 2001, Stadtteil: 'Nordheide', Strasse: 'Heideweg 4'
+  }]);
+  const ueberName = "SELECT Strasse FROM Einwohner WHERE Vorname = 'Ole' AND Nachname = 'Brakhage' ORDER BY Strasse";
+  assert.deepEqual(spalte(haupt('datenspuren'), ueberName), ['Lotsengang 2']);
+  assert.deepEqual(spalte(v, ueberName), ['Heideweg 4', 'Lotsengang 2']);
+  // Abgleich mit dem Vereinseintrag V-4417 (1988, Hafenviertel, Fußball) über Jahrgang + Stadtteil bleibt richtig
+  const ueberMerkmale = `SELECT Einwohner.EinwohnerNr FROM VereinExport, Einwohner
+    WHERE VereinExport.Geburtsjahr = Einwohner.Jahrgang AND VereinExport.Stadtteil = Einwohner.Stadtteil
+      AND VereinExport.MitgliedToken = 'V-4417' ORDER BY Einwohner.EinwohnerNr`;
+  assert.deepEqual(spalte(v, ueberMerkmale), [1042, 1107, 1163]);
+});
+
+const STUFE1_MIT_KLAMMERN = `SELECT KundenToken, COUNT(*) AS Fahrten FROM RadExport
+  WHERE StartStation = 'Hafenkante'
+    AND (Start BETWEEN '2026-09-08 00:00' AND '2026-09-08 04:00'
+      OR Start BETWEEN '2026-09-09 00:00' AND '2026-09-09 04:00'
+      OR Start BETWEEN '2026-09-10 00:00' AND '2026-09-10 04:00'
+      OR Start BETWEEN '2026-09-11 00:00' AND '2026-09-11 04:00'
+      OR Start BETWEEN '2026-09-12 00:00' AND '2026-09-12 04:00')
+  GROUP BY KundenToken ORDER BY KundenToken`;
+const STUFE1_OHNE_KLAMMERN = `SELECT KundenToken, COUNT(*) AS Fahrten FROM RadExport
+  WHERE StartStation = 'Hafenkante'
+    AND Start BETWEEN '2026-09-08 00:00' AND '2026-09-08 04:00'
+     OR Start BETWEEN '2026-09-09 00:00' AND '2026-09-09 04:00'
+     OR Start BETWEEN '2026-09-10 00:00' AND '2026-09-10 04:00'
+     OR Start BETWEEN '2026-09-11 00:00' AND '2026-09-11 04:00'
+     OR Start BETWEEN '2026-09-12 00:00' AND '2026-09-12 04:00'
+  GROUP BY KundenToken ORDER BY KundenToken`;
+
+test('datenspuren/grenze: Kartenzahlung genau 23:00 und Nachtfahrt ab Marktplatz entlarven BETWEEN und fehlende Klammern', () => {
+  const h = haupt('datenspuren');
+  const v = variante('datenspuren', 'grenze');
+  assert.deepEqual(alle(v, "SELECT StandNr, Zeitpunkt FROM FestZahlung WHERE KartenToken = 'K-9021'"),
+    [{ StandNr: 4, Zeitpunkt: '2026-08-29 23:00' }]);
+  assert.deepEqual(alle(v, "SELECT * FROM RadExport WHERE KundenToken = 'R-9022'"), [{
+    KundenToken: 'R-9022', Jahrgang: 1979, Stadtteil: 'Altstadt', Tarif: 'Basis', StartStation: 'Marktplatz',
+    Start: '2026-09-10 03:40'
+  }]);
+  const stunde = (bis) => `SELECT COUNT(*) FROM FestZahlung
+    WHERE StandNr = 4 AND Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 ${bis}'`;
+  assert.equal(wert(h, stunde('23:00')), 0);
+  assert.equal(wert(v, stunde('23:00')), 1);
+  assert.equal(wert(v, stunde('22:59')), 0);
+  // Stufe 1: auf der Haupt-DB liefert die Fehlabfrage zufällig dasselbe, auf der Variante eine Zeile mehr
+  assert.deepEqual(alle(h, STUFE1_OHNE_KLAMMERN), alle(h, STUFE1_MIT_KLAMMERN));
+  assert.deepEqual(alle(v, STUFE1_MIT_KLAMMERN), [{ KundenToken: 'R-7F3A', Fahrten: 5 }]);
+  assert.deepEqual(alle(v, STUFE1_OHNE_KLAMMERN),
+    [{ KundenToken: 'R-7F3A', Fahrten: 5 }, { KundenToken: 'R-9022', Fahrten: 1 }]);
+});
+
+const GRUPPEN = `SELECT Jahrgang, Stadtteil, COUNT(*) AS Anzahl FROM Einwohner
+  GROUP BY Jahrgang, Stadtteil ORDER BY Anzahl DESC, Jahrgang`;
+
+test('datenspuren/gleichstand: zwei größte (Jahrgang, Stadtteil)-Gruppen gleich groß – LIMIT 1 verliert eine', () => {
+  const h = haupt('datenspuren');
+  const v = variante('datenspuren', 'gleichstand');
+  const groesste = (db) => {
+    const g = alle(db, GRUPPEN);
+    return g.filter((z) => z.Anzahl === g[0].Anzahl).map((z) => [z.Jahrgang, z.Stadtteil, z.Anzahl]);
+  };
+  assert.deepEqual(groesste(h), [[1991, 'Bahnhofsviertel', 4]]);
+  assert.deepEqual(groesste(v), [[1983, 'Nordheide', 4], [1991, 'Bahnhofsviertel', 4]]);
+  assert.equal(alle(v, `${GRUPPEN} LIMIT 1`).length, 1);
+  // Reservierung bleibt: 1988 + Hafenviertel genau dreimal
+  assert.equal(wert(v, "SELECT COUNT(*) FROM Einwohner WHERE Jahrgang = 1988 AND Stadtteil = 'Hafenviertel'"), 3);
+});
+
+test('datenspuren/leer: Deichkamp ohne Einwohner, WA-9041 nur an Adressen ohne Einwohner', () => {
+  const h = haupt('datenspuren');
+  const v = variante('datenspuren', 'leer');
+  const jeStadtteil = 'SELECT Stadtteil FROM Einwohner GROUP BY Stadtteil ORDER BY Stadtteil';
+  assert.ok(spalte(h, jeStadtteil).includes('Deichkamp'));
+  assert.ok(!spalte(v, jeStadtteil).includes('Deichkamp'));
+  assert.equal(spalte(v, jeStadtteil).length, 7);
+  const orte = spalte(v, "SELECT Ort FROM AppCheckin WHERE Geraet = 'WA-9041'");
+  assert.ok(orte.length >= 2);
+  const zeiten = spalte(v, "SELECT Zeitpunkt FROM AppCheckin WHERE Geraet = 'WA-9041'");
+  assert.ok(zeiten.every((t) => t.slice(11) < '06:00'), 'nächtliche Adress-Check-ins');
+  const verbund = `SELECT COUNT(*) FROM AppCheckin, Einwohner
+    WHERE AppCheckin.Ort = Einwohner.Strasse AND AppCheckin.Geraet = 'WA-9041'`;
+  assert.equal(wert(v, verbund), 0);
+  // in der Haupt-DB wohnte an diesen Adressen jemand (Deichkamp)
+  for (const ort of new Set(orte)) {
+    assert.equal(wert(v, 'SELECT COUNT(*) FROM Einwohner WHERE Strasse = ?', ort), 0, ort);
+    assert.equal(wert(h, 'SELECT Stadtteil FROM Einwohner WHERE Strasse = ?', ort), 'Deichkamp', ort);
+  }
 });
