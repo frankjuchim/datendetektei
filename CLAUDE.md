@@ -46,7 +46,7 @@ src/services/  inhalte, lernen, verhoer, warmup, training, live, auswertung, mat
 src/routes/    schueler, lehrkraft, admin, gast, live, sso, verbund
 public/        Seiten + static/{css,fonts,img,js,vendor}; sql.js vendort (sql-wasm.js/.wasm, sql-asm.js)
 seed/          akten/*.json, datenbanken/<name>/{schema,pflicht}.sql + varianten/*.sql, warmup/, gast/, arbeitsblaetter.json
-materialien/   docx/pptx je Akte (maßgeblich) + erzeugte PDFs: Arbeitsblaetter_PDF = Schülerfassungen (öffentlich, auch
+materialien/   docx/pptx je Akte (maßgeblich) + erzeugte PDFs: Arbeitsblaetter_PDF = Schülerfassungen (nur angemeldet; öffentlich nur Gast-Auswahl Gast_PDF, E13; auch
                Präsentations-Handouts), Loesungen_Portal + Lehrkraft_PDF nur Lehrkraft, Originale (docx/pptx) nur
                Superadmin – jeweils Whitelist verzeichnis.json (Spec §12.4)
 werkzeuge/     Python: *_pdf.py, material_sql_pruefen.py, materialien_pruefen.py, video_folien.py, fonts/

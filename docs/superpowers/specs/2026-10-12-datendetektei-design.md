@@ -28,6 +28,7 @@ werden hier eingetragen (Abschnitt 18, Änderungsprotokoll), bevor sie umgesetzt
 | E9 | Einsatz im eigenen Kurs **im nächsten Schuljahr** → Qualität vor Tempo, Komplettbau vor dem Start | Kein MVP-Zwang; trotzdem früher Deploy des Gerüsts für Portal-Anbindung |
 | E10 | **Steckbrief-Hinweis** einer Akte erscheint, sobald das Verhör der Akte besiegt ist **oder** die Lehrkraft die nächste Akte freischaltet | Kein Vorgriff auf Lösungen innerhalb einer Akte (Planungs-Präzisierung nach Story-Bibel) |
 | E12 | **Drei Ausgabestufen für Material:** Schülerfassungen als PDF (Arbeitsblätter, Präsentations-Handouts, Warm-up-Karten ohne Lösungen), Lehrkraftfassungen als PDF (zusätzlich Lösungen, Erwartungshorizonte, Klausuren, Lehrerhinweise, Präsentationen mit Notizen), **Originale docx/pptx nur für den Superadmin** (Download in der Plattform + Repo) | Abschnitt 12.4 |
+| E13 | **Materialzugriff nach Rolle** (Entscheidung Frank, 2026-10-12): Im Gastmodus sind nur einzelne, gelistete Schüler- und Lehrkraft-PDFs öffentlich (Demo); alle übrigen PDFs gibt es erst nach Anmeldung, jeweils für die passende Rolle | Abschnitt 12.4, Whitelist `materialien/Gast_PDF/verzeichnis.json` |
 | E11 | Akte 6 ist **rein per SQL** lösbar: `Datenspuren.Einwohner` erhält die Spalte `Strasse`; nächtliche App-Check-ins verraten die Wohnadresse | Lerneffekt Datenschutz (Standortdaten); Schlussplädoyer ohne Unterabfragen in 6 Stufen (`seed/datenbanken/datenspuren/LIESMICH.md`) |
 
 ---
@@ -628,7 +629,7 @@ laden, Sicherung, **Originale** (docx/pptx aus `materialien/Originale/verzeichni
 ### 7.12 Öffentliche Seiten
 - `/gast` – Probefall „Eisdiele Weserstedt“ (eigene Mini-DB, 6 Demo-Aufgaben inkl. Konsole und Zeitlupe; Lehrkraft-
   Demo mit erfundenem Kurs; nichts wird gespeichert; nie echte Aufgaben).
-- `/themen` – alle Akten/Ermittlungen mit DS, Inhalten, Kompetenzen, AB-PDF (Schülerfassung), Video-Link, Warm-up-PDF
+- `/themen` – alle Akten/Ermittlungen mit DS, Inhalten, Kompetenzen, Materialliste (PDF-Download nur nach Anmeldung bzw. Gast-Auswahl, E13), Video-Link, Warm-up-PDF
   ohne Lösungsteil; Querschnitte „nach Falle“ und „nach Aufgabentyp“; keine Lösungen.
 - `/board/<boardSchluessel>` – Beamer-Board (Top 15, Akten-Fortschritt, letzte Erfolge, 20 s Aktualisierung), nur
   wenn im Kurs aktiviert.
@@ -854,9 +855,10 @@ materialien/
   Kuer/                     K1_Eigene_Datenbank, K2_Escape_Room
   Warm-up/                  DD_Warm-up-Karten_A<n>.docx + warmup_a<n>.json
   Videos/                   NN_Kurztitel/video.json → Folien.pptx + Skript.md (erzeugt)
-  Arbeitsblaetter_PDF/      ERZEUGT, Schülerfassungen (öffentlich): Arbeitsblätter, Präsentations-Handouts,
+  Arbeitsblaetter_PDF/      ERZEUGT, Schülerfassungen (nur angemeldet, E13): Arbeitsblätter, Präsentations-Handouts,
                             Warm-up-Karten ohne Lösungsteil, Ermittler-Handbuch, Unplugged-Kopiervorlagen – nie Lösungen
   Loesungen_Portal/         ERZEUGT, nur Lehrkraft
+  Gast_PDF/                 nur verzeichnis.json: öffentliche Demo-Auswahl (einzelne Schüler-/Lehrkraft-PDFs, E13)
   Lehrkraft_PDF/            ERZEUGT, nur Lehrkraft, + verzeichnis.json (Whitelist)
   Originale/                ERZEUGT: nur verzeichnis.json (Whitelist der docx/pptx für den Superadmin-Download)
 ```
@@ -874,7 +876,7 @@ schreibt `materialien/Originale/verzeichnis.json`.
 
 ### 12.4 Ausgabeformate und Zugriff
 
-| Material | Schüler (PDF, öffentlich über `/themen` und je Ermittlung) | Lehrkraft (PDF, angemeldet, Whitelist) | Superadmin (Original) |
+| Material | Schüler (PDF, **angemeldet**; nur die Gast-Auswahl öffentlich, s. u.) | Lehrkraft (PDF, angemeldet, Whitelist) | Superadmin (Original) |
 |---|---|---|---|
 | Arbeitsblätter | ✔ Aufgabenfassung | ✔ + Lösung | docx |
 | Präsentationen | ✔ Handout ohne Notizen/Lösungsfolien | ✔ mit Notizenseiten | pptx |
@@ -885,7 +887,16 @@ schreibt `materialien/Originale/verzeichnis.json`.
 | Klausur, Nachschreibklausur | – | ✔ + Erwartungshorizont | docx |
 | Video-Folien und Drehbücher | – | ✔ (Folien als PDF) | pptx/md |
 
-Tests sichern ab: kein Lösungs-, Erwartungshorizont- oder Klausur-PDF im öffentlichen Ordner; Lehrkraft-Downloads
+**Zugriff nach Rolle (E13):** Schülerfassungen bekommt nur, wer angemeldet ist (Rolle `schueler`, `lehrkraft` oder
+`superadmin`), Lehrkraftfassungen nur `lehrkraft`/`superadmin`, Originale nur `superadmin`. **Öffentlich** (Gastmodus
+`/gast`, ohne Anmeldung) ist nur eine kleine, ausdrücklich gelistete **Demo-Auswahl**: einzelne Schüler-PDFs und
+einzelne Lehrkraft-PDFs, die Frank festlegt (Whitelist `materialien/Gast_PDF/verzeichnis.json`, Standard: leer, bis
+Frank auswählt; keine Lösungen zu echten Lab-/Verhör-/Klausuraufgaben, die nicht ohnehin in der Demo stehen). Die
+Themenseite nennt die übrigen Materialien nur (Titel, Akte, Niveau) mit dem Hinweis „nach Anmeldung“.
+
+Tests sichern ab: ohne Anmeldung ist jede PDF außerhalb der Gast-Whitelist 404 (bzw. 302 auf `/sso/start` bei
+Seitenaufrufen); kein Lösungs-, Erwartungshorizont- oder Klausur-PDF in der Gast-Auswahl, außer Frank listet es
+ausdrücklich; Lehrkraft-Downloads
 nur angemeldet und nur aus der Whitelist; Originale nur für die Rolle `superadmin` (sonst 404). Die Originale kommen
 nur ins Docker-Image, wenn `ORIGINALE_IM_IMAGE=1` gesetzt ist (Standard: ja, Größe prüfen).
 
@@ -1064,3 +1075,4 @@ Zeitrahmen (Vorschlag, Einsatz nächstes Schuljahr): Phasen 1–3 bis Ende Febru
 | 2026-10-12 | **Phase 1, Vertragsstand:** `labs/VERTRAG.md` liegt inzwischen als **v1.2** vor (Anforderungsniveaus: Niveau-Übersicht eA/gA ohne Anmeldung, Manifest `niveaus` KANN, `urls.niveaus` SOLL). Die Plattform folgt v1.2: Manifest `vertrag: "1.2"`, `niveaus: ["eA","gA"]`, `urls.niveaus: "/themen#niveaus"`, `kurs` nennt beide Niveaus; `/themen` erhält den Abschnitt `#niveaus` (Akte 5 nur eA, Abschnitt 3.4). Unser Änderungsvorschlag heißt damit **1.3** (`docs/VERTRAG_VORSCHLAG_1.3.md`); Verweise in README, CLAUDE.md, Abschnitt 15 angepasst. |
 | 2026-10-12 | **Phase 1, Umsetzungsentscheidungen:** `PLATTFORM_URL` und `PORTAL_URL` sind Pflicht (Vertrag §8 erlaubt „sonst aus der Anfrage“; im Modus `portal` wäre ein aus dem Host-Header abgeleiteter Rücksprung fälschbar). SSO-Fehlerseite: ungültig/abgelaufen/state → 401, `keine_berechtigung` → 403, `abgebrochen` → 200, nie eine Sitzung. Anzeigename im Token 1–200 Zeichen (Portal erlaubt Lehrkraft-Namen bis 80). Ein per Verbund-API gesperrter Kurs wird durch einen Login nicht entsperrt (nur `kurs-aendern` mit `aktiv: true`). Neuer öffentlicher Endpunkt `GET /api/akten` (nr, titel, niveaus – keine Inhalte). Aus `public/` wird nur `/static` als Verzeichnis ausgeliefert, Seiten über eigene Routen (sonst umginge `/lehrkraft.html` die Rechteprüfung). Niveau-Tabelle: Kür K1 bei gA „entfällt“ (Abschnitt 3.4 nennt für gA nur K2) – Bestätigung durch Frank offen. |
 | 2026-10-12 | **Deploy-Weg (Entscheidung Frank):** CapRover bleibt per GitHub-Webhook mit `main` verbunden; die geplante Action `deploy.yml` (Deploy erst nach grüner Prüfung) entfällt, damit nicht doppelt deployt wird. Folge: Eine rote Prüfung blockiert den Live-Build nicht mehr → nach `main` nur mit grüner Prüfung auf dem Feature-Branch (CLAUDE.md, README, Abschnitt 7.16). |
+| 2026-10-12 | **E13 Materialzugriff (Entscheidung Frank):** Schüler-PDFs sind nicht mehr allgemein öffentlich. Öffentlich (Gastmodus) nur eine gelistete Demo-Auswahl einzelner Schüler- und Lehrkraft-PDFs (`materialien/Gast_PDF/verzeichnis.json`); alles andere nur nach Anmeldung für die passende Rolle. Angepasst: E13, Abschnitte 7.12, 12.1, 12.4, CLAUDE.md, Hinweis auf `/themen`. Umsetzung in Phase 3 (Gastmodus/Themen) und Phase 7 (Pipeline, Zugriffstests). |
