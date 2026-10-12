@@ -1,0 +1,187 @@
+/* Werkzeug „Spurenbrett“ (DESIGN.md §4.4, §4.5, §5.5, §6, §7). Nur Tokens – keine Farbliterale. */
+
+.spurenbrett-seite code { font-family: var(--schrift-mono); font-size: 0.92em; }
+
+/* ---------- Auswahl ---------- */
+.sb-auswahl { display: flex; flex-direction: column; gap: var(--a-5); }
+.sb-zeile { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+.sb-feld { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.sb-eingabe {
+  min-height: 44px; padding: var(--a-2) var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); font: inherit; font-size: var(--t-s); min-width: 0; max-width: 100%;
+}
+.sb-eingabe[aria-invalid="true"] { border-color: var(--siegelrot); box-shadow: inset 0 0 0 1px var(--siegelrot); }
+.sb-eingabe:disabled { opacity: .5; cursor: not-allowed; }
+.sb-tabellen { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--a-2); }
+.sb-tabellen legend { padding: 0; margin-bottom: var(--a-2); }
+.sb-hinweis { font-size: var(--t-xs); color: var(--tinte-2); }
+.sb-tabellen-liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: var(--a-2) var(--a-4); }
+.sb-tabelle { display: flex; align-items: center; justify-content: space-between; gap: var(--a-2); min-width: 0; }
+.sb-check-label { display: flex; align-items: center; gap: var(--a-2); min-height: 44px; min-width: 0; cursor: pointer; flex-wrap: wrap; }
+.sb-check { width: 22px; height: 22px; accent-color: var(--siegelrot); flex: none; margin: 0; cursor: pointer; }
+.sb-check:disabled { cursor: not-allowed; }
+.sb-check-label:has(.sb-check:disabled) { color: var(--tinte-3); cursor: not-allowed; }
+.sb-tabelle-name { font-family: var(--schrift-mono); font-weight: 600; font-size: var(--t-s); }
+.sb-tabelle-zeilen { font-size: var(--t-xs); color: var(--tinte-3); }
+.sb-zahl { width: 5.5em; flex: none; font-family: var(--schrift-mono); }
+
+.sb-bedingung-bereich { display: flex; flex-direction: column; gap: var(--a-3); }
+.sb-bedingung-rahmen {
+  display: flex; align-items: stretch; min-width: 0; border-radius: var(--radius); overflow: hidden;
+  background: var(--konsole); border: 1px solid var(--konsole-rand);
+}
+.sb-where {
+  display: flex; align-items: flex-start; padding: var(--a-3) 0 var(--a-3) var(--a-3);
+  font-family: var(--schrift-mono); font-weight: 600; font-size: var(--t-s); color: var(--sql-schluessel);
+}
+.sb-code {
+  flex: 1; border: 0; border-radius: 0; resize: vertical; background: var(--konsole); color: var(--konsole-text);
+  font-family: var(--schrift-mono); font-size: var(--t-s); line-height: 1.6; padding: var(--a-3);
+}
+.sb-code:focus-visible { outline: 3px solid var(--fokus); outline-offset: -3px; }
+.sb-fehler:empty { display: none; }
+.sb-fehler .diagnose {
+  border-left: 3px solid var(--siegelrot); background: var(--rot-flaeche); padding: var(--a-3) var(--a-4);
+  border-radius: 0 var(--radius) var(--radius) 0; color: var(--tinte); font-size: var(--t-s);
+}
+
+/* ---------- Zähler ---------- */
+.sb-zaehler { display: flex; align-items: center; gap: var(--a-4); min-height: 56px; }
+.sb-zaehler:empty { display: none; }
+.sb-zaehler-zahl {
+  font-family: var(--schrift-titel); font-weight: 700; font-size: 2.75rem; line-height: 1;
+  font-variant-numeric: tabular-nums; color: var(--siegelrot-text);
+}
+.sb-zaehler-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sb-rechnung { font-family: var(--schrift-mono); font-weight: 600; font-size: var(--t-m); }
+.sb-ohne { font-size: var(--t-s); color: var(--tinte-2); }
+
+/* ---------- Brett (Kork, 4.4) ---------- */
+.sb-brett {
+  position: relative; min-width: 0; overflow: hidden; border-radius: var(--radius);
+  padding: var(--a-6) var(--a-5);
+  border: 8px solid var(--flaeche-2);
+  background-color: var(--kork);
+  background-image: radial-gradient(var(--kork-punkt) 1.2px, transparent 1.4px), radial-gradient(var(--kork-punkt) 1px, transparent 1.2px);
+  background-size: 14px 14px, 9px 9px; background-position: 0 0, 5px 7px;
+  box-shadow: var(--schatten-1);
+}
+.sb-laedt { color: var(--tinte); font-size: var(--t-s); background: var(--karte); padding: var(--a-3) var(--a-4); border-radius: var(--radius); align-self: flex-start; display: inline-block; }
+.sb-auswahl .sb-laedt { background: none; padding: 0; }
+.sb-spalten {
+  position: relative; z-index: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 300px));
+  justify-content: space-between; column-gap: var(--a-7); align-items: start;
+}
+.sb-spalten.drei { grid-template-columns: repeat(3, minmax(0, 270px)); }
+.sb-stapel { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.sb-stapel-titel {
+  font-family: var(--schrift-mono); font-size: var(--t-s); font-weight: 600; background: var(--tinte); color: var(--papier);
+  padding: 4px 10px; border-radius: var(--radius-klein); align-self: flex-start; max-width: 100%; overflow-wrap: anywhere;
+}
+.sb-karten { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.sb-spalten > .sb-stapel:not(:first-child) .sb-karten { padding-top: var(--a-3); }
+.sb-leer { font-size: var(--t-s); color: var(--tinte-2); }
+
+/* Karteikarte (4.5) */
+.sb-karte {
+  position: relative; min-width: 0; padding: 2px 10px 8px; border-radius: var(--radius-klein);
+  background: var(--karte); box-shadow: var(--schatten-1); color: var(--tinte);
+  background-image: linear-gradient(var(--karte) 0 22px, var(--siegelrot) 22px 23px, transparent 23px);
+  font-family: var(--schrift-mono); font-size: var(--t-xs); line-height: 1.45;
+  transition: opacity var(--dauer) var(--kurve);
+}
+.sb-karten .sb-karte:nth-child(odd) { transform: rotate(-0.8deg); }
+.sb-karten .sb-karte:nth-child(even) { transform: rotate(0.6deg); }
+.sb-stift {
+  position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--nadel-licht), var(--nadel) 60%, var(--nadel-schatten));
+  box-shadow: 0 1px 2px var(--schatten-farbe-stark);
+}
+.sb-karte-kopf { min-height: 20px; display: flex; align-items: center; justify-content: space-between; gap: 6px; font-weight: 600; }
+.sb-pk { min-width: 0; overflow-wrap: anywhere; }
+.sb-pk u { text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.sb-karte dl { margin: 6px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 8px; }
+.sb-karte dt { color: var(--tinte-3); }
+.sb-karte dd { margin: 0; overflow-wrap: anywhere; }
+.fk-pfeil { color: var(--siegelrot-text); font-weight: 600; }
+.spurenbrett-seite .null { font-family: var(--schrift-mono); font-style: italic; text-transform: uppercase; color: var(--tinte-3); }
+.sb-karte.ohne-faden { opacity: .55; }
+.sb-kein-faden {
+  flex: none; font-family: var(--schrift-titel); font-weight: 700; font-size: 0.6875rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--siegelrot-text); border: 1.5px solid currentColor; border-radius: var(--radius-stempel);
+  padding: 0 4px; transform: rotate(-3deg);
+}
+
+/* Zettel statt Zeichnung (> 2 000 Fäden) */
+.sb-zettel {
+  position: relative; z-index: 2; margin: 0 auto var(--a-5); max-width: 44ch; padding: var(--a-3) var(--a-4);
+  background: var(--karte); color: var(--tinte); box-shadow: var(--schatten-2); transform: rotate(-1deg);
+  display: flex; flex-direction: column; gap: var(--a-1); font-size: var(--t-s);
+}
+.sb-zettel strong { font-family: var(--schrift-titel); font-size: var(--t-l); color: var(--siegelrot-text); }
+
+/* Fäden (SVG) */
+.sb-faeden { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.sb-faden {
+  transform-box: fill-box; transform-origin: 50% 0;
+  transition: transform 900ms cubic-bezier(.5, 0, .9, .6) var(--verzug, 0ms), opacity 700ms ease-in calc(200ms + var(--verzug, 0ms));
+}
+.sb-faden path { fill: none; stroke: var(--siegelrot); stroke-width: 2; stroke-linecap: round; transition: stroke-width var(--dauer); }
+.sb-faden circle { fill: var(--siegelrot); }
+.sb-faden.passt path { stroke-width: 3; }
+.sb-faden.faellt { transform: translateY(260px) rotate(14deg); opacity: 0; }
+.sb-faeden.still .sb-faden, .sb-faeden.still .sb-faden path { transition: none !important; }
+
+/* ---------- Liste ---------- */
+.sb-liste { padding: 0; }
+.sb-liste-titel {
+  min-height: 44px; display: flex; align-items: center; padding: 0 var(--a-5); cursor: pointer;
+  font-weight: 600; font-size: var(--t-s);
+}
+.sb-liste[open] .sb-liste-titel { border-bottom: 1px solid var(--rand); }
+#sb-liste-inhalt { padding: var(--a-3) var(--a-5) var(--a-4); display: flex; flex-direction: column; gap: var(--a-2); }
+#sb-liste-inhalt:empty { display: none; }
+.sb-liste-kopf { font-size: var(--t-s); }
+.sb-faden-liste { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 2px var(--a-4); }
+.sb-faden-liste li { font-family: var(--schrift-mono); font-size: var(--t-xs); padding: 2px 0 2px 18px; position: relative; overflow-wrap: anywhere; }
+.sb-faden-liste li::before { content: ""; position: absolute; left: 0; top: 50%; width: 12px; height: 2px; background: var(--siegelrot); }
+.sb-faden-liste li.passt::before { height: 3px; }
+
+/* ---------- Ergebnis ---------- */
+.sb-ergebnis:empty { display: none; }
+.sb-ergebnis-raster { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+.sb-ergebnis-karte { display: flex; flex-direction: column; gap: var(--a-3); }
+.sb-ergebnis-kopf { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--a-2); }
+.sb-ergebnis-kopf h2 { font-size: var(--t-l); }
+.sb-meta { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+.sb-sql {
+  margin: 0; padding: var(--a-3) var(--a-4); border-radius: var(--radius); background: var(--konsole); color: var(--konsole-text);
+  font-family: var(--schrift-mono); font-size: var(--t-s); line-height: 1.6; overflow-x: auto; white-space: pre;
+}
+.sb-ergebnis-karte table.daten td, .sb-ergebnis-karte table.daten th { white-space: nowrap; }
+.sb-ergebnis-karte table.daten .pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.sb-ergebnis-karte table.daten td.zahl { text-align: right; }
+.sb-ergebnis-raster .notiz-inhalt { display: flex; flex-direction: column; gap: var(--a-2); font-size: var(--t-s); }
+
+/* ---------- Responsive (DESIGN §6) ---------- */
+@media (max-width: 1023px) {
+  .sb-ergebnis-raster { grid-template-columns: minmax(0, 1fr); }
+  .sb-spalten { column-gap: var(--a-6); }
+}
+@media (max-width: 767px) {
+  .sb-zeile { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 599px) {
+  .sb-brett { padding: var(--a-5) var(--a-3); border-width: 6px; }
+  .sb-spalten, .sb-spalten.drei { grid-template-columns: minmax(0, 1fr); row-gap: var(--a-5); }
+  .sb-spalten > .sb-stapel:not(:first-child) .sb-karten { padding-top: 0; }
+  .sb-faeden { display: none; }
+  .sb-zaehler-zahl { font-size: 2.25rem; }
+}
+
+/* ---------- Bewegung (DESIGN §7): reduziert fallen die Fäden nicht, sie blenden nur aus ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .sb-faeden .sb-faden { transition: opacity 500ms linear !important; }
+  .sb-faeden .sb-faden.faellt { transform: none; }
+  .sb-faeden.still .sb-faden { transition: none !important; }
+}

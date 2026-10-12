@@ -16,6 +16,7 @@ const { verbundRouten } = require('./routes/verbund');
 const { manifestRoute } = require('./kern/manifest');
 const { seitenRouten } = require('./routes/seiten');
 const { sortierfaecherRouten } = require('./routes/sortierfaecher');
+const { spurenbrettRouten } = require('./routes/spurenbrett');
 const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
@@ -81,6 +82,7 @@ function erzeugeApp(
   app.use(ssoRouten(konfig, db));
   app.use(seitenRouten());
   app.use(sortierfaecherRouten());
+  app.use(spurenbrettRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
   if (lernen) app.use(schuelerRouten({ lernen, konfig }));
   // Kurs-Einstellungen für Lehrkräfte (Akten, Niveau, Verhör); Kennzahlen nur mit geladenen Inhalten.
