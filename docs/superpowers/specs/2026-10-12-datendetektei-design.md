@@ -480,11 +480,12 @@ Browser (Vanilla JS, ES-Module, keine Build-Stufe)            Server (Node ≥ 2
   nicht – Tippfehler oder fehlendes Tabellenpräfix?“). Liste in `src/sql/fehlertexte.js`, getestet.
 
 ### 7.4 SQL-Prüfung auf dem Server („Prüfen“)
-- **Sandbox** (`src/sql/sandbox.js`): Pool aus 2–4 `worker_threads`; jeder Worker hält die DB-Varianten als
-  Buffer und erzeugt je Prüfung eine In-Memory-Kopie (better-sqlite3, Deserialisierung – API vor dem Bau prüfen).
+- **Sandbox** (`src/sql/sandbox.js`): Pool aus 2–4 **Kindprozessen** (`child_process.fork`, Abschnitt 18: `worker_threads`
+  lassen sich während einer laufenden SQLite-Abfrage nicht beenden); jeder Prozess hält die DB-Varianten als Buffer und
+  erzeugt je Prüfung eine In-Memory-Kopie (`new Database(buffer)`, im Spike geprüft).
   Pro Anweisung: nur **eine** Anweisung; bei SELECT-Aufgaben `stmt.readonly` muss wahr sein + `PRAGMA query_only`;
   verbotene Tokens (ATTACH, DETACH, PRAGMA, VACUUM, load_extension, `.`-Befehle); max. 4 000 Zeichen; **Zeitlimit
-  1,5 s** (danach Worker beenden und neu starten); max. 5 000 Ergebniszeilen; Rate-Limit je Konto (z. B. 30/min).
+  1,5 s** (danach Prozess mit `SIGKILL` beenden und neu starten); max. 5 000 Ergebniszeilen; Rate-Limit je Konto (z. B. 30/min).
   Kein Zugriff auf die Plattform-Datenbank (eigener Prozesskontext, keine Dateipfade).
 - **Prüfablauf** für Interaktion `sql`:
   1. Parsen + Regelprüfung (Abimodus der Aufgabe).
@@ -1076,3 +1077,5 @@ Zeitrahmen (Vorschlag, Einsatz nächstes Schuljahr): Phasen 1–3 bis Ende Febru
 | 2026-10-12 | **Phase 1, Umsetzungsentscheidungen:** `PLATTFORM_URL` und `PORTAL_URL` sind Pflicht (Vertrag §8 erlaubt „sonst aus der Anfrage“; im Modus `portal` wäre ein aus dem Host-Header abgeleiteter Rücksprung fälschbar). SSO-Fehlerseite: ungültig/abgelaufen/state → 401, `keine_berechtigung` → 403, `abgebrochen` → 200, nie eine Sitzung. Anzeigename im Token 1–200 Zeichen (Portal erlaubt Lehrkraft-Namen bis 80). Ein per Verbund-API gesperrter Kurs wird durch einen Login nicht entsperrt (nur `kurs-aendern` mit `aktiv: true`). Neuer öffentlicher Endpunkt `GET /api/akten` (nr, titel, niveaus – keine Inhalte). Aus `public/` wird nur `/static` als Verzeichnis ausgeliefert, Seiten über eigene Routen (sonst umginge `/lehrkraft.html` die Rechteprüfung). Niveau-Tabelle: Kür K1 bei gA „entfällt“ (Abschnitt 3.4 nennt für gA nur K2) – Bestätigung durch Frank offen. |
 | 2026-10-12 | **Deploy-Weg (Entscheidung Frank):** CapRover bleibt per GitHub-Webhook mit `main` verbunden; die geplante Action `deploy.yml` (Deploy erst nach grüner Prüfung) entfällt, damit nicht doppelt deployt wird. Folge: Eine rote Prüfung blockiert den Live-Build nicht mehr → nach `main` nur mit grüner Prüfung auf dem Feature-Branch (CLAUDE.md, README, Abschnitt 7.16). |
 | 2026-10-12 | **E13 Materialzugriff (Entscheidung Frank):** Schüler-PDFs sind nicht mehr allgemein öffentlich. Öffentlich (Gastmodus) nur eine gelistete Demo-Auswahl einzelner Schüler- und Lehrkraft-PDFs (`materialien/Gast_PDF/verzeichnis.json`); alles andere nur nach Anmeldung für die passende Rolle. Angepasst: E13, Abschnitte 7.12, 12.1, 12.4, CLAUDE.md, Hinweis auf `/themen`. Umsetzung in Phase 3 (Gastmodus/Themen) und Phase 7 (Pipeline, Zugriffstests). |
+| 2026-10-12 | **Bestätigt (Frank):** Kür K1 entfällt im gA-Pfad (Abschnitt 3.4; Niveau-Tabelle auf `/themen`). |
+| 2026-10-12 | **Sandbox mit Kindprozessen statt `worker_threads` (Spike vor Phase 2):** better-sqlite3 öffnet eine DB aus einem Buffer im Worker problemlos (`new Database(buffer)`, `query_only`, `stmt.readonly` wie erwartet). Aber `worker.terminate()` beendet eine **laufende** Abfrage nicht (Endlos-CTE blockierte den Prozess > 2 min) – das Zeitlimit 1,5 s wäre so nicht durchsetzbar. Ein per `child_process.fork` gestarteter Prozess wird mit `SIGKILL` nach 1,5 s zuverlässig beendet. Abschnitt 7.4 und CLAUDE.md angepasst. |

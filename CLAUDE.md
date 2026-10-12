@@ -39,7 +39,7 @@ Widersprechen sich Dateien: Spec > DS_PLANUNG > STORY > übrige. Widerspruch mel
 ```
 src/kern/      gemeinsamer Kern (später lab-kern): jwt.js (UNVERÄNDERT aus frankjuchim/labs), konfig, sitzung,
                sicherheit, sso, verbund, manifest, punkte – keine Abhängigkeit von src/sql oder src/er
-src/sql/       EH-§8-Parser (isomorph), Regeln, Sandbox (worker_threads + better-sqlite3), Prüfer, Diagnose, Fehlertexte
+src/sql/       EH-§8-Parser (isomorph), Regeln, Sandbox (Kindprozesse + better-sqlite3), Prüfer, Diagnose, Fehlertexte
 src/er/        ER-Graph-Abgleich, Schema-Prüfer, Zerlegung (funktionale Abhängigkeiten)
 src/content/   Prüfer je Interaktion, Validator, Trainings-Generatoren
 src/services/  inhalte, lernen, verhoer, warmup, training, live, auswertung, material, gast, stand
@@ -121,7 +121,7 @@ P10 Operator verfehlt.
   nur im laufenden Verhör; Prüfung ausschließlich serverseitig; Antworten des SQL-Prüfers enthalten keine Lösungsdaten.
 - Gespeichert nur: `sub`, Anzeigename, Rolle, Kurs-IDs, Lernstand. **Freitexte nie** (E7), SQL-Entwürfe nur im
   `localStorage` des Geräts, Live-Antworten nach Rundenende verwerfen, IPs nur im RAM.
-- Schüler-SQL nur in der Sandbox (eigener Worker, In-Memory-Kopie, nur lesend, 1,5 s, 5 000 Zeilen, verbotene Tokens).
+- Schüler-SQL nur in der Sandbox (eigener Kindprozess, Abbruch per SIGKILL, In-Memory-Kopie, nur lesend, 1,5 s, 5 000 Zeilen, verbotene Tokens).
 - CSP: `default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self' data:;
   style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'` – keine Inline-
   Skripte/-Styles, keine CDNs, Ausgaben nur als Textknoten. `X-Robots-Tag: noindex`.
