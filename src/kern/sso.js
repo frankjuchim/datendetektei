@@ -64,7 +64,7 @@ function pruefeSsoNutzlast(n) {
   if (typeof n.sub !== 'string' || !SUB_MUSTER.test(n.sub)) return 'sub';
   if (!Object.values(PRAEFIX_ZU_ROLLE).includes(n.rolle)) return 'rolle';
   if (PRAEFIX_ZU_ROLLE[n.sub[0]] !== n.rolle) return 'sub-rolle';
-  if (typeof n.name !== 'string' || n.name.trim().length < 1 || n.name.length > 60) return 'name';
+  if (typeof n.name !== 'string' || n.name.trim().length < 1 || n.name.length > 200) return 'name';
   if (!Array.isArray(n.kurse) || n.kurse.length > 1000) return 'kurse';
   const kursRolle = n.rolle === 'schueler' ? 'mitglied' : 'lehrkraft';
   for (const k of n.kurse) {

@@ -221,7 +221,7 @@ test('weitere Inhaltsfehler: sub-Format, name, kurse, Kursrolle', async () => {
     { sub: 'x:1' },
     { rolle: 'gast' },
     { name: '' },
-    { name: 'x'.repeat(61) },
+    { name: 'x'.repeat(201) },
     { name: 42 },
     { kurse: 'k:17' },
     { kurse: undefined },
@@ -238,6 +238,8 @@ test('weitere Inhaltsfehler: sub-Format, name, kurse, Kursrolle', async () => {
 test('pruefeSsoNutzlast: gültige Nutzlasten ergeben null, ungültige einen Grund', () => {
   const basis = { sub: 's:1042', rolle: 'schueler', name: 'Lena K.', kurse: [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied' }] };
   assert.equal(pruefeSsoNutzlast(basis), null);
+  // Das Portal erlaubt Lehrkraft-Namen bis 80 Zeichen – sie dürfen nicht ausgesperrt werden.
+  assert.equal(pruefeSsoNutzlast({ ...basis, sub: 'l:2', rolle: 'lehrkraft', name: 'x'.repeat(80), kurse: [] }), null);
   assert.equal(pruefeSsoNutzlast({ ...basis, sub: 'a:1', rolle: 'superadmin', kurse: [] }), null);
   assert.equal(pruefeSsoNutzlast({ ...basis, sub: 'l:2', rolle: 'lehrkraft', kurse: [{ id: 'k:3', name: 'GK', rolle: 'lehrkraft' }] }), null);
   assert.equal(typeof pruefeSsoNutzlast({ ...basis, sub: 's:5', rolle: 'lehrkraft' }), 'string');
