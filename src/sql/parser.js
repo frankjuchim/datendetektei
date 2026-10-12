@@ -396,8 +396,11 @@
       if (!(istSchluessel('UNION') || istSchluessel('INTERSECT') || istSchluessel('EXCEPT'))) return erstes;
       var teile = [erstes];
       var operatoren = [];
+      var operatorPositionen = [];
       while (istSchluessel('UNION') || istSchluessel('INTERSECT') || istSchluessel('EXCEPT')) {
-        var op = nimm().wert;
+        var opToken = nimm();
+        var op = opToken.wert;
+        operatorPositionen.push(opToken.start);
         if (op === 'UNION' && istSchluessel('ALL')) {
           nimm();
           op = 'UNION ALL';
@@ -406,7 +409,7 @@
         if (!istSchluessel('SELECT')) fehler('SELECT');
         teile.push(select());
       }
-      return knoten('union', start, { teile: teile, operatoren: operatoren });
+      return knoten('union', start, { teile: teile, operatoren: operatoren, operatorPositionen: operatorPositionen });
     }
 
     function select() {
@@ -547,6 +550,7 @@
         var art = null;
         var natural = false;
         var merke = p;
+        var schluesselPos = startVon(akt());
         if (istSchluessel('NATURAL')) {
           nimm();
           natural = true;
@@ -582,7 +586,7 @@
           } while (istOp(','));
           schliesseKlammer(offen);
         }
-        links = knoten('join', start, { art: art, natural: natural, links: links, rechts: rechts, on: on, using: using });
+        links = knoten('join', start, { art: art, natural: natural, links: links, rechts: rechts, on: on, using: using, schluesselPos: schluesselPos });
       }
     }
 
@@ -663,7 +667,7 @@
       if (t.art === 'operator' && VERGLEICHE[t.wert]) {
         var op = nimm().wert;
         var rechts = summe();
-        return knoten('vergleich', start, { operator: op, links: links, rechts: rechts, klammern: false });
+        return knoten('vergleich', start, { operator: op, operatorPos: t.start, links: links, rechts: rechts, klammern: false });
       }
       if (istSchluessel('IS')) {
         nimm();
