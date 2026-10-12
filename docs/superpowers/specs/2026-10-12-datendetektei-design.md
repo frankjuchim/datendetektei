@@ -451,8 +451,9 @@ Browser (Vanilla JS, ES-Module, keine Build-Stufe)            Server (Node ≥ 2
   `/db/<name>.sqlite` (Cache 1 h). Sie ist identisch mit der „Haupt-DB“ des Prüfers.
 - **CSP** (zusätzlich zu den AlgoQuest-Regeln): `script-src 'self' 'wasm-unsafe-eval'; worker-src 'self';
   connect-src 'self'`. Kein `unsafe-inline`, kein `unsafe-eval`. `wasm-unsafe-eval` ist keine Inline-Ausnahme
-  (README begründet es). Fallback, falls ein Schulnetz WASM blockiert: `sql-asm.js` (ohne WASM-Freigabe) – per
-  Feature-Erkennung.
+  (README begründet es). Fallback, falls WASM blockiert ist: „Ausführen“ läuft **serverseitig** über die Sandbox
+  (`POST /api/sql/ausfuehren`, nur Haupt-DB, Rate-Limit, Abschnitt 18); `sql-asm.js` nur dort, wo er im Worker läuft
+  (Feature-Erkennung per Probelauf).
 - Entwürfe je Aufgabe nur im `localStorage` des Geräts (try/catch, Gerät-lokal), nie auf dem Server.
 
 ### 7.3 EH-§8-Parser (`src/sql/parser.js`, isomorph: Server und Browser)
@@ -1079,3 +1080,4 @@ Zeitrahmen (Vorschlag, Einsatz nächstes Schuljahr): Phasen 1–3 bis Ende Febru
 | 2026-10-12 | **E13 Materialzugriff (Entscheidung Frank):** Schüler-PDFs sind nicht mehr allgemein öffentlich. Öffentlich (Gastmodus) nur eine gelistete Demo-Auswahl einzelner Schüler- und Lehrkraft-PDFs (`materialien/Gast_PDF/verzeichnis.json`); alles andere nur nach Anmeldung für die passende Rolle. Angepasst: E13, Abschnitte 7.12, 12.1, 12.4, CLAUDE.md, Hinweis auf `/themen`. Umsetzung in Phase 3 (Gastmodus/Themen) und Phase 7 (Pipeline, Zugriffstests). |
 | 2026-10-12 | **Bestätigt (Frank):** Kür K1 entfällt im gA-Pfad (Abschnitt 3.4; Niveau-Tabelle auf `/themen`). |
 | 2026-10-12 | **Sandbox mit Kindprozessen statt `worker_threads` (Spike vor Phase 2):** better-sqlite3 öffnet eine DB aus einem Buffer im Worker problemlos (`new Database(buffer)`, `query_only`, `stmt.readonly` wie erwartet). Aber `worker.terminate()` beendet eine **laufende** Abfrage nicht (Endlos-CTE blockierte den Prozess > 2 min) – das Zeitlimit 1,5 s wäre so nicht durchsetzbar. Ein per `child_process.fork` gestarteter Prozess wird mit `SIGKILL` nach 1,5 s zuverlässig beendet. Abschnitt 7.4 und CLAUDE.md angepasst. |
+| 2026-10-12 | **WASM-Fallback (Befund Phase 2, Default bis Entscheidung Frank):** `sql-asm.js` läuft unter unserer CSP (kein `eval`), aber in Chromium **nicht im Web Worker** – der Worker-Stack ist zu klein (`RangeError` schon beim ersten Parsen; auch `-memory-growth`/`-debug`-Builds). Im Hauptthread liefe er, wäre dort aber nicht abbrechbar (Endlosabfrage friert den Tab ein). **Default:** Erkennt der Worker, dass weder WASM noch asm.js nutzbar sind, führt die Konsole „Ausführen“ serverseitig über die Sandbox aus (`POST /api/sql/ausfuehren`: nur Haupt-DB, gleiche Limits wie „Prüfen“, Rate-Limit je Konto bzw. IP im Gastmodus). Alternativen für Frank: nur „Prüfen“ ohne freies Ausführen, oder asm.js im Hauptthread ohne Abbruch. |

@@ -225,7 +225,9 @@ Nach `docs/DESIGN.md` §4.10 und §5.3: Editor mit Zeilennummern und Syntax-Over
 Strg/Cmd+Enter, Tab = zwei Leerzeichen, Randmarken für Parser-Hinweise (Abimodus `hinweis`), Schema-Browser (PK
 unterstrichen, FK `↑` + Ziel, Antippen fügt `Tabelle.Spalte` ein), Ergebniskopf („60 Zeilen · 3 Spalten“), Diagnose mit
 Fallen-Plakette, Leer- und Fehlerzustände mit den Mikrotexten aus DESIGN §9, Entwurf im `localStorage` (try/catch). Die
-Knöpfe Prüfen/Zeitlupe/Tipp/Lösung erscheinen erst mit Aufgaben (Phase 3/4) – hier ausgeblendet.
+Knöpfe Prüfen/Zeitlupe/Tipp/Lösung erscheinen erst mit Aufgaben (Phase 3/4) – hier ausgeblendet. **Fallback ohne WASM
+(Spec §18):** meldet der Worker „nicht ausführbar“, nutzt die Konsole `POST /api/sql/ausfuehren` (Sandbox, nur Haupt-DB,
+Rate-Limit 30/min je Konto bzw. IP für die Eisdiele im Gastmodus); E2E mit erzwungenem `?ohneWasm=1` unter Chromium.
 
 - [ ] **Step 1: Failing tests:** `/konsole/eisdiele` ohne Anmeldung 200, `/konsole/stadtrad` ohne Anmeldung 302 auf
   `/sso/start?ziel=…`, unbekannte DB 404; E2E: Abfrage tippen → Strg+Enter → Tabelle; `<>` zeigt Randmarke

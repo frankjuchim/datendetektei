@@ -1,0 +1,9 @@
+{
+  "version": "1.14.2",
+  "dateien": {
+    "public/static/vendor/sqljs/sql-wasm.js": "f1c84000dbc856c9d87f4f3aabc4d3654bd436165db4be3da13751db3a9c20d7",
+    "public/static/vendor/sqljs/sql-wasm.wasm": "38c14f6e379210bc942bdc4ebca44e7bfdb4318ecc1c72ca666a28fdce96670a",
+    "public/static/vendor/sqljs/sql-asm.js": "82344159a161e30e1c012587a59567adc02f537cd5f376270eff88c564eed0fd",
+    "public/static/vendor/sqljs/LICENSE": "60a3f6e4d7b29b4321359e683b36cf198d24f58e24582070f56e6fa89d5ee2be"
+  }
+}
