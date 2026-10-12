@@ -17,7 +17,8 @@
     "db": "node scripts/db_bauen.js",
     "db:pruefen": "node scripts/db_bauen.js --pruefen",
     "sqljs": "node scripts/sqljs_kopieren.js",
-    "e2e": "node --test test/e2e/*.e2e.js"
+    "e2e": "node --test test/e2e/*.e2e.js",
+    "validate": "node scripts/validate.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

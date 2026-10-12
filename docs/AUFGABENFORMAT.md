@@ -8,7 +8,8 @@ Manifest bleiben `welt`, `levels`, `boss`.
 Eine vollständige Beispieldatei mit jeder Block- und Interaktionsart dieser Phase liegt in
 `test/fixtures/akte_beispiel.json` (`welt: 9`, nur für Tests – nicht in `seed/akten` ablegen).
 
-Prüfen: `npm run validate` (alle Dateien in `seed/akten`) oder `node scripts/validate.js <datei> …` (Option `--json`).
+Prüfen: `npm run validate` (alle Dateien in `seed/akten` und `seed/warmup`) oder `node scripts/validate.js <datei> …`
+(Optionen `--json`, `--ohne-hinweise`).
 Exit-Code 1 bei Fehlern. Prüfer: `src/content/pruefer.js`, Hilfsfunktionen: `src/content/format.js`.
 
 Elemente, die erst in **Phase 5** gebaut werden, sind mit *„folgt in Phase 5“* markiert. Der Validator lehnt sie bis
@@ -85,7 +86,7 @@ Ziel je Ermittlung (DS_PLANUNG): rund 8 Aufgaben, Stufenmix etwa 40/40/20 % (3/3
 |---|---|---|
 | `id` | ja | `A<n>-V` |
 | `titel` | ja | Name des Verhörs |
-| `kontextDb` | ja | Transfer-Datenbank des Verhörs (`seed/datenbanken/verhoer/<kontext>`, `VERHOER_KONTEXTE.md`); in der Beispielakte `eisdiele`. Verhör-DBs sind **nie** öffentlich unter `/db/` |
+| `kontextDb` | ja | Transfer-Datenbank des Verhörs, immer eine Verhör-DB `verhoer/<kontext>` (`seed/datenbanken/verhoer/<kontext>`, `VERHOER_KONTEXTE.md`); in der Beispielakte `verhoer/kiosk`. Verhör-DBs sind **nie** öffentlich unter `/db/`; Ermittlungen dürfen sie nicht verwenden |
 | `rahmensatz` | ja | ein Satz Story-Rahmen für die Startkarte (geduzt, von Edda) |
 | `abimodus` | ja | immer `"streng"` (Spec §7.9): gilt für alle `sql`-Aufgaben des Pools und überschreibt deren eigenen Wert |
 | `dauerMin` | ja | Timer in Minuten (V1–V5: 20, V6: 15, V7: 30), serverseitig, +30 s Kulanz |
@@ -431,11 +432,54 @@ erfüllbar und Summe = `anzahl`, Musterantwort wird vom Prüfer als richtig erka
 
 - `sql`: Datenbank bekannt, Varianten existieren, Musterlösung läuft in der Sandbox auf Haupt-DB + allen Varianten,
   `pruefeRegeln` im Abimodus `streng` ohne Fehler, der Prüfer erkennt die Musterlösung als richtig.
-- `ergebnis` und `zeilen` mit `quelleSql`: das echte Ergebnis entspricht der angegebenen Lösung.
+- `sql` mit `LIMIT`: `ORDER BY` ist Pflicht, und auf Haupt-DB und jeder genannten Variante darf an der Schnittkante kein
+  Gleichstand liegen (Spec §6.2; die Variante `gleichstand` deckt das auf) – sonst wäre die Musterlösung zufällig.
+- `sortierung` nennt nur Spalten, die das Ergebnis der Musterlösung hat.
+- Datenbanken: Ermittlungen und Cold Cases nutzen nur öffentliche Akten-DBs (`sql.datenbank`, `quelle.datenbank`,
+  `loesung.datenbank`, Block `datenbank`); Verhör-Aufgaben nur die `kontextDb`, und `kontextDb` ist eine Verhör-DB.
+- `ergebnis` und `zeilen` mit `quelleSql`: das echte Ergebnis entspricht der angegebenen Lösung (`ergebnis` braucht
+  dazu `loesung.datenbank`).
 - `dbtabelle` mit `quelle`: die Zeilen stimmen mit der DB überein.
 - `lines.block` zeigt auf `sql`/`code`, `zeilen.block` auf `dbtabelle`; Indizes im Bereich.
-- Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block.
+- Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block;
+  Mix je Stufe samt `maxJeKind` erfüllbar (maximaler Fluss Stufe → Art), sonst Fehler; für gA-Kurse (nur `alle`) Hinweis.
 - Cold Cases und `kernpunkte`: `punkte` 0. Niveau-Regeln (Akte 5 ganz `eA`).
 
+- ids: `A<n>-E<k>-<nn>` (steht in der Ermittlung `A<n>-E<k>`), `A<n>-E<k>-CC` (nur als `coldCase` von `A<n>-E<k>`),
+  `A<n>-V-<nn>` (nur im Verhör-Pool); `n` = `welt`; eindeutig über alle Dateien, jede `welt` nur einmal.
+
 Hinweise (keine Fehler): abweichende Punkte, fehlende Erklärung, fehlende Farbe, nicht verwendete Aufgaben, Lösung
-ohne Liste bei gaps.
+ohne Liste bei gaps, Verhör mit `anzahl` außerhalb 6–8 bzw. Pool außerhalb 12–15, Briefing mit mehr als drei Sätzen,
+Musterlösung ohne Ergebniszeile, `welt: 9` (Testakte).
+
+Aufruf als Modul: `validiereAkten([{ name, json }], { datenbanken, sandbox, sqlPruefer }) → Promise<{ fehler, hinweise,
+aufgaben, karten }>` (Einträge `{ datei, id?, text }`); Warm-up-Dateien werden am Namen (`warmup…`) bzw. an `karten`
+erkannt.
+
+## 9. Warm-up-Karten (`seed/warmup/warmup_a<n>.json`)
+
+Karten für den Warm-up-Trainer (Leitner, ohne Punkte; Spec §7.8) und die Papierkarten (DS_PLANUNG „Warm-up-Karten“).
+Beispiel: `test/fixtures/warmup_beispiel.json`.
+
+```json
+{ "version": 1, "karten": [
+  { "id": "W-A1-06", "akte": 1, "kategorie": "SQL eine Tabelle", "titel": "Die NULL-Falle",
+    "aufgabe": "Erkläre, warum diese Abfrage keine Zeile liefert, und korrigiere die Bedingung.",
+    "sql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE AbgeholtAm = NULL", "datenbank": "fundbuero",
+    "loesung": "Ein Vergleich mit NULL ergibt nie wahr. Richtig ist `IS NULL`.",
+    "loesungSql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE AbgeholtAm IS NULL",
+    "minuten": 2, "kompetenz": ["DB-K18"], "falle": ["P5"] } ] }
+```
+
+| Feld | Pflicht | Regel |
+|---|---|---|
+| `id` | ja | `W-A<n>-<nn>`, eindeutig; `n` = `akte` = Nummer im Dateinamen |
+| `akte` | ja | Akte, deren Inhalt die Karte wiederholt (1–7) |
+| `kategorie` | ja | ein Wert aus KATEGORIEN (§4) |
+| `titel`, `aufgabe`, `loesung` | ja | Texte (Mini-Markdown, geduzt); `loesung` erst nach dem Aufdecken |
+| `sql` | nein | SQL, das auf der Karte gezeigt wird – darf absichtlich fehlerhaft sein (wird nicht geprüft) |
+| `datenbank` | bei `sql`/`loesungSql` | öffentliche Akten-DB (`fundbuero` …), nie eine Verhör-DB |
+| `loesungSql` | nein | Lösungsabfrage: muss auf `datenbank` laufen, im Abimodus `streng` regelfrei sein, bei `LIMIT` eindeutig |
+| `minuten` | ja | Bearbeitungszeit 1–15 |
+| `kompetenz` | ja | Liste von Kompetenz-IDs `DB-K01` … `DB-K48` (Kurzform `K01` erlaubt) |
+| `falle` | nein | Liste aus `P1` … `P10` (leer oder `null`, wenn keine) |
