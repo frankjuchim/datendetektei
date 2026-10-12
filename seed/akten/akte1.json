@@ -1470,7 +1470,8 @@
         "kind": "sql",
         "datenbank": "fundbuero",
         "varianten": [
-          "gleichnamig"
+          "gleichnamig",
+          "null"
         ],
         "abimodus": "hinweis"
       },
