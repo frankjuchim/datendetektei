@@ -16,6 +16,7 @@ const { seitenRouten } = require('./routes/seiten');
 const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
+const { lehrkraftRouten } = require('./routes/lehrkraft');
 const { erzeugeStand } = require('./services/stand');
 const { erzeugeLernen } = require('./services/lernen');
 const { version: VERSION } = require('../package.json');
@@ -58,6 +59,8 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   app.use(seitenRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
   if (lernen) app.use(schuelerRouten({ lernen, konfig }));
+  // Kurs-Einstellungen für Lehrkräfte (Akten, Niveau, Verhör); Kennzahlen nur mit geladenen Inhalten.
+  app.use(lehrkraftRouten({ db, stand }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());
