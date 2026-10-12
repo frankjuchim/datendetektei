@@ -9,7 +9,7 @@ const Database = require('better-sqlite3');
 const { chromium } = require('playwright-core');
 const { starteTestServer, baueTestDb } = require('./testserver');
 
-const CHROMIUM = process.env.CHROMIUM_PFAD || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CHROMIUM = require('./chromium').chromiumPfad();
 const ENDLOS = 'WITH RECURSIVE c(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM c) SELECT COUNT(*) FROM c';
 
 let browser;

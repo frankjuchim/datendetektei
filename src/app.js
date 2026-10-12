@@ -1,6 +1,7 @@
 'use strict';
-// App-Fabrik: erzeugeApp(konfig, db[, { datenbanken }]) liefert eine Express-App ohne Port (testbar mit supertest).
-// datenbanken = ladeDatenbanken() aus src/sql/datenbanken.js (optional; ohne sie gibt es /db/ und /api/db/ nicht).
+// App-Fabrik: erzeugeApp(konfig, db[, { datenbanken, sandbox }]) liefert eine Express-App ohne Port (testbar mit
+// supertest). datenbanken = ladeDatenbanken() aus src/sql/datenbanken.js (optional; ohne sie gibt es /db/ und /api/db/
+// nicht). sandbox = erzeugeSandbox() aus src/sql/sandbox.js (optional; ohne sie gibt es POST /api/sql/ausfuehren nicht).
 
 const path = require('node:path');
 const express = require('express');
@@ -10,12 +11,12 @@ const { verbundRouten } = require('./routes/verbund');
 const { manifestRoute } = require('./kern/manifest');
 const { seitenRouten } = require('./routes/seiten');
 const { sqlSkriptRouten } = require('./routes/sql_skripte');
-const { sqlRouten } = require('./routes/sql');
+const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
-function erzeugeApp(konfig, db, { datenbanken = null } = {}) {
+function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', konfig.trustProxy || 0);
@@ -49,6 +50,8 @@ function erzeugeApp(konfig, db, { datenbanken = null } = {}) {
 
   // Übungs-Datenbanken: nur die öffentliche Haupt-DB und ihr Schema (Spec §7.2).
   if (datenbanken) app.use(sqlRouten(datenbanken));
+  // Fallback der Konsole ohne WebAssembly: Ausführen in der Sandbox, nur Haupt-DB (Spec §18).
+  if (sandbox) app.use(sqlAusfuehrenRoute({ sandbox, konfig }));
 
   // Nur public/static/ wird als Verzeichnis ausgeliefert; HTML-Seiten nur über die Routen oben.
   app.use('/static', express.static(path.join(PUBLIC_DIR, 'static'), { maxAge: '1h', index: false }));

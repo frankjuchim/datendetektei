@@ -19,6 +19,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - name: Datenbanken reproduzierbar (basis.sql + Varianten)
+        run: npm run db:pruefen
+      - name: Chromium für die E2E-Tests
+        run: npx playwright-core install --with-deps chromium
+      - name: E2E (Konsole, Worker, Sichtprüfung)
+        run: npm run e2e
       - name: App starten (Entwicklungskonfiguration mit Testschlüssel aus test/fixtures)
         run: |
           npm run dev > app.log 2>&1 &

@@ -4,11 +4,14 @@
 // (schema.sql + pflicht.sql) gebaut werden. Nichts davon liegt in public/.
 
 const fs = require('node:fs');
+const http = require('node:http');
 const path = require('node:path');
 const express = require('express');
 const Database = require('better-sqlite3');
 const { sicherheitsHeader } = require('../../src/kern/sicherheit');
-const { testApp } = require('../helpers');
+const { testApp, meldeAn } = require('../helpers');
+const { ladeDatenbanken } = require('../../src/sql/datenbanken');
+const { erzeugeSandbox } = require('../../src/sql/sandbox');
 
 const WURZEL = path.join(__dirname, '..', '..');
 const SEITEN = path.join(__dirname, 'seiten');
@@ -29,9 +32,33 @@ function baueTestDb(name) {
 /**
  * Startet den Test-Server auf 127.0.0.1 (freier Port).
  * strengeCsp: CSP ohne 'wasm-unsafe-eval' (simuliert ein Umfeld, in dem WebAssembly nicht ausgeführt werden darf).
+ * mitDatenbanken: echte Übungs-DBs (basis.sql) und Sandbox wie im Betrieb (/db/, /api/db/, /api/sql/ausfuehren).
+ * Die Plattform-URL ist die tatsächliche Adresse (mit Port), damit die Origin-Prüfung für POSTs greift.
+ * → { url, t (testApp-Ergebnis), anmelden(nutzer) → Cookie „dd_s=…“, schliessen() }
  */
-async function starteTestServer({ strengeCsp = false } = {}) {
-  const { app } = testApp({ plattformUrl: 'http://127.0.0.1' });
+async function starteTestServer({ strengeCsp = false, mitDatenbanken = false } = {}) {
+  let weiter = (req, res) => {
+    res.statusCode = 503;
+    res.end();
+  };
+  const server = http.createServer((req, res) => weiter(req, res));
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const url = `http://127.0.0.1:${server.address().port}`;
+
+  let sandbox = null;
+  const appOptionen = {};
+  if (mitDatenbanken) {
+    const datenbanken = ladeDatenbanken(undefined, { log: () => {} });
+    sandbox = erzeugeSandbox({
+      prozesse: 1,
+      datenbanken: Object.fromEntries(
+        datenbanken.namen.map((n) => [n, { haupt: datenbanken.haupt(n), varianten: datenbanken.varianten(n) }])
+      )
+    });
+    Object.assign(appOptionen, { datenbanken, sandbox });
+  }
+  const t = testApp({ plattformUrl: url }, appOptionen);
+  const { app } = t;
   const dbs = { fundbuero: baueTestDb('fundbuero'), eisdiele: baueTestDb('eisdiele') };
   const aussen = express();
   aussen.disable('x-powered-by');
@@ -60,12 +87,18 @@ async function starteTestServer({ strengeCsp = false } = {}) {
   });
   aussen.use(test);
   aussen.use(app);
+  weiter = aussen;
 
-  const server = await new Promise((resolve) => {
-    const s = aussen.listen(0, '127.0.0.1', () => resolve(s));
-  });
-  const url = `http://127.0.0.1:${server.address().port}`;
-  return { url, schliessen: () => new Promise((resolve) => server.close(resolve)) };
+  return {
+    url,
+    t,
+    anmelden: (nutzer = {}) => meldeAn(t, nutzer),
+    schliessen: () => {
+      if (sandbox) sandbox.beende();
+      server.closeAllConnections();
+      return new Promise((resolve) => server.close(resolve));
+    }
+  };
 }
 
 module.exports = { starteTestServer, baueTestDb };
