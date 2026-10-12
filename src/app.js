@@ -18,6 +18,8 @@ const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
 const { erzeugeStand } = require('./services/stand');
 const { erzeugeLernen } = require('./services/lernen');
+const { erzeugeVerhoer } = require('./services/verhoer');
+const { verhoerRouten } = require('./routes/verhoer');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -35,6 +37,9 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   const lernen = inhalte ? erzeugeLernen({ db, inhalte, stand, pruefer, jetzt: uhr }) : null;
   app.locals.stand = stand;
   app.locals.lernen = lernen;
+  const verhoer = lernen ? erzeugeVerhoer({ db, inhalte, stand, lernen, pruefer, jetzt: uhr }) : null;
+  if (verhoer) stand.setzeAufraeumer(verhoer.raeumeKursAuf);
+  app.locals.verhoer = verhoer;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -58,6 +63,8 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   app.use(seitenRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
   if (lernen) app.use(schuelerRouten({ lernen, konfig }));
+  // Verhöre (Status, Start, Versuch, Antwort, Abgabe).
+  if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());

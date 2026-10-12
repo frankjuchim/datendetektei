@@ -43,6 +43,11 @@ const niveauSichtbar = (kursNiveau, niveau) => kursNiveau !== NIVEAU_GA || nivea
 
 function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
   const iso = () => isoZeit(jetzt());
+  /** Optional (Verhör-Engine): wertet abgelaufene Verhör-Versuche eines Kurses aus, bevor Punkte gezählt werden. */
+  let aufraeumen = null;
+  const setzeAufraeumer = (f) => {
+    aufraeumen = typeof f === 'function' ? f : null;
+  };
 
   /* ---------- Einstellungen und Sichtbarkeit ---------- */
 
@@ -298,6 +303,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
    * Lehrkraft/Superadmin sehen alle Akten (frei), Schüler nur freigeschaltete (sonst „im Nebel“ ohne Ermittlungen).
    */
   function stand(sub, kursId, zugang = { rolle: 'schueler' }) {
+    if (aufraeumen) aufraeumen(kursId);
     const k = kurs(kursId);
     if (!k) return null;
     const einst = k.einstellungen;
@@ -352,6 +358,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
    * welten: Akten des Plans (1–7) und alle geladenen Akten; anteil = Durchschnitt der Schüler-Anteile je Akte.
    */
   function kennzahlen(kursId, subs) {
+    if (aufraeumen) aufraeumen(kursId);
     const k = kurs(kursId);
     const einst = k ? k.einstellungen : leseEinstellungen('{}');
     const schueler = new Map();
@@ -370,6 +377,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
   }
 
   return {
+    setzeAufraeumer,
     kurs,
     istFreigeschaltet,
     akteSichtbar,
