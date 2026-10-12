@@ -23,7 +23,8 @@ function kursIdPruefen(req, res, next) {
   next();
 }
 
-function verbundRouten(konfig, db) {
+/** kennzahlen: optional, für die Kursübersicht (siehe kursUebersicht in src/kern/konten.js). */
+function verbundRouten(konfig, db, { kennzahlen = null } = {}) {
   const router = express.Router();
   const jti = new JtiSpeicher();
   const auth = (zweck) => verbundAuth(konfig, jti, zweck);
@@ -36,7 +37,7 @@ function verbundRouten(konfig, db) {
   });
 
   router.get('/api/verbund/kurse/:kursId/uebersicht', auth('kurs-uebersicht'), kursIdPruefen, (req, res) => {
-    const uebersicht = kursUebersicht(db, req.params.kursId, konfig.jetzt);
+    const uebersicht = kursUebersicht(db, req.params.kursId, konfig.jetzt, kennzahlen);
     if (!uebersicht) return res.status(404).json({ error: 'Kurs unbekannt.' });
     res.set('Cache-Control', 'no-store');
     res.json(uebersicht);

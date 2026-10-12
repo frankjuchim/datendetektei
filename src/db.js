@@ -151,6 +151,17 @@ const MIGRATIONEN = [
     PRIMARY KEY (sub, kurs_id, aufgabe)
   );
   CREATE INDEX kernpunkte_kurs ON kernpunkte (kurs_id);
+  `,
+  // 3: Serie ohne Fehlversuch je sub × Kurs (Abzeichen „Zehnerserie“, Spec §8; Plan Phase 3 Task 5).
+  `
+  CREATE TABLE serien (
+    sub TEXT NOT NULL REFERENCES konten (sub) ON DELETE CASCADE,
+    kurs_id TEXT NOT NULL REFERENCES kurse (kurs_id) ON DELETE CASCADE,
+    serie INTEGER NOT NULL DEFAULT 0,
+    bestwert INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (sub, kurs_id)
+  );
+  CREATE INDEX serien_kurs ON serien (kurs_id);
   `
 ];
 
