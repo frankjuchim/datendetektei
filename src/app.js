@@ -3,7 +3,8 @@
 
 const path = require('node:path');
 const express = require('express');
-const { sicherheitsHeader } = require('./kern/sicherheit');
+const { sicherheitsHeader, pruefeHerkunft } = require('./kern/sicherheit');
+const { ssoRouten } = require('./routes/sso');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -16,11 +17,14 @@ function erzeugeApp(konfig, db) {
   app.locals.db = db;
 
   app.use(sicherheitsHeader());
+  app.use(pruefeHerkunft(konfig));
   app.use(express.json({ limit: '100kb' }));
 
   app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', version: VERSION });
   });
+
+  app.use(ssoRouten(konfig, db));
 
   app.use(express.static(PUBLIC_DIR, { maxAge: '1h', index: false }));
 
