@@ -44,6 +44,7 @@
   var STICHPROBE_AB = 100000; // Kreuzprodukt: ab hier nur Stichprobe + Hinweis
   var MAX_ZEILEN_GRUPPIEREN = 200000; // darüber keine Zeilen-Stichprobe je Gruppe
   var MAX_GRUPPEN_ANZEIGE = 10;
+  var MAX_ZEILEN_JE_GRUPPE = 6; // Zeitlupe: GROUP BY/HAVING zeigt je Gruppe höchstens so viele Zeilen
   var MAX_GRUPPEN_LISTE = 300; // Worker liefert höchstens 300 Zeilen
   var MAX_FAECHER = 12;
   var MAX_KARTEN_JE_FACH = 8;
@@ -700,7 +701,7 @@
       if (nachWhere > MAX_ZEILEN_GRUPPIEREN) {
         hinweisG = 'Zu viele Zeilen für die Anzeige – die Zähler sind exakt.';
       } else {
-        var proGruppe = Math.max(1, Math.floor(MAX_ANZEIGE / Math.max(1, gewaehlt.length)));
+        var proGruppe = Math.max(1, Math.min(MAX_ZEILEN_JE_GRUPPE, Math.floor(MAX_ANZEIGE / Math.max(1, gewaehlt.length))));
         zeilenG = await gruppenZeilen(
           ctx,
           gewaehlt.map(function (g) {
@@ -1111,9 +1112,10 @@
         var zahlen = ctx.spalten.filter(function (s) {
           return /INT|REAL|NUM|DEC|DOUB|FLOA/.test(s.typ);
         });
+        // nie ein Primär- oder Fremdschlüssel: die Summe von Schlüsselnummern ist fachlich sinnlos → kein Umschalter
         var wahl = zahlen.filter(function (s) {
           return !s.pk && !s.fk;
-        })[0] || zahlen[0];
+        })[0];
         if (wahl) {
           umschalterSpalte = wahl.label;
           summeAusdruck = wahl.ausdruck;

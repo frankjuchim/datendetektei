@@ -232,7 +232,40 @@ Kachel „Diese Ermittlung nutzt: Fundbüro“ mit Schema-Browser und Download d
 Nur für öffentliche Übungs-DBs – **nie** für Verhör-Kontexte (dort `schema` bzw. `dbtabelle` verwenden). Typischer Ort:
 `intro` der Ermittlung.
 
-### 5.6 Folgt in Phase 5
+### 5.6 Verstehenshilfen: `zeitlupe`, `spurenbrett`, `sortierfaecher` (Phase 4)
+
+```json
+{ "t": "zeitlupe", "datenbank": "stadtfest", "sql": "SELECT …\nFROM …\nWHERE …\nGROUP BY …", "start": "WHERE" }
+{ "t": "spurenbrett", "datenbank": "stadtrad",
+  "tabellen": [ { "name": "Rad", "zeilen": [2, 3, 10] }, { "name": "Station", "limit": 4 } ],
+  "bedingung": "Rad.StationID = Station.StationID" }
+{ "t": "sortierfaecher", "datenbank": "stadtfest", "sql": "SELECT ProduktNr, COUNT(*) AS Positionen\nFROM Position\nGROUP BY ProduktNr" }
+```
+
+| Feld | Pflicht | Bedeutung |
+|---|---|---|
+| `datenbank` | ja | öffentliche Akten-DB (`fundbuero` … `eisdiele`); **nie** eine Verhör-DB |
+| `sql` | ja (`zeitlupe`, `sortierfaecher`) | die Abfrage des Blocks – EH-konform (Abimodus `streng`), höchstens 10 000 Zeichen; bei `sortierfaecher` mit `GROUP BY` oder Aggregatfunktion |
+| `start` | nein (`zeitlupe`) | Klausel, bei der die Zeitlupe beginnt: `FROM`, `WHERE`, `GROUP BY`, `HAVING`, `SELECT`, `ORDER BY` oder `LIMIT`; muss in der Abfrage vorkommen |
+| `tabellen` | ja (`spurenbrett`) | zwei oder drei Tabellen `{ name, zeilen? \| limit? }`: `zeilen` = Primärschlüsselwerte (bei zusammengesetztem Schlüssel je Zeile eine Liste), `limit` = die ersten n Zeilen (1–50, Standard 5); nicht beides |
+| `bedingung` | nein (`spurenbrett`) | Verbundbedingung (WHERE-Teil ohne `WHERE`); fehlt sie, zeigt das Brett alle Fäden des Kreuzprodukts |
+
+Darstellung: kompakte eingebettete Fassung des Werkzeugs, gerechnet im Browser (sql.js-Worker) auf der öffentlichen
+Übungs-DB – Zeitlupe als Schrittliste mit Zählern, Spurenbrett mit Karteikarten und Fäden („6 × 4 = 24 Fäden → 5
+bleiben“), Sortierfächer mit Fächern, Aggregaten und Korb – und ein Knopf, der das volle Werkzeug mit genau dieser
+Abfrage öffnet (Übergabe per `sessionStorage`). Ohne WebAssembly erscheint der Hinweis der Werkzeuge.
+
+Regeln (Validator):
+- Nur in Ermittlungen, Cold Cases und im Intro; **im Verhör verboten** (auch der Seed-Loader lässt solche
+  Verhör-Aufgaben aus). Keine Lücken.
+- Die Abfrage bzw. das Brett läuft über `src/sql/visual.js` mit better-sqlite3 auf der Haupt-DB (nie Varianten) –
+  dieselbe Rechenschicht wie im Browser. `zeilen` müssen existieren; mehr als 2 000 Fäden sind ein Fehler.
+- **Keine Lösungsdaten:** `sql` darf (normalisiert: ohne Leerraum, Groß/Klein, `;`) nicht die Musterlösung einer
+  `sql`-Aufgabe derselben Akte sein. Ein Block zeigt nur die eigene Abfrage bzw. Tabelle. Was erst nach dem Lösen
+  sichtbar sein soll (z. B. das Brett *mit* Bedingung zu einer `zeilen`-Aufgabe, die Sortierfächer zu einer
+  `ergebnis`-Aufgabe), gehört in die `erklaerung`.
+
+### 5.7 Folgt in Phase 5
 
 | Block | Zweck |
 |---|---|
@@ -440,8 +473,11 @@ erfüllbar und Summe = `anzahl`, Musterantwort wird vom Prüfer als richtig erka
 - `ergebnis` und `zeilen` mit `quelleSql`: das echte Ergebnis entspricht der angegebenen Lösung (`ergebnis` braucht
   dazu `loesung.datenbank`).
 - `dbtabelle` mit `quelle`: die Zeilen stimmen mit der DB überein.
+- `zeitlupe`, `spurenbrett`, `sortierfaecher` (5.6): öffentliche Akten-DB, nicht im Verhör, Abfrage EH-konform und über
+  `visual.js` darstellbar (`start` kommt vor, Sortierfächer mit Gruppen, `zeilen` vorhanden, ≤ 2 000 Fäden), Block-SQL ≠
+  Musterlösung einer `sql`-Aufgabe derselben Akte.
 - `lines.block` zeigt auf `sql`/`code`, `zeilen.block` auf `dbtabelle`; Indizes im Bereich.
-- Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block;
+- Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block und keine Verstehenshilfen;
   Mix je Stufe samt `maxJeKind` erfüllbar (maximaler Fluss Stufe → Art), sonst Fehler; für gA-Kurse (nur `alle`) Hinweis.
 - Cold Cases und `kernpunkte`: `punkte` 0. Niveau-Regeln (Akte 5 ganz `eA`).
 

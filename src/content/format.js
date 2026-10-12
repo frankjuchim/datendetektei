@@ -5,7 +5,11 @@
 
 const LUECKE_RE = /\[\[([A-Za-z0-9_-]{1,40})\]\]/g;
 
-const BLOCK_TYPEN = ['text', 'hinweis', 'code', 'tabelle', 'dbtabelle', 'schema', 'sql', 'datenbank'];
+const BLOCK_TYPEN = ['text', 'hinweis', 'code', 'tabelle', 'dbtabelle', 'schema', 'sql', 'datenbank', 'zeitlupe', 'spurenbrett', 'sortierfaecher'];
+/** Blöcke der Verstehenshilfen (Phase 4): rechnen im Browser auf einer öffentlichen Übungs-DB, nie im Verhör. */
+const WERKZEUG_BLOECKE = ['zeitlupe', 'spurenbrett', 'sortierfaecher'];
+/** Klauseln der Zeitlupe in Auswertungsreihenfolge (Block zeitlupe: start). */
+const ZEITLUPE_KLAUSELN = ['FROM', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'ORDER BY', 'LIMIT'];
 /** Blöcke, die erst in Phase 5 gebaut werden (Validator lehnt sie bis dahin ab). */
 const BLOCK_TYPEN_PHASE5 = ['er', 'mengen'];
 
@@ -62,7 +66,12 @@ function blockTexte(b) {
       push(b.code);
       break;
     case 'sql':
+    case 'zeitlupe':
+    case 'sortierfaecher':
       push(b.sql);
+      break;
+    case 'spurenbrett':
+      push(b.bedingung);
       break;
     case 'tabelle':
       (Array.isArray(b.kopf) ? b.kopf : []).forEach(push);
@@ -191,6 +200,8 @@ module.exports = {
   LUECKE_RE,
   BLOCK_TYPEN,
   BLOCK_TYPEN_PHASE5,
+  WERKZEUG_BLOECKE,
+  ZEITLUPE_KLAUSELN,
   INTERAKTIONEN,
   INTERAKTIONEN_PHASE5,
   SCHRITT_ARTEN,

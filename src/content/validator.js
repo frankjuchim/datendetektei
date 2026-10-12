@@ -20,6 +20,8 @@ const P = require('./pruefer');
 const parser = require('../sql/parser');
 const regeln = require('../sql/regeln');
 const { OEFFENTLICHE_DATENBANKEN } = require('../sql/datenbanken');
+const visual = require('../sql/visual');
+const Database = require('better-sqlite3');
 
 const LEVEL_ID = /^A(\d)-E(\d)$/;
 const AUFGABE_ID = /^A(\d)-(E\d-(\d{2}|CC)|V-\d{2})$/;
@@ -29,6 +31,8 @@ const KOMPETENZ = /^(DB-)?K(\d{2})$/;
 const FARBE = /^#[0-9A-Fa-f]{6}$/;
 const STUFEN_PUNKTE = { 1: 10, 2: 20, 3: 30 };
 const PARALLEL = 4;
+const MAX_BLOCK_SQL = 10000;
+const MAX_ZEILEN_SPURENBRETT = 50;
 
 function istObjekt(x) {
   return x !== null && typeof x === 'object' && !Array.isArray(x);
@@ -114,7 +118,7 @@ function mixErfuellbar(pool, mix, maxJeKind = {}) {
  */
 function pruefeAkteStruktur(data, datei, kontext) {
   const { f, h, dbs } = kontext;
-  const ergebnis = { welt: null, ids: [], aufgaben: 0, sqlJobs: [] };
+  const ergebnis = { welt: null, ids: [], aufgaben: 0, sqlJobs: [], werkzeugSql: [] };
   const fd = (text) => f({ datei, text });
   if (!istObjekt(data)) {
     fd('Die Datei muss ein JSON-Objekt { "version": 2, "welt": …, "levels": […], "aufgaben": […] } enthalten.');
@@ -175,7 +179,18 @@ function pruefeAkteStruktur(data, datei, kontext) {
       }
     }
     if (l.intro !== undefined) {
-      pruefeBloecke(l.intro, { ort: `Ermittlung ${lid} › intro`, fe: fl, lueckenVerboten: true, verhoer: false, dbs, sqlJobs: ergebnis.sqlJobs, datei, f, h });
+      pruefeBloecke(l.intro, {
+        ort: `Ermittlung ${lid} › intro`,
+        fe: fl,
+        lueckenVerboten: true,
+        verhoer: false,
+        dbs,
+        sqlJobs: ergebnis.sqlJobs,
+        werkzeugSql: ergebnis.werkzeugSql,
+        datei,
+        f,
+        h
+      });
     }
     if (!Array.isArray(l.aufgaben) || !l.aufgaben.length) fl('aufgaben (Liste der Aufgaben-ids) fehlt oder ist leer.');
     for (const aid of Array.isArray(l.aufgaben) ? l.aufgaben : []) {
@@ -274,9 +289,26 @@ function pruefeAkteStruktur(data, datei, kontext) {
   for (const [id, a] of aufgaben) {
     const r = rolle.get(id) || { art: /-V-/.test(id) ? 'verhoer' : /-CC$/.test(id) ? 'cc' : 'lab', niveau: 'alle', unbenutzt: true };
     if (r.unbenutzt) h({ datei, id, text: `Aufgabe „${id}“ wird in keiner Ermittlung, keinem coldCase und keinem Verhör-Pool verwendet.` });
-    pruefeAufgabe(a, id, { welt, eA, rolle: r, kontextDb, datei, f, h, dbs, sqlJobs: ergebnis.sqlJobs });
+    pruefeAufgabe(a, id, { welt, eA, rolle: r, kontextDb, datei, f, h, dbs, sqlJobs: ergebnis.sqlJobs, werkzeugSql: ergebnis.werkzeugSql });
+  }
+
+  /* ---------- Verstehenshilfen zeigen nie eine Musterlösung (Review Focus 4 Phase 4) ---------- */
+  const muster = new Map(); // normalisierte Musterlösung → Aufgaben-id
+  for (const [id, a] of aufgaben) {
+    for (const t of F.teile(a)) {
+      if (istObjekt(t.interaktion) && t.interaktion.kind === 'sql' && istObjekt(t.loesung) && istText(t.loesung.sql)) muster.set(normSql(t.loesung.sql), id);
+    }
+  }
+  for (const w of ergebnis.werkzeugSql) {
+    const id = muster.get(normSql(w.sql));
+    if (id) w.fb(`sql ist die Musterlösung der Aufgabe ${id} – Blöcke der Verstehenshilfen zeigen nie eine Musterlösung.`);
   }
   return ergebnis;
+}
+
+/** SQL für den Vergleich mit Musterlösungen: ohne Leerraum, Groß/Klein und abschließendes Semikolon. */
+function normSql(sql) {
+  return F.normText(sql, 'code').toLowerCase().replace(/;+$/, '');
 }
 
 /* ======================================================================================================== */
@@ -319,7 +351,7 @@ function pruefeAufgabe(a, id, k) {
     ha(`punkte ${a.punkte} weicht vom Standard der Stufe ${a.stufe} (${STUFEN_PUNKTE[a.stufe]}) ab.`);
   }
 
-  const blockKontext = { fe: fa, verhoer, kontextDb: k.kontextDb, dbs: k.dbs, sqlJobs: k.sqlJobs, datei, id, f, h };
+  const blockKontext = { fe: fa, verhoer, kontextDb: k.kontextDb, dbs: k.dbs, sqlJobs: k.sqlJobs, werkzeugSql: k.werkzeugSql, datei, id, f, h };
   if (!Array.isArray(a.inhalt) || !a.inhalt.length) fa('inhalt (Liste von Blöcken) fehlt oder ist leer.');
   else pruefeBloecke(a.inhalt, { ...blockKontext, ort: 'inhalt' });
   if (a.tipps !== undefined) {
@@ -799,11 +831,132 @@ function pruefeBloecke(bloecke, k) {
         if (k.verhoer) fb('Im Verhör gibt es keinen datenbank-Block (Verhör-DBs sind nie öffentlich).');
         else if (!F.UEBUNGS_DBS.includes(b.name)) fb(`name muss eine öffentliche Übungs-DB sein (${F.UEBUNGS_DBS.join(', ')}).`);
         break;
+      case 'zeitlupe':
+      case 'spurenbrett':
+      case 'sortierfaecher':
+        pruefeWerkzeugBlock(b, fb, k);
+        break;
       default:
         break;
     }
     if (k.lueckenVerboten && F.luecken([b]).length) fb('Lücken [[…]] sind hier nicht erlaubt.');
   });
+}
+
+/* ---------- Verstehenshilfen: zeitlupe, spurenbrett, sortierfaecher (Phase 4) ---------- */
+
+/**
+ * Blöcke zeitlupe { datenbank, sql, start? }, sortierfaecher { datenbank, sql }, spurenbrett { datenbank,
+ * tabellen: [{ name, zeilen? | limit? }], bedingung? }: nur öffentliche Akten-DBs, nie im Verhör, keine Lücken; die
+ * Abfrage ist EH-konform und läuft über src/sql/visual.js (better-sqlite3 auf der Haupt-DB) – wie später im Browser.
+ * Dass die Abfrage keine Musterlösung zeigt, prüft pruefeAkteStruktur über k.werkzeugSql.
+ */
+function pruefeWerkzeugBlock(b, fb, k) {
+  if (k.verhoer) return fb('Im Verhör gibt es keine Verstehenshilfen (Zeitlupe, Spurenbrett, Sortierfächer).');
+  if (!istText(b.datenbank) || !OEFFENTLICHE_DATENBANKEN.includes(b.datenbank)) {
+    return fb(`datenbank muss eine öffentliche Akten-DB sein (${OEFFENTLICHE_DATENBANKEN.join(', ')}), nicht ${JSON.stringify(b.datenbank)}.`);
+  }
+  if (F.luecken([b]).length) return fb('Lücken [[…]] sind in Verstehenshilfen nicht erlaubt.');
+  if (b.t === 'spurenbrett') return pruefeSpurenbrettBlock(b, fb, k);
+
+  if (!istText(b.sql)) return fb('sql (die Abfrage des Blocks) fehlt.');
+  if (b.sql.length > MAX_BLOCK_SQL) return fb(`sql ist zu lang (höchstens ${MAX_BLOCK_SQL} Zeichen).`);
+  if (b.start !== undefined) {
+    if (b.t !== 'zeitlupe') fb('start gibt es nur beim Block zeitlupe.');
+    else if (!F.ZEITLUPE_KLAUSELN.includes(b.start)) fb(`start muss eine Klausel sein (${F.ZEITLUPE_KLAUSELN.join(', ')}), nicht ${JSON.stringify(b.start)}.`);
+  }
+  if (!pruefeEh(b.sql, 'sql', fb, k.dbs.schema(b.datenbank))) return;
+  if (Array.isArray(k.werkzeugSql)) k.werkzeugSql.push({ sql: b.sql, fb });
+  const db = b.datenbank;
+  k.sqlJobs.push(async (u) => {
+    const fuehreAus = u.visual(db);
+    if (b.t === 'zeitlupe') {
+      const r = await visual.zeitlupe(b.sql, fuehreAus);
+      if (r.fehler) return fb(`Die Abfrage ist auf ${db} nicht ausführbar: ${r.fehler}`);
+      if (!r.schritte.length) return fb(r.hinweis || 'Die Zeitlupe kann diese Abfrage nicht zeigen.');
+      if (typeof b.start === 'string' && F.ZEITLUPE_KLAUSELN.includes(b.start) && !r.schritte.some((x) => x.klausel === b.start)) {
+        fb(`start „${b.start}“: Diese Klausel kommt in der Abfrage nicht vor.`);
+      }
+    } else {
+      const r = await visual.sortierfaecher(b.sql, fuehreAus);
+      if (r.fehler) return fb(`Die Abfrage ist auf ${db} nicht ausführbar: ${r.fehler}`);
+      if (!r.faecher.length) fb(r.hinweis || 'Die Sortierfächer brauchen eine Abfrage mit GROUP BY oder einer Aggregatfunktion.');
+    }
+  });
+}
+
+function istPkWert(w) {
+  return (typeof w === 'number' && Number.isFinite(w)) || typeof w === 'string';
+}
+
+function pruefeSpurenbrettBlock(b, fb, k) {
+  if (!Array.isArray(b.tabellen) || b.tabellen.length < 2 || b.tabellen.length > 3) {
+    return fb('tabellen: zwei oder drei Tabellen angeben ([{ name, zeilen? | limit? }]).');
+  }
+  let ok = true;
+  const fehler = (text) => {
+    ok = false;
+    fb(text);
+  };
+  b.tabellen.forEach((t, i) => {
+    const o = `tabellen[${i}]`;
+    if (!istObjekt(t) || !istText(t.name)) return fehler(`${o}: name fehlt.`);
+    for (const key of Object.keys(t)) if (!['name', 'zeilen', 'limit'].includes(key)) fehler(`${o}: unbekanntes Feld „${key}“ (erlaubt: name, zeilen, limit).`);
+    if (t.zeilen !== undefined && t.limit !== undefined) return fehler(`${o}: zeilen oder limit angeben – nicht beides.`);
+    if (t.zeilen !== undefined) {
+      const gut =
+        Array.isArray(t.zeilen) &&
+        t.zeilen.length >= 1 &&
+        t.zeilen.length <= MAX_ZEILEN_SPURENBRETT &&
+        t.zeilen.every((w) => istPkWert(w) || (Array.isArray(w) && w.length >= 1 && w.every(istPkWert)));
+      if (!gut) fehler(`${o}: zeilen muss eine Liste von 1–${MAX_ZEILEN_SPURENBRETT} Primärschlüsselwerten sein.`);
+    }
+    if (t.limit !== undefined && (!Number.isInteger(t.limit) || t.limit < 1 || t.limit > MAX_ZEILEN_SPURENBRETT)) {
+      fehler(`${o}: limit muss eine ganze Zahl 1–${MAX_ZEILEN_SPURENBRETT} sein.`);
+    }
+  });
+  if (b.bedingung !== undefined && (typeof b.bedingung !== 'string' || b.bedingung.length > 2000)) fehler('bedingung muss Text sein (höchstens 2 000 Zeichen).');
+  if (!ok) return;
+  const db = b.datenbank;
+  const eingabe = { tabellen: b.tabellen.map((t) => ({ ...t })), bedingung: b.bedingung };
+  k.sqlJobs.push(async (u) => {
+    const r = await visual.spurenbrett(eingabe, u.visual(db));
+    if (r.fehler) return fb(`Auf ${db} nicht darstellbar: ${r.fehler}`);
+    b.tabellen.forEach((t, i) => {
+      if (!Array.isArray(t.zeilen)) return;
+      const da = r.tabellen[i].zeilen.length;
+      if (da !== t.zeilen.length) fb(`tabellen[${i}].zeilen: ${t.zeilen.length - da} der Primärschlüsselwerte gibt es in ${t.name} nicht.`);
+    });
+    if (r.zusammengefasst) fb(`${r.text}: zu viele Fäden für das Brett (höchstens ${visual.GRENZEN.faeden}) – weniger Zeilen wählen.`);
+  });
+}
+
+/**
+ * Ausführung für visual.js im Validator: je öffentlicher DB eine schreibgeschützte better-sqlite3-Kopie der Haupt-DB
+ * (nie Varianten). → { visual(name) → fuehreAus, schliessen() }
+ */
+function visualAusfuehrung(datenbanken) {
+  const offen = new Map();
+  return {
+    visual(name) {
+      if (!offen.has(name)) offen.set(name, new Database(datenbanken.haupt(name), { readonly: true }));
+      const d = offen.get(name);
+      return async (sql) => {
+        try {
+          const stmt = d.prepare(sql);
+          if (!stmt.reader) return { fehler: 'Nur Abfragen.' };
+          const alle = stmt.raw(true).all();
+          return { spalten: stmt.columns().map((c) => c.name), zeilen: alle.slice(0, 300), gesamt: alle.length };
+        } catch (e) {
+          return { fehler: e.message };
+        }
+      };
+    },
+    schliessen() {
+      for (const d of offen.values()) d.close();
+      offen.clear();
+    }
+  };
 }
 
 function pruefeDbTabelle(b, fb, k) {
@@ -992,7 +1145,12 @@ async function validiereAkten(dateien, umgebung = {}) {
     }
   }
 
-  await parallel(jobs, { sandbox, sqlPruefer });
+  const ausfuehrung = visualAusfuehrung(datenbanken);
+  try {
+    await parallel(jobs, { sandbox, sqlPruefer, visual: ausfuehrung.visual });
+  } finally {
+    ausfuehrung.schliessen();
+  }
   return { fehler, hinweise, aufgaben, karten };
 }
 
@@ -1026,10 +1184,12 @@ function dbVerweise(a) {
     for (const b of Array.isArray(liste) ? liste : []) {
       if (!istObjekt(b)) continue;
       if (b.t === 'datenbank') out.push(b.name);
+      if (F.WERKZEUG_BLOECKE.includes(b.t)) out.push(b.datenbank);
       if (b.t === 'dbtabelle' && istObjekt(b.quelle)) out.push(b.quelle.datenbank);
     }
   };
   bloecke(a.inhalt);
+  bloecke(a.erklaerung);
   for (const t of F.teile(a)) {
     if (!istObjekt(t.interaktion)) continue;
     if (t.interaktion.kind === 'sql') out.push(t.interaktion.datenbank);

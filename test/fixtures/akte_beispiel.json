@@ -29,7 +29,10 @@
       "ds": [5],
       "niveau": "eA",
       "briefing": "Die Eisdiele braucht eine Auswertung. Diesmal zählst du nicht Zeilen, sondern summierst.",
-      "intro": [ { "t": "datenbank", "name": "eisdiele" } ],
+      "intro": [
+        { "t": "datenbank", "name": "eisdiele" },
+        { "t": "zeitlupe", "datenbank": "eisdiele", "sql": "SELECT Vegan, COUNT(*) AS Sorten\nFROM Sorte\nWHERE Preis >= 1.5\nGROUP BY Vegan", "start": "WHERE" }
+      ],
       "aufgaben": ["A9-E2-01", "A9-E2-02"]
     }
   ],
@@ -410,7 +413,12 @@
       "punkte": 30,
       "kategorie": "SQL Aggregation",
       "fallen": ["P3", "P4"],
-      "inhalt": [ { "t": "text", "md": "Gib für jede verkaufte Sorte den Namen und die Summe der verkauften Kugeln aus. Die Summe heißt **Kugeln**." } ],
+      "inhalt": [
+        { "t": "text", "md": "Gib für jede verkaufte Sorte den Namen und die Summe der verkauften Kugeln aus. Die Summe heißt **Kugeln**." },
+        { "t": "spurenbrett", "datenbank": "eisdiele",
+          "tabellen": [ { "name": "Sorte", "limit": 3 }, { "name": "Verkauf", "zeilen": [1, 2, 3, 4] } ],
+          "bedingung": "Sorte.SorteNr = Verkauf.SorteNr" }
+      ],
       "interaktion": { "kind": "sql", "datenbank": "eisdiele", "varianten": [], "aliasPflicht": true },
       "loesung": { "sql": "SELECT s.Name, SUM(v.Kugeln) AS Kugeln\nFROM Sorte s, Verkauf v\nWHERE s.SorteNr = v.SorteNr\nGROUP BY s.SorteNr, s.Name" },
       "erklaerung": [ { "t": "text", "md": "Gruppiert wird nach dem Schlüssel **und** dem Namen (GROUP-BY-Regel); `SUM` zählt Kugeln, `COUNT(*)` würde Verkäufe zählen." } ]
@@ -433,7 +441,10 @@
         "quelleSql": "SELECT Name FROM Sorte WHERE Vegan = 'ja'",
         "datenbank": "eisdiele"
       },
-      "erklaerung": [ { "t": "text", "md": "Drei Sorten sind vegan." } ]
+      "erklaerung": [
+        { "t": "text", "md": "Drei Sorten sind vegan." },
+        { "t": "sortierfaecher", "datenbank": "eisdiele", "sql": "SELECT Vegan, COUNT(*) AS Sorten, MAX(Preis) AS Hoechstpreis\nFROM Sorte\nGROUP BY Vegan" }
+      ]
     },
     {
       "id": "A9-V-01",

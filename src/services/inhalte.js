@@ -133,6 +133,13 @@ function aufgabeFehler(a) {
   }
   if (a.tipps !== undefined && !(Array.isArray(a.tipps) && a.tipps.every((t) => typeof t === 'string'))) f.push('tipps muss eine Liste von Texten sein.');
   if (a.erklaerung !== undefined && !Array.isArray(a.erklaerung)) f.push('erklaerung muss eine Liste von Blöcken sein.');
+  // Verhöre zeigen nie Verstehenshilfen (Phase 4; der Validator meldet das ausführlich)
+  if (typeof a.id === 'string' && /-V-\d/.test(a.id)) {
+    const listen = [a.inhalt, a.erklaerung, ...teile.map((ia) => (istObjekt(ia) ? ia.inhalt : null))];
+    if (listen.some((l) => Array.isArray(l) && l.some((b) => istObjekt(b) && F.WERKZEUG_BLOECKE.includes(b.t)))) {
+      f.push('Im Verhör gibt es keine Verstehenshilfen (Zeitlupe, Spurenbrett, Sortierfächer).');
+    }
+  }
   return f;
 }
 

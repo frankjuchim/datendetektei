@@ -344,6 +344,20 @@ test('aufgabeOeffentlich: sql nur kind, datenbank, wirksamer abimodus; kernpunkt
   assert.equal(tab.quelle, undefined);
 });
 
+test('aufgabeOeffentlich: Blöcke der Verstehenshilfen nur mit ihrer eigenen Abfrage, nie mit Lösungsdaten', (t) => {
+  const { inhalte } = geladen(t);
+  // spurenbrett im Inhalt: unverändert sichtbar (Tabellen, Zeilen, Bedingung des Blocks) – ohne Musterlösung
+  const mitBrett = inhalte.aufgabeOeffentlich('A9-E2-01');
+  const roh = beispiel().aufgaben.find((a) => a.id === 'A9-E2-01');
+  assert.deepEqual(mitBrett.inhalt.find((b) => b.t === 'spurenbrett'), roh.inhalt.find((b) => b.t === 'spurenbrett'));
+  assert.ok(!JSON.stringify(mitBrett).includes('SUM(v.Kugeln)'), 'Musterlösung nicht im Inhalt');
+  // sortierfaecher in der Erklärung: erst nach dem Lösen, also nicht in der öffentlichen Aufgabe
+  const mitFaechern = inhalte.aufgabeOeffentlich('A9-E2-02');
+  assert.equal(mitFaechern.erklaerung, undefined);
+  assert.ok(!JSON.stringify(mitFaechern).includes('sortierfaecher'));
+  assert.ok(!JSON.stringify(mitFaechern).includes('Hoechstpreis'));
+});
+
 test('Zugriffsfunktionen liefern unveränderliche Objekte (Katalog nicht von außen manipulierbar)', (t) => {
   const { inhalte } = geladen(t);
   const a = inhalte.aufgabe('A9-E1-02');

@@ -466,8 +466,38 @@ test('Sortierfächer: nur COUNT → Umschalter mit einer Zahlenspalte; ohne GROU
   assert.deepEqual(ohne.faecher, []);
 });
 
+test('Sortierfächer: Umschalter nie mit Primär-/Fremdschlüssel als Summenspalte', async () => {
+  const d = db('detektei');
+  const erg = await visual.sortierfaecher('SELECT Grad, COUNT(*) AS Anzahl\nFROM verdaechtig\nGROUP BY Grad', adapter(d));
+  assert.equal(erg.fehler, undefined, erg.fehler);
+  assert.ok(erg.faecher.length > 0);
+  assert.equal(erg.umschalter, null);
+  const zwei = await visual.sortierfaecher('SELECT Status, COUNT(*) AS Faelle\nFROM Fall\nGROUP BY Status', adapter(d));
+  assert.equal(zwei.fehler, undefined, zwei.fehler);
+  assert.equal(zwei.umschalter, null);
+});
+
 // ---------------------------------------------------------------------------------------------------------------
 // Grenzfälle der Zeitlupe
+
+test('Zeitlupe: in GROUP BY/HAVING höchstens 6 Zeilen je Gruppe, Zähler bleiben exakt', async () => {
+  const d = db('fundbuero');
+  const bedingung = "Kategorie IN ('Schlüssel', 'Elektronik', 'Kleidung')";
+  const sql = `SELECT Kategorie, COUNT(*) AS Anzahl\nFROM Fundsache\nWHERE ${bedingung}\nGROUP BY Kategorie\nHAVING COUNT(*) > 3`;
+  const erg = await visual.zeitlupe(sql, adapter(d));
+  assert.equal(erg.fehler, undefined, erg.fehler);
+  const kleinste = wert(d, `SELECT MIN(n) FROM (SELECT COUNT(*) AS n FROM Fundsache WHERE ${bedingung} GROUP BY Kategorie)`);
+  assert.ok(kleinste > 6, 'Testdaten: jede Gruppe hat mehr als 6 Zeilen');
+  for (const k of ['GROUP BY', 'HAVING']) {
+    const s = schritt(erg, k);
+    for (const gr of s.gruppen) {
+      const n = s.zeilen.filter((z) => z.gruppe === gr.nr).length;
+      assert.equal(n, 6, `${k}: Gruppe ${gr.name} zeigt ${n} Zeilen`);
+    }
+    assert.equal(s.gesamt, wert(d, `SELECT COUNT(*) FROM Fundsache WHERE ${bedingung}`));
+  }
+  assert.equal(schritt(erg, 'GROUP BY').zaehler.wert, 3);
+});
 
 test('leere Gruppen: WHERE verwirft alles → 0 Gruppen; Aggregat ohne GROUP BY → eine Zeile', async () => {
   const d = db('fundbuero');

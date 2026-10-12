@@ -382,6 +382,97 @@ test('Phase-5-Elemente werden abgelehnt (Block er, Interaktion zerlegen)', async
   await erwarteFehler(k, /Phase 5/, 'A9-E1-12');
 });
 
+/* ---------- Verstehenshilfen als Blöcke (Phase 4 Task 5) ---------- */
+
+const blockVon = (liste, t) => liste.find((b) => b && b.t === t);
+
+test('Beispielakte enthält je einen Block zeitlupe, spurenbrett und sortierfaecher (gültig)', async () => {
+  const j = akte();
+  const e2 = j.levels.find((l) => l.id === 'A9-E2');
+  assert.ok(blockVon(e2.intro, 'zeitlupe'), 'zeitlupe im Intro von A9-E2');
+  assert.ok(blockVon(aufgabe(j, 'A9-E2-01').inhalt, 'spurenbrett'), 'spurenbrett in A9-E2-01');
+  assert.ok(blockVon(aufgabe(j, 'A9-E2-02').erklaerung, 'sortierfaecher'), 'sortierfaecher in der Erklärung von A9-E2-02');
+  const r = await validiere(j);
+  assert.deepEqual(r.fehler, []);
+});
+
+test('Block zeitlupe: Abfrage muss laufen, EH-konform sein, start nur eine vorhandene Klausel', async () => {
+  const intro = (j) => blockVon(j.levels.find((l) => l.id === 'A9-E2').intro, 'zeitlupe');
+  const a = akte();
+  intro(a).sql = 'SELECT Gibtsnicht\nFROM Sorte';
+  await erwarteFehler(a, /zeitlupe.*(nicht ausführbar|Gibtsnicht)/);
+  const b = akte();
+  intro(b).sql = 'SELECT Sorte.Name\nFROM Sorte JOIN Verkauf ON Sorte.SorteNr = Verkauf.SorteNr';
+  await erwarteFehler(b, /zeitlupe.*EH/);
+  const c = akte();
+  intro(c).start = 'HAVING';
+  intro(c).sql = 'SELECT Name\nFROM Sorte\nWHERE Preis > 1';
+  await erwarteFehler(c, /start.*HAVING/);
+  const d = akte();
+  intro(d).start = 'JOIN';
+  await erwarteFehler(d, /start/);
+  const e = akte();
+  delete intro(e).sql;
+  await erwarteFehler(e, /sql/);
+});
+
+test('Blöcke der Verstehenshilfen: nur öffentliche Akten-DBs, nie im Verhör', async () => {
+  const a = akte();
+  blockVon(a.levels.find((l) => l.id === 'A9-E2').intro, 'zeitlupe').datenbank = 'verhoer/kiosk';
+  await erwarteFehler(a, /öffentlich/);
+  const b = akte();
+  blockVon(aufgabe(b, 'A9-E2-01').inhalt, 'spurenbrett').datenbank = 'gibtsnicht';
+  await erwarteFehler(b, /öffentlich/, 'A9-E2-01');
+  const c = akte();
+  aufgabe(c, 'A9-V-01').inhalt.push({ t: 'sortierfaecher', datenbank: 'eisdiele', sql: 'SELECT Vegan, COUNT(*) AS Sorten\nFROM Sorte\nGROUP BY Vegan' });
+  await erwarteFehler(c, /Verhör/, 'A9-V-01');
+  const d = akte();
+  aufgabe(d, 'A9-V-02').erklaerung.push({ t: 'zeitlupe', datenbank: 'eisdiele', sql: 'SELECT Name\nFROM Sorte' });
+  await erwarteFehler(d, /Verhör/, 'A9-V-02');
+});
+
+test('Block-SQL darf nicht die Musterlösung einer sql-Aufgabe derselben Akte sein (normalisiert)', async () => {
+  const j = akte();
+  const muster = aufgabe(j, 'A9-E2-01').loesung.sql;
+  // andere Leerzeichen, Groß/Klein, Semikolon – trotzdem dieselbe Abfrage
+  blockVon(j.levels.find((l) => l.id === 'A9-E2').intro, 'zeitlupe').sql = muster.replace(/\n/g, '\n  ').toLowerCase().replace('as kugeln', 'AS Kugeln') + ';';
+  await erwarteFehler(j, /Musterlösung.*A9-E2-01/);
+  const k = akte();
+  blockVon(aufgabe(k, 'A9-E2-02').erklaerung, 'sortierfaecher').sql = aufgabe(k, 'A9-E2-01').loesung.sql;
+  await erwarteFehler(k, /Musterlösung/, 'A9-E2-02');
+});
+
+test('Block sortierfaecher: Abfrage braucht GROUP BY oder eine Aggregatfunktion und muss laufen', async () => {
+  const a = akte();
+  blockVon(aufgabe(a, 'A9-E2-02').erklaerung, 'sortierfaecher').sql = 'SELECT Name\nFROM Sorte';
+  await erwarteFehler(a, /GROUP BY/, 'A9-E2-02');
+  const b = akte();
+  blockVon(aufgabe(b, 'A9-E2-02').erklaerung, 'sortierfaecher').sql = 'SELECT Vegan, COUNT(*) AS Sorten\nFROM Eis\nGROUP BY Vegan';
+  await erwarteFehler(b, /sortierfaecher/, 'A9-E2-02');
+});
+
+test('Block spurenbrett: 2–3 Tabellen, zeilen (Primärschlüssel) vorhanden oder limit 1–50, Bedingung gültig', async () => {
+  const sb = (j) => blockVon(aufgabe(j, 'A9-E2-01').inhalt, 'spurenbrett');
+  const a = akte();
+  sb(a).tabellen = [{ name: 'Sorte' }];
+  await erwarteFehler(a, /zwei oder drei Tabellen/, 'A9-E2-01');
+  const b = akte();
+  sb(b).tabellen[0].name = 'Eis';
+  await erwarteFehler(b, /Eis/, 'A9-E2-01');
+  const c = akte();
+  sb(c).tabellen[1] = { name: 'Verkauf', zeilen: [1, 2, 999999] };
+  await erwarteFehler(c, /999999|zeilen/, 'A9-E2-01');
+  const d = akte();
+  sb(d).tabellen[0] = { name: 'Sorte', limit: 80 };
+  await erwarteFehler(d, /limit/, 'A9-E2-01');
+  const e = akte();
+  sb(e).tabellen[0] = { name: 'Sorte', limit: 3, zeilen: [1] };
+  await erwarteFehler(e, /zeilen.*limit|limit.*zeilen/, 'A9-E2-01');
+  const f = akte();
+  sb(f).bedingung = 'Sorte.SorteNr = Kunde.SorteNr';
+  await erwarteFehler(f, /spurenbrett/, 'A9-E2-01');
+});
+
 /* ---------- Warm-up-Karten ---------- */
 
 function warmup() {
