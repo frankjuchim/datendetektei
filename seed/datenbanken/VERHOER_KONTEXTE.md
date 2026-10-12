@@ -5,7 +5,10 @@ nüchternen Kontexten** (Transfer, Spec 3.1 und 9). Die Story erscheint dort hö
 Startkarte (STORY.md Abschnitt 6). Dieses Dokument legt je Kontext das Relationenschema, den Sachzusammenhang, die
 Zielkompetenzen und die **Pflicht-Randfälle** fest, die die Aufgaben aus `docs/DS_PLANUNG.md` (Verhör- und
 Klausur-Blueprints) lösbar und trennscharf machen. Die SQL-Dateien (`seed/datenbanken/verhoer/<kontext>/schema.sql`,
-`daten.sql`) entstehen zusammen mit den Aufgaben (Phase 2) und werden vollständig kuratiert (kein Generator).
+`pflicht.sql`, `varianten/*.sql`, `LIESMICH.md`) werden vollständig kuratiert (kein Generator) und von
+`scripts/db_bauen.js` unter dem Namen `verhoer/<kontext>` gebaut und geprüft (nie öffentlich). Fertig: V1
+`verhoer/bibliothek`, V2 `verhoer/buergerbus`, V3 `verhoer/kiosk` (Phase 3, Task 11) – die jeweilige `LIESMICH.md`
+nennt die konkreten Pflicht-Datensätze und ist für die Aufgaben maßgeblich.
 
 **Gemeinsame Regeln**
 - Alle Namen, Orte, Einrichtungen frei erfunden (Namen aus `namen.json`); keine Abiturtexte oder -daten übernommen,
@@ -108,17 +111,21 @@ Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bl
 
 - Produkt(<u>ProduktNr</u>, Bezeichnung, Kategorie, Preis)
 - Helfer(<u>HelferNr</u>, Vorname, Nachname, Klasse)
-- Verkauf(<u>VerkaufNr</u>, ↑HelferNr, Zeitpunkt, Zahlart)
+- Schicht(<u>SchichtNr</u>, ↑HelferNr, Datum, Pause)
+- Verkauf(<u>VerkaufNr</u>, ↑SchichtNr, Zeitpunkt, Zahlart)
 - Posten(<u>↑VerkaufNr</u>, <u>↑ProduktNr</u>, Anzahl)
 
-**Kontext:** Die Kiosk-AG einer Gesamtschule verkauft in den großen Pausen Brötchen, Getränke und Snacks. Jeder Verkauf
-wird von einer Helferin oder einem Helfer der AG kassiert und besteht aus Posten (Produkt und Anzahl); bezahlt wird bar
-oder mit der aufladbaren Schülerkarte.
+(Angeglichen an den Verhör-Blueprint in `docs/DS_PLANUNG.md` – A3-V-11 verbindet Helfer, Schicht, Verkauf, Posten,
+Produkt – und STORY 6 „Verkaufsschichten“; früher hier `Verkauf(…, ↑HelferNr, …)` ohne `Schicht`.)
+
+**Kontext:** Die Kiosk-AG einer Gesamtschule verkauft in den großen Pausen Brötchen, Getränke und Snacks. In jeder
+Pause kassieren Helferinnen und Helfer der AG in Schichten; jeder Verkauf gehört zu einer Schicht und besteht aus
+Posten (Produkt und Anzahl); bezahlt wird bar oder mit der aufladbaren Schülerkarte.
 
 **Rahmensatz:** „Kassen lügen nicht, aber Abfragen manchmal – beweis mir, dass deine es nicht tun.“
 
 **Wertebereiche:** Kategorie `Brötchen`, `Getränk`, `Snack`, `Obst` · Zahlart `bar`, `Karte` · 14 Produkte,
-10 Helfer, ≈ 120 Verkäufe in einer Schulwoche, ≈ 200 Posten.
+10 Helfer, 20 Schichten (je Pause zwei), ≈ 120 Verkäufe in einer Schulwoche, ≈ 200 Posten.
 
 **Zielkompetenzen:** K22, K23, K24, K25, K26, K27, K28, K29, K30, K31 (Blueprint A3-V-01 … 12).
 

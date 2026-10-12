@@ -11,7 +11,7 @@ const path = require('node:path');
 const Database = require('better-sqlite3');
 const request = require('supertest');
 
-const { ladeDatenbanken, OEFFENTLICHE_DATENBANKEN, AKTEN_DATENBANKEN } = require('../src/sql/datenbanken');
+const { ladeDatenbanken, OEFFENTLICHE_DATENBANKEN, AKTEN_DATENBANKEN, VERHOER_DATENBANKEN } = require('../src/sql/datenbanken');
 const { erzeugeApp } = require('../src/app');
 const { oeffneDb } = require('../src/db');
 const { testKonfig, testApp } = require('./helpers');
@@ -42,8 +42,8 @@ function tempSeed(namen) {
 
 // ---------------------------------------------------------------- ladeDatenbanken
 
-test('ladeDatenbanken: alle sieben Akten-DBs bekannt, öffentliche Liste fest', () => {
-  assert.deepEqual(datenbanken.namen, SIEBEN);
+test('ladeDatenbanken: Akten- und Verhör-DBs geladen, öffentliche Liste fest (nur die sieben Akten-DBs)', () => {
+  assert.deepEqual(datenbanken.namen, [...SIEBEN, ...VERHOER_DATENBANKEN]);
   assert.deepEqual(AKTEN_DATENBANKEN, SIEBEN);
   assert.deepEqual([...OEFFENTLICHE_DATENBANKEN].sort(), [...SIEBEN].sort());
   assert.ok(Object.isFrozen(OEFFENTLICHE_DATENBANKEN));
@@ -101,7 +101,7 @@ test('ladeDatenbanken: unbekannter Name ist ein Fehler', () => {
 
 test('ladeDatenbanken: Startzeit wird protokolliert', () => {
   assert.equal(protokoll.length, 1);
-  assert.match(protokoll[0], /7 Datenbanken/);
+  assert.match(protokoll[0], new RegExp(`${SIEBEN.length + VERHOER_DATENBANKEN.length} Datenbanken`));
   assert.match(protokoll[0], /\d+ ms/);
 });
 

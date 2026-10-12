@@ -67,7 +67,8 @@ function liesmichAbfragen() {
   const abfragen = [];
   for (const datei of liesmichDateien()) {
     const zeilen = fs.readFileSync(datei, 'utf8').split(/\r?\n/);
-    const db = path.basename(path.dirname(datei));
+    // Name wie in scripts/db_bauen.js: Pfad unter seed/datenbanken (Verhör-Kontexte: 'verhoer/<kontext>')
+    const db = path.relative(SEED, path.dirname(datei)).split(path.sep).join('/') || path.basename(SEED);
     let block = null;
     zeilen.forEach((zeile, i) => {
       if (block === null && /^```sql\s*$/.test(zeile)) {
