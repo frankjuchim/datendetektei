@@ -191,8 +191,12 @@ test('fundbuero/null: 9001 ohne Farbe/Wert/Finder (offen), 9002 Wert NULL abgeho
   assert.equal(r.Wert, null);
   assert.notEqual(r.AbgeholtAm, null);
   assert.equal(wert(v, 'SELECT COUNT(*) FROM Fundsache WHERE Wert IS NULL'),
-    wert(h, 'SELECT COUNT(*) FROM Fundsache WHERE Wert IS NULL') + 2);
+    wert(h, 'SELECT COUNT(*) FROM Fundsache WHERE Wert IS NULL') + 3);
   assert.equal(wert(v, 'SELECT COUNT(*) FROM Fundsache WHERE Wert = NULL'), 0);
+  // Indizienkette A1-E2-07: Messing-Fundstück aus dem Sommer mit unbekanntem Wert (9003) nur mit „OR Wert IS NULL“
+  const kette = "SELECT FundNr FROM Fundsache WHERE Bezeichnung LIKE '%Messing%' AND Funddatum BETWEEN '2026-06-01' AND '2026-07-31'";
+  assert.ok(spalte(v, kette + ' AND (Wert >= 400 OR Wert IS NULL)').includes(9003));
+  assert.ok(!spalte(v, kette + ' AND Wert >= 400').includes(9003));
   const richtig = spalte(v, "SELECT FundNr FROM Fundsache WHERE Farbe != 'schwarz' OR Farbe IS NULL");
   const falsch = spalte(v, "SELECT FundNr FROM Fundsache WHERE Farbe != 'schwarz'");
   assert.ok(richtig.includes(9001) && !falsch.includes(9001));
@@ -200,6 +204,9 @@ test('fundbuero/null: 9001 ohne Farbe/Wert/Finder (offen), 9002 Wert NULL abgeho
 
 test('fundbuero/gleichnamig: zweiter Messing-Kompass macht Bezeichnung mehrdeutig', () => {
   const v = variante('fundbuero', 'gleichnamig');
+  // A1-E2-06: „Messing“ nicht am Anfang (9012) – LIKE 'Messing%' verliert den Datensatz
+  assert.ok(spalte(v, "SELECT FundNr FROM Fundsache WHERE Bezeichnung LIKE '%Messing%'").includes(9012));
+  assert.ok(!spalte(v, "SELECT FundNr FROM Fundsache WHERE Bezeichnung LIKE 'Messing%'").includes(9012));
   assert.deepEqual(alle(v, 'SELECT * FROM Fundsache WHERE FundNr = 9011'), [{
     FundNr: 9011, Bezeichnung: 'Messing-Kompass', Kategorie: 'Sonstiges', Farbe: 'gold', Fundort: 'Marktplatz',
     Stadtteil: 'Altstadt', Funddatum: '2026-07-02', Wert: 15, Finder: 'T. Habben', AbgeholtAm: '2026-07-04'
