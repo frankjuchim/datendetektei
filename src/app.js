@@ -1,5 +1,6 @@
 'use strict';
-// App-Fabrik: erzeugeApp(konfig, db) liefert eine Express-App ohne Port (testbar mit supertest).
+// App-Fabrik: erzeugeApp(konfig, db[, { datenbanken }]) liefert eine Express-App ohne Port (testbar mit supertest).
+// datenbanken = ladeDatenbanken() aus src/sql/datenbanken.js (optional; ohne sie gibt es /db/ und /api/db/ nicht).
 
 const path = require('node:path');
 const express = require('express');
@@ -9,16 +10,18 @@ const { verbundRouten } = require('./routes/verbund');
 const { manifestRoute } = require('./kern/manifest');
 const { seitenRouten } = require('./routes/seiten');
 const { sqlSkriptRouten } = require('./routes/sql_skripte');
+const { sqlRouten } = require('./routes/sql');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
-function erzeugeApp(konfig, db) {
+function erzeugeApp(konfig, db, { datenbanken = null } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', konfig.trustProxy || 0);
   app.locals.konfig = konfig;
   app.locals.db = db;
+  app.locals.datenbanken = datenbanken;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -43,6 +46,9 @@ function erzeugeApp(konfig, db) {
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());
+
+  // Übungs-Datenbanken: nur die öffentliche Haupt-DB und ihr Schema (Spec §7.2).
+  if (datenbanken) app.use(sqlRouten(datenbanken));
 
   // Nur public/static/ wird als Verzeichnis ausgeliefert; HTML-Seiten nur über die Routen oben.
   app.use('/static', express.static(path.join(PUBLIC_DIR, 'static'), { maxAge: '1h', index: false }));

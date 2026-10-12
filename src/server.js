@@ -5,6 +5,7 @@ const path = require('node:path');
 const { ladeKonfig } = require('./kern/konfig');
 const { oeffneDb } = require('./db');
 const { erzeugeApp } = require('./app');
+const { ladeDatenbanken } = require('./sql/datenbanken');
 
 let konfig;
 try {
@@ -22,7 +23,16 @@ try {
   process.exit(1);
 }
 
-const app = erzeugeApp(konfig, db);
+// Übungs-Datenbanken einmal laden (basis.sql + Varianten, Prüfsumme im Kopf); Startzeit steht im Log.
+let datenbanken;
+try {
+  datenbanken = ladeDatenbanken();
+} catch (err) {
+  console.error(`Start abgebrochen. Übungs-Datenbanken nicht nutzbar: ${err.message}`);
+  process.exit(1);
+}
+
+const app = erzeugeApp(konfig, db, { datenbanken });
 const server = app.listen(konfig.port, () => {
   console.log(`Datendetektei läuft auf Port ${konfig.port}`);
 });

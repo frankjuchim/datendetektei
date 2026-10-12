@@ -5,9 +5,8 @@
 
 const crypto = require('node:crypto');
 const { fnv1a32, seedText: seedTextVon, BAU_VERSION } = require('./zufall');
-
-/** Erste Zeile des Datenteils; die Prüfsumme im Kopf läuft über alles ab dieser Zeile. */
-const DATEN_MARKE = '-- ===== Daten (erzeugt) =====';
+// DATEN_MARKE und pruefeBasisText braucht auch die Laufzeit (Prüfsummen-Check beim Start) – eine Quelle.
+const { DATEN_MARKE, pruefeBasisText } = require('../../src/sql/datenbanken');
 
 function bezeichner(name) {
   return /^[A-Za-z_][A-Za-z0-9_]*$/.test(name) ? name : `"${name.replace(/"/g, '""')}"`;
@@ -89,15 +88,6 @@ function schreibeBasis(name, db, { schema = '', seedText = seedTextVon(name), ve
     '-- ====================================================================='
   ].join('\n');
   return `${kopf}\n\n${schema.trimEnd()}\n\n${daten}`;
-}
-
-/** Prüft die Prüfsumme im Kopf gegen den Datenteil einer basis.sql. */
-function pruefeBasisText(text) {
-  const m = /^-- SHA-256 \(Datenteil\): ([0-9a-f]{64})$/m.exec(text);
-  const pos = text.indexOf(`\n${DATEN_MARKE}\n`);
-  if (!m || pos < 0) return { ok: false, soll: m ? m[1] : null, ist: null };
-  const ist = sha256(text.slice(pos + 1));
-  return { ok: ist === m[1], soll: m[1], ist };
 }
 
 module.exports = {
