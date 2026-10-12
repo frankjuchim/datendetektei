@@ -232,6 +232,16 @@ async function start() {
   knopfAbbrechen.addEventListener('click', () => {
     if (laeuft) laeuft.abbrechen();
   });
+  // Zeitlupe (Phase 4): Abfrage über sessionStorage übergeben (nie über die URL), gleiche Registerkarte.
+  $('k-zeitlupe').addEventListener('click', () => {
+    speicherSchreiben(entwurfSchluessel, editor.wert()); // Entwurf sofort sichern (Rücksprung)
+    try {
+      window.sessionStorage.setItem('dd_zeitlupe', JSON.stringify({ db: name, sql: editor.wert(), zurueck: window.location.pathname }));
+    } catch {
+      /* privater Modus – die Zeitlupe zeigt dann die Beispielabfrage */
+    }
+    window.location.assign(`/werkzeug/zeitlupe?db=${encodeURIComponent(name)}`);
+  });
   document.documentElement.dataset.konsole = 'bereit';
 }
 

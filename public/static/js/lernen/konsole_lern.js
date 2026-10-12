@@ -133,6 +133,12 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
       knoepfe.pruefen = knopf('Prüfen', 'knopf pruefen', 'i-pruefen');
       leiste.appendChild(knoepfe.pruefen);
       leiste.appendChild(el('span', 'trenner'));
+      // Zeitlupe nur mit ausführbarer Übungs-DB (Ermittlung) – das Verhör hat keine DB und damit keinen Knopf.
+      if (mitAusfuehren && aktionen) {
+        knoepfe.zeitlupe = knopf('Zeitlupe', 'knopf', 'i-zeitlupe');
+        leiste.appendChild(knoepfe.zeitlupe);
+        knoepfe.zeitlupe.addEventListener('click', () => oeffneZeitlupe());
+      }
       knoepfe.tipp = knopf('Tipp', 'knopf', 'i-tipp');
       knoepfe.loesung = knopf('Lösung', 'knopf', 'i-auge');
       leiste.append(knoepfe.tipp, knoepfe.loesung);
@@ -200,6 +206,18 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
     );
     knoepfe.ausfuehren.addEventListener('click', () => ausfuehren());
     knoepfe.abbrechen.addEventListener('click', () => laeuft && laeuft.abbrechen());
+  }
+
+  /** Öffnet die Zeitlupe mit der aktuellen Abfrage (sessionStorage 'dd_zeitlupe', nie über die URL). */
+  function oeffneZeitlupe() {
+    if (!mitAusfuehren) return;
+    if (entwurf) schreib(entwurf, editor.wert()); // Entwurf sofort sichern (Rücksprung)
+    try {
+      window.sessionStorage.setItem('dd_zeitlupe', JSON.stringify({ db: datenbank, sql: editor.wert(), zurueck: window.location.pathname }));
+    } catch {
+      /* privater Modus */
+    }
+    window.location.assign(`/werkzeug/zeitlupe?db=${encodeURIComponent(datenbank)}`);
   }
 
   async function aufDemServer(sql, signal) {

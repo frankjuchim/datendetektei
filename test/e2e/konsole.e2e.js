@@ -122,8 +122,8 @@ test('Eisdiele ohne Anmeldung: tippen → Strg+Enter → Tabelle (WASM im Browse
     const ist = await tabelle(page);
     assert.deepEqual(ist.map((z) => z[0]), soll.map((z) => z[0]));
     assert.deepEqual(ist.map((z) => z[1]), soll.map((z) => String(z[1]).replace('.', ',')));
-    // Prüfen/Zeitlupe/Tipp/Lösung gibt es hier nicht
-    assert.equal(await page.$$eval('.konsole-knoepfe .knopf:not([hidden])', (k) => k.length), 1);
+    // Prüfen/Tipp/Lösung gibt es hier nicht, nur Ausführen und (seit Phase 4) Zeitlupe
+    assert.deepEqual(await page.$$eval('.konsole-knoepfe .knopf:not([hidden])', (k) => k.map((x) => x.id)), ['k-ausfuehren', 'k-zeitlupe']);
     assert.deepEqual(csp(), []);
   } finally {
     await context.close();
