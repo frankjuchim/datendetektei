@@ -702,8 +702,8 @@ Lernstand wird **je sub × Kurs** geführt (Vertrag §3 „unter sub und Kurs-ID
 - `npm run e2e`: Playwright-Durchlauf inkl. Konsole, Zeitlupe, Bauplan-Tisch; Screenshots nach `docs/screenshots/`.
 - `werkzeuge/material_sql_pruefen.py`: extrahiert alle Absätze im Format „SQL-Code“ aus docx/pptx, führt sie gegen die
   angegebene DB aus und prüft EH-Konformität (Abschnitt 12.3).
-- **CI blockiert den Deploy:** Statt CapRover-Webhook bei jedem Push baut eine GitHub Action nach grünen Tests auf
-  `main` und stößt CapRover an (Verbesserung gegenüber AlgoQuest). `main` nur nach Freigabe.
+- **Deploy per CapRover-Webhook** auf `main` (Entscheidung Frank, Abschnitt 18); die GitHub-Prüfung läuft bei jedem Push,
+  blockiert den Deploy aber nicht. Deshalb: Feature-Branch, grüne Prüfung, Freigabe, dann `main`.
 - Dockerfile (node:22-bookworm-slim, Build-Tools für better-sqlite3 im Build-Stage), HEALTHCHECK `/healthz`,
   `captain-definition`, Persistent Directory `/app/data`, TZ Europe/Berlin.
 
@@ -962,7 +962,7 @@ datendetektei/
   werkzeuge/                 *_pdf.py, material_sql_pruefen.py, materialien_pruefen.py, video_folien.py, fonts/
   scripts/                   vertrag_pruefen.js (unverändert), validate.js, db_bauen.js
   test/                      *.test.js, fixtures/akte_beispiel.json, e2e/
-  .github/workflows/         pruefung.yml (Tests + Inhalte) und deploy.yml (CapRover nach grüner Prüfung)
+  .github/workflows/         pruefung.yml (Tests + Inhalte; Deploy per CapRover-Webhook auf main)
   Dockerfile, captain-definition, .dockerignore, package.json
 ```
 
@@ -1063,3 +1063,4 @@ Zeitrahmen (Vorschlag, Einsatz nächstes Schuljahr): Phasen 1–3 bis Ende Febru
 | 2026-10-12 | Phase-0-Abgleich: E10 (Steckbrief-Regel), E11 (`Einwohner.Strasse`), Namensausnahme Beziehungstabellen, Akte 6 + `zeilen`, Level-Zählung, Cold Cases; Kontrast-Text-Tokens siehe `docs/DESIGN.md` |
 | 2026-10-12 | **Phase 1, Vertragsstand:** `labs/VERTRAG.md` liegt inzwischen als **v1.2** vor (Anforderungsniveaus: Niveau-Übersicht eA/gA ohne Anmeldung, Manifest `niveaus` KANN, `urls.niveaus` SOLL). Die Plattform folgt v1.2: Manifest `vertrag: "1.2"`, `niveaus: ["eA","gA"]`, `urls.niveaus: "/themen#niveaus"`, `kurs` nennt beide Niveaus; `/themen` erhält den Abschnitt `#niveaus` (Akte 5 nur eA, Abschnitt 3.4). Unser Änderungsvorschlag heißt damit **1.3** (`docs/VERTRAG_VORSCHLAG_1.3.md`); Verweise in README, CLAUDE.md, Abschnitt 15 angepasst. |
 | 2026-10-12 | **Phase 1, Umsetzungsentscheidungen:** `PLATTFORM_URL` und `PORTAL_URL` sind Pflicht (Vertrag §8 erlaubt „sonst aus der Anfrage“; im Modus `portal` wäre ein aus dem Host-Header abgeleiteter Rücksprung fälschbar). SSO-Fehlerseite: ungültig/abgelaufen/state → 401, `keine_berechtigung` → 403, `abgebrochen` → 200, nie eine Sitzung. Anzeigename im Token 1–200 Zeichen (Portal erlaubt Lehrkraft-Namen bis 80). Ein per Verbund-API gesperrter Kurs wird durch einen Login nicht entsperrt (nur `kurs-aendern` mit `aktiv: true`). Neuer öffentlicher Endpunkt `GET /api/akten` (nr, titel, niveaus – keine Inhalte). Aus `public/` wird nur `/static` als Verzeichnis ausgeliefert, Seiten über eigene Routen (sonst umginge `/lehrkraft.html` die Rechteprüfung). Niveau-Tabelle: Kür K1 bei gA „entfällt“ (Abschnitt 3.4 nennt für gA nur K2) – Bestätigung durch Frank offen. |
+| 2026-10-12 | **Deploy-Weg (Entscheidung Frank):** CapRover bleibt per GitHub-Webhook mit `main` verbunden; die geplante Action `deploy.yml` (Deploy erst nach grüner Prüfung) entfällt, damit nicht doppelt deployt wird. Folge: Eine rote Prüfung blockiert den Live-Build nicht mehr → nach `main` nur mit grüner Prüfung auf dem Feature-Branch (CLAUDE.md, README, Abschnitt 7.16). |

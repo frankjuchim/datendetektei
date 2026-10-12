@@ -1,4 +1,6 @@
-# Prüfung bei jedem Push und Pull Request (Vertrag §9). Der Deploy (deploy.yml) startet nur nach grüner Prüfung auf main.
+# Prüfung bei jedem Push und Pull Request (Vertrag §9).
+# Hinweis: CapRover baut die Live-App per Webhook direkt bei jedem Push auf main – diese Prüfung blockiert das nicht.
+# Deshalb auf Feature-Branches arbeiten und erst nach grüner Prüfung (und Freigabe) nach main übernehmen.
 name: Prüfung
 
 on:

@@ -14,8 +14,9 @@ Leistungskurs (eA, Grundkurs-Pfad gA) in Niedersachsen, Abitur ab 2027 (KC 2017 
 > (Version 1.2) mit der Anschlussanleitung `docs/INTEGRATION.md` desselben Repos. Abweichungen nie still: als Text für
 > VERTRAG.md vorschlagen (neue Version, Eintrag in §14) – siehe `docs/VERTRAG_VORSCHLAG_1.3.md`.
 
-> ⚠️ **Deploy:** CapRover wird ausschließlich von der GitHub Action `deploy.yml` nach grüner Prüfung auf `main`
-> angestoßen. Nur auf Feature-Branches arbeiten; nach `main` nur nach ausdrücklicher Freigabe durch Frank.
+> ⚠️ **`main` ist direkt mit CapRover verbunden (Webhook): Jeder Push auf `main` startet sofort den Live-Build –
+> auch wenn die GitHub-Prüfung rot ist.** Nur auf Feature-Branches arbeiten; nach `main` nur nach ausdrücklicher
+> Freigabe durch Frank und mit grüner Prüfung auf dem Feature-Branch.
 
 ## Quellen der Wahrheit (vor jeder Arbeit lesen, was die Aufgabe betrifft)
 

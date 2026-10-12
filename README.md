@@ -70,16 +70,11 @@ Rücksprung-Adresse `https://datendetektei.frankjuchim.de/sso/ende` und schaltet
 Vorlage für die Variablen: [`.env.example`](.env.example). Container: `Dockerfile` (Node 22, läuft als `node`,
 Port 80, `HEALTHCHECK` auf `/healthz`, `TZ=Europe/Berlin`), `captain-definition`; Persistent Directory `/app/data`.
 
-**Deploy nur nach grüner Prüfung:** Die CapRover-App wird **ohne** GitHub-Webhook betrieben. Jeder Push löst die
-GitHub Action „Prüfung“ aus (`.github/workflows/pruefung.yml`: Tests, App-Start, `vertrag_pruefen.js`,
-Kontrastprüfung, Docker-Build und Container-Start). Nur wenn sie auf `main` grün ist, übergibt „Deploy“
-(`.github/workflows/deploy.yml`) genau diesen Commit an CapRover. Dafür im GitHub-Repo unter *Settings → Secrets and
-variables → Actions* anlegen:
-
-| Secret | Inhalt |
-|---|---|
-| `CAPROVER_URL` | Adresse des CapRover-Dashboards, z. B. `https://captain.<domain>` |
-| `CAPROVER_APP_TOKEN` | App-Token der App `datendetektei` (CapRover → App → *Deployment* → *App Token*) |
+**Deploy per Webhook:** `main` ist über einen GitHub-Webhook direkt mit CapRover verbunden – jeder Push auf `main`
+startet sofort den Live-Build (wie bei Algo Quest und dem Portal). Die GitHub Action „Prüfung“
+(`.github/workflows/pruefung.yml`: Tests, App-Start, `vertrag_pruefen.js`, Kontrastprüfung, Docker-Build und
+Container-Start) läuft bei jedem Push, blockiert den Deploy aber nicht. Deshalb nur auf Feature-Branches arbeiten und
+erst nach grüner Prüfung und Freigabe nach `main` übernehmen.
 
 ## Lizenz
 
