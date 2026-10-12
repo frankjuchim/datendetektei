@@ -8,6 +8,7 @@ const { erzeugeApp } = require('./app');
 const { ladeDatenbanken } = require('./sql/datenbanken');
 const { erzeugeSandbox } = require('./sql/sandbox');
 const { erzeugeInhalte } = require('./services/inhalte');
+const { erzeugePruefer } = require('./sql/pruefer');
 
 let konfig;
 try {
@@ -40,7 +41,11 @@ const sandbox = erzeugeSandbox({
     datenbanken.namen.map((name) => [name, { haupt: datenbanken.haupt(name), varianten: datenbanken.varianten(name) }])
   )
 });
-
+// SQL-Prüfer für die Interaktion sql (Spec §7.4): Sandbox + Schemata (für Diagnosen wie KREUZPRODUKT).
+const pruefer = erzeugePruefer({
+  sandbox,
+  schemata: Object.fromEntries(datenbanken.namen.map((name) => [name, datenbanken.schema(name)]))
+});
 
 // Akten aus seed/akten/*.json einspielen (Upsert, fehlertolerant; der Seed-Bericht steht im Log und im Speicher).
 // AKTEN_DATEIEN (kommasepariert): zusätzliche Akten-Dateien für Tests/Entwicklung, z. B. test/fixtures/akte_beispiel.json.
@@ -56,8 +61,7 @@ try {
   console.error(`Akten konnten nicht geladen werden (letzter Stand bleibt): ${err.message}`);
 }
 
-
-const app = erzeugeApp(konfig, db, { datenbanken, sandbox, inhalte });
+const app = erzeugeApp(konfig, db, { datenbanken, sandbox, inhalte, pruefer });
 const server = app.listen(konfig.port, () => {
   console.log(`Datendetektei läuft auf Port ${konfig.port}`);
 });

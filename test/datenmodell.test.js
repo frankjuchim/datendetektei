@@ -15,7 +15,8 @@ const LERNSTAND = [
   'verhoer_versuche',
   'leitner',
   'training',
-  'kernpunkte'
+  'kernpunkte',
+  'serien'
 ];
 const NEU = ['akten', 'aufgaben', ...LERNSTAND, 'fehlabfragen'];
 
@@ -46,7 +47,8 @@ function lernstandFuer(db, sub, kurs) {
   db.prepare("INSERT INTO leitner (sub, kurs_id, karte, fach, faellig) VALUES (?, ?, 'W1-01', 2, '2026-10-13')").run(sub, kurs);
   db.prepare("INSERT INTO training (sub, kurs_id, tag, anzahl, punkte) VALUES (?, ?, '2026-10-12', 5, 5)").run(sub, kurs);
   db.prepare("INSERT INTO kernpunkte (sub, kurs_id, aufgabe, haken) VALUES (?, ?, 'A1-E1-11', 2)").run(sub, kurs);
-  return 9;
+  db.prepare('INSERT INTO serien (sub, kurs_id, serie, bestwert) VALUES (?, ?, 3, 7)').run(sub, kurs);
+  return 10;
 }
 
 function fehlabfrage(db, kurs) {
@@ -129,7 +131,7 @@ test('KONTO_TABELLEN/KURS_TABELLEN enthalten alle Lernstand-Tabellen, Stammzeile
 test('loescheKonto entfernt den Lernstand in allen Kursen; Zähler stimmt; zweiter Aufruf 0', () => {
   const db = befuellt();
   // 2 × 9 Lernstand-Zeilen + 2 Mitgliedschaften + Konto
-  assert.equal(loescheKonto(db, 's:1042'), 2 * 9 + 2 + 1);
+  assert.equal(loescheKonto(db, 's:1042'), 2 * 10 + 2 + 1);
   for (const t of LERNSTAND) {
     assert.equal(zahl(db, `SELECT COUNT(*) AS n FROM ${t} WHERE sub = 's:1042'`), 0, t);
     assert.ok(zahl(db, `SELECT COUNT(*) AS n FROM ${t} WHERE sub = 's:1043'`) > 0, 'Mika bleibt: ' + t);
@@ -140,8 +142,8 @@ test('loescheKonto entfernt den Lernstand in allen Kursen; Zähler stimmt; zweit
 
 test('loescheKurs entfernt Lernstand und Fehlabfragen des Kurses; Zähler stimmt; zweiter Aufruf 0', () => {
   const db = befuellt();
-  // k:17: 2 Schüler × 9 + 1 Fehlabfrage + 2 Mitgliedschaften + Kurs
-  assert.equal(loescheKurs(db, 'k:17'), 2 * 9 + 1 + 2 + 1);
+  // k:17: 2 Schüler × 10 + 1 Fehlabfrage + 2 Mitgliedschaften + Kurs
+  assert.equal(loescheKurs(db, 'k:17'), 2 * 10 + 1 + 2 + 1);
   for (const t of [...LERNSTAND, 'fehlabfragen']) {
     assert.equal(zahl(db, `SELECT COUNT(*) AS n FROM ${t} WHERE kurs_id = 'k:17'`), 0, t);
     assert.ok(zahl(db, `SELECT COUNT(*) AS n FROM ${t} WHERE kurs_id = 'k:18'`) > 0, 'k:18 bleibt: ' + t);
@@ -164,7 +166,7 @@ test('Verbund-Löschauftrag sub: alle neuen Tabellen leer für das Konto, geloes
   lernstandFuer(db, 's:1042', 'k:17');
   const r1 = await verbundLoeschen(t, { sub: 's:1042' });
   assert.equal(r1.status, 200);
-  assert.deepEqual(r1.body, { geloescht: 9 + 1 + 1 });
+  assert.deepEqual(r1.body, { geloescht: 10 + 1 + 1 });
   for (const tab of LERNSTAND) assert.equal(zahl(db, `SELECT COUNT(*) AS n FROM ${tab}`), 0, tab);
   const r2 = await verbundLoeschen(t, { sub: 's:1042' });
   assert.deepEqual(r2.body, { geloescht: 0 });
@@ -178,7 +180,7 @@ test('Verbund-Löschauftrag kurs: Lernstand und Fehlabfragen des Kurses weg, gel
   fehlabfrage(db, 'k:17');
   const r1 = await verbundLoeschen(t, { kurs: 'k:17' });
   assert.equal(r1.status, 200);
-  assert.deepEqual(r1.body, { geloescht: 9 + 1 + 1 + 1 });
+  assert.deepEqual(r1.body, { geloescht: 10 + 1 + 1 + 1 });
   for (const tab of [...LERNSTAND, 'fehlabfragen']) assert.equal(zahl(db, `SELECT COUNT(*) AS n FROM ${tab}`), 0, tab);
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM konten'), 1, 'Konto bleibt');
   const r2 = await verbundLoeschen(t, { kurs: 'k:17' });

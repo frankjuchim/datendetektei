@@ -26,7 +26,8 @@ const LERNSTAND_TABELLEN = Object.freeze([
   'verhoer_versuche',
   'leitner',
   'training',
-  'kernpunkte'
+  'kernpunkte',
+  'serien'
 ]);
 const KONTO_TABELLEN = Object.freeze([...LERNSTAND_TABELLEN, 'mitgliedschaften', 'konten']);
 const KURS_TABELLEN = Object.freeze([...LERNSTAND_TABELLEN, 'fehlabfragen', 'mitgliedschaften', 'kurse']);
@@ -100,21 +101,29 @@ function aendereKurs(db, kursId, { name, aktiv } = {}) {
   })();
 }
 
-/** Kennzahlen für das Portal (Vertrag §6) – nur sub und Zahlen, keine Namen. Phase 1: alle Werte 0. */
-function kursUebersicht(db, kursId, jetzt = Date.now) {
+/**
+ * Kennzahlen für das Portal (Vertrag §6) – nur sub und Zahlen, keine Namen; nur Schüler (Rolle mitglied).
+ * kennzahlen(kursId, subs) → { schueler: Map sub → { punkte, geloest, anteil }, welten: [{ nr, titel, anteil }] }
+ * wird injiziert (src/services/stand.js), damit src/kern nicht von src/services abhängt; ohne sie: alle Werte 0.
+ */
+function kursUebersicht(db, kursId, jetzt = Date.now, kennzahlen = null) {
   const kurs = db.prepare('SELECT kurs_id FROM kurse WHERE kurs_id = ?').get(kursId);
   if (!kurs) return null;
-  const schueler = db
+  const zeilen = db
     .prepare(
       "SELECT k.sub, k.zuletzt FROM mitgliedschaften m, konten k WHERE m.sub = k.sub AND m.kurs_id = ? AND m.rolle = 'mitglied' ORDER BY k.sub"
     )
-    .all(kursId)
-    .map((z) => ({ sub: z.sub, punkte: 0, geloest: 0, anteil: 0, zuletzt: z.zuletzt }));
+    .all(kursId);
+  const kz = typeof kennzahlen === 'function' ? kennzahlen(kursId, zeilen.map((z) => z.sub)) : null;
+  const schueler = zeilen.map((z) => {
+    const w = (kz && kz.schueler.get(z.sub)) || { punkte: 0, geloest: 0, anteil: 0 };
+    return { sub: z.sub, punkte: w.punkte, geloest: w.geloest, anteil: w.anteil, zuletzt: z.zuletzt };
+  });
   return {
     kurs: kursId,
     stand: isoZeit(jetzt()),
     schueler,
-    welten: AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, anteil: 0 }))
+    welten: kz ? kz.welten.map((w) => ({ nr: w.nr, titel: w.titel, anteil: w.anteil })) : AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, anteil: 0 }))
   };
 }
 

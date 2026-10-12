@@ -2,7 +2,9 @@
 // App-Fabrik: erzeugeApp(konfig, db[, { datenbanken, sandbox, inhalte }]) liefert eine Express-App ohne Port (testbar
 // mit supertest). datenbanken = ladeDatenbanken() aus src/sql/datenbanken.js (optional; ohne sie gibt es /db/ und
 // /api/db/ nicht). sandbox = erzeugeSandbox() aus src/sql/sandbox.js (optional; ohne sie gibt es POST /api/sql/ausfuehren
-// nicht). inhalte = erzeugeInhalte(db) aus src/services/inhalte.js (optional; ohne sie meldet das Manifest den Standard-umfang).
+// nicht). inhalte = erzeugeInhalte(db) aus src/services/inhalte.js (optional; ohne sie meldet das Manifest den Standard-umfang
+// und es gibt keine Lern-API). pruefer = erzeugePruefer({ sandbox, schemata }) aus src/sql/pruefer.js (optional; ohne ihn
+// sind sql-Aufgaben nicht prüfbar). Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
 const express = require('express');
@@ -13,11 +15,14 @@ const { manifestRoute } = require('./kern/manifest');
 const { seitenRouten } = require('./routes/seiten');
 const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
+const { schuelerRouten } = require('./routes/schueler');
+const { erzeugeStand } = require('./services/stand');
+const { erzeugeLernen } = require('./services/lernen');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
-function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = null } = {}) {
+function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = null, pruefer = null } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', konfig.trustProxy || 0);
@@ -25,6 +30,11 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   app.locals.db = db;
   app.locals.datenbanken = datenbanken;
   app.locals.inhalte = inhalte;
+  const uhr = konfig.jetzt || Date.now;
+  const stand = inhalte ? erzeugeStand({ db, inhalte, jetzt: uhr }) : null;
+  const lernen = inhalte ? erzeugeLernen({ db, inhalte, stand, pruefer, jetzt: uhr }) : null;
+  app.locals.stand = stand;
+  app.locals.lernen = lernen;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -34,7 +44,7 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   app.use('/api/verbund', rateLimit({ fensterMs: 60000, max: 120, ...limits.verbund, jetzt }));
 
   // Verbund-API vor dem allgemeinen JSON-Parser: JSON wird erst nach der Token-Prüfung gelesen.
-  app.use(verbundRouten(konfig, db));
+  app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null }));
 
   app.use(pruefeHerkunft(konfig));
   app.use(express.json({ limit: '100kb' }));
@@ -46,6 +56,8 @@ function erzeugeApp(konfig, db, { datenbanken = null, sandbox = null, inhalte = 
   app.get('/api/plattform', manifestRoute(konfig, inhalte ? inhalte.umfang : undefined));
   app.use(ssoRouten(konfig, db));
   app.use(seitenRouten());
+  // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
+  if (lernen) app.use(schuelerRouten({ lernen, konfig }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());

@@ -35,13 +35,15 @@ function testKonfig(ueberschreiben = {}) {
 
 /**
  * App für supertest: In-Memory-DB, frisches Schlüsselpaar, PORTAL_PUBLIC_KEY = dessen öffentlicher Teil.
- * appOptionen gehen unverändert an erzeugeApp (z. B. { datenbanken, sandbox }).
+ * appOptionen gehen unverändert an erzeugeApp (z. B. { datenbanken, sandbox }); als Funktion (db) => optionen,
+ * wenn die Optionen die Test-DB brauchen (z. B. inhalte = erzeugeInhalte(db)).
  */
 function testApp(ueberschreiben = {}, appOptionen = {}) {
   const schluessel = neuesSchluesselpaar();
   const konfig = testKonfig({ portalPublicKey: schluessel.publicPem, ...ueberschreiben });
   const db = oeffneDb(':memory:');
-  const app = erzeugeApp(konfig, db, appOptionen);
+  const optionen = typeof appOptionen === 'function' ? appOptionen(db) : appOptionen;
+  const app = erzeugeApp(konfig, db, optionen);
   return { app, db, konfig, schluessel };
 }
 
