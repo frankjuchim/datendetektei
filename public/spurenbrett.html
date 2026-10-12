@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <title>Spurenbrett – Datendetektei</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.3.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.3.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.3.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.3.0">
+  <link rel="stylesheet" href="/static/css/spurenbrett.css?v=0.3.0">
+  <script src="/static/js/kern/thema.js?v=0.3.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.3.0" defer></script>
+  <script src="/static/js/sql/parser.js?v=0.3.0" defer></script>
+  <script src="/static/js/sql/fehlertexte.js?v=0.3.0" defer></script>
+  <script src="/static/js/sql/visual.js?v=0.3.0" defer></script>
+  <script type="module" src="/static/js/spurenbrett/spurenbrett.js?v=0.3.0"></script>
+</head>
+<body>
+  <a class="springen" href="#sb-tabellen">Zur Auswahl springen</a>
+  <header class="kopf">
+    <a class="marke" href="/" aria-label="Datendetektei Weserstedt – zur Startseite">
+      <svg class="marke-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <span class="marke-text"><span class="marke-name">Datendetektei</span><span class="marke-ort">Weserstedt</span></span>
+    </a>
+    <div class="kopf-mitte"><span class="kopf-kurs" id="kopf-kurs"></span></div>
+    <div class="kopf-rechts">
+      <a class="portal-link" id="portal-link" href="/" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-haus"/></svg><span class="portal-text">Portal</span></a>
+      <button class="knopf-icon" id="thema-knopf" type="button" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-mond"/></svg></button>
+      <a class="knopf kopf-anmelden" id="kopf-anmelden" href="/sso/start" hidden>Anmelden</a>
+      <details class="ich" id="ich" hidden>
+        <summary class="ich-knopf"><span class="ich-initialen" id="ich-initialen" aria-hidden="true"></span><span class="ich-name" id="ich-name"></span></summary>
+        <div class="ich-menue">
+          <p class="etikett" id="ich-rolle"></p>
+          <a href="/lehrkraft" id="ich-lehrkraft" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Lehrkraft-Bereich</a>
+          <div class="trenner"></div>
+          <a href="/abmelden"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Abmelden</a>
+          <a href="/abmelden/ueberall"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Überall abmelden</a>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main class="inhalt spurenbrett-seite" id="inhalt" tabindex="-1">
+    <div class="seiten-kopf">
+      <span class="etikett">Werkzeug · Verbund verstehen · <span id="sb-db-name">Übungs-DB</span></span>
+      <h1>Spurenbrett</h1>
+      <p>Ohne Bedingung verbindet <code id="sb-from">FROM …</code> jede Karte mit jeder anderen: das Kreuzprodukt.
+        Wende die Verbundbedingung an und sieh, welche Fäden halten.</p>
+    </div>
+
+    <section class="karte sb-auswahl" aria-labelledby="sb-auswahl-titel">
+      <h2 class="nur-sr" id="sb-auswahl-titel">Auswahl</h2>
+      <div class="sb-zeile">
+        <label class="sb-feld sb-feld-db" for="sb-db">
+          <span class="etikett">Datenbank</span>
+          <select id="sb-db" class="sb-eingabe"></select>
+        </label>
+        <fieldset class="sb-tabellen" id="sb-tabellen" aria-describedby="sb-tabellen-hinweis">
+          <legend class="etikett">Tabellen (2 oder 3) · Zeilen je Tabelle</legend>
+          <p class="sb-hinweis" id="sb-tabellen-hinweis">Wähle zwei oder drei Tabellen und wie viele Karten (1 bis 50) von jeder auf das Brett kommen.</p>
+          <div class="sb-tabellen-liste" id="sb-tabellen-liste"><p class="sb-laedt">Schema wird geladen …</p></div>
+        </fieldset>
+      </div>
+      <div class="sb-bedingung-bereich">
+        <label class="sb-feld sb-feld-bedingung" for="sb-bedingung">
+          <span class="etikett">Bedingung (WHERE)</span>
+          <span class="sb-bedingung-rahmen"><span class="sb-where" aria-hidden="true">WHERE</span><textarea id="sb-bedingung" class="sb-eingabe sb-code" rows="2" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="sb-bedingung-hinweis sb-fehler"></textarea></span>
+        </label>
+        <p class="sb-hinweis" id="sb-bedingung-hinweis">Vorschlag aus den Fremdschlüsseln – du kannst ihn ändern. Strg oder Cmd und Enter wendet die Bedingung an.</p>
+        <div class="knopf-reihe">
+          <button class="knopf primaer" id="sb-anwenden" type="button" disabled><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-faden"/></svg>Bedingung anwenden</button>
+          <button class="knopf leise" id="sb-zuruecksetzen" type="button" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-zurueck"/></svg>Alle Fäden zeigen</button>
+        </div>
+        <div class="sb-fehler" id="sb-fehler" role="alert"></div>
+      </div>
+    </section>
+
+    <div class="sb-zaehler" id="sb-zaehler" aria-live="polite"></div>
+
+    <section class="pinnwand sb-brett" id="sb-brett" aria-label="Spurenbrett">
+      <p class="sb-laedt">Das Spurenbrett wird vorbereitet …</p>
+    </section>
+
+    <details class="karte sb-liste" id="sb-liste">
+      <summary class="sb-liste-titel">Fäden als Liste</summary>
+      <div id="sb-liste-inhalt"></div>
+    </details>
+
+    <div class="sb-ergebnis" id="sb-ergebnis" aria-live="polite"></div>
+  </main>
+  <footer class="fuss">
+    <nav aria-label="Weitere Seiten">
+      <a href="/">Start</a>
+      <a href="/themen">Themen</a>
+      <a href="/gast">Gastmodus</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a data-portal-pfad="/" href="/" hidden>Portal InfoLabs</a>
+    </nav>
+    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden</p>
+  </footer>
+</body>
+</html>

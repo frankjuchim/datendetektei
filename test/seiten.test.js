@@ -442,3 +442,69 @@ test('Fonts werden lokal ausgeliefert (woff2, fonts.css, OFL.txt)', async () => 
   assert.match(fontsCss, /unicode-range:/);
   assert.match(fs.readFileSync(path.join(STATIC, 'fonts', 'OFL.txt'), 'utf8'), /SIL OPEN FONT LICENSE Version 1\.1/);
 });
+
+/* ---------- Spurenbrett (Phase 4 Task 3) ---------- */
+
+test('/werkzeug/spurenbrett?db=eisdiele ohne Anmeldung: 200 mit Modul, Styles und Rechenschicht', async () => {
+  const { app } = testApp();
+  const res = await request(app).get('/werkzeug/spurenbrett?db=eisdiele');
+  assert.equal(res.status, 200);
+  assert.match(res.headers['content-type'], /text\/html/);
+  assert.equal(res.headers['cache-control'], 'no-cache');
+  assert.match(res.text, /<script type="module" src="\/static\/js\/spurenbrett\/spurenbrett\.js\?v=/);
+  assert.match(res.text, /\/static\/css\/spurenbrett\.css\?v=/);
+  for (const datei of ['parser', 'fehlertexte', 'visual']) {
+    assert.match(res.text, new RegExp(`<script src="/static/js/sql/${datei}\\.js\\?v=[^"]+" defer></script>`), datei);
+  }
+  // Rechenschicht nach Parser und Fehlertexten
+  assert.ok(res.text.indexOf('/sql/visual.js') > res.text.indexOf('/sql/fehlertexte.js'));
+  for (const id of ['sb-db', 'sb-tabellen', 'sb-bedingung', 'sb-anwenden', 'sb-zaehler', 'sb-brett', 'sb-ergebnis']) {
+    assert.match(res.text, new RegExp(`id="${id}"`), id);
+  }
+  assert.match(res.text, /id="sb-zaehler"[^>]*aria-live="polite"/);
+});
+
+test('/werkzeug/spurenbrett ohne Anmeldung (ohne oder mit anderer DB): 302 auf /sso/start?ziel=…', async () => {
+  const { app } = testApp();
+  for (const pfad of ['/werkzeug/spurenbrett', '/werkzeug/spurenbrett?db=stadtrad', '/werkzeug/spurenbrett?db=tus']) {
+    const res = await request(app).get(pfad);
+    assert.equal(res.status, 302, pfad);
+    assert.equal(res.headers.location, '/sso/start?ziel=' + encodeURIComponent(pfad), pfad);
+  }
+});
+
+test('/werkzeug/spurenbrett angemeldet: Schüler, Lehrkraft und Admin, alle öffentlichen DBs', async () => {
+  for (const nutzer of [{}, LEHRKRAFT, ADMIN]) {
+    const t = testApp();
+    const cookie = await anmelden(t, nutzer);
+    for (const pfad of ['/werkzeug/spurenbrett', ...KONSOLEN_DBS.map((n) => '/werkzeug/spurenbrett?db=' + n)]) {
+      const res = await request(t.app).get(pfad).set('Cookie', cookie);
+      assert.equal(res.status, 200, `${nutzer.rolle || 'schueler'} ${pfad}`);
+      assert.match(res.text, /id="sb-brett"/);
+    }
+  }
+});
+
+test('/werkzeug/spurenbrett mit unbekannter, nicht öffentlicher oder doppelter DB: 404 (auch angemeldet)', async () => {
+  const t = testApp();
+  const cookie = await anmelden(t);
+  for (const pfad of ['/werkzeug/spurenbrett?db=gibtsnicht', '/werkzeug/spurenbrett?db=verhoer%2Fbibliothek',
+    '/werkzeug/spurenbrett?db=Eisdiele', '/werkzeug/spurenbrett?db=eisdiele&db=stadtrad', '/werkzeug/spurenbrett/',
+    '/werkzeug/spurenbrett/x', '/spurenbrett.html']) {
+    for (const mitCookie of [false, true]) {
+      const anfrage = request(t.app).get(pfad);
+      const res = mitCookie ? await anfrage.set('Cookie', cookie) : await anfrage;
+      assert.equal(res.status, 404, `${pfad} ${mitCookie ? 'angemeldet' : 'ohne Anmeldung'}`);
+    }
+  }
+});
+
+test('Spurenbrett-Modul: ES-Modul, nur Textknoten, SVG per createElementNS, Bausteine mit Version', () => {
+  const js = fs.readFileSync(path.join(STATIC, 'js', 'spurenbrett', 'spurenbrett.js'), 'utf8');
+  assert.match(js, /new URL\(import\.meta\.url\)\.search/);
+  assert.doesNotMatch(js, /^import .* from /m);
+  assert.doesNotMatch(js, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
+  assert.doesNotMatch(js, /setAttribute\(\s*['"]style['"]/);
+  assert.match(js, /createElementNS|svg\(/);
+  assert.match(js, /dd_spurenbrett/);
+});
