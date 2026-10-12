@@ -82,6 +82,22 @@
     {"modus":"dunkel","name":"SQL-Kommentar","vorder":"sql-kommentar","hinter":"konsole","soll":4.5},
     {"modus":"dunkel","name":"Heatmap: Wert in Stufe 1","vorder":"heat-text-hell","hinter":"heat-1","soll":4.5},
     {"modus":"dunkel","name":"Heatmap: Wert in Stufe 2","vorder":"heat-text-hell","hinter":"heat-2","soll":4.5},
-    {"modus":"dunkel","name":"Heatmap: Wert in Stufe 5","vorder":"heat-text-dunkel","hinter":"heat-5","soll":4.5}
+    {"modus":"dunkel","name":"Heatmap: Wert in Stufe 5","vorder":"heat-text-dunkel","hinter":"heat-5","soll":4.5},
+    {"modus":"hell","name":"Konsole: NULL in der Ergebnistabelle","vorder":"konsole-null","hinter":"konsole-tabelle","soll":4.5},
+    {"modus":"hell","name":"Konsole: Tabellenkopf","vorder":"konsole-text","hinter":"konsole-tabelle-kopf","soll":4.5},
+    {"modus":"hell","name":"Konsole: Diagnose-Fehlertext","vorder":"konsole-fehler-text","hinter":"konsole-fehler-flaeche","soll":4.5},
+    {"modus":"hell","name":"Konsole: Diagnose-Hinweistext","vorder":"konsole-hinweis-text","hinter":"konsole-hinweis-flaeche","soll":4.5},
+    {"modus":"hell","name":"Konsole: Link in der Diagnose","vorder":"konsole-link","hinter":"konsole-fehler-flaeche","soll":4.5},
+    {"modus":"hell","name":"Konsole: Fremdschlüssel-Pfeil im Schema","vorder":"konsole-fk","hinter":"konsole-flaeche","soll":4.5},
+    {"modus":"hell","name":"Konsole: Etikett/Zeilennummer auf Konsole","vorder":"konsole-leise","hinter":"konsole","soll":4.5},
+    {"modus":"hell","name":"Konsole: Text auf Hover-Fläche","vorder":"konsole-text","hinter":"konsole-hover","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: NULL in der Ergebnistabelle","vorder":"konsole-null","hinter":"konsole-tabelle","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: Tabellenkopf","vorder":"konsole-text","hinter":"konsole-tabelle-kopf","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: Diagnose-Fehlertext","vorder":"konsole-fehler-text","hinter":"konsole-fehler-flaeche","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: Diagnose-Hinweistext","vorder":"konsole-hinweis-text","hinter":"konsole-hinweis-flaeche","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: Link in der Diagnose","vorder":"konsole-link","hinter":"konsole-fehler-flaeche","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: Fremdschlüssel-Pfeil im Schema","vorder":"konsole-fk","hinter":"konsole-flaeche","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: Etikett/Zeilennummer auf Konsole","vorder":"konsole-leise","hinter":"konsole","soll":4.5},
+    {"modus":"dunkel","name":"Konsole: Text auf Hover-Fläche","vorder":"konsole-text","hinter":"konsole-hover","soll":4.5}
   ]
 }

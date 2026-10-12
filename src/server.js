@@ -6,6 +6,7 @@ const { ladeKonfig } = require('./kern/konfig');
 const { oeffneDb } = require('./db');
 const { erzeugeApp } = require('./app');
 const { ladeDatenbanken } = require('./sql/datenbanken');
+const { erzeugeSandbox } = require('./sql/sandbox');
 
 let konfig;
 try {
@@ -32,12 +33,20 @@ try {
   process.exit(1);
 }
 
-const app = erzeugeApp(konfig, db, { datenbanken });
+// Sandbox (Kindprozesse) für Schüler-SQL auf dem Server: Haupt-DBs und Varianten als Buffer (Spec §7.4, §18).
+const sandbox = erzeugeSandbox({
+  datenbanken: Object.fromEntries(
+    datenbanken.namen.map((name) => [name, { haupt: datenbanken.haupt(name), varianten: datenbanken.varianten(name) }])
+  )
+});
+
+const app = erzeugeApp(konfig, db, { datenbanken, sandbox });
 const server = app.listen(konfig.port, () => {
   console.log(`Datendetektei läuft auf Port ${konfig.port}`);
 });
 
 function beenden() {
+  sandbox.beende();
   server.close(() => {
     db.close();
     process.exit(0);

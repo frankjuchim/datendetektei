@@ -33,12 +33,15 @@ function testKonfig(ueberschreiben = {}) {
   };
 }
 
-/** App für supertest: In-Memory-DB, frisches Schlüsselpaar, PORTAL_PUBLIC_KEY = dessen öffentlicher Teil. */
-function testApp(ueberschreiben = {}) {
+/**
+ * App für supertest: In-Memory-DB, frisches Schlüsselpaar, PORTAL_PUBLIC_KEY = dessen öffentlicher Teil.
+ * appOptionen gehen unverändert an erzeugeApp (z. B. { datenbanken, sandbox }).
+ */
+function testApp(ueberschreiben = {}, appOptionen = {}) {
   const schluessel = neuesSchluesselpaar();
   const konfig = testKonfig({ portalPublicKey: schluessel.publicPem, ...ueberschreiben });
   const db = oeffneDb(':memory:');
-  const app = erzeugeApp(konfig, db);
+  const app = erzeugeApp(konfig, db, appOptionen);
   return { app, db, konfig, schluessel };
 }
 
@@ -84,8 +87,25 @@ function verbundToken(schluessel, konfig, zweck, ueberschreiben = {}) {
   return signiere(ohneUndefiniert(nutzlast), schluessel.privatePem);
 }
 
+/**
+ * Anmeldung über /sso/start → /sso/ende (wie das Portal); liefert das Sitzungs-Cookie „dd_s=…“.
+ * t = Ergebnis von testApp(); ueberschreiben wie bei ssoToken.
+ */
+async function meldeAn(t, ueberschreiben = {}) {
+  const request = require('supertest');
+  const start = await request(t.app).get('/sso/start');
+  const state = new URL(start.headers.location).searchParams.get('state');
+  const stateCookie = start.headers['set-cookie'].find((c) => c.startsWith('dd_sso_state=')).split(';')[0];
+  const token = ssoToken(t.schluessel, t.konfig, ueberschreiben);
+  const ende = await request(t.app)
+    .get('/sso/ende?' + new URLSearchParams({ token, state, ziel: '/' }).toString())
+    .set('Cookie', stateCookie);
+  if (ende.status !== 302) throw new Error('Anmeldung im Test fehlgeschlagen: ' + ende.status);
+  return ende.headers['set-cookie'].find((c) => c.startsWith('dd_s=')).split(';')[0];
+}
+
 function ohneUndefiniert(objekt) {
   return Object.fromEntries(Object.entries(objekt).filter(([, w]) => w !== undefined));
 }
 
-module.exports = { testKonfig, testApp, neuesSchluesselpaar, ssoToken, verbundToken };
+module.exports = { testKonfig, testApp, neuesSchluesselpaar, ssoToken, verbundToken, meldeAn };

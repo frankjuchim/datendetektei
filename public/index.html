@@ -9,13 +9,13 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.1.0">
-  <script src="/static/js/kern/thema.js?v=0.1.0"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.1.0" defer></script>
-  <script src="/static/js/start.js?v=0.1.0" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.2.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.2.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.2.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.2.0">
+  <script src="/static/js/kern/thema.js?v=0.2.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.2.0" defer></script>
+  <script src="/static/js/start.js?v=0.2.0" defer></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -78,6 +78,19 @@
             <div id="start-lehrkraft" class="knopf-reihe" hidden>
               <a class="knopf primaer" href="/lehrkraft"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Zum Lehrkraft-Bereich</a>
               <a class="knopf" href="/themen#niveaus">Niveau-Übersicht eA/gA</a>
+            </div>
+            <div class="freie-ermittlung-start">
+              <h3>Freie Ermittlung</h3>
+              <p class="hinweis-klein">Probier eigene Abfragen auf den Datenbanken der Akten aus – ohne Bewertung.</p>
+              <ul class="db-liste">
+                <li><a href="/konsole/fundbuero"><span class="db-name">Fundbüro</span><span class="db-akte">Akte 1 · eine Tabelle</span></a></li>
+                <li><a href="/konsole/stadtrad"><span class="db-name">StadtRad</span><span class="db-akte">Akten 2 und 6 · Verbund</span></a></li>
+                <li><a href="/konsole/stadtfest"><span class="db-name">Stadtfest</span><span class="db-akte">Akten 3 und 6 · Gruppieren</span></a></li>
+                <li><a href="/konsole/tus"><span class="db-name">TuS Weserstedt</span><span class="db-akte">Akte 4 · Vereinsarchiv</span></a></li>
+                <li><a href="/konsole/detektei"><span class="db-name">Detektei</span><span class="db-akte">Akten 5 und 6 · Fall-Datenbank</span></a></li>
+                <li><a href="/konsole/datenspuren"><span class="db-name">Datenspuren</span><span class="db-akte">Akte 6 · Finale</span></a></li>
+                <li><a href="/konsole/eisdiele"><span class="db-name">Eisdiele</span><span class="db-akte">Probefall · <span class="db-frei">ohne Anmeldung</span></span></a></li>
+              </ul>
             </div>
           </div>
         </div>
