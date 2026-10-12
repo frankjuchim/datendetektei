@@ -30,7 +30,7 @@ und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, wa
 ## Verbund InfoLabs
 
 Verbindlich ist der Vertrag [`frankjuchim/labs/VERTRAG.md`](https://github.com/frankjuchim/labs/blob/main/VERTRAG.md)
-(Version 1.1) mit der Anschlussanleitung `docs/INTEGRATION.md`. Die Plattform baut kein eigenes Login: Single Sign-on
+(Version 1.2) mit der Anschlussanleitung `docs/INTEGRATION.md`. Die Plattform baut kein eigenes Login: Single Sign-on
 nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
 
 **Begründete Abweichungen von SOLL-Regeln (Vertrag §9):**
@@ -38,7 +38,7 @@ nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
   `#B3261E`), weil Setting und Werkzeuge (Akten, Pinnwand, Konsole) eine eigene, zusammenhängende Bildsprache brauchen.
   Kontraste sind nach WCAG AA geprüft; der Link „⌂ Portal“ steht in der Kopfzeile.
 - *Empfehlung §13.2 (Kopie von Algo Quest):* eigene Codebasis mit gemeinsamem Kern in `src/kern/`
-  (Vorschlag für Vertrag 1.2: [`docs/VERTRAG_VORSCHLAG_1.2.md`](docs/VERTRAG_VORSCHLAG_1.2.md)).
+  (Vorschlag für Vertrag 1.3: [`docs/VERTRAG_VORSCHLAG_1.3.md`](docs/VERTRAG_VORSCHLAG_1.3.md)).
 - *CSP:* zusätzlich `'wasm-unsafe-eval'` und `worker-src 'self'` für die SQL-Engine im Browser (sql.js). Das ist keine
   Inline-Ausnahme; ohne WASM greift ein asm.js-Fallback.
 

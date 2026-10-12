@@ -6,7 +6,7 @@
 | **Zielgruppe** | Informatik Leistungskurs (eA) Niedersachsen, Abitur ab 2027; Grundkurs-Pfad (gA) inklusive |
 | **Stand** | 2026-10-12 · Entwurf zur Freigabe durch Frank Juchim |
 | **Plattform** | `datendetektei.frankjuchim.de` · `PLATTFORM_ID=datendetektei` · `AUTH_MODUS=portal` |
-| **Verbindlich** | Vertrag des Plattform-Verbunds `frankjuchim/labs/VERTRAG.md` v1.1 · KC Informatik GO 2017 · Ergänzende Hinweise (EH) Neufassung 2025 · Operatorenliste 2024 |
+| **Verbindlich** | Vertrag des Plattform-Verbunds `frankjuchim/labs/VERTRAG.md` v1.2 · KC Informatik GO 2017 · Ergänzende Hinweise (EH) Neufassung 2025 · Operatorenliste 2024 |
 
 Diese Spezifikation ist die **Quelle der Wahrheit** für Claude Code. Alles, was hier festgelegt ist, gilt; Änderungen
 werden hier eingetragen (Abschnitt 18, Änderungsprotokoll), bevor sie umgesetzt werden.
@@ -21,7 +21,7 @@ werden hier eingetragen (Abschnitt 18, Änderungsprotokoll), bevor sie umgesetzt
 | E2 | Setting **„Datendetektei Weserstedt“** (Kurs = Ermittlerteam, durchgehender Fall „Das Phantom“) | Anknüpfung an die SQL-Werkstatt (StadtRad Weserstedt); SQL = Ermitteln |
 | E3 | Reihenfolge **Benutzen → Verstehen → Entwerfen**: SQL → Anomalien/Schlüssel → ER/Schema → Datenschutz | Motivierender Einstieg; Chaos-Archiv begründet den Bedarf an Modellierung |
 | E4 | Stoff = **Abitur-Kern streng nach EH §7/§8 + markierte Kür** (Normalformen 1–3 als Werkzeug, CREATE/INSERT, Ausblick JOIN … ON/LEFT JOIN); **keine** Relationenalgebra | Abitur-Treue; Kür für Interessierte/Projekt |
-| E5 | **Eigenes Produkt** mit eigener Codebasis und eigenem Design (nicht AlgoQuest-Kopie); alle MUSS-Regeln aus Vertrag §9 bleiben | Abweichung von §13.2 (Empfehlung) → Vorschlag VERTRAG 1.2 (Abschnitt 15) |
+| E5 | **Eigenes Produkt** mit eigener Codebasis und eigenem Design (nicht AlgoQuest-Kopie); alle MUSS-Regeln aus Vertrag §9 bleiben | Abweichung von §13.2 (Empfehlung) → Vorschlag VERTRAG 1.3 (Abschnitt 15) |
 | E6 | Plattformname **Datendetektei**, Subdomain `datendetektei` | `PLATTFORM_ID` ändert sich nie |
 | E7 | **Freitexte** (Begründungen, Analysen) werden **nicht serverseitig gespeichert**; nur Kernpunkt-Selbstcheck | Datensparsam, kein Korrekturaufwand, keine Freitext-Löschfragen |
 | E8 | **DOCX/PPTX sind die maßgebliche Fassung** der Materialien (wie AlgoQuest); PDFs werden erzeugt | Vertrautes Bearbeiten in Word/PowerPoint; SQL-Prüfung über Absatzformat „SQL-Code“ (Abschnitt 12.3) |
@@ -108,7 +108,7 @@ FROM tabelle1 [t1], tabelle2 [t2], …
 entwerfen/entwickeln · analysieren/untersuchen · erläutern · beschreiben · begründen · beurteilen · ergänzen/erweitern
 · nennen/angeben · erstellen · vergleichen · erörtern. Volle Liste mit Definition: Werkzeugkarte 7 des Ermittler-Handbuchs (Abschnitt 11.4).
 
-### 2.6 Vertrag v1.1 §9 (MUSS) – was die Plattform unabhängig vom eigenen Design einhält
+### 2.6 Vertrag v1.2 §9 (MUSS) – was die Plattform unabhängig vom eigenen Design einhält
 Node ≥ 20, Express, SQLite (better-sqlite3), Vanilla-JS ohne Build, keine CDNs, strikte CSP ohne Inline-Skripte,
 `X-Robots-Tag: noindex`, Healthcheck, Docker + CapRover, `main` = live nur nach Freigabe, GitHub-Prüfung bei jedem Push ·
 Lösungen/Erklärungen/Tipps nur serverseitig und erst nach dem Lösen, Boss-Aufgaben nur im laufenden Kampf ·
@@ -634,7 +634,7 @@ laden, Sicherung, **Originale** (docx/pptx aus `materialien/Originale/verzeichni
   wenn im Kurs aktiviert.
 - `/datenschutz` – plattformspezifische Ergänzung, verlinkt die zentrale Erklärung des Portals.
 
-### 7.13 Verbund-Anbindung (Vertrag v1.1)
+### 7.13 Verbund-Anbindung (Vertrag v1.2)
 - **SSO** nach §5 / INTEGRATION.md §3: `/sso/start`, `/sso/ende` (state-Cookie signiert, httpOnly, SameSite=Lax,
   secure, 10 min; `pruefe(token, PORTAL_PUBLIC_KEY, {iss, aud, maxDauerSek:120})` mit **immer gesetztem** iss/aud;
   jti einmalig; Upsert Konto/Kurse/Mitgliedschaften; Sitzung Schüler ≤ 30 Tage, Lehrkraft/Superadmin ≤ 8 h;
@@ -646,15 +646,17 @@ laden, Sicherung, **Originale** (docx/pptx aus `materialien/Originale/verzeichni
   Zugriff, Lehrkraft lesend). Eigener JtiSpeicher, `maxDauerSek: 60`, `sub === "portal"`, `zweck` exakt.
 - **Manifest** `GET /api/plattform` (CORS `*`):
 ```json
-{ "vertrag": "1.1", "id": "datendetektei", "name": "Datendetektei",
+{ "vertrag": "1.2", "id": "datendetektei", "name": "Datendetektei",
   "titel": "Datendetektei Weserstedt – Ermitteln mit Datenbanken",
   "themenfeld": "Daten und Datenbanken",
-  "kurs": "Informatik eA/gA, Niedersachsen, Abitur ab 2027",
+  "kurs": "Informatik eA und gA, Niedersachsen, Abitur ab 2027",
+  "niveaus": ["eA", "gA"],
   "beschreibung": "SQL, Schlüssel und Anomalien, ER-Modell und Datenschutz – als Ermittlungsfälle mit Live-SQL.",
   "farbe": "#B3261E", "version": "0.1.0", "basis": "https://datendetektei.frankjuchim.de",
   "icon": "/static/favicon.svg",
   "urls": { "start": "/", "gast": "/gast", "themen": "/themen", "lehrkraft": "/lehrkraft",
-            "datenschutz": "/datenschutz", "healthz": "/healthz", "ssoStart": "/sso/start", "ssoEnde": "/sso/ende" },
+            "datenschutz": "/datenschutz", "healthz": "/healthz", "ssoStart": "/sso/start", "ssoEnde": "/sso/ende",
+            "niveaus": "/themen#niveaus" },
   "auth": { "modus": "portal", "portal": "https://labs.frankjuchim.de", "sso": true },
   "umfang": { "welten": 7, "level": 13, "aufgaben": 0, "bosse": 7 },
   "welten": [ { "nr": 1, "titel": "Das Fundbüro" }, { "nr": 2, "titel": "Spur der Räder" },
@@ -934,7 +936,7 @@ datendetektei/
     AUFGABENFORMAT.md        verbindliches Aufgabenformat (AlgoQuest-Basis + neue Blöcke/Interaktionen)
     DESIGN.md                Design-System, Komponenten, Screens
     STORY.md                 Story-Bibel (Figuren, Akten, Beweisstücke, Texte)
-    VERTRAG_VORSCHLAG_1.2.md Änderungsvorschlag für frankjuchim/labs
+    VERTRAG_VORSCHLAG_1.3.md Änderungsvorschlag für frankjuchim/labs
     screenshots/
   src/
     kern/                    jwt.js (unverändert), sso.js, sitzung.js, sicherheit.js, verbund.js, manifest.js, punkte.js
@@ -966,19 +968,19 @@ datendetektei/
 
 ---
 
-## 15. Vertragsbezug und Vorschlag VERTRAG 1.2
+## 15. Vertragsbezug und Vorschlag VERTRAG 1.3
 
 **Eingehalten:** alle MUSS-Regeln §5–§10 (Abschnitt 2.6, 7.13, 7.14).
 
 **Abweichungen (nicht still):**
 | Punkt | Art | Umgang |
 |---|---|---|
-| §13.2 „Neue Plattformen starten als Kopie von Algo Quest“ | Empfehlung | eigene Codebasis (E5) → Vorschlag 1.2 |
+| §13.2 „Neue Plattformen starten als Kopie von Algo Quest“ | Empfehlung | eigene Codebasis (E5) → Vorschlag 1.3 |
 | §9 SOLL Hausfarben | SOLL | eigene Farben, Begründung im README |
 | Beamer-Board ohne Kurscode | intern | eigener Board-Schlüssel je Kurs-ID (kein Vertragsinhalt) |
-| Fähigkeiten `sql-konsole`, `live` | Nebenversion | im Vorschlag 1.2 als bekannte Fähigkeiten aufnehmen |
+| Fähigkeiten `sql-konsole`, `live` | Nebenversion | im Vorschlag 1.3 als bekannte Fähigkeiten aufnehmen |
 
-**Textvorschlag für `VERTRAG.md` (Version 1.2):**
+**Textvorschlag für `VERTRAG.md` (Version 1.3):**
 
 > **§13.2 (neu gefasst):** Neue Plattformen starten als Kopie von Algo Quest (AlgoQuest-README Teil G) **oder mit
 > eigener Codebasis**, wenn sie §5–§10 vollständig erfüllen, das Aufgabenformat nach §9 kompatibel erweitern und den
@@ -992,7 +994,7 @@ datendetektei/
 > **§6 (Klarstellung):** `POST /api/verbund/kurse/:kursId` für einen der Plattform unbekannten Kurs legt diesen an und
 > antwortet `200` (nicht `404`).
 >
-> **§14:** `| 1.2 | <Datum der Annahme> | §13.2 eigene Codebasis zulässig (Kern in src/kern/); §7 Liste bekannter Fähigkeiten;
+> **§14:** `| 1.3 | <Datum der Annahme> | §13.2 eigene Codebasis zulässig (Kern in src/kern/); §7 Liste bekannter Fähigkeiten;
 > §6 Klarstellung unbekannter Kurs bei kurs-aendern |`
 
 **Klärungsbedarf (für Frank als Vertragsverantwortlichen, keine Blockade):** Inhaberin vs. Mitlehrkraft im Token nicht
@@ -1006,7 +1008,7 @@ unterscheidbar (wer darf Kurs-Einstellungen ändern? – Datendetektei: alle Leh
 ### Phase 0 – Cowork (Konzept, kein App-Code)
 Lieferungen: diese Spec · `docs/STORY.md` · `seed/datenbanken/*/LIESMICH.md` (Schemata, Randfälle) ·
 DS-Feinplanung + Kompetenzmatrix · `docs/DESIGN.md` + klickbarer Design-Prototyp der Kernscreens (Stadtplan,
-Ermittlung mit Konsole, Zeitlupe, Bauplan-Tisch, Lehrkraft-Auswertung) · `docs/VERTRAG_VORSCHLAG_1.2.md` ·
+Ermittlung mit Konsole, Zeitlupe, Bauplan-Tisch, Lehrkraft-Auswertung) · `docs/VERTRAG_VORSCHLAG_1.3.md` ·
 `CLAUDE.md` · `README.md` (Gerüst) · Implementierungsplan (`docs/superpowers/plans/`).
 **➜ Übergabe:** Frank pusht diese Dateien als initialen Commit nach `frankjuchim/datendetektei` (Branch `main`,
 CapRover noch **nicht** verbunden). Danach arbeitet Claude Code ausschließlich im Repo weiter.
@@ -1036,7 +1038,7 @@ Zeitrahmen (Vorschlag, Einsatz nächstes Schuljahr): Phasen 1–3 bis Ende Febru
 3. Lizenz für Materialien und Plattforminhalte für andere Lehrkräfte festlegen (Vorschlag: CC BY-NC-SA 4.0 für
    Materialien; Code-Lizenz nach Wunsch).
 4. Angaben der Schule für `/datenschutz` (Verantwortliche, DSB, Hoster, Rechtsgrundlage).
-5. VERTRAG 1.2 annehmen (Frank als Verantwortlicher des Verbunds).
+5. VERTRAG 1.3 (Vorschlag der Datendetektei) annehmen (Frank als Verantwortlicher des Verbunds).
 6. GitHub-Repo `frankjuchim/datendetektei` anlegen; CapRover-App `datendetektei` mit Persistent Directory `/app/data`.
 
 **Risiken und Gegenmaßnahmen**
@@ -1059,3 +1061,4 @@ Zeitrahmen (Vorschlag, Einsatz nächstes Schuljahr): Phasen 1–3 bis Ende Febru
 | 2026-10-12 | Erstfassung nach Planungssitzung (Entscheidungen E1–E9) |
 | 2026-10-12 | E12 Ausgabestufen Material (Schüler-PDF, Lehrkraft-PDF, Originale für Superadmin), Abschnitt 12.4 |
 | 2026-10-12 | Phase-0-Abgleich: E10 (Steckbrief-Regel), E11 (`Einwohner.Strasse`), Namensausnahme Beziehungstabellen, Akte 6 + `zeilen`, Level-Zählung, Cold Cases; Kontrast-Text-Tokens siehe `docs/DESIGN.md` |
+| 2026-10-12 | **Phase 1, Vertragsstand:** `labs/VERTRAG.md` liegt inzwischen als **v1.2** vor (Anforderungsniveaus: Niveau-Übersicht eA/gA ohne Anmeldung, Manifest `niveaus` KANN, `urls.niveaus` SOLL). Die Plattform folgt v1.2: Manifest `vertrag: "1.2"`, `niveaus: ["eA","gA"]`, `urls.niveaus: "/themen#niveaus"`, `kurs` nennt beide Niveaus; `/themen` erhält den Abschnitt `#niveaus` (Akte 5 nur eA, Abschnitt 3.4). Unser Änderungsvorschlag heißt damit **1.3** (`docs/VERTRAG_VORSCHLAG_1.3.md`); Verweise in README, CLAUDE.md, Abschnitt 15 angepasst. |

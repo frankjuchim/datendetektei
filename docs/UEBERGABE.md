@@ -45,7 +45,7 @@ für Phase 2 und lege ihn mir vor.
 |---|---|
 | Task 10 | CapRover-App `datendetektei` anlegen: Persistent Directory `/app/data`, HTTPS, Domain `datendetektei.frankjuchim.de`, Umgebungsvariablen laut README („Betrieb“), App-Token erzeugen. GitHub-Secrets `CAPROVER_URL`, `CAPROVER_APP_TOKEN` setzen. |
 | Task 11 | Im Portal (Superadmin): Plattform eintragen, Rücksprung `https://datendetektei.frankjuchim.de/sso/ende` bestätigen, Testkurs anlegen, Plattform für den Kurs freischalten, Testschüler + Testlehrkraft. |
-| beliebig | `docs/VERTRAG_VORSCHLAG_1.2.md` prüfen und in `frankjuchim/labs` übernehmen (kann eine Claude-Code-Session im labs-Repo erledigen). |
+| beliebig | `docs/VERTRAG_VORSCHLAG_1.3.md` prüfen und in `frankjuchim/labs` übernehmen (kann eine Claude-Code-Session im labs-Repo erledigen). |
 
 ## 4. Offene Punkte (blockieren Phase 1 nicht)
 
@@ -66,5 +66,5 @@ für Phase 2 und lege ihn mir vor.
 | `docs/KOMPETENZMATRIX.md` | DB-K01…K48 × Aufgaben, Fallen- und Abi-Abdeckung |
 | `docs/STORY.md` | Story-Bibel (Phantom, Briefings, Schlussplädoyer, Debatte, Escape Room) |
 | `docs/DESIGN.md`, `docs/prototyp/` | Design-System, klickbarer Prototyp, Screenshots |
-| `docs/VERTRAG_VORSCHLAG_1.2.md` | Änderungsvorschlag für den Verbund-Vertrag |
+| `docs/VERTRAG_VORSCHLAG_1.3.md` | Änderungsvorschlag für den Verbund-Vertrag |
 | `seed/datenbanken/` | 7 Datenbanken (Schema, Pflicht-Datensätze, Varianten, Generator-Vorgaben) + Verhör-/Klausur-Kontexte; alle Schemata und Beispielabfragen maschinell geprüft |
