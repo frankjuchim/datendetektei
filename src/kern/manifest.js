@@ -39,14 +39,16 @@ function baueManifest(konfig, umfang = STANDARD_UMFANG) {
   };
 }
 
-/** Route-Handler: CORS * (Portal und Übersichten lesen das Manifest), 5 Minuten cachebar. */
-function manifestRoute(konfig) {
-  const manifest = baueManifest(konfig);
+/**
+ * Route-Handler: CORS * (Portal und Übersichten lesen das Manifest), 5 Minuten cachebar.
+ * umfang: Funktion, die den aktuellen Umfang aus dem Seed liefert (Inhalte-Dienst); ohne sie die Standardwerte.
+ */
+function manifestRoute(konfig, umfang = () => STANDARD_UMFANG) {
   return function plattform(req, res) {
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Cross-Origin-Resource-Policy', 'cross-origin');
     res.set('Cache-Control', 'public, max-age=300');
-    res.json(manifest);
+    res.json(baueManifest(konfig, umfang()));
   };
 }
 
