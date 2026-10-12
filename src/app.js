@@ -8,6 +8,7 @@ const { ssoRouten } = require('./routes/sso');
 const { verbundRouten } = require('./routes/verbund');
 const { manifestRoute } = require('./kern/manifest');
 const { seitenRouten } = require('./routes/seiten');
+const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -39,6 +40,9 @@ function erzeugeApp(konfig, db) {
   app.get('/api/plattform', manifestRoute(konfig));
   app.use(ssoRouten(konfig, db));
   app.use(seitenRouten());
+
+  // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
+  app.use(sqlSkriptRouten());
 
   // Nur public/static/ wird als Verzeichnis ausgeliefert; HTML-Seiten nur über die Routen oben.
   app.use('/static', express.static(path.join(PUBLIC_DIR, 'static'), { maxAge: '1h', index: false }));
