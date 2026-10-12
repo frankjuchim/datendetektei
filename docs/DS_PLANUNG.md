@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Bezug** | Spezifikation `docs/superpowers/specs/2026-10-12-datendetektei-design.md` (Quelle der Wahrheit), Abschnitte 3, 4, 5, 7.5, 9, 10, 11 |
-| **Stand** | 2026-10-12 · Phase 0 (Konzept) · Blueprint für Claude Code |
+| **Stand** | 2026-10-12 · Phase 0 (Konzept) · Blueprint für Claude Code · Akten 1–3 (Lab, Verhör 1–3, Warm-up A1–A3) an die validierten Inhalte in `seed/akten/` und `seed/warmup/` angeglichen (Phase 3) |
 | **Zweck** | Verbindlicher Bauplan für Lab-Aufgaben (`seed/akten/akte<n>.json`, `kuer.json`), Verhör-Pools, Warm-up-Karten (`seed/warmup/`), Arbeitsblätter, Lehrerhinweise, Generalprobe und Klausuren |
 | **Begleitdokument** | `docs/KOMPETENZMATRIX.md` (Kompetenz-, Fallen-, Interaktions- und Abi-Bezugsmatrix; aus denselben Daten erzeugt) |
 | **Story** | `docs/STORY.md` (parallel): Phantom = Merle Falkenrath (Tarnname „Nora Falter“, Jahrgang 1988, Hafenviertel, Tischtennis beim TuS, ehem. Datenschutzbeauftragte); Chefin Edda Lorenz; Azubi Juri Brandes. Story-Fakten in Aufgaben folgen STORY Anhang A |
@@ -117,14 +117,14 @@ Die Schülerinnen und Schüler …
 | Tabelle (Relation) | Fundsache |
 | Datensatz | eine Zeile = eine Fundsache |
 | Attribut | eine Spalte, z. B. Kategorie |
-| Attributwert | ein Eintrag, z. B. 'Schirm' |
+| Attributwert | ein Eintrag, z. B. 'Kleidung' |
 | Primärschlüssel | FundNr: eindeutig für **alle möglichen** Daten, nie NULL, minimal |
 
 ```sql
 SELECT Bezeichnung, Stadtteil, Wert          -- welche Spalten?
 FROM Fundsache                               -- welche Tabelle?
-WHERE (Kategorie = 'Tasche' OR Kategorie = 'Rucksack')
-  AND Wert > 50                              -- welche Zeilen?
+WHERE (Kategorie = 'Kleidung' OR Kategorie = 'Dokumente')
+  AND Wert > 30                              -- welche Zeilen?
 ORDER BY Stadtteil, Wert DESC;               -- welche Reihenfolge?
 ```
 **Ermittler-Notiz:** AND bindet stärker als OR – Klammern setzen! · Text in `'…'` · ORDER BY mehrstufig: erst nach dem ersten Kriterium, bei Gleichstand nach dem zweiten · ASC ist Standard.
@@ -136,15 +136,15 @@ ORDER BY Stadtteil, Wert DESC;               -- welche Reihenfolge?
 | A1-E1-01 | Das Fundbuch aufschlagen | ★ | `choice` | K01, K47 | – | gA/eA | Am markierten Ausschnitt der Tabelle Fundsache je Markierung entscheiden: Tabelle, Datensatz, Attribut oder Attributwert (4 Teilfragen). |
 | A1-E1-02 | Wer ist der Schlüssel? | ★★ | `choice` | K02 | P8 | gA/eA | Begründet auswählen, welches Attribut als Primärschlüssel taugt; im gezeigten Ausschnitt ist auch Bezeichnung zufällig eindeutig (Begründungsoptionen mit Ausschnitt-Falle). |
 | A1-E1-03 | Alles im Blick | ★ | `sql` | K15 | – | gA/eA | Bezeichnung, Kategorie und Fundort aller Fundsachen ausgeben. |
-| A1-E1-04 | Puzzle der Ermittlungsakte | ★ | `order` | K15, K21 | P5 | gA/eA | Bausteine `SELECT Bezeichnung, Farbe` · `FROM Fundsache` · `WHERE Kategorie = 'Schirm'` · `ORDER BY Funddatum DESC` in gültige Reihenfolge bringen; Distraktor `WHERE Kategorie = Schirm` (ohne Hochkommata) aussortieren. |
-| A1-E1-05 | Wer steht auf? | ★★ | `zeilen` | K17, K29 | P6 | gA/eA | In zehn Karteikarten-Zeilen diejenigen antippen, die `WHERE Kategorie = 'Tasche' OR Kategorie = 'Rucksack' AND Wert > 50` liefert (AND bindet stärker). |
-| A1-E1-06 | Klammern retten den Fall | ★★★ | `sql` | K17 | P6 | gA/eA | Alle Taschen und Rucksäcke mit Wert über 50 €, die nicht im Hafenviertel gefunden wurden (Klammern um OR, `NOT`), mit Bezeichnung, Stadtteil und Wert. |
-| A1-E1-07 | Reihenfolge vorhersagen | ★★ | `ergebnis` | K21, K29 | – | gA/eA | Ergebnistabelle von `SELECT Bezeichnung, Wert FROM Fundsache WHERE Kategorie = 'Schmuck' ORDER BY Wert DESC, Bezeichnung` vorhersagen (5 Zeilen, ein Gleichstand im Wert, Reihenfolge zählt). |
+| A1-E1-04 | Puzzle der Ermittlungsakte | ★ | `order` | K15, K21 | P5 | gA/eA | Bausteine `SELECT Bezeichnung, Farbe` · `FROM Fundsache` · `WHERE Kategorie = 'Kleidung'` · `ORDER BY Funddatum DESC` in gültige Reihenfolge bringen; Distraktor `WHERE Kategorie = Kleidung` (ohne Hochkommata) aussortieren. |
+| A1-E1-05 | Wer steht auf? | ★★ | `zeilen` | K17, K29 | P6 | gA/eA | In zehn Karteikarten-Zeilen diejenigen antippen, die `WHERE Kategorie = 'Taschen' OR Kategorie = 'Schmuck' AND Wert > 50` liefert (AND bindet stärker: jede Tasche, auch für 19 €; Schmuck ohne Wert bleibt sitzen). |
+| A1-E1-06 | Klammern retten den Fall | ★★★ | `sql` | K17 | P6 | gA/eA | Alle Fundsachen der Kategorien Taschen oder Schmuck mit Wert über 50 €, die nicht im Hafenviertel gefunden wurden (Klammern um OR, `NOT`), mit Bezeichnung, Stadtteil und Wert. |
+| A1-E1-07 | Reihenfolge vorhersagen | ★★ | `ergebnis` | K21, K29 | – | gA/eA | Ergebnistabelle von `SELECT Bezeichnung, Wert FROM Fundsache WHERE Kategorie = 'Fahrradzubehör' AND Wert >= 20 ORDER BY Wert DESC, Bezeichnung` vorhersagen (Ausschnitt: alle 6 Fundsachen der Kategorie Fahrradzubehör; 5 Ergebniszeilen, Grenzwert 20 €, ein Gleichstand im Wert, Reihenfolge zählt). |
 | A1-E1-08 | Sortierte Spurensuche | ★★★ | `sql` | K21, K17 | P6 | gA/eA | Alle Fundsachen aus 'Hafenviertel' oder 'Altstadt' mit Wert ab 20 € (`>=`, Variante `+grenze`), sortiert nach Stadtteil aufsteigend, innerhalb nach Funddatum absteigend. |
 
 Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `ergebnis`, `order`, `sql`, `zeilen`
 
-**Cold Case im Lab (ohne Punkte):** `A1-E1-CC` „Die Nachtfalter-Liste“ (K15, K21) – Freie Ermittlung: Fundsachen nach Finder sortieren und Auffälligkeiten notieren (welcher Eintrag ist kein Personenname?) – offene Spur für DS 2.
+**Cold Case im Lab (ohne Punkte):** `A1-E1-CC` „Die Nachtfalter-Liste“ (K15, K21) – Freie Ermittlung: Finder, Bezeichnung und FundNr nach Finder sortiert ausgeben und den Finder-Eintrag finden, der schnell gesprochen wie ein Tier klingt ('N. Falter', FundNr 36) – offene Spur für DS 2.
 
 ### Arbeitsblatt-Blueprint AB 1.1 („Ermittlungsakte“)
 
@@ -163,8 +163,8 @@ Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `ch
 |---|---|---|---|---|
 | 1 | ★ | PAPIER | Beschrifte im Fundbuch-Ausschnitt Tabelle, Datensatz, Attribut und Attributwert. | K01 |
 | 2 | ★ | PAPIER | Entscheide begründet, ob FundNr, Bezeichnung oder Funddatum Primärschlüssel sein kann. | K02 |
-| 3 | ★★ | PAPIER | Markiere die Zeilen, die `WHERE Kategorie = 'Schirm' OR Farbe = 'schwarz' AND Wert < 10` liefert – einmal wie notiert, einmal mit Klammern um die OR-Bedingung. | K17, K29 |
-| 4 | ★★ | PAPIER | Notiere eine Abfrage: alle Fundsachen aus dem Stadtteil 'Neustadt' mit Bezeichnung und Funddatum, neueste zuerst. | K15, K21 |
+| 3 | ★★ | PAPIER | Markiere die Zeilen, die `WHERE Kategorie = 'Sonstiges' OR Farbe = 'schwarz' AND Wert < 10` liefert – einmal wie notiert, einmal mit Klammern um die OR-Bedingung. | K17, K29 |
+| 4 | ★★ | PAPIER | Notiere eine Abfrage: alle Fundsachen aus dem Stadtteil 'Lindenhof' mit Bezeichnung und Funddatum, neueste zuerst. | K15, K21 |
 | 5 | ★★★ | LAB | Fundsachen mit Wert ab 100 € oder der Kategorie 'Schmuck', aber nicht aus dem Hafenviertel – sortiert nach Stadtteil und absteigend nach Wert. | K17, K21 |
 
 - **Abi-Ecke** (rot gerahmt, K15, K17): Gegeben ist die Tabelle Fundsache. **Entwerfen** Sie eine SQL-Abfrage, die Bezeichnung und Wert aller Fundsachen ausgibt, die im Stadtteil Altstadt gefunden wurden und einen Wert von mehr als 20 € haben. **[2 BE]** – Operator **entwerfen**, AFB II.
@@ -182,7 +182,7 @@ Die Warm-up-Karten **W-A1-01…04** wiederholen diese DS und werden zu Beginn vo
 - Portal-Login scheitert (persönlicher Code vergessen) → Kursliste mit Codes bereithalten; notfalls `/gast` (Eisdiele) zum Ausprobieren, zählt nicht.
 - Spalten- und Zeilenauswahl verwechselt (`SELECT` vs. `WHERE`) → Bild aus dem Unplugged: „aufstehen = WHERE, vorlesen = SELECT“.
 - AND/OR ohne Klammern (P6) → Zeitlupe zeigt die verworfenen Zeilen; Merkkasten.
-- Text ohne Hochkommata (P5) → deutsche Fehlermeldung „Die Spalte Schirm gibt es nicht …“ gemeinsam deuten.
+- Text ohne Hochkommata (P5) → deutsche Fehlermeldung „Die Spalte Kleidung gibt es nicht …“ gemeinsam deuten.
 - Primärschlüssel aus dem Ausschnitt „bewiesen“ (P8) → Gegenbeispiel-Frage „Kann es morgen eine zweite Fundsache *Regenschirm* geben?“
 
 **Differenzierung**
@@ -242,7 +242,7 @@ WHERE Bezeichnung LIKE 'M_tze'                           -- _ = genau ein Zeiche
 WHERE Funddatum BETWEEN '2026-09-01' AND '2026-09-30'    -- Grenzen inklusive
 WHERE Kategorie IN ('Schmuck', 'Elektronik')             -- Werteliste
 WHERE AbgeholtAm IS NULL                                 -- niemals: = NULL
-WHERE Kategorie != 'Schirm'                              -- im Abitur: !=
+WHERE Kategorie != 'Kleidung'                            -- im Abitur: !=
 SELECT DISTINCT Stadtteil FROM Fundsache;                -- Duplikate entfernen
 
 SELECT Bezeichnung, Wert, Wert * 0.05 AS Finderlohn
@@ -263,12 +263,12 @@ LIMIT 3;
 | A1-E2-04 | Die Septemberwoche | ★★ | `sql` | K18, K32 | P6 | gA/eA | Alle Fundsachen mit Funddatum zwischen '2026-09-14' und '2026-09-20' (BETWEEN inklusive; Grenzdatum liegt in den Daten), sortiert nach Funddatum. |
 | A1-E2-05 | Finderlohn | ★★ | `sql` | K20, K16, K18, K22 | P6 | gA/eA | Bezeichnung, Wert und `Wert * 0.05 AS Finderlohn` für Fundsachen der Kategorien Schmuck oder Elektronik (IN); nur die drei höchsten Finderlöhne (ORDER BY Alias + LIMIT 3, kein Gleichstand). |
 | A1-E2-06 | Indizienkette 1/3: Irgendwas mit Messing | ★★ | `sql` | K19, K15 | P6 | gA/eA | Alle Fundsachen mit „Messing“ in der Bezeichnung (`LIKE '%Messing%'`) mit FundNr, Bezeichnung, Funddatum und Wert – mehrere Treffer, teils außerhalb Juni/Juli. |
-| A1-E2-07 | Indizienkette 2/3: Sommer und mehrere hundert Euro | ★★★ | `sql` | K18, K17, K19, K32 | P5, P6 | gA/eA | Messing-Fundsachen mit Funddatum zwischen '2026-06-01' und '2026-07-31' (BETWEEN), deren Wert mindestens 400 € beträgt oder unbekannt ist (`Wert >= 400 OR Wert IS NULL` in Klammern). |
-| A1-E2-08 | Indizienkette 3/3: Abgeholt ohne Unterschrift | ★★★ | `sql` | K18, K17, K32 | P5 | gA/eA | Bedingungen aus 06/07 plus `NOT AbgeholtAm IS NULL`: genau ein Datensatz bleibt – Bezeichnung, Fundort, Wert, AbgeholtAm und Finder ausgeben (Messing-Kompass, 'Weserpromenade', 450, '2026-09-14', 'N. Falter'). |
+| A1-E2-07 | Indizienkette 2/3: Sommer und mehrere hundert Euro | ★★★ | `sql` | K18, K17, K19, K32 | P5, P6 | gA/eA | Messing-Fundsachen mit Funddatum zwischen '2026-06-01' und '2026-07-31' (BETWEEN), deren Wert mindestens 400 € beträgt oder unbekannt ist (`Wert >= 400 OR Wert IS NULL` in Klammern) – auf der Haupt-DB bleibt schon hier nur FundNr 36 (Messing-Kompass) übrig; Variante `+null` (Messingleuchter mit unbekanntem Wert) prüft das `OR Wert IS NULL`. |
+| A1-E2-08 | Indizienkette 3/3: Abgeholt ohne Unterschrift | ★★★ | `sql` | K18, K17, K32 | P5 | gA/eA | Bedingungen aus 06/07 plus `NOT AbgeholtAm IS NULL`: bestätigt, dass der Kandidat aus 07 abgeholt wurde, und deckt Fundort und Finder auf – Bezeichnung, Fundort, Wert, AbgeholtAm und Finder ausgeben (Messing-Kompass, 'Weserpromenade', 450, '2026-09-14', 'N. Falter'). |
 
 Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `gaps`, `lines`, `sql`
 
-**Cold Case im Lab (ohne Punkte):** `A1-E2-CC` „Der Schatten-Finder“ (K19, K29) – Wie viele Fundsachen tragen im Feld Finder einen Eintrag, der 'falter' enthält? Notiere alle Schreibweisen – ein Hinweis auf den Tarnnamen des Phantoms.
+**Cold Case im Lab (ohne Punkte):** `A1-E2-CC` „Der Schatten-Finder“ (K19, K29) – Wie viele Fundsachen tragen im Feld Finder einen Eintrag, der 'falter' enthält (`LIKE '%falter%'`)? Nur einer: 'N. Falter' beim Messing-Kompass (FundNr 36) – das Phantom hat nur diesen einen Datensatz geändert.
 
 ### Arbeitsblatt-Blueprint AB 1.2 („Ermittlungsakte“)
 
@@ -304,7 +304,7 @@ Wiederholung von DS 1 (Begriffe, Klammern, Sortieren, Schlüssel).
 | ID | Titel | Aufgabe | Min. | Kompetenz | Falle |
 |---|---|---|---|---|---|
 | W-A1-01 | Begriffe am Fundbuch | An einem Tabellenausschnitt Tabelle, Datensatz, Attribut und Attributwert benennen. | 2' | K01, K47 | – |
-| W-A1-02 | Klammer-Check | Angeben, welche von sechs Zeilen `WHERE Kategorie = 'Schirm' OR Farbe = 'rot' AND Wert > 10` liefert – und was Klammern um die OR-Bedingung ändern. | 3' | K17, K29 | P6 |
+| W-A1-02 | Klammer-Check | Angeben, welche von sechs Zeilen `WHERE Kategorie = 'Sonstiges' OR Farbe = 'rot' AND Wert > 10` liefert – und was Klammern um die OR-Bedingung ändern. | 3' | K17, K29 | P6 |
 | W-A1-03 | Zweistufig sortieren | Abfrage notieren: alle Fundsachen, sortiert nach Kategorie aufsteigend, innerhalb nach Wert absteigend. | 3' | K21, K15 | – |
 | W-A1-04 | Schlüsselfrage | Begründen, warum Bezeichnung kein Primärschlüssel ist, obwohl sie im Ausschnitt eindeutig ist. | 2' | K02 | P8 |
 
@@ -333,16 +333,16 @@ Rahmensatz (STORY 6, geduzt auf der Startkarte): „Bevor ich dich allein an das
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Aufgabe (gesiezt, Transfer) |
 |---|---|---|---|---|---|---|---|
-| A1-V-01 | Begriffe | ★ | `choice` | K01, K47 | – | gA/eA | Geben Sie an, welcher Fachbegriff (Datensatz, Attribut, Attributwert) die markierte Stelle der Tabelle Medium bezeichnet. |
+| A1-V-01 | Begriffe | ★ | `choice` | K01, K47 | – | gA/eA | Geben Sie an, welcher Fachbegriff (Datensatz, Attribut, Attributwert, Primärschlüssel) die markierte Stelle der Tabelle Medium bezeichnet. |
 | A1-V-02 | Schlüssel | ★ | `choice` | K02 | P8 | gA/eA | Beurteilen Sie, welches Attribut als Primärschlüssel geeignet ist; der Ausschnitt enthält nur eindeutige Titel. |
 | A1-V-03 | Krimis | ★ | `sql` | K15, K17 | P5 | gA/eA | Entwerfen Sie eine Abfrage, die Titel und Autor aller Medien des Genres 'Krimi' ausgibt. |
 | A1-V-04 | Verfügbar | ★ | `sql` | K18 | P5 | gA/eA | Entwerfen Sie eine Abfrage, die alle zurzeit nicht ausgeliehenen Medien (AusgeliehenBis IS NULL) mit Titel und Standort ausgibt. |
 | A1-V-05 | Bedingungslogik | ★ | `zeilen` | K17, K29 | P6 | gA/eA | Geben Sie an, welche Datensätze `WHERE Genre = 'Krimi' OR Genre = 'Thriller' AND Preis > 15` liefert. |
 | A1-V-06 | Titelsuche | ★★ | `sql` | K19 | P6 | gA/eA | Entwerfen Sie eine Abfrage für alle Medien, deren Titel mit 'Der ' beginnt und deren Autor genau fünf Buchstaben lang ist. |
 | A1-V-07 | Jahrgänge | ★★ | `sql` | K18, K32 | P6 | gA/eA | Entwerfen Sie eine Abfrage für alle Medien der Genres Roman oder Sachbuch (IN), erschienen von 2000 bis 2010 einschließlich. |
-| A1-V-08 | Sortierung | ★★ | `ergebnis` | K21, K29 | – | gA/eA | Geben Sie das Ergebnis einer gegebenen Abfrage mit `ORDER BY Genre, Erscheinungsjahr DESC` für einen Ausschnitt von 7 Datensätzen an. |
+| A1-V-08 | Sortierung | ★★ | `ergebnis` | K21, K29 | – | gA/eA | Geben Sie das Ergebnis einer gegebenen Abfrage mit `ORDER BY Genre, Erscheinungsjahr DESC` für den Ausschnitt aller 7 DVDs des Bestands (`WHERE Medienart = 'DVD'`) an. |
 | A1-V-09 | Ersatzkosten | ★★ | `sql` | K20, K16 | – | gA/eA | Entwerfen Sie eine Abfrage, die für alle Medien im Standort 'Magazin' Titel und `Preis + 5 AS Ersatzkosten` ausgibt. |
-| A1-V-10 | Hörbücher | ★★ | `sql` | K15, K21 | – | gA/eA | Entwerfen Sie eine Abfrage, die alle Medien der Medienart 'Hörbuch' ausgibt, die nach 2015 erschienen sind, absteigend sortiert nach Erscheinungsjahr. |
+| A1-V-10 | Hörbücher | ★★ | `sql` | K15, K21 | – | gA/eA | Entwerfen Sie eine Abfrage, die Titel, Autor und Erscheinungsjahr aller Medien der Medienart 'Hörbuch' ausgibt, die nach 2015 erschienen sind, absteigend sortiert nach Erscheinungsjahr. |
 | A1-V-11 | Die teuersten | ★★★ | `sql` | K22, K17, K18 | P6 | gA/eA | Entwerfen Sie eine Abfrage für die fünf teuersten verfügbaren Medien der Genres Krimi oder Thriller. |
 | A1-V-12 | Fehlersuche | ★★★ | `lines` | K32, K18 | P5 | gA/eA | Geben Sie die Zeilen einer gegebenen Abfrage an, die fehlerhaft notiert sind (NULL-Vergleich, Text- und Datumsliterale). |
 
@@ -388,7 +388,7 @@ Die Schülerinnen und Schüler …
 2. Auftrag `WHERE Rad.StationID = Station.StationID`: Entfernt alle Fäden, bei denen die Nummern nicht übereinstimmen. Es bleiben 5 Fäden.
 3. Impulse: *„Wo ist Rad 6?“* (StationID NULL → kein Faden bleibt) – *„Warum taucht Station Deichtor nicht auf?“* (kein Rad verweist auf sie) – *„Was passiert, wenn ihr die WHERE-Bedingung vergesst?“* (24 Zeilen, Unsinn wie „Rad 1 steht überall“).
 4. Zusatz für schnelle Teams: `AND Station.Stadtteil = 'Hafenviertel'` – welche Fäden bleiben?
-*Sicherung:* Foto des Tisches nach Schritt 2; Tafel „Verbund = Kreuzprodukt + Filter FK = PK“. Danach dasselbe im Spurenbrett des Labs (Zähler „45 × 13 = 585 Fäden → nur die Räder mit Station bleiben“; genaue Zahl aus der Haupt-DB).
+*Sicherung:* Foto des Tisches nach Schritt 2; Tafel „Verbund = Kreuzprodukt + Filter FK = PK“. Danach dasselbe im Spurenbrett des Labs (Zähler „45 × 13 = 585 Fäden → nur die 26 Räder mit Station bleiben“).
 
 ### Tafelbild / Merkkasten „Ermittler-Notiz“
 **Station**(<u>StationID</u>, Name, Stadtteil, Stellplaetze)
@@ -405,19 +405,19 @@ WHERE Rad.StationID = Station.StationID
   AND Station.Stadtteil = 'Hafenviertel';
 ```
 **Verbund-Rezept:** ① alle beteiligten Tabellen in FROM ② je Tabellenpaar eine Verbundbedingung FK = PK (n Tabellen → mindestens n − 1 Bedingungen) ③ gleichnamige Spalten mit Tabellenpräfix ④ erst dann weitere Bedingungen mit AND.
-Ohne ② entsteht das Kreuzprodukt: 40 Räder × 12 Stationen = 480 Zeilen.
+Ohne ② entsteht das Kreuzprodukt: 45 Räder × 13 Stationen = 585 Zeilen; mit Verbundbedingung bleiben 26 (19 Räder ohne Station fallen heraus).
 
 ### Lab-Blueprint (A2-E1)
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
-| A2-E1-01 | Der Pfeil im Schema | ★ | `choice` | K03, K05 | – | gA/eA | Im Schema `Rad(RadID, Typ, Baujahr, ↑StationID, Status)` die zutreffende Bedeutung von ↑StationID und der Unterstreichung auswählen. |
-| A2-E1-02 | Zeichen der Kurzschreibweise | ★ | `match` | K04, K05 | – | gA/eA | Kennzeichnungen (unterstrichen, ↑, zwei unterstrichene Attribute, ↑ und unterstrichen) ihren Bedeutungen zuordnen. |
+| A2-E1-01 | Der Pfeil im Schema | ★ | `choice` | K03, K05 | – | gA/eA | Im Schema `Rad(RadID, Typ, Baujahr, ↑StationID, Status)` die zutreffenden Aussagen zu ↑StationID und der Unterstreichung auswählen (Mehrfachauswahl, Richtung des Verweises Rad → Station). |
+| A2-E1-02 | Zeichen der Kurzschreibweise | ★ | `match` | K04, K05 | – | gA/eA | Kennzeichnungen (unterstrichen, ↑, zwei unterstrichene Attribute, ↑ und unterstrichen) ihren Bedeutungen zuordnen – an Rad und einer geplanten Tabelle Ladeplatz(↑StationID, PlatzNr, Leistung). |
 | A2-E1-03 | Spurenbrett | ★ | `zeilen` | K23, K03 | P2 | gA/eA | Auf dem Spurenbrett (6 Räder × 4 Stationen) die Fäden/Zeilen antippen, die `Rad.StationID = Station.StationID` erfüllen; Rad mit StationID NULL bleibt ohne Faden. |
 | A2-E1-04 | Wohin zeigt der Pfeil? | ★★ | `gaps` | K04, K03 | P7 | gA/eA | Kurzschreibweise von Ausleihe vervollständigen: fehlende ↑ setzen und angeben, auf welche Relation StartStation, ZielStation und KundenID verweisen. |
-| A2-E1-05 | 585 Fäden | ★★ | `ergebnis` | K23, K29 | P2 | gA/eA | Zeilenzahl von `SELECT * FROM Rad, Station` (ohne WHERE) und mit Verbundbedingung angeben (Zahlen aus dem Schema-Browser ablesen). |
+| A2-E1-05 | 585 Fäden | ★★ | `ergebnis` | K23, K29 | P2 | gA/eA | Zeilenzahl von `SELECT * FROM Rad, Station` (ohne WHERE) und mit Verbundbedingung angeben (Zahlen aus dem Schema-Browser ablesen: 45 × 13 = 585; mit Bedingung 26, weil 19 Räder `StationID` NULL haben). |
 | A2-E1-06 | Wo steht welches Rad? | ★★ | `sql` | K23, K16 | P7 | gA/eA | RadID, Typ und Name der Station aller Räder (Präfix bei der gleichnamigen Spalte StationID). |
-| A2-E1-07 | Lastenräder am Hafen | ★★★ | `sql` | K23, K17 | P2, P7 | gA/eA | Alle Lastenräder an Stationen im Stadtteil Hafenviertel mit RadID und Stationsname, sortiert nach Stationsname. |
+| A2-E1-07 | Keine Citybikes am Bahnhof | ★★★ | `sql` | K23, K17 | P2, P7 | gA/eA | Alle Räder, die **keine** Citybikes sind (`Rad.Typ != 'Citybike'`) und an einer Station im Stadtteil Bahnhofsviertel stehen, mit RadID, Typ und Stationsname, sortiert nach Stationsname. |
 | A2-E1-08 | Gerade unterwegs | ★★★ | `sql` | K23, K18 | P5 | gA/eA | Alle Lastenräder, die gerade ausgeliehen sind (`Ausleihe.Ende IS NULL`), mit RadID, Start und KundenID. |
 
 Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `ergebnis`, `gaps`, `match`, `sql`, `zeilen`
@@ -547,7 +547,7 @@ WHERE a.KundenID = k.KundenID
 |---|---|---|---|---|---|---|---|
 | A2-E2-01 | Welche Verbindung gehört wohin? | ★ | `match` | K24, K03 | P7 | gA/eA | Tabellenpaaren (Ausleihe–Rad, Ausleihe–Kunde, Ausleihe–Station über Start, Rad–Station) die passende Verbundbedingung zuordnen. |
 | A2-E2-02 | Ausleihen am Stadtfest-Samstag | ★ | `sql` | K23, K16, K19 | P7 | gA/eA | Vor- und Nachname der Kunden und Startzeit aller Ausleihen am 2026-08-29 (`a.Start LIKE '2026-08-29%'`), mit Tabellenalias. |
-| A2-E2-03 | Der gerissene Faden | ★ | `lines` | K24 | P2, P7 | gA/eA | In einer Verbundabfrage über drei Tabellen die Zeile mit fehlender bzw. falscher Verbundbedingung antippen. |
+| A2-E2-03 | Der gerissene Faden | ★ | `lines` | K24 | P2, P7 | gA/eA | In einer Verbundabfrage über drei Tabellen (Lastenrad-Ausleihen) die Zeile mit der falschen Verbundbedingung antippen (`a.RadID = r.StationID` statt `a.RadID = r.RadID`). |
 | A2-E2-04 | Vier Tabellen, eine Spur | ★★ | `sql` | K24 | P2 | gA/eA | Kundenname, Radtyp und Name der Startstation aller Ausleihen mit einem Preis über 10 €. |
 | A2-E2-05 | Von hier nach dort | ★★ | `sql` | K24, K16 | P7 | gA/eA | Alle abgeschlossenen Ausleihen mit AusleihID sowie Name der Start- und der Zielstation (Station zweimal: s1, s2). |
 | A2-E2-06 | Die leere Zielstation | ★★ | `ergebnis` | K18, K29 | P5 | gA/eA | Zeilenzahl vorhersagen: `… WHERE ZielStation IS NULL` vs. `… WHERE ZielStation = NULL` auf einem Ausschnitt mit 3 laufenden Ausleihen. |
@@ -573,10 +573,10 @@ Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `er
 
 | Nr. | Stufe | Ort | Auftrag | Kompetenz |
 |---|---|---|---|---|
-| 1 | ★ | PAPIER | Beschreibe den Ermittlungsweg für „Name aller Kunden, die ein Rad an der Station Deichtor ausgeliehen haben“. | K24, K30 |
+| 1 | ★ | PAPIER | Beschreibe den Ermittlungsweg für „Name aller Kunden, die ein Rad an der Station Fischmarkt ausgeliehen haben“. | K24, K30 |
 | 2 | ★ | PAPIER | Ergänze die fehlende Verbundbedingung in einer vorgegebenen Abfrage über vier Tabellen. | K24 |
 | 3 | ★★ | LAB | Alle Reparaturen an Rädern, die zurzeit an einer Station im Hafenviertel stehen (Reparatur, Rad, Station). | K24 |
-| 4 | ★★ | PAPIER | Notiere eine Abfrage mit Start- und Zielstationsname für alle Ausleihen von Kundin 'Lea Brandt'. | K24, K16 |
+| 4 | ★★ | PAPIER | Notiere eine Abfrage mit Start- und Zielstationsname für alle Ausleihen von Kundin 'Lea Meiners'. | K24, K16 |
 | 5 | ★★★ | PAPIER | Begründe, warum die Abfrage aus Auftrag 4 laufende Ausleihen nicht anzeigt, und beschreibe, wie du sie trotzdem (ohne Zielstation) erhältst. | K18, K24 |
 
 - **Abi-Ecke** (rot gerahmt, K24, K16, K17): **Entwerfen** Sie eine SQL-Abfrage, die für alle Ausleihen, die im Stadtteil Hafenviertel begonnen und in einem anderen Stadtteil beendet wurden, die AusleihID sowie die Namen von Start- und Zielstation ausgibt. **[4 BE]** – Operator **entwerfen**, AFB II/III.
@@ -592,7 +592,7 @@ Wiederholung von DS 3 (Schlüssel, Kurzschreibweise, Verbund über zwei Tabellen
 | ID | Titel | Aufgabe | Min. | Kompetenz | Falle |
 |---|---|---|---|---|---|
 | W-A2-01 | Kurzschreibweise lesen | Die Kennzeichnungen in `Reparatur(ReparaturID, ↑RadID, Datum, Grund, Kosten)` erläutern. | 2' | K04, K05 | – |
-| W-A2-02 | Fäden zählen | Zeilenzahl von `FROM Kunde, Station` (60 und 12 Datensätze) ohne und mit sinnvoller Bedingung angeben. | 2' | K23, K29 | P2 |
+| W-A2-02 | Fäden zählen | Zeilenzahl von `SELECT * FROM Ausleihe, Kunde` (469 und 80 Datensätze) ohne WHERE (469 · 80 = 37 520) und mit der Verbundbedingung `Ausleihe.KundenID = Kunde.KundenID` (469) angeben. | 2' | K23, K29 | P2 |
 | W-A2-03 | Zwei Tabellen | Abfrage notieren: Typ jedes Rades und Name seiner Station. | 3' | K23, K16 | P7 |
 | W-A2-04 | Anderer Name, gleicher Verweis | Verbundbedingung für Ausleihe und Station über die Zielstation notieren und das Präfix begründen. | 3' | K03, K16 | P7 |
 
@@ -617,7 +617,7 @@ Wiederholung von DS 3 (Schlüssel, Kurzschreibweise, Verbund über zwei Tabellen
 **Kontext-DB „Bürgerbus“** (eigene kleine DB):
 `Haltestelle(<u>HaltID</u>, Name, Ortsteil)` · `Fahrer(<u>FahrerNr</u>, Vorname, Nachname, Telefon)` · `Bus(<u>Kennzeichen</u>, Sitzplaetze)` ·
 `Fahrt(<u>FahrtNr</u>, ↑FahrerNr, ↑Kennzeichen, ↑StartHalt, ↑ZielHalt, Datum, Abfahrt, Fahrgaeste)` – zwei FKs auf Haltestelle, Fahrgaeste teils NULL, gleichnamige Fahrer.
-Rahmensatz: „Ein Nachbarort bittet die Detektei, die Fahrtenliste seines Bürgerbusses auszuwerten.“ Timer 20 min, Abimodus `streng`.
+Rahmensatz: „Wer Räder verfolgen kann, kann auch Busse verfolgen – zeig es mir.“ Timer 20 min, Abimodus `streng`.
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Aufgabe (gesiezt, Transfer) |
 |---|---|---|---|---|---|---|---|
@@ -634,7 +634,7 @@ Rahmensatz: „Ein Nachbarort bittet die Detektei, die Fahrtenliste seines Bürg
 | A2-V-11 | Spitzenfahrten | ★★★ | `sql` | K24, K22 | P7 | gA/eA | Entwerfen Sie eine Abfrage für die fünf Fahrten mit den meisten Fahrgästen inklusive der Namen von Start- und Zielhaltestelle. |
 | A2-V-12 | Ortsteilwechsel | ★★★ | `sql` | K24, K17 | P6, P7 | gA/eA | Entwerfen Sie eine Abfrage für alle Fahrten, die im Ortsteil Nordheide beginnen und in einem anderen Ortsteil enden. |
 
-Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 3 × ★★ + 1 × ★★★; mindestens eine Aufgabe zu zwei FKs auf dieselbe Tabelle (A2-V-07, -11 oder -12).
+Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 3 × ★★ + 1 × ★★★ (max. 1 Aufgabe je Interaktionsart `choice`); mindestens eine Aufgabe zu zwei FKs auf dieselbe Tabelle (A2-V-07, -11 oder -12).
 
 ---
 
@@ -695,7 +695,7 @@ FROM Position, Produkt
 WHERE Position.ProduktNr = Produkt.ProduktNr
 GROUP BY Produkt.ProduktNr, Produkt.Bezeichnung;
 ```
-**GROUP-BY-Regel:** Jede Spalte im SELECT ist entweder aggregiert oder in GROUP BY aufgezählt. · Nach dem **Schlüssel** gruppieren (zwei Helfer heißen „Jonas Weber“!) und Namen zusätzlich in GROUP BY aufnehmen. · `COUNT(*)` zählt Zeilen, `COUNT(Spalte)` zählt Nicht-NULL-Werte, `SUM(Menge)` addiert Stückzahlen. · „Anzahl Käufe“ = COUNT(*), „Anzahl verkaufter Stück“ = SUM(Menge).
+**GROUP-BY-Regel:** Jede Spalte im SELECT ist entweder aggregiert oder in GROUP BY aufgezählt. · Nach dem **Schlüssel** gruppieren (zwei Helferinnen heißen „Lotta Bödeker“!) und Namen zusätzlich in GROUP BY aufnehmen. · `COUNT(*)` zählt Zeilen, `COUNT(Spalte)` zählt Nicht-NULL-Werte, `SUM(Menge)` addiert Stückzahlen. · „Anzahl Käufe“ = COUNT(*), „Anzahl verkaufter Stück“ = SUM(Menge).
 
 ### Lab-Blueprint (A3-E1)
 
@@ -712,7 +712,7 @@ GROUP BY Produkt.ProduktNr, Produkt.Bezeichnung;
 
 Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `ergebnis`, `lines`, `sql`
 
-**Cold Case im Lab (ohne Punkte):** `A3-E1-CC` „Der stille Stand“ (K26, K23) – Welche Stände tauchen in deiner Lösung zu A3-E1-05 gar nicht auf? Finde sie ohne Unterabfrage – mit welchen Mitteln geht das, und wo stößt das Abitur-SQL an Grenzen?
+**Cold Case im Lab (ohne Punkte):** `A3-E1-CC` „Der stille Stand“ (K26, K23) – Welcher Stand taucht in deiner Lösung zu A3-E1-05 gar nicht auf? Finde ihn ohne Unterabfrage (8 Stände, 7 Ergebniszeilen → Info-Zelt, Stand 8, ohne Bon) – mit welchen Mitteln geht das, und wo stößt das Abitur-SQL an Grenzen?
 
 ### Arbeitsblatt-Blueprint AB 3.1 („Ermittlungsakte“)
 
@@ -824,7 +824,7 @@ ORDER BY NullPositionen DESC;
 **Auswertungsreihenfolge:** FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.
 - WHERE filtert **Zeilen vor** dem Gruppieren, HAVING filtert **Gruppen danach** (Aggregat wiederholen, kein Alias in HAVING).
 - Top-n: `ORDER BY … DESC LIMIT n` – nur eindeutig, wenn an Platz n kein Gleichstand besteht.
-- **Vervielfachung:** Bon × Position × Schicht – jeder Bon erscheint so oft, wie die Helferin Schichten hat → SUM zu hoch (Fehlbetrag 312,50 € wird zu einem Vielfachen). Nur Tabellen verbinden, die für die Frage nötig sind.
+- **Vervielfachung:** Bon × Position × Schicht, Schicht nur über den Stand verbunden – jede Position erscheint so oft, wie es am Stand passende Schichten gibt → SUM zu hoch (drei Schichten: 312,50 € werden zu 937,50 €). Nur Tabellen verbinden, die für die Frage nötig sind.
 - **Analyse im Sachzusammenhang:** „Die Abfrage liefert für jede Helferin/jeden Helfer (Nummer, Name) die Anzahl der am Stadtfest-Samstag gebuchten Positionen mit Menge 0, aber nur, wenn es mehr als drei sind – absteigend nach Anzahl.“ (nicht: „zählt Zeilen und gruppiert“).
 - **Vorgehen in Worten:** benötigte Tabellen → Verbund → Zeilenfilter → Gruppierung → Gruppenfilter → Sortierung/Begrenzung.
 
@@ -834,16 +834,16 @@ ORDER BY NullPositionen DESC;
 |---|---|---|---|---|---|---|---|
 | A3-E2-01 | Die Zeitlupe ordnen | ★ | `order` | K27 | P1 | gA/eA | Die Klauseln FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT in Auswertungsreihenfolge bringen. |
 | A3-E2-02 | Vorher oder nachher? | ★ | `choice` | K27 | P1 | gA/eA | Für sechs Bedingungen entscheiden, ob sie in WHERE oder HAVING gehören. |
-| A3-E2-03 | Die großen Stände | ★ | `sql` | K27, K26 | P1 | gA/eA | Stände mit mehr als 200 Bons (HAVING COUNT(*) > 200) mit StandNr und Name. |
+| A3-E2-03 | Die großen Stände | ★ | `sql` | K27, K26 | P1 | gA/eA | Stände mit mehr als 100 Bons (HAVING COUNT(*) > 100) mit StandNr und Name (Kaffeemobil, Bierwagen). |
 | A3-E2-04 | Die auffällige Stunde | ★★ | `sql` | K27, K26, K18 | P1, P3 | gA/eA | Je Helfer die Anzahl der Positionen mit Menge 0 am Stand 'Kaffeemobil' am 2026-08-29 (BETWEEN '2026-08-29 00:00' AND '2026-08-29 23:59'), nur Helfer mit mehr als 3 solcher Positionen (WHERE + HAVING) → nur HelferNr 23. |
 | A3-E2-05 | Die Top 3 | ★★ | `sql` | K22, K21, K26 | P6 | gA/eA | Die drei Produkte mit der höchsten verkauften Stückzahl (ORDER BY SUM(Menge) DESC LIMIT 3; kein Gleichstand an Platz 3). |
 | A3-E2-06 | Was sagt diese Abfrage? | ★★ | `kernpunkte` | K28, K29 | P10 | gA/eA | Gegebene Abfrage (Verbund Bon–Stand, WHERE Zahlart, GROUP BY, HAVING, ORDER BY) im Sachzusammenhang analysieren; Kernpunkte aufdecken und abhaken. |
-| A3-E2-07 | Dreimal zu viel | ★★★ | `sql` | K24, K25, K31 | P2 | gA/eA | Fehlbetrag berechnen: Summe der Listenpreise aller Positionen mit Menge 0 am Kaffeemobil zwischen '2026-08-29 22:00' und '2026-08-29 22:59'; eine gegebene Abfrage verbindet zusätzlich Schicht ohne passende Bedingung und vervielfacht die Summe – Fehler erkennen, korrekte Abfrage schreiben (Ergebnis 312,50). |
+| A3-E2-07 | Dreimal zu viel | ★★★ | `sql` | K24, K25, K31 | P2 | gA/eA | Fehlbetrag berechnen: Summe der Listenpreise aller Positionen mit Menge 0 am Kaffeemobil zwischen '2026-08-29 22:00' und '2026-08-29 22:59'; eine gegebene Abfrage verbindet zusätzlich Schicht nur über den Stand (drei Schichten ab 21 Uhr) und verdreifacht die Summe auf 937,50 – Fehler erkennen, korrekte Abfrage ohne Schicht schreiben (Ergebnis 312,50). |
 | A3-E2-08 | In Worten ermitteln | ★★★ | `kernpunkte` | K30, K28 | P10 | gA/eA | Beschreiben, wie man ermittelt, wer am 2026-08-29 von 22 bis 23 Uhr die Schicht am Kaffeemobil hatte und ob die Positionen mit Menge 0 in diese Schicht fallen (Tabellen Schicht, Helfer, Bon, Position, Stand; Verbund, Filter, Gruppierung, Sortierung). |
 
 Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `kernpunkte`, `order`, `sql`
 
-**Cold Case im Lab (ohne Punkte):** `A3-E2-CC` „Gleichstand an der Kante“ (K22, K21) – Ermittle die Top 5 der Stände nach Bonzahl. Was fällt an Platz 5 und 6 auf? Formuliere eine bessere Frage, die eindeutig beantwortbar ist.
+**Cold Case im Lab (ohne Punkte):** `A3-E2-CC` „Gleichstand an der Kante“ (K22, K21) – Der Festausschuss will „die zwei Stände mit den meisten Kartenzahlungen“ ehren: Kartenzahlungen je Stand absteigend ausgeben (noch ohne LIMIT). Was fällt an Platz 2 und 3 auf (Grillhütte und Bierwagen je 36), was liefert `LIMIT 2`? Formuliere eine bessere Frage, die eindeutig beantwortbar ist.
 
 ### Arbeitsblatt-Blueprint AB 3.2 („Ermittlungsakte“)
 
@@ -882,7 +882,7 @@ Wiederholung von DS 5 (Aggregation, GROUP BY).
 | W-A3-01 | COUNT oder SUM? | Für „Anzahl Bons“ und „Anzahl verkaufter Crêpes“ die passende Aggregatfunktion angeben und begründen. | 2' | K25 | P4 |
 | W-A3-02 | Regel-Check | Prüfen, ob `SELECT Stand.Name, Bon.Zahlart, COUNT(*) … GROUP BY Stand.Name` die GROUP-BY-Regel erfüllt, und korrigieren. | 3' | K26 | P3 |
 | W-A3-03 | Fächer füllen | Ergebnis von `SELECT Zahlart, COUNT(*) FROM Bon GROUP BY Zahlart` für 8 gegebene Bons angeben. | 2' | K26, K29 | – |
-| W-A3-04 | Zwei Jonas Weber | Begründen, warum nach Helfer.HelferNr und nicht nur nach dem Namen gruppiert wird. | 3' | K26 | P3 |
+| W-A3-04 | Zwei Lotta Bödeker | Begründen, warum für den Umsatz je Person nach Helfer.HelferNr und nicht nur nach Vor- und Nachnamen gruppiert wird (sonst 68,00 € + 67,50 € = 135,50 € in einem Fach). | 3' | K26 | P3 |
 
 ### Typische Schwierigkeiten · Differenzierung · Vorbereitung
 **Typische Schwierigkeiten**
@@ -904,7 +904,7 @@ Wiederholung von DS 5 (Aggregation, GROUP BY).
 
 **Kontext-DB „Schulkiosk“** (eigene kleine DB):
 `Produkt(<u>ProduktNr</u>, Bezeichnung, Kategorie, Preis)` · `Helfer(<u>HelferNr</u>, Vorname, Nachname, Klasse)` · `Schicht(<u>SchichtNr</u>, ↑HelferNr, Datum, Pause)` (Verkaufsschichten, STORY 6) · `Verkauf(<u>VerkaufNr</u>, ↑SchichtNr, Zeitpunkt, Zahlart)` · `Posten(<u>↑VerkaufNr, ↑ProduktNr</u>, Anzahl)` – Gleichnamige, Kategorien mit Gleichstand, ein Produkt ohne Verkauf.
-Rahmensatz: „Die Kiosk-AG einer Gesamtschule bittet um eine Auswertung ihrer Verkaufsdaten.“ Timer 20 min, Abimodus `streng`.
+Rahmensatz: „Kassen lügen nicht, aber Abfragen manchmal – beweis mir, dass deine es nicht tun.“ Timer 20 min, Abimodus `streng`.
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Aufgabe (gesiezt, Transfer) |
 |---|---|---|---|---|---|---|---|
@@ -921,7 +921,7 @@ Rahmensatz: „Die Kiosk-AG einer Gesamtschule bittet um eine Auswertung ihrer V
 | A3-V-11 | Umsatz je Helfer | ★★★ | `sql` | K26, K24 | P3 | gA/eA | Entwerfen Sie eine Abfrage, die je Helfer (Nummer, Vor- und Nachname) den Gesamtumsatz ausgibt (Helfer, Schicht, Verkauf, Posten, Produkt), nur Helfer mit mehr als 50 € Umsatz. |
 | A3-V-12 | Vorgehen | ★★★ | `order` | K30 | P10 | gA/eA | Bringen Sie die Schritte zur Beantwortung einer gegebenen Frage (Tabellen, Verbund, Zeilenfilter, Gruppierung, Gruppenfilter, Sortierung) in eine sinnvolle Reihenfolge. |
 
-Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 3 × ★★ + 1 × ★★★ (Pflicht: mind. eine `sql`-Aufgabe mit GROUP BY und eine Analyse- oder Fehleraufgabe).
+Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 3 × ★★ + 1 × ★★★, max. 2 × `choice` (Pflicht: mind. eine `sql`-Aufgabe mit GROUP BY und eine Analyse- oder Fehleraufgabe).
 
 ---
 
