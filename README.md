@@ -67,6 +67,20 @@ Umgebungsvariablen (Vertrag §8):
 Nach dem ersten Deploy: Superadmin trägt die Plattform im Portal unter „Plattformen“ ein, bestätigt die
 Rücksprung-Adresse `https://datendetektei.frankjuchim.de/sso/ende` und schaltet Lehrkräfte frei.
 
+Vorlage für die Variablen: [`.env.example`](.env.example). Container: `Dockerfile` (Node 22, läuft als `node`,
+Port 80, `HEALTHCHECK` auf `/healthz`, `TZ=Europe/Berlin`), `captain-definition`; Persistent Directory `/app/data`.
+
+**Deploy nur nach grüner Prüfung:** Die CapRover-App wird **ohne** GitHub-Webhook betrieben. Jeder Push löst die
+GitHub Action „Prüfung“ aus (`.github/workflows/pruefung.yml`: Tests, App-Start, `vertrag_pruefen.js`,
+Kontrastprüfung, Docker-Build und Container-Start). Nur wenn sie auf `main` grün ist, übergibt „Deploy“
+(`.github/workflows/deploy.yml`) genau diesen Commit an CapRover. Dafür im GitHub-Repo unter *Settings → Secrets and
+variables → Actions* anlegen:
+
+| Secret | Inhalt |
+|---|---|
+| `CAPROVER_URL` | Adresse des CapRover-Dashboards, z. B. `https://captain.<domain>` |
+| `CAPROVER_APP_TOKEN` | App-Token der App `datendetektei` (CapRover → App → *Deployment* → *App Token*) |
+
 ## Lizenz
 
 Noch festzulegen (Vorschlag: Materialien CC BY-NC-SA 4.0). Abituraufgaben des Landes Niedersachsen sind nicht

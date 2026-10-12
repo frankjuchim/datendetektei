@@ -60,6 +60,8 @@ npm install
 npm test                 # node --test test/*.test.js
 npm run dev              # Port 3000, DATA_DIR=./data, Testschlüssel aus test/fixtures (kein echtes Portal nötig)
 npm run vertrag          # node scripts/vertrag_pruefen.js http://localhost:3000
+npm run kontrast         # WCAG-AA-Kontraste der Design-Tokens (scripts/kontrast_paare.json)
+npm run fonts            # woff2 aus @fontsource nach public/static/fonts kopieren (nur bei Font-Änderungen)
 npm run validate         # (ab Phase 2/3) Akten-JSON + SQL-Lösungen auf allen DB-Varianten
 npm run e2e              # (ab Phase 3) Playwright; Chromium unter /opt/pw-browsers bzw. PLAYWRIGHT_BROWSERS_PATH
 npm run pruefen          # alles: test, validate, Material-SQL, Materialien

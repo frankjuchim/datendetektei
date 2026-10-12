@@ -1,0 +1,49 @@
+# Prüfung bei jedem Push und Pull Request (Vertrag §9). Der Deploy (deploy.yml) startet nur nach grüner Prüfung auf main.
+name: Prüfung
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pruefung:
+    name: Tests, Vertragsprüfung, Kontraste, Docker-Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: App starten (Entwicklungskonfiguration mit Testschlüssel aus test/fixtures)
+        run: |
+          npm run dev > app.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/healthz && exit 0
+            sleep 1
+          done
+          cat app.log
+          exit 1
+      - name: Vertragsprüfung (scripts/vertrag_pruefen.js)
+        run: node scripts/vertrag_pruefen.js http://localhost:3000
+      - name: Kontrastprüfung (WCAG AA)
+        run: node scripts/kontrast_pruefen.js
+      - name: Docker-Image baut
+        run: docker build -t datendetektei .
+      - name: Docker-Container startet und antwortet
+        run: |
+          docker run -d --name dd -p 8080:80 \
+            -e PLATTFORM_URL=http://localhost:8080 \
+            -e PORTAL_URL=http://localhost:3100 \
+            -e PORTAL_PUBLIC_KEY="$(cat test/fixtures/dev_portal_public.pem)" \
+            -e AUTH_MODUS=portal \
+            -e SESSION_SECRET=ci-nur-zum-testen-0123456789abcdef \
+            -e ERLAUBE_HTTP=1 \
+            datendetektei
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/healthz && break
+            sleep 1
+          done
+          node scripts/vertrag_pruefen.js http://localhost:8080 || { docker logs dd; exit 1; }
