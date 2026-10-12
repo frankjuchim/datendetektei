@@ -953,7 +953,7 @@ datendetektei/
     screenshots/
   src/
     kern/                    jwt.js (unverändert), sso.js, sitzung.js, sicherheit.js, verbund.js, manifest.js, punkte.js
-    sql/                     parser.js, regeln.js, sandbox.js, sandbox-worker.js, pruefer.js, diagnose.js, fehlertexte.js
+    sql/                     parser.js, regeln.js, sandbox.js, sandbox-prozess.js, pruefer.js, diagnose.js, fehlertexte.js
     er/                      graph.js, abgleich.js, schema-pruefer.js, zerlegung.js
     content/                 pruefer.js (je Interaktion), validator.js, generatoren.js, format.js
     services/                inhalte, lernen, verhoer, warmup, training, live, auswertung, material, gast, stand
