@@ -117,7 +117,7 @@ test('/lehrkraft als Lehrkraft und als Superadmin liefert die Seite', async () =
     const cookie = await anmelden(t, nutzer);
     const res = await request(t.app).get('/lehrkraft').set('Cookie', cookie);
     assert.equal(res.status, 200, nutzer.rolle);
-    assert.match(res.text, /Lehrkraft-Bereich folgt in Phase 6/);
+    assert.match(res.text, /Auswertung folgt in Phase 6/);
     assert.match(res.text, /\/static\/js\/lehrkraft\.js\?v=/);
   }
 });

@@ -50,30 +50,27 @@
     <div class="seiten-kopf">
       <span class="etikett">Lehrkraft-Bereich</span>
       <h1>Guten Tag, <span id="lk-name">…</span>.</h1>
-      <p>Hier sehen Sie Ihre Kurse aus dem Portal InfoLabs. Kurse, Freischaltungen und Konten verwalten Sie im Portal.</p>
+      <p>Hier legen Sie für Ihre Kurse fest, welche Akten freigeschaltet sind, auf welchem Niveau gearbeitet wird und
+        wann die Verhöre offen sind. Kurse, Freischaltungen und Konten verwalten Sie im Portal InfoLabs.</p>
     </div>
-    <div class="zwei-spalten">
-      <section class="aktendeckel" aria-labelledby="kurse-titel">
-        <span class="reiter">Ihre Kurse</span>
-        <div class="aktendeckel-innen">
-          <h2 id="kurse-titel">Kurse</h2>
-          <p id="kurse-laden" class="leise">Kurse werden geladen …</p>
-          <ul class="kurs-liste" id="kurs-liste" hidden></ul>
-          <p id="kurse-leer" class="leise" hidden>Ihnen ist noch kein Kurs zugeordnet. Kurse legen Sie im Portal an und
-            schalten dort die Datendetektei frei.</p>
-        </div>
-      </section>
-      <section class="karte abschnitt" aria-labelledby="folgt-titel">
-        <h2 id="folgt-titel">Lehrkraft-Bereich folgt in Phase 6</h2>
-        <div class="notiz">
-          <svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>
-          <p class="notiz-titel">Was hier entsteht</p>
-          <p>Lernstand je Ermittlung, Fallen-Profil des Kurses, Akten und Verhöre freischalten, Niveau eA/gA,
-            Beamer-Board und Materialien.</p>
-        </div>
-        <p><a class="link-ziel" href="/themen#niveaus">Niveau-Übersicht eA/gA ansehen</a></p>
-      </section>
-    </div>
+    <section class="lk-kurse" aria-labelledby="kurse-titel">
+      <h2 id="kurse-titel">Ihre Kurse</h2>
+      <p id="kurse-laden" class="leise" aria-live="polite">Kurse werden geladen …</p>
+      <p id="kurse-fehler" class="leise" role="alert" hidden>Die Kurse konnten nicht geladen werden. Bitte laden Sie die
+        Seite neu.</p>
+      <p id="kurse-leer" class="leise" hidden>Ihnen ist noch kein Kurs zugeordnet. Kurse legen Sie im Portal an und
+        schalten dort die Datendetektei frei.</p>
+      <div class="kurs-karten" id="kurs-karten" hidden></div>
+    </section>
+    <section class="karte abschnitt" aria-labelledby="folgt-titel">
+      <h2 id="folgt-titel">Auswertung folgt in Phase 6</h2>
+      <div class="notiz">
+        <svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>
+        <p class="notiz-titel">Was hier noch entsteht</p>
+        <p>Lernstand je Ermittlung, Fallen-Profil des Kurses, Scoreboard, Beamer-Board und Materialien.</p>
+      </div>
+      <p><a class="link-ziel" href="/themen#niveaus">Niveau-Übersicht eA/gA ansehen</a></p>
+    </section>
   </main>
   <footer class="fuss">
     <nav aria-label="Weitere Seiten">
