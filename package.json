@@ -13,7 +13,9 @@
     "test": "node --test test/*.test.js",
     "vertrag": "node scripts/vertrag_pruefen.js http://localhost:3000",
     "fonts": "node scripts/fonts_kopieren.js",
-    "kontrast": "node scripts/kontrast_pruefen.js"
+    "kontrast": "node scripts/kontrast_pruefen.js",
+    "db": "node scripts/db_bauen.js",
+    "db:pruefen": "node scripts/db_bauen.js --pruefen"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
