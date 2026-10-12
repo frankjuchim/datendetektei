@@ -7,7 +7,8 @@
 // Je DB: schema.sql → (nur StadtRad) uebernahme.sql → pflicht.sql → Generator scripts/db/<name>.js → Abnahme
 // (foreign_key_check, integrity_check, abnahme() des Moduls, alle ```sql-Beispielabfragen der LIESMICH außer
 // `-- Fehlabfrage`) → basis.sql. Ohne --pruefen wird basis.sql geschrieben; mit --pruefen wird neu gebaut und
-// byteweise mit der eingecheckten Datei verglichen (Exit 1 bei Abweichung).
+// byteweise mit der eingecheckten Datei verglichen (Exit 1 bei Abweichung). In beiden Fällen werden danach alle
+// Randfall-Varianten varianten/<typ>.sql gebaut (Delta auf einer Kopie der Haupt-DB, FK- und Integritätsprüfung).
 //
 // Generator-Module: scripts/db/<name>.js exportiert
 //   generiere(db, zufall, namen, kontext)   – fügt die Generator-Daten ein (nicht bei TuS/Eisdiele)
@@ -192,6 +193,112 @@ function basisText(name, db, { quellen = SEED_VERZEICHNIS } = {}) {
   return schreibeBasis(name, db, { schema, kuratiert: KURATIERT.includes(name) });
 }
 
+// ---------------------------------------------------------------- Randfall-Varianten (LIESMICH §5, Schritt 6)
+
+/** Variantentypen in fester Reihenfolge (Spec 7.4); Datei je Typ: <quellen>/<name>/varianten/<typ>.sql. */
+const VARIANTEN_TYPEN = ['null', 'gleichnamig', 'grenze', 'gleichstand', 'leer'];
+
+/**
+ * Vorhandene Varianten einer DB in fester Reihenfolge. Ohne varianten/-Ordner: keine (z. B. Eisdiele, „entfällt“).
+ * Eine .sql-Datei mit unbekanntem Typ ist ein Fehler (Tippfehler sollen nicht still wegfallen).
+ */
+function varianten(name, { quellen = SEED_VERZEICHNIS } = {}) {
+  const ordner = path.join(quellen, name, 'varianten');
+  if (!fs.existsSync(ordner)) return [];
+  const typen = fs.readdirSync(ordner).filter((d) => d.endsWith('.sql')).map((d) => d.slice(0, -4));
+  const unbekannt = typen.filter((t) => !VARIANTEN_TYPEN.includes(t));
+  if (unbekannt.length > 0) {
+    throw new Error(`${name}: unbekannte Variante(n) ${unbekannt.map((t) => `varianten/${t}.sql`).join(', ')} ` +
+      `(erlaubt: ${VARIANTEN_TYPEN.join(', ')})`);
+  }
+  return VARIANTEN_TYPEN.filter((t) => typen.includes(t));
+}
+
+/** Haupt-DB aus der eingecheckten basis.sql (bzw. aus `basis`, dem Text einer gerade gebauten basis.sql). */
+function ladeHaupt(name, { quellen = SEED_VERZEICHNIS, basis } = {}) {
+  let text = basis;
+  if (text === undefined) {
+    const datei = path.join(quellen, name, 'basis.sql');
+    if (!fs.existsSync(datei)) throw new Error(`${name}: basis.sql fehlt (erst „npm run db“ ausführen)`);
+    text = fs.readFileSync(datei, 'utf8');
+  }
+  const db = new Database(':memory:');
+  db.exec(text);
+  return db;
+}
+
+/**
+ * Baut eine Variante: Kopie der Haupt-DB (`haupt` = serialisierter Buffer, sonst aus basis.sql bzw. `basis`) →
+ * Delta mit PRAGMA foreign_keys = ON → foreign_key_check und integrity_check müssen leer sein, sonst Fehler.
+ * → Database (im Speicher, beschreibbar)
+ */
+function baueVariante(name, typ, { quellen = SEED_VERZEICHNIS, haupt, basis } = {}) {
+  if (!VARIANTEN_TYPEN.includes(typ)) throw new Error(`${name}: unbekannte Variante ${typ}`);
+  const datei = path.join(quellen, name, 'varianten', `${typ}.sql`);
+  if (!fs.existsSync(datei)) throw new Error(`${name}: Variante ${typ} gibt es nicht (varianten/${typ}.sql fehlt)`);
+  const delta = fs.readFileSync(datei, 'utf8');
+  const db = haupt ? new Database(haupt) : ladeHaupt(name, { quellen, basis });
+  try {
+    db.pragma('foreign_keys = ON');
+    db.exec(delta);
+    const meldungen = integritaet(db);
+    if (meldungen.length > 0) throw new Error(meldungen.join('; '));
+  } catch (e) {
+    db.close();
+    throw new Error(`${name}/${typ}: ${e.message}`);
+  }
+  return db;
+}
+
+/**
+ * Serialisierte Übungsdatenbanken für die Laufzeit (src/sql/datenbanken.js): Haupt-DB aus basis.sql, je Variante
+ * basis.sql + Delta. Fehlt eine basis.sql oder scheitert eine Variante, wird ein Fehler geworfen.
+ * → { <name>: { haupt: Buffer, varianten: { <typ>: Buffer } } }
+ */
+function ladeAlle(seedDir = SEED_VERZEICHNIS, { namen = REIHENFOLGE } = {}) {
+  const ergebnis = {};
+  for (const name of namen) {
+    const hauptDb = ladeHaupt(name, { quellen: seedDir });
+    const haupt = hauptDb.serialize();
+    hauptDb.close();
+    const bufferJeTyp = {};
+    for (const typ of varianten(name, { quellen: seedDir })) {
+      const v = baueVariante(name, typ, { quellen: seedDir, haupt });
+      bufferJeTyp[typ] = v.serialize();
+      v.close();
+    }
+    ergebnis[name] = { haupt, varianten: bufferJeTyp };
+  }
+  return ergebnis;
+}
+
+/** Baut alle Varianten auf `basis` (Text) und protokolliert je Variante; → true, wenn alle in Ordnung sind. */
+function pruefeVarianten(name, basis, { quellen, log }) {
+  let ok = true;
+  let typen;
+  try {
+    typen = varianten(name, { quellen });
+  } catch (e) {
+    log(`${name}: FEHLER – ${e.message}`);
+    return false;
+  }
+  if (typen.length === 0) return true;
+  const hauptDb = ladeHaupt(name, { basis });
+  const haupt = hauptDb.serialize();
+  hauptDb.close();
+  for (const typ of typen) {
+    try {
+      const v = baueVariante(name, typ, { quellen, haupt });
+      v.close();
+      log(`  ${name}/${typ}: ok`);
+    } catch (e) {
+      ok = false;
+      log(`  ${name}/${typ}: FEHLER – ${e.message}`);
+    }
+  }
+  return ok;
+}
+
 /** Kurze Diff-Zusammenfassung zweier Texte (zeilenweise). */
 function diffZusammenfassung(eingecheckt, neu) {
   const a = eingecheckt.split('\n');
@@ -261,6 +368,7 @@ function lauf({ quellen = SEED_VERZEICHNIS, reihenfolge = REIHENFOLGE, nur, prue
       fs.writeFileSync(datei, text);
       log(`${name}: basis.sql geschrieben (${info})`);
     }
+    if (!pruefeVarianten(name, text, { quellen, log })) code = 1;
   }
   for (const { db } of ergebnisse) db.close();
   return code;
@@ -294,8 +402,13 @@ module.exports = {
   KURATIERT,
   ABHAENGIGKEITEN,
   extrahiereSqlBloecke,
+  VARIANTEN_TYPEN,
   ladeModul,
   baueDb,
+  varianten,
+  ladeHaupt,
+  baueVariante,
+  ladeAlle,
   baueAlle,
   lauf,
   basisText
