@@ -64,9 +64,18 @@ function pruefeHerkunft(konfig) {
  */
 function rateLimit({ fensterMs, max, schluessel = () => 'alle', jetzt = Date.now }) {
   const zaehler = new Map();
-  return function begrenzer(req, res, next) {
+  // Abgelaufene Einträge (z. B. IPs) nach dem Zeitfenster vergessen – bei Zugriffen höchstens einmal je Fenster und
+  // zusätzlich per Timer (unref), damit sie auch ohne weitere Anfragen nicht im RAM bleiben (Sicherheits-Review Phase 8).
+  let naechsteBereinigung = 0;
+  const bereinige = (t) => {
+    for (const [k, z] of zaehler) if (z.ende <= t) zaehler.delete(k);
+    naechsteBereinigung = t + fensterMs;
+  };
+  const timer = setInterval(() => bereinige(jetzt()), Math.max(1000, fensterMs));
+  if (typeof timer.unref === 'function') timer.unref();
+  function begrenzer(req, res, next) {
     const t = jetzt();
-    if (zaehler.size > 10000) for (const [k, z] of zaehler) if (z.ende <= t) zaehler.delete(k);
+    if (t >= naechsteBereinigung || zaehler.size > 10000) bereinige(t);
     const k = String(schluessel(req));
     let z = zaehler.get(k);
     if (!z || z.ende <= t) {
@@ -78,7 +87,10 @@ function rateLimit({ fensterMs, max, schluessel = () => 'alle', jetzt = Date.now
     res.set('Retry-After', String(Math.max(1, Math.ceil((z.ende - t) / 1000))));
     if ((req.baseUrl + req.path).startsWith('/api/')) return res.status(429).json({ error: 'Zu viele Anfragen.' });
     return res.status(429).type('text/plain; charset=utf-8').send('Zu viele Anfragen – bitte kurz warten.');
-  };
+  }
+  /** Anzahl gespeicherter Schlüssel (für Tests). */
+  begrenzer.anzahlSchluessel = () => zaehler.size;
+  return begrenzer;
 }
 
 module.exports = { sicherheitsHeader, pruefeHerkunft, rateLimit, CSP_DIREKTIVEN };

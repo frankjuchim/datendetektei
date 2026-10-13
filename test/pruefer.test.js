@@ -264,3 +264,29 @@ test('Endlosabfrage: Zeitlimit als Diagnose, danach prüft der Prüfer weiter', 
   const danach = await pruefer.pruefeSql({ sql: aufgabe.loesung.sql, aufgabe });
   assert.equal(danach.ok, true);
 });
+
+test('Sicherheits-Review Phase 8: Schülerabfrage läuft auf den Varianten nur, wenn sie auf der Haupt-DB stimmt', async () => {
+  const schueler = [];
+  const zaehlend = {
+    fuehreAus(auftrag) {
+      if (auftrag.sql !== aufgabe.loesung.sql) schueler.push(auftrag.variante || 'haupt');
+      return sandbox.fuehreAus(auftrag);
+    }
+  };
+  const aufgabe = FIXTURE.aufgaben.find((a) => a.aufgabe.id === 'fb-offen-hafen').aufgabe;
+  assert.ok(aufgabe.varianten.length > 0);
+  const p = erzeugePruefer({ sandbox: zaehlend, schemata });
+  // falsch auf der Haupt-DB → nur ein Sandbox-Auftrag (eine langsame oder falsche Abfrage vervielfacht die Last nicht)
+  const falsch = await p.pruefeSql({ sql: 'SELECT FundNr, Bezeichnung FROM Fundsache', aufgabe });
+  assert.equal(falsch.ok, false);
+  assert.deepEqual(schueler, ['haupt']);
+  // SQL-Fehler bzw. Zeitlimit auf der Haupt-DB → ebenfalls nur ein Auftrag
+  schueler.length = 0;
+  await p.pruefeSql({ sql: 'SELECT Gibtsnicht FROM Fundsache', aufgabe });
+  assert.deepEqual(schueler, ['haupt']);
+  // richtig → Haupt-DB und alle Varianten
+  schueler.length = 0;
+  const richtig = await p.pruefeSql({ sql: aufgabe.loesung.sql + ' ', aufgabe });
+  assert.equal(richtig.ok, true);
+  assert.deepEqual(schueler.sort(), ['haupt', ...aufgabe.varianten].sort());
+});

@@ -31,7 +31,7 @@
         },
         {
           "t": "text",
-          "md": "**So arbeitet die Sandbox:** Bei jedem Ausführen bekommst du eine frische Datenbank (leer oder mit dem Startschema der Aufgabe), dann läuft dein ganzes Skript von oben nach unten. Mehrere Anweisungen trennst du mit `;`. Nach dem Ausführen siehst du das Protokoll, das Ergebnis des letzten `SELECT` und das Schema. Dein Skript merkt sich nur dieses Gerät – kaputtmachen ist ausdrücklich erlaubt."
+          "md": "**So arbeitet die Sandbox:** Bei jedem Ausführen bekommst du eine frische Datenbank (leer oder mit dem Startschema der Aufgabe), dann läuft dein ganzes Skript von oben nach unten. Mehrere Anweisungen trennst du mit `;`. Nach dem Ausführen siehst du das Protokoll, das Ergebnis des letzten `SELECT` und das Schema. Dein Skript wird nur auf diesem Gerät gespeichert – kaputtmachen ist ausdrücklich erlaubt."
         }
       ],
       "aufgaben": [

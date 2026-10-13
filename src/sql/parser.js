@@ -269,6 +269,14 @@
   }
 
   /** parse(sql) → { ast, fehler: [{ code, text, zeile, spalte }] }; bei Fehlern ist ast null. */
+  var MAX_TIEFE = 40;
+  function zuTief(pos) {
+    return {
+      ast: null,
+      fehler: [{ code: 'ZU_TIEF', text: 'Die Abfrage ist zu tief verschachtelt (zu viele Klammern ineinander). Vereinfache sie.', zeile: pos.zeile, spalte: pos.spalte }]
+    };
+  }
+
   function parse(sql) {
     sql = String(sql == null ? '' : sql);
     var zerlegt = zerlegeIntern(sql, false);
@@ -276,6 +284,15 @@
     var tokens = zerlegt.tokens;
     if (!tokens.length) {
       return { ast: null, fehler: [{ code: 'LEER', text: 'Die Abfrage ist leer. Schreib eine Abfrage, die mit SELECT beginnt.', zeile: 1, spalte: 1 }] };
+    }
+    // Sicherheits-Review Phase 8: tiefe Klammerung würde den rekursiven Abstieg (und Regeln/Visualisierung) bis zum
+    // Stapelüberlauf treiben – vorher mit verständlicher Meldung ablehnen.
+    var tiefe = 0;
+    for (var ti = 0; ti < tokens.length; ti++) {
+      if (tokens[ti].art !== 'operator') continue;
+      if (tokens[ti].wert === '(') tiefe++;
+      else if (tokens[ti].wert === ')') tiefe = Math.max(0, tiefe - 1);
+      if (tiefe > MAX_TIEFE) return zuTief(tokens[ti].start);
     }
     var p = 0;
     var endePos = tokens[tokens.length - 1].ende;
@@ -866,6 +883,7 @@
       if (e instanceof ParseFehler) {
         return { ast: null, fehler: [{ code: e.code, text: e.text, zeile: e.zeile, spalte: e.spalte }] };
       }
+      if (e instanceof RangeError) return zuTief({ zeile: 1, spalte: 1 });
       throw e;
     }
   }

@@ -13,7 +13,7 @@
       ],
       "ab": "AB 5.1 Baupläne lesen",
       "niveau": "eA",
-      "briefing": "Die Pinnwand ist voll, und Juri hat die rote Wolle aufgebraucht – die Detektei braucht eine eigene Fall-Datenbank. Bevor wir bauen, lernst du Baupläne lesen: ER-Diagramme in Chen-Notation mit Entitätstypen, Beziehungstypen und Kardinalitäten. Achte auf die unterstrichenen Schlüsselattribute und begründe jede Kardinalität – auch mit echten Tabellendaten.",
+      "briefing": "Die Pinnwand ist voll, und Juri hat die rote Wolle aufgebraucht – die Detektei braucht eine eigene Fall-Datenbank. Bevor wir bauen, lernst du, Baupläne zu lesen: ER-Diagramme in Chen-Notation mit Entitätstypen, Beziehungstypen und Kardinalitäten. Achte auf die unterstrichenen Schlüsselattribute und begründe jede Kardinalität – auch mit echten Tabellendaten.",
       "intro": [
         {
           "t": "er",
@@ -2057,7 +2057,7 @@
       "erklaerung": [
         {
           "t": "text",
-          "md": "Bei festen Dienstwagen gilt **1:1**: Jede ErmittlerNr kommt in der Liste höchstens einmal vor, jedes Kennzeichen genau einmal. Werden Wagen im Schichtbetrieb geteilt, wird daraus **n:m** mit der Schicht als Beziehungsattribut. Dieselben Daten können zu beiden Modellen passen – entscheidend ist, was die Detektei organisatorisch festlegt (K40)."
+          "md": "Bei festen Dienstwagen gilt **1:1**: Jede ErmittlerNr kommt in der Liste höchstens einmal vor, jedes Kennzeichen genau einmal. Werden Wagen im Schichtbetrieb geteilt, wird daraus **n:m** mit der Schicht als Beziehungsattribut. Dieselben Daten können zu beiden Modellen passen – entscheidend ist, was die Detektei organisatorisch festlegt."
         }
       ]
     },
@@ -5910,7 +5910,7 @@
         },
         {
           "t": "text",
-          "md": "Ergebnis: 7 Zeilen (z. B. Lotta Wehrhahn → Imke Tiemann → Maren Kolthoff). Wer keinen Mentor hat (MentorNr NULL) oder wessen Mentor keinen Mentor hat, findet im impliziten Verbund keinen Partner und fällt heraus (P5). Alle Ermittler auch ohne Mentor ginge nur mit LEFT JOIN – nicht im Abitur."
+          "md": "Ergebnis: 7 Zeilen (z. B. Lotta Wehrhahn → Imke Tiemann → Maren Kolthoff). Wer keinen Mentor hat (MentorNr NULL) oder wessen Mentor keinen Mentor hat, findet im impliziten Verbund keinen Partner und fällt heraus (P5). Alle Ermittler – auch die ohne Mentor – auszugeben, ginge nur mit LEFT JOIN (nicht im Abitur)."
         }
       ]
     },
@@ -6045,7 +6045,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen** Sie den Elementen des ER-Diagramms die Fachbegriffe nach den Ergänzenden Hinweisen zu. [2 BE]"
+          "md": "**Ordnen Sie** den Elementen des ER-Diagramms die Fachbegriffe nach den Ergänzenden Hinweisen **zu**. [2 BE]"
         }
       ],
       "interaktion": {
@@ -6280,7 +6280,7 @@
       "erklaerung": [
         {
           "t": "text",
-          "md": "n:m in beiden Richtungen; Datum und Erfolg hängen am Beziehungstyp. Option c beschreibt nur die Zeichen, nicht den Sachzusammenhang (P10)."
+          "md": "n:m in beiden Richtungen; Datum und Erfolg hängen am Beziehungstyp. c) beschreibt nur die Zeichen, nicht den Sachzusammenhang (P10)."
         }
       ]
     },
@@ -6382,7 +6382,7 @@
         },
         {
           "t": "text",
-          "md": "**Bestimmen** Sie die Kardinalität des Beziehungstyps *hat* zwischen Wand und Route. [1 BE]"
+          "md": "**Bestimmen Sie** die Kardinalität des Beziehungstyps *hat* zwischen Wand und Route. [1 BE]"
         }
       ],
       "interaktion": {
@@ -6501,7 +6501,7 @@
         },
         {
           "t": "text",
-          "md": "**Bestimmen** Sie die Kardinalität von *klettert* zwischen Mitglied und Route anhand des Ausschnitts. [2 BE]"
+          "md": "**Bestimmen Sie** die Kardinalität von *klettert* zwischen Mitglied und Route anhand des Ausschnitts. [2 BE]"
         }
       ],
       "interaktion": {
@@ -6617,7 +6617,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen** Sie den Beziehungsarten die Umsetzungsregel zu. [2 BE]"
+          "md": "**Ordnen Sie** den Beziehungsarten die Umsetzungsregel **zu**. [2 BE]"
         }
       ],
       "interaktion": {
@@ -6694,7 +6694,7 @@
         },
         {
           "t": "text",
-          "md": "**Erweitern** Sie das ER-Diagramm so, dass erfasst werden kann, welche Mitglieder welche Routen an welchem Datum mit welchem Erfolg geklettert sind. Ergänzen Sie Kardinalitäten und Attribute an der richtigen Stelle. [4 BE]"
+          "md": "**Erweitern Sie** das ER-Diagramm so, dass erfasst werden kann, welche Mitglieder welche Routen an welchem Datum mit welchem Erfolg geklettert sind. Ergänzen Sie Kardinalitäten und Attribute an der richtigen Stelle. [4 BE]"
         }
       ],
       "interaktion": {
@@ -6898,7 +6898,7 @@
         },
         {
           "t": "text",
-          "md": "**Ergänzen** Sie den Beziehungstyp „Trainer bildet Trainer aus“ mit Kardinalitäten. [3 BE]"
+          "md": "**Ergänzen Sie** den Beziehungstyp „Trainer bildet Trainer aus“ mit Kardinalitäten. [3 BE]"
         }
       ],
       "interaktion": {
@@ -7032,7 +7032,7 @@
         },
         {
           "t": "text",
-          "md": "**Erweitern** Sie das ER-Modell um die nötigen Beziehungstypen mit Kardinalitäten. [4 BE]"
+          "md": "**Erweitern Sie** das ER-Modell um die nötigen Beziehungstypen mit Kardinalitäten. [4 BE]"
         }
       ],
       "interaktion": {
@@ -7305,7 +7305,7 @@
         },
         {
           "t": "text",
-          "md": "**Beurteilen** Sie, welche der folgenden Anforderungen sich mit den Kardinalitäten 1, n und m im ER-Diagramm **nicht** darstellen lassen. [3 BE]"
+          "md": "**Beurteilen Sie**, welche der folgenden Anforderungen sich mit den Kardinalitäten 1, n und m im ER-Diagramm **nicht** darstellen lassen. [3 BE]"
         }
       ],
       "interaktion": {
@@ -7347,7 +7347,7 @@
       "erklaerung": [
         {
           "t": "text",
-          "md": "Nicht darstellbar: konkrete Ober-/Untergrenzen (a, c) und inhaltliche Bedingungen (e) – sie gehören als Anmerkung zum Modell. b ist die 1 bei *hat*, d die n:m-Beziehung *besucht*."
+          "md": "Nicht darstellbar: konkrete Ober-/Untergrenzen (a, c) und inhaltliche Bedingungen (e) – sie gehören als Anmerkung zum Modell. b) ist die 1 bei *hat*, d) die n:m-Beziehung *besucht*."
         }
       ]
     },
@@ -7744,7 +7744,7 @@
       "erklaerung": [
         {
           "t": "text",
-          "md": "Bei n:m passt auf keiner Seite ein einzelner Wert. b ist falsch: Attribute einer 1:n-Beziehung wandern auf die n-Seite. c und d sind sachlich falsch (P10)."
+          "md": "Bei n:m passt auf keiner Seite ein einzelner Wert. b) ist falsch: Bei 1:n wandern die Beziehungsattribute auf die n-Seite, eine eigene Relation ist nicht nötig. c) und d) sind sachlich falsch (P10)."
         }
       ]
     },
@@ -7767,7 +7767,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwickeln** Sie ein vollständiges ER-Modell (Chen-Notation) mit Schlüsselattributen, Kardinalitäten und Attributen. [6 BE]"
+          "md": "**Entwickeln Sie** ein vollständiges ER-Modell (Chen-Notation) mit Schlüsselattributen, Kardinalitäten und Attributen. [6 BE]"
         }
       ],
       "interaktion": {
@@ -8053,7 +8053,7 @@
         },
         {
           "t": "text",
-          "md": "**Rekonstruieren** Sie aus dem Relationenschema das ER-Diagramm mit Schlüsselattributen, Kardinalitäten und Attributen. [6 BE]"
+          "md": "**Rekonstruieren Sie** aus dem Relationenschema das ER-Diagramm mit Schlüsselattributen, Kardinalitäten und Attributen. [6 BE]"
         }
       ],
       "interaktion": {

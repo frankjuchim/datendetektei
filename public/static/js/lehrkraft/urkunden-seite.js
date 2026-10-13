@@ -53,7 +53,8 @@ function urkunde(s, { kurs, niveau, datum, lehrkraft, beweisMax, jahr, kursNr })
     el('h2', 'urkunde-titel', 'Detektei-Lizenz'),
     el('p', 'urkunde-nr', `Nr. ${nummer}`),
     el('p', 'urkunde-text', 'Hiermit wird bestätigt, dass'),
-    el('p', 'urkunde-name', s.name),
+    // lange Namen (ab 17 Zeichen) kleiner setzen, damit sie in eine Zeile passen und die Seite nicht überläuft
+    el('p', 'urkunde-name' + (s.name.length > 16 ? ' lang' : ''), s.name),
     h('p', 'urkunde-text', 'im Kurs ', el('strong', null, kurs), ' die Ermittlerprüfung der Datendetektei Weserstedt abgelegt hat.'),
     el(
       'p',
