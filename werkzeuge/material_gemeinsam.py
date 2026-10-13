@@ -166,7 +166,9 @@ def _titel(x):
 
 
 def _eintrag(g, x, datei, fassung, zusatz=""):
-    e = {"datei": datei, "titel": _titel(x) + zusatz, "akte": g.get("akte"), "gruppe": g["gruppe"], "art": x["art"],
+    # Handout einer Präsentation: Whitelist-Art „handout“ (Server/Themenseite: „Präsentations-Handout“)
+    art = "handout" if fassung == "handout" else x["art"]
+    e = {"datei": datei, "titel": _titel(x) + zusatz, "akte": g.get("akte"), "gruppe": g["gruppe"], "art": art,
          "fassung": fassung}
     for f in ("niveau", "ermittlung", "ds"):
         if x.get(f) is not None:

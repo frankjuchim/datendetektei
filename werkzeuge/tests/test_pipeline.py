@@ -73,6 +73,7 @@ class ZuordnungTest(unittest.TestCase):
                                  "gruppe": "A1", "art": "ab", "fassung": "schueler", "niveau": "gA/eA", "ermittlung": "A1-E1",
                                  "ds": [1]})
         self.assertEqual(ab[1]["fassung"], "handout")
+        self.assertEqual(ab[1]["art"], "handout")
         lsg = v["Loesungen_Portal"]["dateien"]
         self.assertEqual(lsg[0]["fassung"], "loesung")
         self.assertEqual(v["Lehrkraft_PDF"]["dateien"][0]["fassung"], "lehrkraft")
