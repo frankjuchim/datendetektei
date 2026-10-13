@@ -1,7 +1,7 @@
 // Renderer der Aufgabenblöcke (docs/AUFGABENFORMAT.md §5, DESIGN.md §4): text/hinweis (Mini-Markdown), code, sql (mit
 // Zeilennummern und Hervorhebung über window.DD_SQL_PARSER.hebeHervor), tabelle, dbtabelle (PK unterstrichen, ↑FK,
 // NULL grau, Markierungen), schema (Kurzschreibweise), datenbank (Kachel), zeitlupe/spurenbrett/sortierfaecher
-// (eingebettete Verstehenshilfen, Phase 4). Dazu kleine Bausteine: Sterne, Ring,
+// (eingebettete Verstehenshilfen, Phase 4), er/mengen (Modellierung, Phase 5: bauplan/block.js). Dazu kleine Bausteine: Sterne, Ring,
 // Stempel, Fallen-Plakette. Alle Texte als Textknoten – nie HTML aus Zeichenketten.
 //
 // ctx (optional) verbindet die Blöcke mit den Interaktionen:
@@ -495,6 +495,15 @@ const SKRIPTE = [
 const TEXT_WB_LAEDT = 'Wird vorbereitet …';
 const TEXT_WB_LADEFEHLER = 'Die Datenbank konnte nicht geladen werden. Lade die Seite neu.';
 const ausfuehrerJeDb = new Map(); // db → Promise<{ fuehreAus, schema } | { fehler }>
+
+/* ---------- Modellierung (Phase 5): Blöcke er und mengen aus bauplan/block.js (SVG nach DESIGN §4.14) ---------- */
+// ctx.erAuswahl(blockIndex) → { klick(id), registriere(api) } für die Interaktion er im Lesen-Modus (oder null).
+const BAUPLAN = await import('../bauplan/block.js' + V);
+
+function blockEr(b, ctx, index) {
+  const wahl = ctx && typeof ctx.erAuswahl === 'function' ? ctx.erAuswahl(index) : null;
+  return BAUPLAN.erBlock(b, wahl);
+}
 let skripteGeladen = null;
 
 /** Klassische Skripte (Parser, Fehlertexte, Rechenschicht) nachladen, falls die Seite sie nicht schon hat. */
@@ -820,6 +829,10 @@ export function block(b, ctx, index) {
       return blockSpurenbrett(b);
     case 'sortierfaecher':
       return blockSortierfaecher(b);
+    case 'er':
+      return blockEr(b, ctx, index);
+    case 'mengen':
+      return BAUPLAN.mengenBlock(b);
     default:
       return el('p', 'leise', 'Dieser Baustein kann hier noch nicht angezeigt werden.');
   }

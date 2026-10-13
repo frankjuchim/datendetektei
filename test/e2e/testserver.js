@@ -75,7 +75,7 @@ async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mi
   const t = testApp(konfigTest, (db) => {
     if (!mitInhalten) return appOptionen;
     const inhalte = erzeugeInhalte(db);
-    inhalte.laden(aktenDateien ? { dateien: aktenDateien } : {});
+    inhalte.laden(aktenDateien && aktenDateien.length ? { dateien: aktenDateien } : {});
     return { ...appOptionen, inhalte };
   });
   const { app } = t;

@@ -1,0 +1,73 @@
+/* Schema-Werkbank (DESIGN.md §4.5, §4.13, §5.8, §6, §7). Nur Tokens – keine Farbliterale. */
+
+.werkbank { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.wk-hinweis { font-size: var(--t-s); color: var(--tinte-2); }
+.wk-brett { position: relative; min-width: 0; }
+.wk-karten { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--a-6) var(--a-5); align-items: start; }
+.wk-faeden { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.wk-faden { fill: none; stroke: var(--siegelrot); stroke-width: 2; stroke-linecap: round; opacity: .85; }
+.wk-nadel { fill: var(--siegelrot); }
+
+.wk-karte {
+  position: relative; display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; padding: var(--a-4);
+  background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius-klein); box-shadow: var(--schatten-1);
+}
+.wk-karte.ok { border-color: var(--gruen); box-shadow: inset 0 0 0 1px var(--gruen), var(--schatten-1); }
+.wk-karte.falsch { border-color: var(--siegelrot); box-shadow: inset 0 0 0 1px var(--siegelrot), var(--schatten-1); }
+.wk-karte-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2); padding-bottom: var(--a-2); border-bottom: 2px solid var(--siegelrot); }
+.wk-karte-kopf .etikett { flex: 0 0 100%; }
+.wk-karte-name { font-family: var(--schrift-mono); font-size: var(--t-m); font-weight: 600; }
+.wk-feld {
+  min-height: 44px; padding: var(--a-2) var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); font-family: var(--schrift-mono); font-size: var(--t-s); min-width: 0; max-width: 100%;
+}
+.wk-feld:disabled { opacity: .6; cursor: not-allowed; }
+.wk-name-feld { flex: 1 1 160px; font-weight: 600; }
+.wk-attr-feld { flex: 1 1 120px; }
+.wk-attr-feld.pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.wk-attribute { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.wk-attr { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-1) var(--a-2); min-width: 0; padding: 2px 0; border-bottom: 1px dashed var(--rand); }
+.wk-attr:last-child { border-bottom: 0; }
+.wk-attr-name {
+  flex: 1 1 120px; min-height: 44px; padding: 0 var(--a-2); border: 1px solid transparent; border-radius: var(--radius);
+  background: none; color: var(--tinte); font-family: var(--schrift-mono); font-size: var(--t-s); text-align: left; cursor: pointer;
+}
+.wk-attr-name:hover { background: var(--flaeche); }
+.wk-attr-name[aria-pressed="true"] { font-weight: 600; }
+.wk-attr-name .pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.wk-schalter {
+  min-height: 44px; min-width: 44px; padding: 0 var(--a-2); border: 1px solid var(--rand-stark); border-radius: var(--radius-pille);
+  background: var(--karte); color: var(--tinte-2); font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; cursor: pointer;
+}
+.wk-schalter:hover { background: var(--flaeche); }
+.wk-schalter[aria-pressed="true"] { background: var(--siegelrot); border-color: var(--siegelrot); color: var(--auf-akzent); }
+.wk-schalter:disabled, .wk-attr-name:disabled { cursor: not-allowed; opacity: .6; }
+.wk-ziel {
+  min-height: 44px; flex: 1 1 140px; padding: var(--a-2); border: 1px solid var(--siegelrot); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); font: inherit; font-size: var(--t-s); min-width: 0; max-width: 100%;
+}
+.wk-entfernen { color: var(--tinte-3); }
+.wk-leer { font-size: var(--t-s); color: var(--tinte-2); }
+.wk-rueckmeldung { display: flex; flex-direction: column; gap: var(--a-1); padding-top: var(--a-2); border-top: 1px solid var(--rand); font-size: var(--t-s); }
+.wk-urteil { font-weight: 700; }
+.wk-karte.ok .wk-urteil { color: var(--gruen); }
+.wk-karte.falsch .wk-urteil { color: var(--siegelrot-text); }
+.wk-hinweise { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.wk-hinweise li { display: flex; gap: var(--a-2); align-items: baseline; }
+.wk-vorschau { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.wk-ergebnis { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1.5px solid var(--siegelrot); border-radius: var(--radius); background: var(--rot-flaeche); min-width: 0; }
+.wk-ergebnis.geloest { border-color: var(--gruen); background: var(--gruen-flaeche); }
+.wk-ergebnis .stempel { align-self: flex-end; }
+.wk-ergebnis-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: var(--a-2); flex-wrap: wrap; }
+.wk-ergebnis-kopf h3 { margin: 0; }
+.wk-zaehler { font-family: var(--schrift-titel); font-weight: 700; font-size: var(--t-l); }
+.wk-ergebnis-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); font-size: var(--t-s); }
+.wk-ergebnis-liste li { display: flex; gap: var(--a-2); align-items: baseline; }
+.wk-zeichen { font-weight: 700; width: 1.2em; flex: none; }
+.wk-ergebnis-liste li.ok .wk-zeichen { color: var(--gruen); }
+.wk-ergebnis-liste li.falsch .wk-zeichen { color: var(--siegelrot-text); }
+.wk-loesung { display: flex; flex-direction: column; gap: var(--a-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  .wk-ergebnis .stempel.auftritt { animation: none; }
+}
