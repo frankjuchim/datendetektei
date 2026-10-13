@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Bezug** | Spezifikation `docs/superpowers/specs/2026-10-12-datendetektei-design.md` (Quelle der Wahrheit), Abschnitte 3, 4, 5, 7.5, 9, 10, 11 |
-| **Stand** | 2026-10-12 · Phase 0 (Konzept) · Blueprint für Claude Code · Akten 1–3 (Lab, Verhör 1–3, Warm-up A1–A3) an die validierten Inhalte in `seed/akten/` und `seed/warmup/` angeglichen (Phase 3) |
+| **Stand** | 2026-10-12 · Phase 0 (Konzept) · Blueprint für Claude Code · Akten 1–3 (Lab, Verhör 1–3, Warm-up A1–A3) an die validierten Inhalte in `seed/akten/` und `seed/warmup/` angeglichen (Phase 3) · Akten 4–5 (Lab, Verhör 4–5, Warm-up A4–A5) angeglichen (Phase 5, siehe Anhang Nr. 14–25) |
 | **Zweck** | Verbindlicher Bauplan für Lab-Aufgaben (`seed/akten/akte<n>.json`, `kuer.json`), Verhör-Pools, Warm-up-Karten (`seed/warmup/`), Arbeitsblätter, Lehrerhinweise, Generalprobe und Klausuren |
 | **Begleitdokument** | `docs/KOMPETENZMATRIX.md` (Kompetenz-, Fallen-, Interaktions- und Abi-Bezugsmatrix; aus denselben Daten erzeugt) |
 | **Story** | `docs/STORY.md` (parallel): Phantom = Merle Falkenrath (Tarnname „Nora Falter“, Jahrgang 1988, Hafenviertel, Tischtennis beim TuS, ehem. Datenschutzbeauftragte); Chefin Edda Lorenz; Azubi Juri Brandes. Story-Fakten in Aufgaben folgen STORY Anhang A |
@@ -934,7 +934,7 @@ Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 
 | Titel | Die Excel-Liste |
 | Kompetenzen | K07, K08, K10, K14 |
 | Fallen-Schwerpunkt | P10 (Anomalie nur benannt statt am Datensatz erläutert), P6 (LIKE auf mehrwertigen Zellen) |
-| Datenbank | TuS (Rohliste) – `MitgliederlisteRoh(Mitglied, Geburtsjahr, Abteilungen, Trainer, TrainerTelefon, Beitragsgruppe, Monatsbeitrag, Halle, HallenAdresse, Eintritt)` (~60 Zeilen; mehrwertige Zellen, widersprüchliche Beiträge, Tippfehler-Varianten) |
+| Datenbank | TuS (Rohliste) – `MitgliederlisteRoh(Mitglied, Geburtsjahr, Abteilungen, Trainer, TrainerTelefon, Beitragsgruppe, Monatsbeitrag, Halle, HallenAdresse, Eintritt)` (62 Zeilen; mehrwertige Zellen, widersprüchliche Beiträge, Tippfehler-Varianten). Ausschnitte im Lab zeigen zusätzlich die Spalte **Zeile** (`rowid`), damit Zeilennummern in Aufgabe, Tafel und Simulator übereinstimmen |
 | Unplugged | Anomalie-Rennen |
 | Video | 4 |
 | Verhör | – |
@@ -962,6 +962,7 @@ Die Schülerinnen und Schüler …
 1. Jedes Teammitglied erhält 3–4 Zeilenstreifen („Du pflegst diese Datensätze“). Niemand darf fremde Streifen anfassen; Absprachen nur flüsternd.
 2. Die Lehrkraft deckt im 45-Sekunden-Takt Aufträge auf; einige werden **nur einem** Teammitglied gezeigt (Karte wandert verdeckt):
    - A1 „Trainer Meyer hat eine neue Telefonnummer: 0000-4711.“ (an alle) · A2 „Trainer Meyer heißt nach der Heirat Meyer-Kahl.“ (nur an Mitglied B) · A3 „Der Monatsbeitrag der Gruppe *Erwachsene* steigt von 12 € auf 14 €.“ (an alle, unter Zeitdruck) · A4 „Das letzte Judo-Mitglied (Zeile 9) tritt aus – streicht den Streifen.“ · A5 „Neue Abteilung *Bouldern*, Trainerin Kaya, Halle Nord – noch ohne Mitglieder. Tragt sie ein.“ · A6 „Halle Süd zieht um: neue Adresse Deichweg 3.“
+   *Hinweis:* Das Papier-Rennen nutzt eigene Daten (Bouldern, Halle Nord/Süd). Im Lab und an der Tafel heißt die neue Abteilung **Boule** (Trainerin Gesa Thiele, Bouleplatz Weseraue, A4-E1-05) – beim Übergang zum Simulator kurz darauf hinweisen.
 3. Streifen wieder zur Liste zusammenlegen; Teams zählen Widersprüche (gleicher Trainer, verschiedene Namen/Telefone; Gruppe *Erwachsene* mit zwei Beiträgen), verlorene Information (Wer trainiert Judo? Wo ist die Judo-Halle?) und unmögliche Einträge (Bouldern ohne Mitglied → leere Mitglied-Spalte).
 4. Wertung: Team mit den wenigsten Widersprüchen gewinnt – Auflösung: *„Fehlerfrei geht es nur, wenn ihr bei jeder Änderung alle Zeilen findet. Das Problem ist die Liste, nicht ihr.“*
 *Sicherung:* Drei Anomaliearten mit **eurem** konkreten Beispiel (Zeilennummer) an die Tafel; Redundanz als Ursache markieren.
@@ -969,30 +970,30 @@ Die Schülerinnen und Schüler …
 ### Tafelbild / Merkkasten „Ermittler-Notiz“
 | Begriff | Erläuterung am Datensatz (Rohliste TuS) |
 |---|---|
-| **Redundanz** | Dieselbe Information ist mehrfach gespeichert: Trainer Meyer mit Telefon 0000-1234 steht in allen 9 Fußball-Zeilen. |
-| **Änderungsanomalie** | Ändert sich Meyers Telefonnummer, muss sie in 9 Zeilen geändert werden; wird eine vergessen (Zeile 7), widerspricht sich die Liste. |
-| **Löschanomalie** | Tritt das letzte Judo-Mitglied (Zeile 9) aus und wird die Zeile gelöscht, gehen auch Trainer und Halle der Abteilung Judo verloren. |
-| **Einfügeanomalie** | Die neue Abteilung Bouldern kann nicht eingetragen werden, solange es kein Mitglied gibt (Mitglied-Spalte müsste leer bleiben). |
+| **Redundanz** | Dieselbe Information ist mehrfach gespeichert: Trainer Jens Meyer mit Telefon 0000-31415 steht in 23 Zeilen der Rohliste (Fußball und Tennis). |
+| **Änderungsanomalie** | Ändert sich Meyers Telefonnummer, muss sie in allen 23 Zeilen geändert werden; wird eine vergessen, widerspricht sich die Liste – eine Zeile mit dem Zahlendreher 0000-31451 zeigt, wie das aussieht. |
+| **Löschanomalie** | Tritt Timo Rieken, das einzige Judo-Mitglied (Zeile 12), aus und wird die Zeile gelöscht, gehen auch die Abteilung Judo und ihr Trainer Ole Wittkamp samt Telefonnummer verloren. |
+| **Einfügeanomalie** | Die neue Abteilung Boule (Trainerin Gesa Thiele, Bouleplatz Weseraue) kann nicht eingetragen werden, solange es kein Mitglied gibt (Mitglied-Spalte müsste leer bleiben). |
 | **nicht-atomarer Wert** | „Fußball, Tennis“ in einer Zelle: `WHERE Abteilungen = 'Tennis'` findet das Mitglied nicht; `LIKE '%Tennis%'` findet auch „Tischtennis“. |
 
-**Ermittler-Notiz:** Redundanz ist die Ursache der Änderungsanomalie; Einfüge- und Löschanomalie entstehen, weil **mehrere Sachverhalte** (Mitglied, Abteilung, Trainer, Halle, Beitrag) in **einer** Tabelle stehen. · Operator **erläutern** = Anomalieart + konkreter Datensatz + Folge (P10).
+**Ermittler-Notiz:** Redundanz ist die Ursache der Änderungsanomalie; Einfüge- und Löschanomalie entstehen, weil **mehrere Sachverhalte** (Mitglied, Abteilung, Trainer, Halle, Beitrag) in **einer** Tabelle stehen. · Operator **erläutern** = Anomalieart + konkreter Datensatz + Folge (P10). · *Im Lab* nennt die Ermittler-Notiz ein anderes Beispiel (Birte Haschkes Telefonnummer in den Tischtennis-Zeilen), damit sie die Simulator-Aufgaben 03–05 nicht vorwegnimmt; das Tafelbild entsteht erst in der Fallbesprechung.
 
 ### Lab-Blueprint (A4-E1)
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
-| A4-E1-01 | Doppelte Spuren | ★ | `zellen` | K07 | – | gA/eA | Im Ausschnitt der Rohliste alle Zellen antippen, die eine bereits an anderer Stelle gespeicherte Information wiederholen (Trainer-Telefon, Hallen-Adresse). |
-| A4-E1-02 | Welche Anomalie? | ★ | `choice` | K08 | – | gA/eA | Vier Szenarien (Telefonwechsel, Austritt des letzten Mitglieds, neue Abteilung, Beitragserhöhung) der passenden Anomalieart zuordnen. |
-| A4-E1-03 | Meyer heißt jetzt Meyer-Kahl | ★ | `anomalie` | K08 | P10 | gA/eA | Simulator: Namensänderung so ausführen, wie die Tabelle es erlaubt; vergessene Zeile wird sichtbar → Änderungsanomalie, betroffene Zellen markieren. |
-| A4-E1-04 | Der letzte Judoka | ★★ | `anomalie` | K08 | P10 | gA/eA | Simulator: Austritt des letzten Judo-Mitglieds (Zeile löschen) → Löschanomalie; verlorene Informationen (Trainer, Halle) markieren. |
-| A4-E1-05 | Bouldern ohne Mitglieder | ★★ | `anomalie` | K08 | P10 | gA/eA | Simulator: neue Abteilung ohne Mitglied anlegen → Einfügeanomalie; Zellen markieren, die leer bleiben müssten. |
-| A4-E1-06 | Mehr als ein Wert | ★★ | `zellen` | K14 | P6 | gA/eA | Alle Zellen mit nicht-atomaren Werten antippen und die Zelle wählen, die `LIKE '%Tennis%'` fälschlich mitfindet (Tischtennis). |
-| A4-E1-07 | 12 oder 14 Euro? | ★★★ | `kernpunkte` | K10, K08 | P10 | gA/eA | Erläutern, wie seit der Beitragserhöhung für Erwachsene (12,00 € → 14,00 €) widersprüchliche Monatsbeiträge entstanden sind (Redundanz → Änderungsanomalie) und warum der Eintrag „Nora Falter, 0,00 €“ darin unterging – mit Bezug auf konkrete Datensätze. |
-| A4-E1-08 | Wie viele spielen Tennis? | ★★★ | `kernpunkte` | K14 | P10 | gA/eA | Erläutern, warum die Frage „Wie viele Mitglieder hat die Abteilung Tennis?“ mit der Rohliste per SQL nicht zuverlässig beantwortet werden kann, und eine bessere Speicherung skizzieren. |
+| A4-E1-01 | Doppelte Spuren | ★ | `zellen` | K07 | – | gA/eA | Im Ausschnitt der Rohliste in den Spalten TrainerTelefon und HallenAdresse alle Zellen antippen, deren Information weiter oben im Ausschnitt schon gespeichert ist (die erste Nennung ist nötig, jede weitere redundant). |
+| A4-E1-02 | Welche Anomalie? | ★ | `choice` ×4 | K08 | – | gA/eA | Mehrteilig (a–d): vier Szenarien – neue Telefonnummer von Anke Rosendahl, Austritt des einzigen Mitglieds einer Abteilung, neue Abteilung Rudern ohne Mitglieder, Beitragserhöhung Jugend 8,50 € → 9,00 € – je der drohenden Anomalieart zuordnen. |
+| A4-E1-03 | Meyer heißt jetzt Meyer-Kahl | ★ | `anomalie` | K08 | P10 | gA/eA | Simulator: Der Auftrag ändert nur Zellen mit genau „Jens Meyer“; die Zeile „Jens Meyer, Sven Albers“ bleibt stehen → Widerspruch, Änderungsanomalie; alle sechs Zellen markieren, die angepasst werden müssten (auch die Kommaliste). |
+| A4-E1-04 | Der letzte Judoka | ★★ | `anomalie` | K08 | P10 | gA/eA | Simulator: Timo Rieken, das einzige Judo-Mitglied, tritt aus (Zeile löschen) → Löschanomalie; die Zellen markieren, deren Information danach nirgends mehr steht (Abteilung Judo, Trainer Ole Wittkamp, Telefon – die Halle am Mühlenfeld bleibt über andere Zeilen erhalten). |
+| A4-E1-05 | Boule ohne Mitglieder | ★★ | `anomalie` | K08 | P10 | gA/eA | Simulator: neue Abteilung Boule (Trainerin Gesa Thiele, Bouleplatz Weseraue) als Zeile 63 anlegen („Zeile anlegen“ mit vorgegebenen Werten) → Einfügeanomalie; in der neuen Zeile die Zellen markieren, die leer bleiben müssten. |
+| A4-E1-06 | Mehr als ein Wert | ★★ | `zellen` ×2 | K14 | P6 | gA/eA | Mehrteilig: (a) alle Zellen mit nicht-atomaren Werten antippen; (b) genau die eine Zelle der Spalte Abteilungen antippen, die `LIKE '%Tennis%'` fälschlich mitfindet (Tischtennis). |
+| A4-E1-07 | 12 oder 14 Euro? | ★★★ | `kernpunkte` | K10, K08 | P10 | gA/eA | Erläutern, wie seit der Beitragserhöhung für Erwachsene (12,00 € → 14,00 €) widersprüchliche Monatsbeiträge entstanden sind (Redundanz → Änderungsanomalie) und warum der Eintrag „Nora Falter, 0,00 €“ darin unterging – mit Bezug auf konkrete Datensätze. Selbstkontrolle über Kernpunkte (0 Punkte, zählt als bearbeitet). |
+| A4-E1-08 | Wie viele spielen Tennis? | ★★★ | `kernpunkte` | K14 | P10 | gA/eA | Erläutern, warum „Wie viele Mitglieder hat die Abteilung Tennis?“ mit der Rohliste per SQL nicht zuverlässig beantwortet werden kann (zwei Abfragen liefern 9 bzw. 23), und eine bessere Speicherung skizzieren. Kernpunkte, 0 Punkte. |
 
-Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `anomalie`, `choice`, `kernpunkte`, `zellen`
+Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `anomalie`, `choice`, `kernpunkte`, `zellen` · mehrteilig: 02, 06 · `kernpunkte`-Aufgaben bringen 0 Punkte (Rang und Freischaltung zählen sie als bearbeitet)
 
-**Cold Case im Lab (ohne Punkte):** `A4-E1-CC` „Tippfehler im Archiv“ (K07, K19) – Finde mit LIKE alle Schreibweisen der Halle „Halle am Mühlenfeld“ in der Rohliste und erkläre, welche Anomalie sie verursacht haben könnte.
+**Cold Case im Lab (ohne Punkte):** `A4-E1-CC` „Tippfehler im Archiv“ (K07, K19, P6) – `sql` + `kernpunkte`: Die Halle am Mühlenfeld soll „Mühlenhalle“ heißen. (a) Alle verschiedenen Kombinationen aus Halle und HallenAdresse mit LIKE finden, in denen die Halle vorkommt – auch in Kommalisten und abweichender Schreibweise; (b) erläutern, welche Anomalie die Schreibweisen verursacht haben.
 
 ### Arbeitsblatt-Blueprint AB 4.1 („Ermittlungsakte“)
 
@@ -1112,16 +1113,16 @@ Die Schülerinnen und Schüler …
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
-| A4-E2-01 | Drei Kriterien | ★ | `choice` | K02 | P8 | gA/eA | Für vier Attribute(kombinationen) der Tabelle Mitglied entscheiden, ob sie als Primärschlüssel geeignet sind, und das verletzte Kriterium (eindeutig, nie NULL, minimal) wählen. |
-| A4-E2-02 | Die Ausschnitt-Falle | ★ | `zellen` | K02 | P8 | gA/eA | Im Ausschnitt scheint Nachname eindeutig; aus einer Nachlieferung die Zellen antippen, die die Eindeutigkeit widerlegen, und begründen, warum der Ausschnitt nichts beweist. |
-| A4-E2-03 | Wo droht Ärger? | ★ | `zellen` | K09, K07 | P10 | gA/eA | In der zusammengelegten Tabelle `AbteilungHalle(AbteilungNr, Abteilung, Trainer, Halle, HallenAdresse)` die Zellen markieren, an denen eine Änderungsanomalie auftreten kann. |
-| A4-E2-04 | Wieder eingetreten | ★★ | `choice` | K02 | P8 | gA/eA | Beurteilen, ob (MitgliedNr, AbteilungNr) in Mitgliedschaft Primärschlüssel bleiben kann, wenn Mitglieder austreten und später wieder eintreten dürfen (Mehrfachvorkommen); passende Lösung wählen. |
-| A4-E2-05 | Keine Anomalie möglich? | ★★ | `choice` | K09 | P8 | gA/eA | Von drei gegebenen Tabellen diejenige wählen, in der keine Anomalie möglich ist, und die zutreffende Begründung auswählen. |
-| A4-E2-06 | Zerlegungs-Puzzle: Abteilungen | ★★ | `zerlegen` | K11 | – | eA | Spalten Abteilung, Trainer, TrainerTelefon, Halle, HallenAdresse auf neue Tabellen verteilen und Schlüssel setzen (Teilzerlegung, Feedback über hinterlegte Abhängigkeiten). |
-| A4-E2-07 | Das neue Archiv | ★★★ | `schema` | K11, K04, K03 | P7 | eA | Schema-Werkbank: vollständige Zerlegung der Rohliste in Kurzschreibweise mit PK und ↑FK anlegen (FK Mitglied.Beitragsgruppe → Beitragsgruppe.Gruppe, abweichender Name zulässig). |
-| A4-E2-08 | Beweis der Ordnung | ★★★ | `kernpunkte` | K12, K11 | P10 | eA | Begründen, dass das Schema aus 07 redundanzfrei und die Zerlegung verlustfrei ist; Kernpunkte abhaken. |
+| A4-E2-01 | Drei Kriterien | ★ | `choice` ×4 | K02 | P8 | gA/eA | Mehrteilig (a–d): `MitgliedNr`, `Nachname`, `(MitgliedNr, Nachname)`, `(Vorname, Nachname, Geburtsjahr)` – je beurteilen, ob als Primärschlüssel von Mitglied geeignet, sonst die verletzten Kriterien (eindeutig, nie NULL, minimal) wählen (Mehrfachauswahl). |
+| A4-E2-02 | Die Ausschnitt-Falle | ★ | `zellen` + `choice` | K02 | P8 | gA/eA | Mehrteilig: (a) im Ausschnitt scheint Nachname eindeutig – in der Nachlieferung die Zellen antippen, die die Eindeutigkeit widerlegen; (b) wählen, was ein Ausschnitt über Eindeutigkeit zeigen kann (nur widerlegen, nie beweisen). |
+| A4-E2-03 | Wo droht Ärger? | ★ | `zellen` | K09, K07 | P10 | gA/eA | In der zusammengelegten Tabelle `AbteilungHalle(AbteilungNr, Abteilung, Trainer, Halle, HallenAdresse)` die Zellen markieren, an denen eine Änderungsanomalie auftreten kann: die HallenAdresse-Zellen der mehrfach genannten Halle am Mühlenfeld (Trainer und Halle stehen nur über ihren eindeutigen Namen in der Tabelle). |
+| A4-E2-04 | Wieder eingetreten | ★★ | `choice` ×2 | K02 | P8 | gA/eA | `Mitgliedschaft(↑MitgliedNr, ↑AbteilungNr, Seit, Bis)` – Wiedereintritt erzeugt eine neue Zeile: (a) beurteilen, ob (MitgliedNr, AbteilungNr) Primärschlüssel bleiben kann (Mehrfachvorkommen); (b) geeignete Primärschlüssel wählen (Mehrfachauswahl). `Bis` gibt es nur in der Aufgabe, nicht in der TuS-DB. |
+| A4-E2-05 | Keine Anomalie möglich? | ★★ | `choice` ×2 | K09 | P8 | gA/eA | Mehrteilig: (a) von drei gegebenen Tabellen diejenige wählen, in der keine Anomalie möglich ist; (b) die zutreffende Begründung auswählen. |
+| A4-E2-06 | Zerlegungs-Puzzle: Abteilungen | ★★ | `zerlegen` | K11 | – | eA | Spalten Abteilung, Trainer, TrainerTelefon, Halle, HallenAdresse auf neue Tabellen verteilen und Schlüssel setzen (Teilzerlegung; Rückmeldung je Tabelle über die hinterlegten funktionalen Abhängigkeiten, z. B. „TrainerTelefon hängt von Trainer ab, nicht vom Schlüssel (Abteilung)“). |
+| A4-E2-07 | Das neue Archiv | ★★★ | `schema` | K11, K04, K03 | P7 | eA | Schema-Werkbank (Modus `frei`): vollständige Zerlegung der Rohliste mit PK und ↑FK anlegen. Der Aufgabentext nennt die sechs Relationen und ihre Attribute (künstliche Schlüssel MitgliedNr, AbteilungNr, TrainerNr, HalleNr; Gruppe, Name, Telefon, Adresse, Seit), damit der Abgleich eindeutig ist; FK Mitglied.Beitragsgruppe → Beitragsgruppe.Gruppe (abweichender Name zulässig). |
+| A4-E2-08 | Beweis der Ordnung | ★★★ | `kernpunkte` | K12, K11 | P10 | eA | Begründen, dass das Schema aus 07 redundanzfrei und die Zerlegung verlustfrei ist; Kernpunkte abhaken (0 Punkte). |
 
-Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `kernpunkte`, `schema`, `zellen`, `zerlegen`
+Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `kernpunkte`, `schema`, `zellen`, `zerlegen` · mehrteilig: 01, 02, 04, 05 · Ermittlung 4.2 hat **keine** Datenbank-Kachel: Das normalisierte TuS-Schema zeigt die Lösung von A4-E2-07 (die Freie Ermittlung `/konsole/tus` zeigt es weiterhin, offene Frage in Spec §18).
 
 **Cold Case im Lab (ohne Punkte):** `A4-E2-CC` „KÜR: Normalformen-Check“ (K13, K11) – Ohne Punkte, nicht im Abitur: Bestimme in der Rohliste drei funktionale Abhängigkeiten und prüfe deine Zerlegung auf 1., 2. und 3. Normalform.
 
@@ -1182,26 +1183,26 @@ Wiederholung von DS 7 (Redundanz, Anomalien, nicht-atomare Werte).
 
 ### Verhör-Blueprint: Verhör 4 · Musikschule (V4, Rohliste)
 
-**Kontext-DB „Musikschule“** (Rohliste + Teiltabellen):
+**Kontext-DB „Musikschule“** (Rohliste + zusammengelegte Tabelle; **keine** normalisierten Teiltabellen, weil deren Schema die Lösung von A4-V-11 wäre; keine Varianten, da V4 keine SQL-Aufgaben hat):
 `UnterrichtRoh(Schueler, Geburtsjahr, Instrumente, Lehrkraft, LehrkraftTelefon, Raum, Tarif, Monatsgebuehr)` – mehrwertige Zellen, Redundanz bei Lehrkraft/Telefon und Tarif/Gebühr; zusätzlich zusammengelegte Tabelle `LehrkraftRaum(LehrkraftNr, Name, Telefon, Raum, Etage)`.
-Rahmensatz: „Die Musikschule Weserstedt will ihre Anmeldeliste in eine Datenbank überführen und bittet um ein Gutachten.“ Timer 20 min.
+Rahmensatz (Edda): „Listen wie die vom TuS gibt es überall – zeig mir, dass du ihre Schwachstellen findest.“ Kontext-Einleitung je Aufgabe: Die Musikschule Weserstedt will ihre Anmeldeliste `UnterrichtRoh` in eine Datenbank überführen und bittet um ein Gutachten. Timer 20 min, Abimodus `streng`.
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Aufgabe (gesiezt, Transfer) |
 |---|---|---|---|---|---|---|---|
 | A4-V-01 | Redundanz | ★ | `zellen` | K07 | – | gA/eA | Geben Sie alle Zellen des Ausschnitts an, die redundante Information enthalten. |
-| A4-V-02 | Anomalieart | ★ | `choice` | K08 | – | gA/eA | Geben Sie zu drei Szenarien der Musikschule die jeweilige Anomalieart an. |
-| A4-V-03 | Telefonwechsel | ★ | `anomalie` | K08 | P10 | gA/eA | Führen Sie die Änderung „Lehrkraft Albers hat eine neue Telefonnummer“ in der Rohliste aus und ordnen Sie die entstehende Anomalie zu. |
+| A4-V-02 | Anomalieart | ★ | `choice` ×3 | K08 | – | gA/eA | Geben Sie zu drei Szenarien der Musikschule (einzige Cello-Schülerin meldet sich ab, Tarif Jugend steigt, neue Gesangslehrkraft ohne Schüler) die jeweilige Anomalieart an. |
+| A4-V-03 | Telefonwechsel | ★ | `anomalie` | K08 | P10 | gA/eA | Führen Sie die Änderung „Lehrkraft Jana Albers hat eine neue Telefonnummer“ im Simulator aus, ordnen Sie die entstehende Anomalie zu und markieren Sie alle Zellen, die angepasst werden müssten. |
 | A4-V-04 | Mehrere Instrumente | ★ | `zellen` | K14 | P6 | gA/eA | Geben Sie die Zellen mit nicht-atomaren Werten an. |
 | A4-V-05 | Schlüsselkandidat | ★ | `choice` | K02 | P8 | gA/eA | Beurteilen Sie, ob Schueler als Primärschlüssel geeignet ist; im Ausschnitt sind alle Namen verschieden. |
-| A4-V-06 | Neues Instrument | ★★ | `anomalie` | K08 | P10 | gA/eA | Führen Sie „Die Musikschule bietet ab sofort Harfe an, noch ohne Anmeldungen“ aus und ordnen Sie die Anomalie zu. |
+| A4-V-06 | Neues Instrument | ★★ | `anomalie` | K08 | P10 | gA/eA | Führen Sie „Die Musikschule bietet ab sofort Harfe an (Lehrkraft Swantje Uphoff, Streicherzimmer), noch ohne Anmeldungen“ aus, ordnen Sie die Anomalie zu und markieren Sie die Zellen, die leer bleiben müssten. |
 | A4-V-07 | Ursache | ★★ | `choice` | K10 | P10 | gA/eA | Geben Sie an, welche Aussage den Zusammenhang zwischen Redundanz und Änderungsanomalie korrekt erläutert. |
 | A4-V-08 | Zusammengelegt | ★★ | `zellen` | K09 | P10 | gA/eA | Untersuchen Sie die Tabelle LehrkraftRaum und geben Sie die Zellen an, an denen eine Änderungsanomalie möglich ist. |
 | A4-V-09 | Anomaliefrei? | ★★ | `choice` | K09 | P8 | gA/eA | Geben Sie an, in welcher von drei Tabellen keine Anomalie möglich ist. |
 | A4-V-10 | Doppelt belegt | ★★ | `choice` | K02 | P8 | gA/eA | Beurteilen Sie den Schlüssel (Schueler, Instrument), wenn Schüler dasselbe Instrument bei zwei Lehrkräften belegen dürfen. |
-| A4-V-11 | Neuordnung | ★★★ | `zerlegen` | K11, K02 | – | eA | Zerlegen Sie die Rohliste verlustfrei in redundanzfreie Tabellen und kennzeichnen Sie die Schlüssel. |
+| A4-V-11 | Neuordnung | ★★★ | `zerlegen` | K11, K02 | – | eA | Zerlegen Sie die Rohliste verlustfrei in redundanzfreie Tabellen und kennzeichnen Sie die Schlüssel (hinterlegte Abhängigkeiten mit den Spaltennamen der Rohliste und Etage aus Raum; Schlüssel der Rohliste {SchuelerNr, Instrument, LehrkraftNr}). |
 | A4-V-12 | Begründung | ★★★ | `choice` | K12 | P10 | eA | Geben Sie an, welche Begründung die Redundanzfreiheit des gegebenen Schemas korrekt belegt. |
 
-Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 3 × ★★ + 1 × ★★★; gA-Kurse ziehen ohne A4-V-11/12 (eA) → ★★★ entfällt, dafür 4 × ★★.
+Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 3 × ★★ + 1 × ★★★, höchstens 3 × `choice`; gA-Kurse ziehen ohne A4-V-11/12 (eA) → ★★★ entfällt, es wird aufgefüllt (Validator-Hinweis). In A4-V-01 zählt jedes Vorkommen redundanter Werte.
 
 ---
 
@@ -1214,7 +1215,7 @@ Pool-Mix ★/★★/★★★: **5/5/2 (42/42/17 %)** · Ziehung 6 = 2 × ★ + 
 | Titel | Baupläne lesen |
 | Kompetenzen | K33, K34, K36 · prozessbezogen K47 |
 | Fallen-Schwerpunkt | P9 (Kardinalität vertauscht/fehlt, Schlüsselattribut nicht markiert, Beziehungsattribut falsch platziert), P10 (Erläutern ohne Sachzusammenhang) |
-| Datenbank | Detektei (ER-Sicht) – Ausschnitte: Ermittler–*leitet*–Fall (1:n), Person–*verdaechtig*–Fall (n:m, Attribut Grad), Fall–Beweisstück (1:n), Beweisstück–Ort (n:1) |
+| Datenbank | Detektei (ER-Sicht) – Ausschnitte: Ermittler–*leitet*–Fall (1:n), Person–*verdaechtig*–Fall (n:m, Attribut Grad), Fall–Beweisstück (1:n), Beweisstück–Ort (n:1). Die Datenbank-Kachel der Detektei steht in Akte 5 nur in A5-E3-08 und A5-E3-CC (ihr Schema ist die Lösung der Überführungsaufgaben); Tabellenausschnitte stehen direkt in den Aufgaben |
 | Unplugged | Fäden-Kardinalitäten (Rollenkarten) |
 | Video | 5 |
 | Verhör | – |
@@ -1267,17 +1268,17 @@ Die Schülerinnen und Schüler …
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
 | A5-E1-01 | Die Zeichen des Bauplans | ★ | `match` | K33, K47 | – | eA | Rechteck, Raute, Ellipse, unterstrichene Ellipse und Kantenbeschriftung den Fachbegriffen Entitätstyp, Beziehungstyp, Attribut, Schlüsselattribut, Kardinalität zuordnen. |
-| A5-E1-02 | Bauplan lesen | ★ | `er` | K33 | P9 | eA | Bauplan-Tisch (Modus `lesen`): im Diagramm Ermittler–leitet–Fall–Beweisstück alle Entitätstypen, Beziehungstypen und Schlüsselattribute antippen. |
-| A5-E1-03 | Fäden zählen | ★ | `choice` | K34 | P9 | eA | Aus einem Mengendiagramm (Ermittler/Fälle mit Verbindungslinien) die Kardinalität bestimmen und die passende Leserichtung wählen. |
-| A5-E1-04 | Die Tabelle verrät es | ★★ | `choice` | K34 | P9 | eA | Aus einem Ausschnitt der Tabelle `verdaechtig(PersonNr, FallNr, Grad)` die Kardinalität n:m ableiten und die tragfähige Begründung wählen. |
-| A5-E1-05 | Im Sachzusammenhang | ★★ | `kernpunkte` | K33, K34 | P10 | eA | Das ER-Diagramm Fall–Beweisstück–Ort im Sachzusammenhang erläutern (Kardinalitäten in beiden Richtungen); Kernpunkte abhaken. |
-| A5-E1-06 | Der Verdachtsgrad | ★★ | `er` | K36 | P9 | eA | Bauplan-Tisch (Modus `ergaenzen`): das Attribut Grad korrekt am Beziehungstyp verdaechtig anbringen (nicht an Person oder Fall). |
-| A5-E1-07 | Fehlende Kardinalitäten | ★★★ | `er` | K34, K36 | P9 | eA | Im Startdiagramm (Ermittler, Fall, Beweisstück, Ort) fehlende Kardinalitäten aus gegebenen Tabellendaten setzen und das Attribut Fundzeitpunkt richtig platzieren. |
+| A5-E1-02 | Bauplan lesen | ★ | `er` (lesen) | K33 | P9 | eA | Bauplan-Tisch (Modus `lesen`): im Diagramm Ermittler–leitet–Fall–gehoertZu–Beweisstück alle Entitätstypen, Beziehungstypen und Schlüsselattribute antippen (sonst nichts). |
+| A5-E1-03 | Fäden zählen | ★ | `choice` ×2 | K34 | P9 | eA | Mengendiagramm mit echten Daten der Fall-Datenbank (4 Ermittler, 6 Fälle; Juri Brandes leitet keinen Fall): (a) Kardinalität von *leitet* bestimmen, (b) die richtigen Lesesätze wählen (Mehrfachauswahl). |
+| A5-E1-04 | Die Tabelle verrät es | ★★ | `choice` ×2 | K34 | P9 | eA | Ausschnitt der Tabelle `verdaechtig(PersonNr, FallNr, Grad)` (Fälle 1–3): (a) die gestützte Kardinalität n:m wählen, (b) die tragfähige Begründung wählen. |
+| A5-E1-05 | Im Sachzusammenhang | ★★ | `kernpunkte` | K33, K34 | P10 | eA | Das ER-Diagramm Fall–gehoertZu–Beweisstück–gefundenAn–Ort im Sachzusammenhang erläutern (Kardinalitäten in beiden Richtungen); Kernpunkte abhaken (0 Punkte). |
+| A5-E1-06 | Der Verdachtsgrad | ★★ | `er` (ergänzen) | K36 | P9 | eA | Bauplan-Tisch (Modus `ergaenzen`): Nora Falter ist in Fall 1 *hoch*, in Fall 4 *mittel* verdächtig – das Attribut Grad korrekt am Beziehungstyp verdaechtig anbringen (nicht an Person oder Fall). |
+| A5-E1-07 | Fehlende Kardinalitäten | ★★★ | `er` (ergänzen) | K34, K36 | P9 | eA | Im Startdiagramm (Ermittler, Fall, Beweisstück, Ort; Juri hat keine Kardinalität eingetragen) alle Kardinalitäten aus Tabellenausschnitten Fall und Beweisstueck (ohne Datenbank-Kachel) setzen und das Attribut Fundzeitpunkt am Beziehungstyp gefundenAn platzieren. |
 | A5-E1-08 | Beleg aus der Datenbank | ★★★ | `sql` | K34, K26, K27 | P1, P3 | eA | Per SQL belegen, dass Personen in mehreren Fällen verdächtig sind: PersonNr, Vor- und Nachname mit Anzahl Fälle, nur bei mehr als einem Fall (GROUP BY + HAVING über Person und verdaechtig). |
 
-Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `er`, `kernpunkte`, `match`, `sql`
+Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `er`, `kernpunkte`, `match`, `sql` · mehrteilig: 03, 04
 
-**Cold Case im Lab (ohne Punkte):** `A5-E1-CC` „1:1 oder 1:n?“ (K34, K40) – Ein Ermittler hat einen Dienstwagen. Diskutiere mit Daten aus dem Fuhrpark-Ausschnitt, ob 1:1 oder 1:n angemessen ist – und was sich ändert, wenn Wagen im Schichtbetrieb geteilt werden.
+**Cold Case im Lab (ohne Punkte):** `A5-E1-CC` „1:1 oder 1:n?“ (K34, K40) – `choice` + `kernpunkte`: Ein Ermittler hat einen Dienstwagen. (a) Kardinalität von *faehrt* bei „genau ein Wagen je Person“ wählen; (b) mit Daten aus dem Fuhrpark-Ausschnitt (nicht in der Fall-DB) diskutieren, was sich im Schichtbetrieb ändert.
 
 ### Arbeitsblatt-Blueprint AB 5.1 („Ermittlungsakte“)
 
@@ -1394,17 +1395,17 @@ Ternär m:n:p:     [Person] ——m—— <sagtAus> ——n—— [Fall]
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
 | A5-E2-01 | Wer betreut wen? | ★ | `choice` | K37 | P9 | eA | Zur rekursiven Beziehung Ermittler–betreut–Ermittler (1:n) die zutreffenden Aussagen im Sachzusammenhang auswählen. |
-| A5-E2-02 | Drei Kanten, eine Raute | ★ | `er` | K38 | P9 | eA | Bauplan-Tisch (Modus `lesen`): in einem Diagramm mit zwei Beziehungen Person–Fall und der ternären Beziehung sagtAus die beteiligten Entitätstypen und Rollen zuordnen. |
-| A5-E2-03 | Wer kennt wen? | ★ | `er` | K37, K36 | P9 | eA | Rekursive Beziehung kennt (n:m) mit Attribut Seit an Person ergänzen. |
-| A5-E2-04 | Neue Spur: Fahrzeuge | ★★ | `er` | K39 | P9 | eA | Gegebenes Detektei-Diagramm nach Anforderungstext erweitern: Fahrzeug (Kennzeichen, Marke) gehört genau einer Person, wurde an Orten gesichtet (Zeitpunkt). |
-| A5-E2-05 | Die Aussage | ★★ | `er` | K38, K36 | P9 | eA | Ternäre Beziehung sagtAus (Person, Fall, Ort) mit Kardinalitäten m:n:p und Attributen Zeitpunkt, Inhalt ergänzen. |
-| A5-E2-06 | Grenzen des Plans | ★★ | `choice` | K40 | – | eA | Für vier Anforderungen („genau drei Ermittler je Team“, „jeder Fall hat einen Leiter“ …) entscheiden, ob sie mit 1/n/m darstellbar sind, und die Alternative „Anmerkung zum Modell“ wählen. |
-| A5-E2-07 | Die Ermittlerschule | ★★★ | `er` | K35, K37, K38 | P9 | eA | Bauplan-Tisch (Modus `entwickeln`): ER-Modell aus Anforderungstext – Ermittler besucht Lehrgang (n:m, Note), Ermittler leitet Lehrgang (1:n), Ermittler betreut Ermittler (1:n), Lehrgang findet in Raum statt. |
-| A5-E2-08 | Zwei Entwürfe im Vergleich | ★★★ | `kernpunkte` | K40, K35 | P10 | eA | Zwei Wettbewerbsentwürfe (Ort als Attribut vs. Entitätstyp; n:m vs. aufgelöste Zwischenentität) beurteilen; Kernpunkte abhaken. |
+| A5-E2-02 | Drei Kanten, eine Raute | ★ | `er` (lesen, Zuordnung) | K38 | P9 | eA | Bauplan-Tisch (Modus `lesen` mit Kategorien): **jedes** Element des Diagramms einer von fünf Kategorien zuordnen (Entitätstyp, binärer Beziehungstyp, ternärer Beziehungstyp, Schlüsselattribut, Attribut eines Beziehungstyps). Diagramm: Person–*verdaechtig*–Fall (n:m, Grad), Person–*meldet*–Fall (1:n) und ternär *sagtAus* mit Ort (Zeitpunkt, Inhalt). |
+| A5-E2-03 | Wer kennt wen? | ★ | `er` (ergänzen) | K37, K36 | P9 | eA | Rekursive Beziehung kennt (n:m) mit Attribut Seit an Person ergänzen. |
+| A5-E2-04 | Neue Spur: Fahrzeuge | ★★ | `er` (ergänzen) | K39 | P9 | eA | Gegebenes Detektei-Diagramm nach Anforderungstext erweitern: Fahrzeug (Kennzeichen, Marke) gehört genau einer Person (*besitzt*), wurde an Orten gesichtet (*gesichtetAn*, n:m mit Zeitpunkt). |
+| A5-E2-05 | Die Aussage | ★★ | `er` (ergänzen) | K38, K36 | P9 | eA | Ternäre Beziehung sagtAus (Person, Fall, Ort) mit Kardinalitäten m:n:p und Attributen Zeitpunkt, Inhalt ergänzen. |
+| A5-E2-06 | Grenzen des Plans | ★★ | `choice` ×4 | K40 | – | eA | Mehrteilig (a–d): „genau drei Ermittler je Team“, „genau ein leitender Ermittler je Fall“, „höchstens drei Praktikanten je Mentor“, „beliebig viele Fälle je Person“ – je entscheiden, ob mit 1/n/m darstellbar oder eine Anmerkung zum Modell nötig ist. |
+| A5-E2-07 | Die Ermittlerschule | ★★★ | `er` (entwickeln) | K35, K37, K38 | P9 | eA | Bauplan-Tisch (Modus `entwickeln`): ER-Modell aus Anforderungstext – Ermittler besucht Lehrgang (n:m, Note), Ermittler leitet Lehrgang (1:n), Ermittler betreut Ermittler (rekursiv 1:n, Rollen Mentor/Neuling), Lehrgang findet in Raum statt (n:1); Äquivalenz „n:m als aufgelöste Zwischenentität“ wird anerkannt. |
+| A5-E2-08 | Zwei Entwürfe im Vergleich | ★★★ | `kernpunkte` | K40, K35 | P10 | eA | Zwei Wettbewerbsentwürfe (Ort als Attribut vs. Entitätstyp; n:m vs. aufgelöste Zwischenentität) beurteilen; Kernpunkte abhaken (0 Punkte). |
 
-Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `er`, `kernpunkte`
+Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `er`, `kernpunkte` · mehrteilig: 06
 
-**Cold Case im Lab (ohne Punkte):** `A5-E2-CC` „Das Phantom-Netz“ (K37, K40) – Modelliere „Person ist Komplizin von Person“ zusätzlich zu kennt. Brauchst du einen zweiten rekursiven Beziehungstyp oder ein Attribut? Begründe beide Varianten.
+**Cold Case im Lab (ohne Punkte):** `A5-E2-CC` „Das Phantom-Netz“ (K37, K40) – `er` (ergänzen) + `kernpunkte`: (a) „Person ist Komplizin von Person“ als zweiten rekursiven Beziehungstyp an Person modellieren (zusätzlich zu kennt); (b) mit der Variante „Attribut Komplize an kennt“ vergleichen.
 
 ### Arbeitsblatt-Blueprint AB 5.2 („Ermittlungsakte“)
 
@@ -1525,18 +1526,18 @@ ORDER BY m.Name;
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
-| A5-E3-01 | Wohin mit dem Verweis? | ★ | `choice` | K41 | P9 | eA | Für leitet (Ermittler 1 : n Fall) die korrekte Lage des Fremdschlüssels wählen und die falsche Alternative (FallNr in Ermittler) mit Probedaten verwerfen. |
-| A5-E3-02 | Nur noch Schlüssel setzen | ★ | `schema` | K41, K04 | P9 | eA | Schema-Werkbank (Startzustand aus ER Fall–Beweisstück–Ort): Primärschlüssel unterstreichen und ↑FK mit Zielrelation setzen. |
+| A5-E3-01 | Wohin mit dem Verweis? | ★ | `choice` ×2 | K41 | P9 | eA | Mehrteilig: (a) für leitet (Ermittler 1 : n Fall) die korrekte Überführung wählen, (b) begründen, warum Juris Vorschlag (geleitete Fälle in Ermittler) an den Probedaten scheitert. |
+| A5-E3-02 | Nur noch Schlüssel setzen | ★ | `schema` (Schlüssel) | K41, K04 | P9 | eA | Schema-Werkbank (Modus `schluessel`, Relationen Fall, Beweisstueck, Ort vorgegeben): Primärschlüssel antippen und ↑FK mit Zielrelation setzen. |
 | A5-E3-03 | Regel-Memory | ★ | `match` | K41 | – | eA | Beziehungsarten (1:n, n:m, 1:1, rekursiv 1:n, rekursiv n:m, ternär) der passenden Umsetzungsregel zuordnen. |
-| A5-E3-04 | Verdacht und Bekanntschaft | ★★ | `schema` | K41 | P9 | eA | verdaechtig (n:m mit Grad) und kennt (rekursiv n:m mit Seit) überführen – zusammengesetzte Schlüssel, FK-Namen nach Rolle (BekannterNr). |
+| A5-E3-04 | Verdacht und Bekanntschaft | ★★ | `schema` (frei) | K41 | P9 | eA | verdaechtig (n:m mit Grad) und kennt (rekursiv n:m mit Seit) überführen – Person und Fall liegen schon in der Werkbank; zusammengesetzte Schlüssel, FK-Namen nach Rolle (BekannterNr). |
 | A5-E3-05 | Warum eine eigene Tabelle? | ★★ | `kernpunkte` | K42 | P10 | eA | Begründen, warum n:m eine eigene Relation benötigt und 1:n nicht (Mehrfachwerte/Redundanz → Anomalien); Kernpunkte abhaken. |
-| A5-E3-06 | Der Plan rückwärts | ★★ | `er` | K43 | P9 | eA | Aus dem Schema Ermittler(…, ↑MentorNr), Fall(…, ↑LeiterNr), verdaechtig(↑PersonNr, ↑FallNr, Grad), Person das ER-Diagramm im Bauplan-Tisch rekonstruieren. |
-| A5-E3-07 | Aussagen mehrfach | ★★★ | `schema` | K41, K42 | P9 | eA | Ternäre Beziehung sagtAus überführen; Schlüssel so wählen, dass dieselbe Person im selben Fall am selben Ort mehrfach aussagen kann (Zeitpunkt oder AussageNr). |
-| A5-E3-08 | Wer kennt Nora Falter? | ★★★ | `sql` | K24, K16 | P7 | eA | Self-Join auf der Fall-Datenbank: Vor- und Nachname aller Bekannten der Person 'Nora' 'Falter' mit dem Datum Seit (`Person p, kennt k, Person b`), sortiert nach Nachname – Bekannte an allen vier Tatorten. |
+| A5-E3-06 | Der Plan rückwärts | ★★ | `er` (entwickeln) | K43 | P9 | eA | Aus dem Schema Ermittler(…, ↑MentorNr), Fall(…, ↑LeiterNr), Person, verdaechtig(↑PersonNr, ↑FallNr, Grad) das ER-Diagramm im Bauplan-Tisch rekonstruieren; **ohne** Äquivalenz „aufgelöste Zwischenentität“ – verdaechtig muss als n:m-Beziehungstyp mit Grad erkannt werden. |
+| A5-E3-07 | Aussagen mehrfach | ★★★ | `schema` (frei) | K41, K42 | P9 | eA | Ternäre Beziehung sagtAus in die Relation Aussage überführen; Gesa Ohlendiek hat zu Fall 1 im Fundbüro zweimal ausgesagt → Schlüssel so wählen, dass dieselbe Person im selben Fall am selben Ort mehrfach aussagen kann (Zeitpunkt oder AussageNr). |
+| A5-E3-08 | Wer kennt Nora Falter? | ★★★ | `sql` | K24, K16 | P7 | eA | Self-Join auf der Fall-Datenbank (einzige Datenbank-Kachel der Akte neben dem Cold Case): Vor- und Nachname aller Bekannten der Person 'Nora' 'Falter' mit dem Jahr Seit (`Person p, kennt k, Person b`), sortiert nach Nachname – Bekannte an allen vier Tatorten. Varianten `null` und `grenze` (keine gleichnamige Variante). |
 
-Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `er`, `kernpunkte`, `match`, `schema`, `sql`
+Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `choice`, `er`, `kernpunkte`, `match`, `schema`, `sql` · mehrteilig: 01 · Die Intro-Notiz der Ermittlung erklärt die Regeln R1–R6 am **Schulbeispiel** (Kurs, Lehrkraft, Schueler), nicht an der Detektei – sonst stünden die Lösungen von 02, 04 und 07 schon da.
 
-**Cold Case im Lab (ohne Punkte):** `A5-E3-CC` „Mentor-Kette“ (K24, K16) – Gib zu jedem Ermittler den Mentor und den Mentor des Mentors aus (Ermittler dreimal mit Alias). Was passiert mit Ermittlern ohne Mentor?
+**Cold Case im Lab (ohne Punkte):** `A5-E3-CC` „Mentor-Kette“ (K24, K16, P7, P5) – `sql` + `choice`: (a) zu jedem Ermittler den Mentor und den Mentor des Mentors ausgeben (Ermittler dreimal mit Alias); (b) wählen, welche Ermittler fehlen und warum (ohne Mentor bzw. ohne Mentor des Mentors).
 
 ### Arbeitsblatt-Blueprint AB 5.3 („Ermittlungsakte“)
 
@@ -1596,8 +1597,8 @@ Wiederholung von DS 10 (rekursiv, ternär, Modellieren, Grenzen der Notation).
 ### Verhör-Blueprint: Verhör 5 · Kletterhalle (V5, ER)
 
 **Kontext „Kletterhalle“** (nur ER/Schema, eigene Mini-DB für die Kardinalität-aus-Daten-Aufgaben):
-Mitglied(MitgliedsNr, Name, Jahrgang) · Trainer(TrainerNr, Name) · Kurs(KursNr, Titel) · Route(RoutenNr, Name, Schwierigkeit) · Wand(WandNr, Bereich); *klettert* (Mitglied–Route, n:m, Datum, Erfolg) · *bildetAus* (rekursiv Trainer–Trainer, STORY 6) · *leitet* (Trainer–Kurs) · *besucht*/*assistiertIn* (zwei Beziehungen Mitglied–Kurs) · *Wertung* (ternär Mitglied, Route, Wettkampf mit Punkten).
-Rahmensatz: „Die Kletterhalle Weserstedt plant eine neue Mitgliederverwaltung und bittet die Detektei um ein Gutachten.“ Timer 20 min, Abimodus `streng`.
+Mitglied(MitgliedsNr, Name, Jahrgang) · Trainer(TrainerNr, Name) · Kurs(KursNr, Titel, Termin) · Route(RoutenNr, Name, Schwierigkeit) · Wand(WandNr, Bereich) · Wettkampf(WettkampfNr, Titel, Datum); *klettert* (Mitglied–Route, n:m, Datum, Erfolg) · *bildetAus* (rekursiv Trainer–Trainer, STORY 6) · *leitet* (Trainer–Kurs) · *besucht*/*assistiertIn* (zwei Beziehungen Mitglied–Kurs) · *wertet* (ternär Mitglied, Route, Wettkampf mit Punkten; Relation `Wertung`). Keine Varianten (V5 hat keine SQL-Aufgaben).
+Rahmensatz (Edda): „Ein Bauplan, den du nicht selbst gezeichnet hast – lies ihn, erweitere ihn, bau ihn um.“ Kontext-Einleitung je Aufgabe: Die Kletterhalle Weserstedt plant eine neue Mitgliederverwaltung und bittet um ein Gutachten zum Datenmodell. Timer 20 min, Abimodus `streng`.
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Aufgabe (gesiezt, Transfer) |
 |---|---|---|---|---|---|---|---|
@@ -1607,7 +1608,7 @@ Rahmensatz: „Die Kletterhalle Weserstedt plant eine neue Mitgliederverwaltung 
 | A5-V-04 | Aus den Daten | ★ | `choice` | K34 | P9 | eA | Bestimmen Sie die Kardinalität von klettert anhand des gegebenen Tabellenausschnitts. |
 | A5-V-05 | Fremdschlüssel platzieren | ★ | `choice` | K41 | P9 | eA | Geben Sie an, in welcher Relation der Fremdschlüssel für Wand —1— hat —n— Route steht. |
 | A5-V-06 | Regeln | ★ | `match` | K41 | – | eA | Ordnen Sie den Beziehungsarten die Umsetzungsregel zu. |
-| A5-V-07 | Beziehungsattribut | ★★ | `er` | K36 | P9 | eA | Erweitern Sie das ER-Diagramm so, dass erfasst werden kann, welche Mitglieder welche Routen an welchem Datum geklettert sind (Attribute an der richtigen Stelle). |
+| A5-V-07 | Das Beziehungsattribut | ★★ | `er` (ergänzen) | K36 | P9 | eA | Erweitern Sie das ER-Diagramm so, dass erfasst werden kann, welche Mitglieder welche Routen geklettert sind – mit Datum und Erfolg je Begehung (Attribute an der richtigen Stelle). |
 | A5-V-08 | Ausbildung | ★★ | `er` | K37 | P9 | eA | Ergänzen Sie die Beziehung „Trainer bildet Trainer aus“ mit Kardinalitäten (jede Trainerin/jeder Trainer wurde von höchstens einer Person ausgebildet). |
 | A5-V-09 | Kurse | ★★ | `er` | K39, K38 | P9 | eA | Erweitern Sie das ER-Modell: Kurse werden von genau einem Trainer geleitet, Mitglieder besuchen Kurse und können in anderen Kursen assistieren. |
 | A5-V-10 | Grenzen | ★★ | `choice` | K40 | – | eA | Beurteilen Sie, welche Anforderung („höchstens 8 Teilnehmende je Kurs“ …) mit der Notation nicht darstellbar ist. |
@@ -1615,9 +1616,9 @@ Rahmensatz: „Die Kletterhalle Weserstedt plant eine neue Mitgliederverwaltung 
 | A5-V-12 | Begründung | ★★ | `choice` | K42 | P10 | eA | Geben Sie an, welche Begründung für die eigene Relation zu klettert zutrifft. |
 | A5-V-13 | Neuer Anbau | ★★★ | `er` | K35 | P9 | eA | Entwickeln Sie zu einem kurzen Anforderungstext (Boulderbereich, Griffe, Routenbauer) ein vollständiges ER-Modell. |
 | A5-V-14 | Rückwärts | ★★★ | `er` | K43 | P9 | eA | Rekonstruieren Sie aus dem gegebenen Relationenschema das ER-Diagramm. |
-| A5-V-15 | Wettkampf | ★★★ | `schema` | K41, K38 | P9 | eA | Überführen Sie die ternäre Wertung und die rekursive Beziehung bildetAus in Relationen. |
+| A5-V-15 | Wettkampf | ★★★ | `schema` | K41, K38 | P9 | eA | Überführen Sie die ternäre Beziehung *wertet* (Relation Wertung) und die rekursive Beziehung bildetAus in Relationen. |
 
-Pool-Mix ★/★★/★★★: **6/6/3 (40/40/20 %)** · Ziehung 8 = 3 × ★ + 3 × ★★ + 2 × ★★★; mindestens eine Aufgabe je Bereich lesen/ergänzen/überführen.
+Pool-Mix ★/★★/★★★: **6/6/3 (40/40/20 %)** · Ziehung 8 = 3 × ★ + 3 × ★★ + 2 × ★★★, höchstens 3 × `choice` und 3 × `er` (statt „mindestens eine Aufgabe je Bereich“; Stufe ★★★ besteht nur aus er-/schema-Aufgaben, Überführen und Lesen kommen damit praktisch immer vor). Verhör 5 nur eA.
 
 ---
 
@@ -2179,3 +2180,15 @@ Die Schülerinnen und Schüler …
 | 11 | Cold Cases im Lab | Je Ermittlung eine Cold-Case-Aufgabe `A<n>-E<k>-CC` ohne Punkte (zusätzlich zu den 108); K13 (Kür Normalformen) wird über `A4-E2-CC` abgedeckt. | Validator: Cold Cases mit `punkte: 0`, nicht in Rang-/Freischaltberechnung. |
 | 12 | Interaktion `lines` | Bedeutung hier: Codezeilen einer Abfrage antippen (z. B. fehlerhafte Zeile). Falls `lines` in AlgoQuest anders definiert ist, diese Aufgaben auf `choice` mit Zeilennummern umstellen. | In `docs/AUFGABENFORMAT.md` prüfen. |
 | 13 | Story-Abgleich mit `docs/STORY.md` | Story-Fakten übernommen: Messing-Kompass (Wert 450, Fundort 'Weserpromenade', AbgeholtAm '2026-09-14', Finder 'N. Falter'); Konto 77 „Nora Falter“, Tarif 'Plus', Nachtfahrten 2026-09-08…12 01–02 Uhr ab 'Hafenkante'; Stand 'Kaffeemobil', Festtag 2026-08-29, Schicht 22:00–23:00, HelferNr 23, Fehlbetrag 312,50 € über Positionen mit Menge 0; TuS-Beitrag Erwachsene 12 → 14 €, „Nora Falter“ 0,00 €; Auftraggeber:innen und Debattenrollen nach STORY 3.2/8; Escape-Room-Stationen nach STORY 9; Verhör-Kontexte V1/V3/V5 an STORY 6 angepasst (Medienart, Verkaufsschichten, Trainer bildet Trainer aus). | – |
+| 14 | DS 7–8 / Akte 4 (Phase 5) | Inhalte folgen den Daten der TuS-DB: Tafelbild mit echten Werten (Jens Meyer 0000-31415 in 23 Zeilen, Zahlendreher 0000-31451; Judo = Timo Rieken, Zeile 12); Einfügeanomalie im Lab und an der Tafel mit **Boule** (Gesa Thiele, Bouleplatz Weseraue) statt Bouldern – das Papier-Rennen behält Bouldern als eigene Daten (Hinweis im Ablauf). Ausschnitte zeigen eine Spalte Zeile (`rowid`). Aktenfarbe A4 `#5E4A8C`. | – |
+| 15 | Mehrteilige Aufgaben | A4-E1-02, A4-E1-06 (b: genau eine Zelle), A4-E2-01/02/04/05, A5-E1-03/04, A5-E2-06, A5-E3-01, alle Cold Cases außer A4-E2-CC sowie A4-V-02 sind mehrteilig (Interaktion als Liste von Teilen). A4-E2-04 nutzt eine erweiterte `Mitgliedschaft(…, Seit, Bis)` nur im Aufgabentext. | – |
+| 16 | `kernpunkte` | Aufgaben mit Kernpunkten bringen 0 Punkte und zählen nach dem Abhaken als bearbeitet; in gemischten Aufgaben erst nach Lösen/Lösung sichtbar. | – |
+| 17 | Ermittler-Notizen | Intro-Notizen nehmen keine Lab-Lösung vorweg: A4-E1 erklärt Redundanz an Birte Haschke (nicht an Meyer), A4-E2 hat keine Datenbank-Kachel (normalisiertes TuS-Schema = Lösung A4-E2-07), A5-E3 erklärt R1–R6 am Schulbeispiel. A4-E2-07 nennt im Text alle Relationen und Attribute. | – |
+| 18 | A4-E2-03 | Änderungsanomalie nur an den HallenAdresse-Zellen der mehrfach genannten Halle am Mühlenfeld; Trainer und Halle stehen nur über ihren eindeutigen Namen in der Tabelle. | – |
+| 19 | Verhör 4 | Kontext Musikschule ohne normalisierte Teiltabellen (Musterzerlegung = Lösung A4-V-11), keine Varianten; FA-Liste mit Spaltennamen der Rohliste plus Etage aus Raum, Schlüssel {SchuelerNr, Instrument, LehrkraftNr}; in A4-V-01 zählt jedes Vorkommen redundanter Werte; „Albers“ ist ein vorgegebener Nachname (Ausnahmeliste im Namens-Test). | – |
+| 20 | DS 9–11 / Akte 5 (Phase 5) | Datenbank-Kachel der Detektei nur in A5-E3-08 und A5-E3-CC (sonst wären die Überführungslösungen sichtbar); Tabellenausschnitte stehen direkt in den Aufgaben. A5-E1-03 zeigt das Mengendiagramm mit echten Daten der Fall-DB. Aktenfarbe A5 `#17585C`. | – |
+| 21 | A5-E2-02 | Lesen-Modus mit Kategorien: **alle** Elemente werden zugeordnet; die zweite Beziehung Person–Fall heißt *meldet* (1:n). | – |
+| 22 | A5-E3-06, A5-E3-08 | A5-E3-06 ohne Äquivalenz `nm_aufgeloest` (verdaechtig muss als n:m erkannt werden); A5-E3-08 ohne gleichnamige Variante (Varianten `null`, `grenze`), `Seit` ist ein Jahr. | – |
+| 23 | Verhör 5 | Kontext an DS_PLANUNG angeglichen (klettert, Trainer, bildetAus, besucht/assistiertIn, ternär *wertet* mit Relation Wertung, Wettkampf); VERHOER_KONTEXTE nachgezogen. A5-V-07 heißt „Das Beziehungsattribut“. Ziehung mit maxJeKind (choice 3, er 3) statt „je Bereich mindestens eine“. | – |
+| 24 | Warm-up A5 | 12 Karten (W-A5-01…12, W-A5-09…12 in DS 12) – wie geplant, keine Abweichung. | Spec §10 bestätigt. |
+| 25 | Trainingsplatz T4–T7 | T4 (Kardinalität) und T6 (Überführung) nur eA (in gA-Kursen ausgeblendet); T4 bietet auch n:1 (Leserichtung); T6-Optionen als Schema-Blöcke „Vorschlag A–D“ mit ER-Block. | – |
