@@ -14,6 +14,7 @@
 const F = require('../content/format');
 const { pruefeAntwort, bereinige, AntwortFehler } = require('../content/pruefer');
 const { punkteFuer } = require('../domain');
+const PL = require('../content/plaedoyer');
 
 class HttpFehler extends Error {
   constructor(status, message) {
@@ -181,6 +182,24 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     };
   }
 
+  /* ---------- Schlussplädoyer (Phase 6, AUFGABENFORMAT §2.1) ---------- */
+
+  /** Abfragen für die Indizienkette eines Kontos (Status je Aufgabe, Titel, Sichtbarkeit im Kurs-Niveau). */
+  function ketteFragen(z, fm = stand.fortschritt(z.sub, z.kurs.id)) {
+    return {
+      status: (id) => (fm.has(id) ? fm.get(id).status : 'offen'),
+      titel: (id) => (inhalte.aufgabe(id) || {}).titel || id,
+      sichtbar: (id) => stand.aufgabeSichtbar(inhalte.aufgabe(id), z.einst.niveau)
+    };
+  }
+
+  /** Plädoyer-Angaben zu einer Aufgabe (Schritt n von m, Indiz nach dem Lösen, Auflösung nach dem letzten Schritt). */
+  function plaedoyerSchritt(z, a) {
+    const l = a.ermittlung ? inhalte.ermittlung(a.ermittlung) : null;
+    if (!l || !l.plaedoyer) return null;
+    return PL.schritt(l.plaedoyer, a.id, ketteFragen(z));
+  }
+
   /* ---------- Öffentliche Funktionen ---------- */
 
   function standFuer(sitzung, kursId) {
@@ -197,7 +216,11 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const i = levels.findIndex((x) => x.level.id === sl.level.id);
     return {
       akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe },
-      ermittlung: { ...kurz, intro: oeffentlicheBloecke(sl.level.intro) },
+      ermittlung: {
+        ...kurz,
+        intro: oeffentlicheBloecke(sl.level.intro),
+        plaedoyer: sl.level.plaedoyer ? PL.kette(sl.level.plaedoyer, ketteFragen(z, fm)) : null
+      },
       vorher: i > 0 ? { id: levels[i - 1].level.id, titel: levels[i - 1].level.titel } : null,
       nachher: i >= 0 && i < levels.length - 1 ? { id: levels[i + 1].level.id, titel: levels[i + 1].level.titel } : null
     };
@@ -209,6 +232,8 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const zs = zustand(z, a);
     const out = { aufgabe: inhalte.aufgabeOeffentlich(a.id), coldCase: a.art === 'cc', zustand: zs, ort: ort(a) };
     if (zs.status !== 'offen') out.loesung = loesungsteil(a);
+    const pl = plaedoyerSchritt(z, a);
+    if (pl) out.plaedoyer = pl;
     return out;
   }
 
@@ -328,6 +353,8 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const out = { ok: erg.ok, rueckmeldung: erg.rueckmeldung, zustand: zs, geloest: neu.geloest, punkteErhalten: neu.punkte, neueAbzeichen };
     if (teilweise) Object.assign(out, { teilweise: true, teil: erg.teil });
     if (zs.status !== 'offen' && fertig) out.loesung = loesungsteil(a);
+    const pl = plaedoyerSchritt(z, a);
+    if (pl) out.plaedoyer = pl;
     return out;
   }
 
@@ -356,7 +383,10 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
         }
       })();
     }
-    return { zustand: zustand(z, a), loesung: loesungsteil(a) };
+    const out = { zustand: zustand(z, a), loesung: loesungsteil(a) };
+    const pl = plaedoyerSchritt(z, a);
+    if (pl) out.plaedoyer = pl;
+    return out;
   }
 
   /** Für das Rate-Limit: hat die Aufgabe (falls vorhanden) einen sql-Teil? */

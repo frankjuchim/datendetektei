@@ -18,11 +18,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const F = require('../content/format');
 const M = require('../content/modellierung');
+const PL = require('../content/plaedoyer');
 const { STANDARD_UMFANG } = require('../kern/manifest');
 
 const STANDARD_VERZEICHNIS = path.join(__dirname, '..', '..', 'seed', 'akten');
 /** Teil des Fingerabdrucks: ändert sich die Lade-Logik, wird jede Datei einmal neu eingespielt. */
-const SEED_VERSION = 'akten-1';
+const SEED_VERSION = 'akten-2'; // akten-2: Ermittlungen behalten plaedoyer (Phase 6)
 const STUFEN_PUNKTE = Object.freeze({ 1: 10, 2: 20, 3: 30 });
 const ID_RE = /^A\d{1,2}-(?:E\d{1,2}-(?:\d{2,3}|CC)|V-\d{2,3})$/;
 const LEVEL_ID_RE = /^A\d{1,2}-E\d{1,2}$/;
@@ -175,7 +176,9 @@ function aktenDaten(d, gut) {
     briefing: typeof l.briefing === 'string' ? l.briefing : '',
     intro: Array.isArray(l.intro) ? l.intro : [],
     coldCase: typeof l.coldCase === 'string' && gut.has(l.coldCase) ? l.coldCase : null,
-    aufgaben: (Array.isArray(l.aufgaben) ? l.aufgaben : []).filter((id) => gut.has(id))
+    aufgaben: (Array.isArray(l.aufgaben) ? l.aufgaben : []).filter((id) => gut.has(id)),
+    // Schlussplädoyer (AUFGABENFORMAT §2.1): Indizien und Auflösung sind Lösungsdaten – nur intern, nie roh an den Browser
+    plaedoyer: istObjekt(l.plaedoyer) ? l.plaedoyer : null
   }));
   let boss = null;
   if (istObjekt(d.boss)) {
@@ -381,6 +384,7 @@ function baueKatalog(db) {
         akte: z.nr,
         coldCase: cc && cc.art === 'cc' ? cc.id : null,
         aufgaben: ids,
+        plaedoyer: PL.bereinige(l.plaedoyer, ids.filter((id) => F.artVon(aufgaben.get(id).interaktion) === 'sql')),
         maxPunkte: ids.reduce((s, id) => s + aufgaben.get(id).punkte, 0)
       };
       levels.push(level);
