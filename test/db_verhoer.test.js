@@ -507,53 +507,63 @@ test('V4: FA-Liste der LIESMICH (zerlegen, A4-V-11) – Schlüssel, Musterzerleg
 
 // ---------------------------------------------------------------- V5 Kletterhalle (Mini-DB, Phase 5 Task 6)
 
-test('V5: Mini-DB Wand 4, Route 12 (je genau eine Wand), begeht ≈ 25 nach Musterschema', () => {
+test('V5: Mini-DB Wand 4, Route 12 (je genau eine Wand), klettert ≈ 25 nach Musterschema', () => {
   const db = haupt('verhoer/kletterhalle');
   assert.deepEqual(spalte(db, "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY rowid"),
-    ['Mitglied', 'Wand', 'Routenbauer', 'Route', 'begeht']);
+    ['Mitglied', 'Wand', 'Routenbauer', 'Route', 'klettert']);
   assert.deepEqual(db.prepare('PRAGMA table_info(Route)').all().map((s) => [s.name, s.pk, s.notnull]),
     [['RoutenNr', 1, 0], ['Name', 0, 1], ['Schwierigkeit', 0, 1], ['WandNr', 0, 1], ['BauerNr', 0, 1]]);
-  assert.deepEqual(db.prepare('PRAGMA table_info(begeht)').all().map((s) => [s.name, s.pk]),
+  assert.deepEqual(db.prepare('PRAGMA table_info(klettert)').all().map((s) => [s.name, s.pk]),
     [['MitgliedsNr', 1], ['RoutenNr', 2], ['Datum', 3], ['Erfolg', 0]]);
   assert.deepEqual(db.prepare('PRAGMA foreign_key_list(Route)').all().map((f) => [f.from, f.table, f.to]).sort(),
     [['BauerNr', 'Routenbauer', 'BauerNr'], ['WandNr', 'Wand', 'WandNr']]);
-  assert.deepEqual(db.prepare('PRAGMA foreign_key_list(begeht)').all().map((f) => [f.from, f.table, f.to]).sort(),
+  assert.deepEqual(db.prepare('PRAGMA foreign_key_list(klettert)').all().map((f) => [f.from, f.table, f.to]).sort(),
     [['MitgliedsNr', 'Mitglied', 'MitgliedsNr'], ['RoutenNr', 'Route', 'RoutenNr']]);
   assert.deepEqual(alle(db, `SELECT (SELECT COUNT(*) FROM Wand), (SELECT COUNT(*) FROM Route),
     (SELECT COUNT(*) FROM Mitglied), (SELECT COUNT(*) FROM Routenbauer)`), [[4, 12, 8, 3]]);
-  const n = wert(db, 'SELECT COUNT(*) FROM begeht');
+  const n = wert(db, 'SELECT COUNT(*) FROM klettert');
   assert.ok(n >= 22 && n <= 28, `${n} Begehungen`);
 });
 
-test('V5: Kardinalität aus Daten – Wand 1:n Route, begeht n:m, dasselbe Paar an zwei Tagen', () => {
+test('V5: Kardinalität aus Daten – Wand 1:n Route, klettert n:m, dasselbe Paar an zwei Tagen', () => {
   const db = haupt('verhoer/kletterhalle');
   // jede Wand hat mehrere Routen, jede Route genau eine Wand (Spalte NOT NULL, FK)
   assert.deepEqual(spalte(db, 'SELECT COUNT(*) FROM Route GROUP BY WandNr ORDER BY WandNr'), [4, 3, 3, 2]);
   // Mitglieder mit mehreren Routen UND Routen mit mehreren Mitgliedern
-  const routenJeMitglied = spalte(db, 'SELECT COUNT(DISTINCT RoutenNr) FROM begeht GROUP BY MitgliedsNr');
-  const mitgliederJeRoute = spalte(db, 'SELECT COUNT(DISTINCT MitgliedsNr) FROM begeht GROUP BY RoutenNr');
+  const routenJeMitglied = spalte(db, 'SELECT COUNT(DISTINCT RoutenNr) FROM klettert GROUP BY MitgliedsNr');
+  const mitgliederJeRoute = spalte(db, 'SELECT COUNT(DISTINCT MitgliedsNr) FROM klettert GROUP BY RoutenNr');
   assert.ok(routenJeMitglied.filter((x) => x > 1).length >= 5, JSON.stringify(routenJeMitglied));
   assert.ok(mitgliederJeRoute.filter((x) => x > 1).length >= 5, JSON.stringify(mitgliederJeRoute));
   // dasselbe Paar genau einmal an zwei Tagen (erst ohne, dann mit Durchstieg) → Datum gehört in den Schlüssel
-  assert.deepEqual(alle(db, `SELECT MitgliedsNr, RoutenNr, COUNT(*), COUNT(DISTINCT Datum) FROM begeht
+  assert.deepEqual(alle(db, `SELECT MitgliedsNr, RoutenNr, COUNT(*), COUNT(DISTINCT Datum) FROM klettert
     GROUP BY MitgliedsNr, RoutenNr HAVING COUNT(*) > 1`), [[1, 3, 2, 2]]);
-  assert.deepEqual(spalte(db, 'SELECT Erfolg FROM begeht WHERE MitgliedsNr = 1 AND RoutenNr = 3 ORDER BY Datum'), ['nein', 'ja']);
+  assert.deepEqual(spalte(db, 'SELECT Erfolg FROM klettert WHERE MitgliedsNr = 1 AND RoutenNr = 3 ORDER BY Datum'), ['nein', 'ja']);
   // jede Route mindestens einmal begangen, jedes Mitglied mindestens zweimal
-  assert.equal(wert(db, 'SELECT COUNT(DISTINCT RoutenNr) FROM begeht'), 12);
+  assert.equal(wert(db, 'SELECT COUNT(DISTINCT RoutenNr) FROM klettert'), 12);
   assert.ok(Math.min(...routenJeMitglied) >= 2);
   // Herbst 2026, Erfolg ja/nein
-  assert.deepEqual(alle(db, "SELECT MIN(Datum) >= '2026-09-01', MAX(Datum) <= '2026-11-30' FROM begeht"), [[1, 1]]);
-  assert.deepEqual(spalte(db, 'SELECT DISTINCT Erfolg FROM begeht ORDER BY Erfolg'), ['ja', 'nein']);
+  assert.deepEqual(alle(db, "SELECT MIN(Datum) >= '2026-09-01', MAX(Datum) <= '2026-11-30' FROM klettert"), [[1, 1]]);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Erfolg FROM klettert ORDER BY Erfolg'), ['ja', 'nein']);
   // Ausschnitt für A5-V-04 (LIESMICH): zeigt beide Richtungen
-  const ausschnitt = alle(db, `SELECT MitgliedsNr, RoutenNr FROM begeht
+  const ausschnitt = alle(db, `SELECT MitgliedsNr, RoutenNr FROM klettert
     WHERE (MitgliedsNr = 1 AND RoutenNr IN (1, 3)) OR (MitgliedsNr IN (2, 3) AND RoutenNr = 1) OR (MitgliedsNr = 2 AND RoutenNr = 2)`);
   assert.ok(ausschnitt.length >= 5);
 });
 
-test('V5: LIESMICH enthält Musterlösung ER und Relationenschema aus VERHOER_KONTEXTE', () => {
+test('V5: LIESMICH und VERHOER_KONTEXTE an DS_PLANUNG angeglichen (klettert, Trainer, bildetAus, assistiertIn, Wertung)', () => {
   const liesmich = fs.readFileSync(path.join(SEED, 'verhoer/kletterhalle', 'LIESMICH.md'), 'utf8');
-  for (const text of ['A5-V-03', 'A5-V-04', 'sichert', 'Wertung', 'wertet', 'leitet', 'besucht',
-    'begeht(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg)', 'Route(<u>RoutenNr</u>, Name, Schwierigkeit, ↑WandNr, ↑BauerNr)']) {
-    assert.ok(liesmich.includes(text), text);
+  const kontexte = fs.readFileSync(path.join(SEED, 'VERHOER_KONTEXTE.md'), 'utf8');
+  const v5 = kontexte.slice(kontexte.indexOf('## V5 '), kontexte.indexOf('## V6 '));
+  for (const text of [liesmich, v5]) {
+    for (const teil of ['angeglichen an DS_PLANUNG', '*klettert*', '*bildetAus*', '*assistiertIn*', '*besucht*', '*leitet*',
+      '*wertet*', 'Trainer (1) – Kurs (n)', 'Trainer(<u>TrainerNr</u>, Name, ↑AusbilderNr)',
+      'klettert(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg)',
+      'Route(<u>RoutenNr</u>, Name, Schwierigkeit, ↑WandNr, ↑BauerNr)',
+      'Wertung(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>↑WettkampfNr</u>, Punkte)',
+      'assistiertIn(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>)']) {
+      assert.ok(text.includes(teil), teil);
+    }
+    assert.doesNotMatch(text, /\bbegeht\(|sichert\(/);
   }
+  assert.ok(liesmich.includes('A5-V-03') && liesmich.includes('A5-V-04'));
 });

@@ -1,4 +1,4 @@
-# Kletterhalle – Verhör-Kontext V5 (Verhör 5, Akte 5, nur eA)
+# Kletterhalle – Verhör-Kontext V5 (Verhör 5, Akte 5, nur eA) – angeglichen an DS_PLANUNG
 
 ## Zweck
 
@@ -16,16 +16,14 @@ ER-Diagrammen und Schemata; diese **Mini-DB** liefert die Daten für die beiden 
   bau ihn um.“ (DS_PLANUNG: „Die Kletterhalle Weserstedt plant eine neue Mitgliederverwaltung und bittet die Detektei um
   ein Gutachten.“)
 - **Umfang der Mini-DB:** genau der Ausschnitt der Musterlösung, den A5-V-03/04 brauchen – `Mitglied`, `Wand`,
-  `Routenbauer`, `Route`, `begeht`. Kurse, Sichern und Wettkämpfe stehen nur im ER-Modell bzw. Relationenschema unten
-  (keine Tabellen, damit die Mini-DB keine Lösung von A5-V-09/11/15 vorwegnimmt).
+  `Routenbauer`, `Route`, `klettert`. Trainer, Kurse und Wettkämpfe stehen nur im ER-Modell bzw. Relationenschema
+  unten (keine Tabellen, damit die Mini-DB keine Lösung von A5-V-08/09/11/15 vorwegnimmt).
 
-**Abweichung zwischen den Quellen (gemeldet, nicht still aufgelöst):** Der Verhör-Blueprint in `docs/DS_PLANUNG.md`
-nennt die Beziehung Mitglied–Route *klettert* und einen Entitätstyp *Trainer* (mit *bildetAus*, *leitet*,
-*assistiertIn*); `VERHOER_KONTEXTE.md` V5 (Anforderungstext, Musterlösung) nennt sie *begeht*, die Routen schraubt ein
-*Routenbauer*, Kurse leitet ein *Mitglied*, und *sichert* ist die rekursive Beziehung. Die Mini-DB folgt
-`VERHOER_KONTEXTE.md` (Tabelle `begeht`). Die Aufgaben A5-V-02/04/07/08/09/11/12/15 (Task 8) müssen dieselben Namen
-verwenden – entweder werden die Blueprint-Texte auf *begeht*/*sichert* angepasst oder die Musterlösung hier auf
-*klettert*/*Trainer* (dann `begeht` → `klettert` umbenennen und `npm run db`).
+**Angeglichen an DS_PLANUNG** (Entscheidung Phase 5 Task 6, wie V3 in Phase 3: DS_PLANUNG geht `VERHOER_KONTEXTE.md`
+vor): Die Beziehung Mitglied–Route heißt *klettert* (Tabelle `klettert`), Kurse leitet ein *Trainer*, die rekursive
+Beziehung ist *bildetAus* (Trainer–Trainer, 1:n), Mitglied–Kurs hat die zwei Beziehungen *besucht* und
+*assistiertIn*, die ternäre Beziehung *wertet* wird zur Relation `Wertung`. Routenbauer bleibt (A5-V-13).
+`VERHOER_KONTEXTE.md` V5 ist entsprechend angepasst.
 
 ## Relationenschema der Mini-DB (Kurzschreibweise)
 
@@ -33,7 +31,7 @@ verwenden – entweder werden die Blueprint-Texte auf *begeht*/*sichert* angepas
 - Wand(<u>WandNr</u>, Bereich)
 - Routenbauer(<u>BauerNr</u>, Name)
 - Route(<u>RoutenNr</u>, Name, Schwierigkeit, ↑WandNr, ↑BauerNr)
-- begeht(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg)
+- klettert(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg)
 
 `Schwierigkeit` als UIAA-Grad (`'3'` … `'8-'`), `Erfolg` `'ja'`/`'nein'` (Durchstieg), Datum `'JJJJ-MM-TT'`.
 
@@ -42,34 +40,37 @@ verwenden – entweder werden die Blueprint-Texte auf *begeht*/*sichert* angepas
 > Jedes Mitglied der Kletterhalle hat eine Mitgliedsnummer, einen Namen und einen Jahrgang. Die Halle besteht aus
 > Wänden mit Nummer und Bereich (z. B. „Nordwand“). An jeder Wand gibt es mehrere Routen; eine Route (Nummer, Name,
 > Schwierigkeit) befindet sich an genau einer Wand und wurde von genau einem Routenbauer (Nummer, Name) geschraubt.
-> Mitglieder begehen Routen; für jede Begehung werden das Datum und der Erfolg (Durchstieg ja/nein) gespeichert.
-> Beim Klettern sichern sich Mitglieder gegenseitig; es soll festgehalten werden, wer wen schon gesichert hat.
-> Kurse (Nummer, Titel, Termin) werden von genau einem Mitglied geleitet und von mehreren Mitgliedern besucht.
+> Mitglieder klettern Routen; für jede Begehung werden das Datum und der Erfolg (Durchstieg ja/nein) gespeichert.
+> Die Halle beschäftigt Trainerinnen und Trainer (Nummer, Name). Jede Trainerin und jeder Trainer wurde von höchstens
+> einer anderen Trainerin bzw. einem anderen Trainer der Halle ausgebildet und kann selbst mehrere ausbilden.
+> Kurse (Nummer, Titel, Termin) werden von genau einer Trainerin oder einem Trainer geleitet. Mitglieder besuchen
+> Kurse; außerdem können Mitglieder in Kursen assistieren.
 > Bei Hallenwettkämpfen (Nummer, Titel, Datum) erhält jedes teilnehmende Mitglied für jede gekletterte Route Punkte.
 
 ## Muster-ER (Chen; aus VERHOER_KONTEXTE V5)
 
 - **Entitätstypen:** `Mitglied` (<u>MitgliedsNr</u>, Name, Jahrgang) · `Wand` (<u>WandNr</u>, Bereich) · `Route`
-  (<u>RoutenNr</u>, Name, Schwierigkeit) · `Routenbauer` (<u>BauerNr</u>, Name) · `Kurs` (<u>KursNr</u>, Titel, Termin) ·
-  `Wettkampf` (<u>WettkampfNr</u>, Titel, Datum).
-- **Beziehungstypen:** *hat* Wand (1) – Route (n) · *schraubt* Routenbauer (1) – Route (n) · *begeht* Mitglied (n) –
-  Route (m) mit **Datum, Erfolg** · *sichert* Mitglied (n, Rolle Sichernde) – Mitglied (m, Rolle Kletternde),
-  **rekursiv n:m** · *leitet* Mitglied (1) – Kurs (n) · *besucht* Mitglied (n) – Kurs (m) (**zwei Beziehungen zwischen
-  denselben Entitätstypen**) · *wertet* **ternär** Mitglied (m) – Route (n) – Wettkampf (p) mit **Punkte**.
+  (<u>RoutenNr</u>, Name, Schwierigkeit) · `Routenbauer` (<u>BauerNr</u>, Name) · `Trainer` (<u>TrainerNr</u>, Name) ·
+  `Kurs` (<u>KursNr</u>, Titel, Termin) · `Wettkampf` (<u>WettkampfNr</u>, Titel, Datum).
+- **Beziehungstypen:** *hat* Wand (1) – Route (n) · *schraubt* Routenbauer (1) – Route (n) · *klettert* Mitglied (n) –
+  Route (m) mit **Datum, Erfolg** · *bildetAus* Trainer (1, Rolle Ausbildende) – Trainer (n, Rolle Ausgebildete),
+  **rekursiv 1:n** · *leitet* Trainer (1) – Kurs (n) · *besucht* Mitglied (n) – Kurs (m) und *assistiertIn*
+  Mitglied (n) – Kurs (m) (**zwei Beziehungen zwischen denselben Entitätstypen**) · *wertet* **ternär** Mitglied (m) –
+  Route (n) – Wettkampf (p) mit **Punkte** (Relation `Wertung`).
 - Grenzen der Notation (A5-V-10): „höchstens 8 Teilnehmende je Kurs“, „jede Route hat mindestens drei Begehungen“ sind
-  mit 1/n/m nicht darstellbar. Variante STORY 6 „Trainer bildet Trainer aus“ (*bildetAus* Mitglied (1) – Mitglied (n))
-  nur als Cold Case.
+  mit 1/n/m nicht darstellbar. Mögliche Cold-Case-Variante: rekursiv n:m *sichert* Mitglied – Mitglied.
 
 ## Muster-Relationenschema (aus VERHOER_KONTEXTE V5)
 
 Mitglied(<u>MitgliedsNr</u>, Name, Jahrgang) · Wand(<u>WandNr</u>, Bereich) · Routenbauer(<u>BauerNr</u>, Name) ·
 Route(<u>RoutenNr</u>, Name, Schwierigkeit, ↑WandNr, ↑BauerNr) ·
-begeht(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg) – Datum im Schlüssel, weil dieselbe Route mehrfach
-begangen wird · sichert(<u>↑SichererNr</u>, <u>↑KlettererNr</u>) – beide verweisen auf `Mitglied` ·
-Kurs(<u>KursNr</u>, Titel, Termin, ↑LeiterNr) · besucht(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>) ·
+klettert(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg) – Datum im Schlüssel, weil dieselbe Route
+mehrfach geklettert wird · Trainer(<u>TrainerNr</u>, Name, ↑AusbilderNr) – rekursiv 1:n, `AusbilderNr` verweist auf
+`Trainer` (NULL, wenn extern ausgebildet) · Kurs(<u>KursNr</u>, Titel, Termin, ↑TrainerNr) ·
+besucht(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>) · assistiertIn(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>) ·
 Wettkampf(<u>WettkampfNr</u>, Titel, Datum) · Wertung(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>↑WettkampfNr</u>, Punkte).
 
-Die Mini-DB ist genau der Teil `Mitglied`, `Wand`, `Routenbauer`, `Route`, `begeht` dieses Schemas.
+Die Mini-DB ist genau der Teil `Mitglied`, `Wand`, `Routenbauer`, `Route`, `klettert` dieses Schemas.
 
 ## Daten im Überblick
 
@@ -83,7 +84,7 @@ Die Mini-DB ist genau der Teil `Mitglied`, `Wand`, `Routenbauer`, `Route`, `bege
 Routenbauer: 1 Tomke Bredehorn, 2 Helge Schierholz, 3 Kaja Wiechmann (je 4 Routen).
 Mitglieder: 1 Arne Steenken (1994), 2 Smilla Dirksen (2008), 3 Deniz Akgül (1989), 4 Maren Tiemann (2001),
 5 Ilias Haddad (2010), 6 Vivien Eggers (1976), 7 Jannik Möhlmann (2005), 8 Fenja Nordhoff (2012).
-`begeht`: 25 Begehungen vom 2026-09-05 bis 2026-10-17, 19 mit Durchstieg; jedes Mitglied 2–5 Begehungen auf mindestens
+`klettert`: 25 Begehungen vom 2026-09-05 bis 2026-10-17, 19 mit Durchstieg; jedes Mitglied 2–5 Begehungen auf mindestens
 zwei Routen, jede Route begangen, 11 von 12 Routen von mindestens zwei Mitgliedern (Route 12 nur von Mitglied 8).
 
 ## Pflicht-Randfälle
@@ -91,8 +92,8 @@ zwei Routen, jede Route begangen, 11 von 12 Routen von mindestens zwei Mitgliede
 | Randfall | Daten | Für |
 |---|---|---|
 | 1:n aus Daten | Wand 1–4 mit 4/3/3/2 Routen; `Route.WandNr` NOT NULL, also jede Route an genau einer Wand | A5-V-03 (P9: nicht n:m, nicht 1:1) |
-| n:m aus Daten | Mitglied 1 begeht Route 1, 3, 8, 9; Route 1 wird von Mitglied 1, 2, 3 begangen | A5-V-04 (P9: nicht 1:n) |
-| Paar an zwei Tagen | Mitglied 1 / Route 3: 2026-09-05 `nein`, 2026-09-12 `ja` | A5-V-04, A5-V-11/12 (Datum im Schlüssel von `begeht`; P9 Beziehungsattribut) |
+| n:m aus Daten | Mitglied 1 klettert Route 1, 3, 8, 9; Route 1 wird von Mitglied 1, 2, 3 geklettert | A5-V-04 (P9: nicht 1:n) |
+| Paar an zwei Tagen | Mitglied 1 / Route 3: 2026-09-05 `nein`, 2026-09-12 `ja` | A5-V-04, A5-V-11/12 (Datum im Schlüssel von `klettert`; P9 Beziehungsattribut) |
 | FK auf der n-Seite | `Route.WandNr`, `Route.BauerNr` | A5-V-05 |
 
 ## Hinweise für A5-V-03 und A5-V-04
@@ -101,13 +102,13 @@ zwei Routen, jede Route begangen, 11 von 12 Routen von mindestens zwei Mitgliede
   genau einen Pfeil zu einer Wand, jede Wand mehrere Routen → *hat* Wand (1) – Route (n). Distraktoren: n:m (wer
   übersieht, dass keine Route an zwei Wänden hängt), 1:1 (wer nur prüft, dass jede Route genau eine Wand hat),
   vertauschte Richtung „Wand n – Route 1“.
-- **A5-V-04 Tabellenausschnitt:** die sechs Zeilen von `begeht` mit (MitgliedsNr, RoutenNr) ∈ {(1, 1), (1, 3), (3, 1),
+- **A5-V-04 Tabellenausschnitt:** die sechs Zeilen von `klettert` mit (MitgliedsNr, RoutenNr) ∈ {(1, 1), (1, 3), (3, 1),
   (2, 2), (2, 1)} – (1, 3) zweimal, an zwei Tagen –, am besten mit Namen (Beispielabfrage 6). Daran sichtbar: ein
-  Mitglied begeht mehrere Routen (Arne Steenken: Morgenrot, Gletscherspalte) **und** eine Route wird von mehreren
+  Mitglied klettert mehrere Routen (Arne Steenken: Morgenrot, Gletscherspalte) **und** eine Route wird von mehreren
   Mitgliedern begangen (Morgenrot: Arne Steenken, Deniz Akgül, Smilla Dirksen) → n:m. Typischer Fehlschluss (P9):
-  „Arne Steenken begeht mehrere Routen → 1:n“ (nur eine Leserichtung geprüft). Die doppelte Zeile (1, 3) begründet
+  „Arne Steenken klettert mehrere Routen → 1:n“ (nur eine Leserichtung geprüft). Die doppelte Zeile (1, 3) begründet
   zusätzlich, warum `Datum` zum Schlüssel gehört (A5-V-12).
-- Der Ausschnitt verrät keine Lösung anderer Aufgaben (keine Kurs-, Sicher- oder Wettkampfdaten in der DB).
+- Der Ausschnitt verrät keine Lösung anderer Aufgaben (keine Trainer-, Kurs- oder Wettkampfdaten in der DB).
 
 ## Randfall-Varianten
 
@@ -138,8 +139,8 @@ ORDER BY Route.RoutenNr
 
 ```sql
 SELECT Mitglied.MitgliedsNr, Mitglied.Name, COUNT(*) AS Begehungen
-FROM Mitglied, begeht
-WHERE Mitglied.MitgliedsNr = begeht.MitgliedsNr
+FROM Mitglied, klettert
+WHERE Mitglied.MitgliedsNr = klettert.MitgliedsNr
 GROUP BY Mitglied.MitgliedsNr, Mitglied.Name
 ```
 
@@ -147,8 +148,8 @@ GROUP BY Mitglied.MitgliedsNr, Mitglied.Name
 
 ```sql
 SELECT Route.RoutenNr, Route.Name, COUNT(*) AS Begehungen
-FROM Route, begeht
-WHERE Route.RoutenNr = begeht.RoutenNr
+FROM Route, klettert
+WHERE Route.RoutenNr = klettert.RoutenNr
 GROUP BY Route.RoutenNr, Route.Name
 HAVING COUNT(*) > 1
 ```
@@ -157,7 +158,7 @@ HAVING COUNT(*) > 1
 
 ```sql
 SELECT MitgliedsNr, RoutenNr, COUNT(*) AS Begehungen
-FROM begeht
+FROM klettert
 GROUP BY MitgliedsNr, RoutenNr
 HAVING COUNT(*) > 1
 ```
@@ -165,23 +166,23 @@ HAVING COUNT(*) > 1
 **6. Tabellenausschnitt für A5-V-04** – Ergebnis: 6 Zeilen, nach Datum.
 
 ```sql
-SELECT Mitglied.Name, Route.Name AS Route, begeht.Datum, begeht.Erfolg
-FROM Mitglied, begeht, Route
-WHERE Mitglied.MitgliedsNr = begeht.MitgliedsNr
-  AND begeht.RoutenNr = Route.RoutenNr
+SELECT Mitglied.Name, Route.Name AS Route, klettert.Datum, klettert.Erfolg
+FROM Mitglied, klettert, Route
+WHERE Mitglied.MitgliedsNr = klettert.MitgliedsNr
+  AND klettert.RoutenNr = Route.RoutenNr
   AND Route.RoutenNr <= 3
   AND Mitglied.MitgliedsNr <= 3
-  AND begeht.Datum <= '2026-10-11'
-ORDER BY begeht.Datum
+  AND klettert.Datum <= '2026-10-11'
+ORDER BY klettert.Datum
 ```
 
 **7. Durchstiege je Route** – Ergebnis: 11 Zeilen (Route 9 „Schwerkraft“ ohne Durchstieg fehlt).
 
 ```sql
 SELECT Route.Name, COUNT(*) AS Durchstiege
-FROM Route, begeht
-WHERE Route.RoutenNr = begeht.RoutenNr
-  AND begeht.Erfolg = 'ja'
+FROM Route, klettert
+WHERE Route.RoutenNr = klettert.RoutenNr
+  AND klettert.Erfolg = 'ja'
 GROUP BY Route.RoutenNr, Route.Name
 ```
 
@@ -197,18 +198,18 @@ GROUP BY Routenbauer.BauerNr, Routenbauer.Name
 **9. Begehungen von Arne Steenken** – Ergebnis: 5 Zeilen, Gletscherspalte zweimal.
 
 ```sql
-SELECT Route.Name, Route.Schwierigkeit, begeht.Datum, begeht.Erfolg
-FROM begeht, Route
-WHERE begeht.RoutenNr = Route.RoutenNr
-  AND begeht.MitgliedsNr = 1
-ORDER BY begeht.Datum
+SELECT Route.Name, Route.Schwierigkeit, klettert.Datum, klettert.Erfolg
+FROM klettert, Route
+WHERE klettert.RoutenNr = Route.RoutenNr
+  AND klettert.MitgliedsNr = 1
+ORDER BY klettert.Datum
 ```
 
 ## Abnahme-Prüfungen
 
 | Prüfung | Erwartung |
 |---|---|
-| Zeilen | Mitglied 8, Wand 4, Routenbauer 3, Route 12, begeht 22–28 (ist 25) |
+| Zeilen | Mitglied 8, Wand 4, Routenbauer 3, Route 12, klettert 22–28 (ist 25) |
 | Routen je Wand | 4, 3, 3, 2 |
 | Route ohne Wand/Routenbauer | 0 |
 | Routen je Routenbauer | 4, 4, 4 |

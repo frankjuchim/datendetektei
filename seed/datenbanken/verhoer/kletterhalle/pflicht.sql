@@ -1,7 +1,7 @@
 -- =====================================================================
 -- Verhör-Kontext V5 „Kletterhalle“ · vollständige Daten (kuratiert, kein Generator):
 -- basis.sql = schema.sql + pflicht.sql. Herbst 2026 (Begehungen 2026-09-05 … 2026-10-17).
--- Pflicht-Randfälle (LIESMICH): Wand 1:n Route (4/3/3/2 Routen), jede Route genau eine Wand; begeht n:m (jedes
+-- Pflicht-Randfälle (LIESMICH): Wand 1:n Route (4/3/3/2 Routen), jede Route genau eine Wand; klettert n:m (jedes
 -- Mitglied mehrere Routen, fast jede Route mehrere Mitglieder); Mitglied 1 / Route 3 an zwei Tagen (erst ohne, dann
 -- mit Durchstieg).
 -- =====================================================================
@@ -41,7 +41,7 @@ INSERT INTO Route (RoutenNr, Name, Schwierigkeit, WandNr, BauerNr) VALUES
   (11, 'Raupe', '3', 4, 1),
   (12, 'Marienkäfer', '3+', 4, 3);
 
-INSERT INTO begeht (MitgliedsNr, RoutenNr, Datum, Erfolg) VALUES
+INSERT INTO klettert (MitgliedsNr, RoutenNr, Datum, Erfolg) VALUES
   (1, 1, '2026-09-05', 'ja'),
   (1, 3, '2026-09-05', 'nein'),
   (1, 3, '2026-09-12', 'ja'),

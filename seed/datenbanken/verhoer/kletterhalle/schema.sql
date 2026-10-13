@@ -2,19 +2,19 @@
 -- Datendetektei Weserstedt · Verhör-Kontext V5 „Kletterhalle“ (Verhör 5, Akte 5, nur eA)
 -- Nur für das Verhör (nie öffentlich unter /db/). Mini-DB für „Kardinalität aus Daten“ (A5-V-03/04): Die
 -- Kletterhalle Weserstedt hat Wände mit Routen; jede Route hängt an genau einer Wand und wurde von genau einem
--- Routenbauer geschraubt; Mitglieder begehen Routen (Datum, Durchstieg ja/nein). Ausschnitt der Musterlösung
--- (VERHOER_KONTEXTE.md V5); Kurse, Sichern und Wettkämpfe gibt es nur im ER-Modell, nicht in der Mini-DB.
+-- Routenbauer geschraubt; Mitglieder klettern Routen (Datum, Durchstieg ja/nein). Ausschnitt der Musterlösung
+-- (VERHOER_KONTEXTE.md V5, angeglichen an DS_PLANUNG); Trainer, Kurse und Wettkämpfe gibt es nur im ER-Modell.
 -- Kurzschreibweise:
 --   Mitglied(MitgliedsNr, Name, Jahrgang)
 --   Wand(WandNr, Bereich)
 --   Routenbauer(BauerNr, Name)
 --   Route(RoutenNr, Name, Schwierigkeit, ↑WandNr, ↑BauerNr)
---   begeht(↑MitgliedsNr, ↑RoutenNr, Datum, Erfolg)      PK: MitgliedsNr, RoutenNr, Datum
+--   klettert(↑MitgliedsNr, ↑RoutenNr, Datum, Erfolg)      PK: MitgliedsNr, RoutenNr, Datum
 -- =====================================================================
 
 PRAGMA foreign_keys = ON;
 
-DROP TABLE IF EXISTS begeht;
+DROP TABLE IF EXISTS klettert;
 DROP TABLE IF EXISTS Route;
 DROP TABLE IF EXISTS Routenbauer;
 DROP TABLE IF EXISTS Wand;
@@ -46,8 +46,8 @@ CREATE TABLE Route (
   FOREIGN KEY (BauerNr) REFERENCES Routenbauer(BauerNr)
 );
 
--- n:m-Beziehung mit Beziehungsattributen; Datum gehört zum Schlüssel, weil dieselbe Route mehrfach begangen wird.
-CREATE TABLE begeht (
+-- n:m-Beziehung mit Beziehungsattributen; Datum gehört zum Schlüssel, weil dieselbe Route mehrfach geklettert wird.
+CREATE TABLE klettert (
   MitgliedsNr INTEGER NOT NULL,
   RoutenNr    INTEGER NOT NULL,
   Datum       TEXT    NOT NULL CHECK (Datum LIKE '____-__-__'),

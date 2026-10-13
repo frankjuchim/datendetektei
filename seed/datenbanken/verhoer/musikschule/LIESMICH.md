@@ -70,7 +70,7 @@ Geschwister-Tarif für Geschwisterkinder unabhängig vom Alter → **Geburtsjahr
   Monatsgebuehr. Redundant (jedes Vorkommen eines im Ausschnitt mehrfach gespeicherten Fakts): LehrkraftTelefon und
   Raum in Zeile 1, 3 (Jana Albers) und 2, 7 (Heiko Bargmann); Monatsgebuehr in Zeile 1, 4, 5, 8 (Jugend) und 6, 7
   (Geschwister) – 14 Zellen. Der gleiche Raumname in Zeile 5 (Linus Hedden, Bandraum) ist **keine** Redundanz der
-  Rohliste (andere Lehrkraft). Wer nur „ab dem zweiten Vorkommen“ wertet, legt das in der Aufgabe fest.
+  Rohliste (andere Lehrkraft). Festgelegt: jedes Vorkommen zählt (nicht erst das zweite).
 - **A4-V-04 nicht-atomar:** Zeile 8–16; Lösung: Instrumente, Lehrkraft, LehrkraftTelefon, Raum in Zeile 10 und 16
   (8 Zellen). Mit Zeile 22 (ganze Liste) 12 Zellen.
 - **A4-V-05 Ausschnitt-Falle:** Zeile 1–12 (Namen verschieden); die Gesamtliste zeigt Zeile 4 und 20.
