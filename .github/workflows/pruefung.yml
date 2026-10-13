@@ -59,10 +59,12 @@ jobs:
         run: docker build -t datendetektei .
       - name: Docker-Container startet und antwortet
         run: |
+          # Das Image läuft mit NODE_ENV=production und lehnt den Entwicklungsschlüssel ab: frischer Wegwerf-Schlüssel.
+          node -e "process.stdout.write(require('crypto').generateKeyPairSync('ed25519').publicKey.export({ type: 'spki', format: 'pem' }))" > "$RUNNER_TEMP/ci_portal_public.pem"
           docker run -d --name dd -p 8080:80 \
             -e PLATTFORM_URL=http://localhost:8080 \
             -e PORTAL_URL=http://localhost:3100 \
-            -e PORTAL_PUBLIC_KEY="$(cat test/fixtures/dev_portal_public.pem)" \
+            -e PORTAL_PUBLIC_KEY="$(cat "$RUNNER_TEMP/ci_portal_public.pem")" \
             -e AUTH_MODUS=portal \
             -e SESSION_SECRET=ci-nur-zum-testen-0123456789abcdef \
             -e ERLAUBE_HTTP=1 \
