@@ -195,7 +195,8 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
 
   /* ---------- Abzeichen ---------- */
 
-  function definitionen() {
+  /** Abzeichen-Definitionen; mit niveau nur die Akten, die es im Kurs-Niveau gibt (gA: ohne Akte 5, Probelauf 8). */
+  function definitionen(niveau = null) {
     const liste = [];
     for (const d of ABZEICHEN) {
       if (!d.jeAkte) {
@@ -204,6 +205,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
       }
       for (const akte of inhalte.akten()) {
         if (akte.kuer) continue;
+        if (niveau && !akteSichtbar(akte, niveau)) continue;
         // „Akte geschlossen“ nur für Akten mit Lab-Aufgaben (Akte 7 = Generalprobe hat eine Ermittlung ohne Aufgaben)
         if (d.id === 'akte-geschlossen' && !akte.levels.some((l) => l.aufgaben.length)) continue;
         if (d.id === 'beweisstueck' && !(akte.boss && akte.boss.pool.length)) continue;
@@ -258,7 +260,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
     const schueler = istSchuelerKonto(sub);
     const ins = db.prepare('INSERT OR IGNORE INTO abzeichen (sub, kurs_id, abzeichen, zeit) VALUES (?, ?, ?, ?)');
     db.transaction(() => {
-      for (const d of definitionen()) {
+      for (const d of definitionen(einst.niveau)) {
         if (!erfuellt.has(d.id) || hat.has(d.id)) continue;
         ins.run(sub, kursId, d.id, iso());
         if (schueler) erfolg(kursId, sub, `abzeichen:${d.id}`);
@@ -270,7 +272,8 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
 
   function abzeichenVon(sub, kursId) {
     const hat = new Map(db.prepare('SELECT abzeichen, zeit FROM abzeichen WHERE sub = ? AND kurs_id = ?').all(sub, kursId).map((z) => [z.abzeichen, z.zeit]));
-    return definitionen().map((d) => ({ ...d, erhalten: hat.has(d.id), am: hat.get(d.id) || null }));
+    const k = kurs(kursId);
+    return definitionen(k ? k.einstellungen.niveau : null).map((d) => ({ ...d, erhalten: hat.has(d.id), am: hat.get(d.id) || null }));
   }
 
   function fallenVon(sub, kursId) {

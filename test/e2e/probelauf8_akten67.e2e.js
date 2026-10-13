@@ -178,3 +178,25 @@ test('Urkunden: lange Namen (30 Zeichen) passen auf die A4-Seite, Stempel überd
     await kontext.close();
   }
 });
+
+test('Kür-Schreibkonsole: abgelaufene Sitzung und Netzfehler mit verständlicher Meldung', { timeout: 60000 }, async () => {
+  const { kontext, page } = await neueSeite(lena);
+  try {
+    await page.goto(`${server.url}/ermittlung/K1-E1?aufgabe=K1-E1-01`);
+    await page.waitForSelector('.schreib-konsole textarea');
+    await page.fill('.schreib-konsole textarea', 'SELECT 1;');
+    const ausfuehren = async () => {
+      await page.click('.schreib-konsole [id^="k-skript-ausfuehren"]');
+      await page.waitForFunction(() => document.querySelector('.schreib-konsole .ergebnis-fehler'));
+      return page.textContent('.schreib-konsole .ergebnis-fehler');
+    };
+    await page.route('**/skript', (r) => r.abort());
+    assert.match(await ausfuehren(), /nicht ausgeführt werden/);
+    await page.unroute('**/skript');
+    await kontext.clearCookies();
+    assert.match(await ausfuehren(), /nicht mehr angemeldet\. Melde dich über das Portal neu an/);
+  } finally {
+    await kontext.close();
+    meldungen.length = 0; // erwartete Netz- und 401-Meldungen der Konsole
+  }
+});
