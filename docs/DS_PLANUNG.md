@@ -1694,6 +1694,8 @@ ORDER BY Anzahl;
 ```
 **Ermittler-Notiz:** Jede Gruppe in diesem Ergebnis ist ein Risiko: Wer Jahrgang und Stadtteil kennt, kann die Person fast eindeutig bestimmen.
 
+*Plattform (Phase 6):* Die Ermittler-Notiz im Lab enthält den Merkkasten **ohne** diese SQL-Abfrage (sie wäre die Lösung von A6-E1-03/04); die Abfrage gehört nur an die Tafel nach dem Lab-Einsatz. Aktenfarbe A6 `#4A5A1A`.
+
 ### Lab-Blueprint (A6-E1)
 
 Die Ermittlung besteht aus 8 Aufgaben (Datenschutz + Verknüpfung) und dem **Schlussplädoyer** (6 `sql`-Aufgaben, Abschnitt 7.7 der Spec): Jedes Ergebnis wird als Indiz an die Pinnwand geheftet; nach A6-E1-14 folgt die Auflösung. Ablauf nach STORY 7, letzter Schritt neu: Verbund AppCheckin × Einwohner über `Ort = Strasse` (das Gerät des Phantoms checkt nachts an 'Kranstraße 7' ein). Nach A6-E1-14 erscheint die Auflösung (STORY 7.1: Merle Falkenrath, Jahrgang 1988, Hafenviertel, Tischtennis, ehemalige Datenschutzbeauftragte) und die Überleitung zur Debatte (STORY 7.2: Tamara Leversen und Ole Brakhage standen kurz auf der Kandidatenliste). Alle sechs Aufgaben laufen auf der DB Datenspuren.
@@ -1705,8 +1707,8 @@ Die Ermittlung besteht aus 8 Aufgaben (Datenschutz + Verknüpfung) und dem **Sch
 | A6-E1-01 | Die Grundsätze | ★ | `match` | K44 | – | gA/eA | DSGVO-Grundsätze (Zweckbindung, Datenminimierung, Transparenz, Speicherbegrenzung, Rechtmäßigkeit) ihren Beschreibungen und je einem Beispiel aus Weserstedt zuordnen. |
 | A6-E1-02 | Pseudonym oder anonym? | ★ | `choice` | K46 | – | gA/eA | Für vier Datensätze (Token mit Jahrgang/Stadtteil, reine Monatssumme je Stadtteil, Name + Adresse, Gerätekennung) entscheiden: personenbezogen, pseudonym oder anonym. |
 | A6-E1-03 | Wie groß sind die Gruppen? | ★ | `sql` | K26, K25, K46 | P3 | gA/eA | Anzahl der Einwohner je Jahrgang und Stadtteil, aufsteigend nach Anzahl sortiert. |
-| A6-E1-04 | Allein in der Gruppe | ★★ | `sql` | K27, K46 | P1 | gA/eA | Nur Kombinationen aus Jahrgang und Stadtteil mit genau einer Person (`HAVING COUNT(*) = 1`) – wie viele Einwohner sind damit eindeutig bestimmbar? |
-| A6-E1-05 | Dieselbe Person? | ★★ | `zeilen` | K46 | P2 | gA/eA | In Ausschnitten von RadExport und VereinExport die Zeilen antippen, die aufgrund von Jahrgang/Geburtsjahr und Stadtteil zu derselben Person gehören könnten. |
+| A6-E1-04 | Allein in der Gruppe | ★★ | `sql` + `gaps` | K27, K46 | P1 | gA/eA | Zweiteilig: a) nur Kombinationen aus Jahrgang und Stadtteil mit genau einer Person (`HAVING COUNT(*) = 1`); b) Lücke: wie viele Einwohner sind damit eindeutig bestimmbar? (150) |
+| A6-E1-05 | Dieselbe Person? | ★★ | `zeilen` | K46 | P2 | gA/eA | Gegeben ein TuS-Mitglied aus dem VereinExport (V-7046, 1983, Altstadt, Tennis – bewusst nicht das Phantom); im RadExport-Ausschnitt (24.–26.08.) alle Zeilen antippen, die nach Jahrgang = Geburtsjahr und Stadtteil zu derselben Person gehören könnten (zwei Fahrten von R-4BB5). |
 | A6-E1-06 | Exporte verknüpfen | ★★ | `sql` | K23, K46 | P2 | gA/eA | RadExport und VereinExport über `Jahrgang = Geburtsjahr AND Stadtteil = Stadtteil` verbinden (Verbund über Quasi-Identifikatoren); KundenToken, MitgliedToken und Abteilung ohne Duplikate. |
 | A6-E1-07 | Werbung mit Raddaten? | ★★★ | `kernpunkte` | K45, K44 | P10 | gA/eA | Beurteilen, ob die Stadt die Rad-Exporte an einen Werbepartner weitergeben darf (Zweckbindung, Einwilligung, Widerruf, Transparenz); Kernpunkte abhaken. |
 | A6-E1-08 | So hätte es sein müssen | ★★★ | `kernpunkte` | K46, K44 | P10 | gA/eA | Technische und organisatorische Maßnahmen für eine datenschutzgerechte Veröffentlichung erläutern und Datenschutz von Datensicherheit abgrenzen. |
@@ -1715,16 +1717,16 @@ Die Ermittlung besteht aus 8 Aufgaben (Datenschutz + Verknüpfung) und dem **Sch
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
-| A6-E1-09 | Spur 1: Fünf Nächte an der Hafenkante | ★ | `sql` | K18, K21, K32 | P5 | gA/eA | RadExport: alle Fahrten mit StartStation 'Hafenkante' und Start zwischen '2026-09-08 00:00' und '2026-09-12 23:59', mit KundenToken, Start, Jahrgang, Stadtteil und Tarif, sortiert nach Start – fünf Nachtfahrten (01–02 Uhr) unter einem Token (1988, Hafenviertel, Plus). |
+| A6-E1-09 | Spur 1: Fünf Nächte an der Hafenkante | ★ | `sql` | K18, K21, K32 | P5 | gA/eA | RadExport: alle Fahrten mit StartStation 'Hafenkante' und Start zwischen '2026-09-08 00:00' und '2026-09-12 23:59', mit KundenToken, Start, Jahrgang, Stadtteil und Tarif, sortiert nach Start – 9 Zeilen: fünf Nachtfahrten (01–02 Uhr) unter einem Token R-7F3A (1988, Hafenviertel, Plus), vier Tagfahrten anderer Tokens (ohne GROUP BY; Blueprint so beibehalten). |
 | A6-E1-10 | Spur 2: Wie viele teilen diese Merkmale? | ★ | `sql` | K15, K17 | P4 | gA/eA | Alle verschiedenen KundenToken (DISTINCT) mit Jahrgang 1988, Stadtteil 'Hafenviertel' und Tarif 'Plus' → nur ein Token. Erklärung thematisiert: GROUP BY mit COUNT(*) zählt hier Fahrten, nicht Menschen. |
 | A6-E1-11 | Spur 3: Das Handy fährt mit | ★★ | `sql` | K23, K26 | P2 | gA/eA | RadExport × AppCheckin über `AppCheckin.Ort = RadExport.StartStation AND AppCheckin.Zeitpunkt = RadExport.Start`, eingeschränkt auf das Token aus Spur 1; je Gerät die Anzahl Treffer (GROUP BY Geraet) → ein Gerät passt zu allen fünf Fahrten. |
-| A6-E1-12 | Spur 4: Wo war das Gerät sonst? | ★★ | `sql` | K15, K21, K32 | P5 | gA/eA | AppCheckin: alle Check-ins des Geräts aus Spur 3, sortiert nach Zeitpunkt – Festplatz am 2026-08-29 vor 22:00 und nach 23:00, Fundbüro am 2026-09-14 vormittags, dienstags Vereinsheim TuS, nachts 'Kranstraße 7'. (Gegenprobe FestZahlung: keine Kartenzahlung am Kaffeemobil 22:00–22:59 – in der Erklärung.) |
+| A6-E1-12 | Spur 4: Wo war das Gerät sonst? | ★★ | `sql` | K15, K21, K32 | P5 | gA/eA | Nur AppCheckin: alle Check-ins des Geräts aus Spur 3, sortiert nach Zeitpunkt – Festplatz am 2026-08-29 vor 22:00 und nach 23:00, Fundbüro am 2026-09-14 vormittags, dienstags Vereinsheim TuS, nachts 'Kranstraße 7'. (Gegenprobe FestZahlung: keine Kartenzahlung am Kaffeemobil 22:00–22:59 – in der Erklärung.) |
 | A6-E1-13 | Spur 5: Wer aus dem TuS passt? | ★★ | `sql` | K17, K15 | P5 | gA/eA | VereinExport: alle MitgliedToken mit Geburtsjahr 1988, Stadtteil 'Hafenviertel' und Abteilung 'Tischtennis' → genau ein Token (passend zu Steckbrief und Dienstagabend-Check-ins). |
-| A6-E1-14 | Spur 6: Die Enttarnung | ★★★ | `sql` | K24, K17, K46 | P2 | gA/eA | `Einwohner e, AppCheckin a, RadExport r`: `a.Ort = e.Strasse` (nächtliche Check-ins des Geräts aus Spur 3 an 'Kranstraße 7'), `r.Jahrgang = e.Jahrgang AND r.Stadtteil = e.Stadtteil` für das Token aus Spur 1; Vor- und Nachname ohne Duplikate (DISTINCT) → genau eine Person: Merle Falkenrath. |
+| A6-E1-14 | Spur 6: Die Enttarnung | ★★★ | `sql` | K24, K17, K46 | P2 | gA/eA | `Einwohner e, AppCheckin a, RadExport r`: `a.Ort = e.Strasse` (Check-ins des Geräts WA-3917 an einer Wohnadresse – 'Kranstraße 7'; ohne Zeitfilter), `r.Jahrgang = e.Jahrgang AND r.Stadtteil = e.Stadtteil` für das Token aus Spur 1; Vor- und Nachname ohne Duplikate (DISTINCT) → genau eine Person: Merle Falkenrath. |
 
 Stufenmix ★/★★/★★★: **5/6/3 (36/43/21 %)** · Interaktionsarten: `choice`, `kernpunkte`, `match`, `sql`, `zeilen`
 
-**Cold Case im Lab (ohne Punkte):** `A6-E1-CC` „Wie anonym ist Weserstedt?“ (K46, K26) – Bestimme für die Einwohner-Tabelle, wie viel Prozent der Einwohner in einer Gruppe (Jahrgang, Stadtteil) mit weniger als 5 Personen leben – zwei Abfragen, Rechnung im Kopf. Was ändert sich bei Jahrzehnt statt Jahrgang?
+**Cold Case im Lab (ohne Punkte):** `A6-E1-CC` „Wie anonym ist Weserstedt?“ (K46, K26) – Bestimme für die Einwohner-Tabelle, wie viel Prozent der Einwohner in einer Gruppe (Jahrgang, Stadtteil) mit weniger als 5 Personen leben – zwei Abfragen, Rechnung im Kopf. Was ändert sich bei Jahrzehnt statt Jahrgang? *Ergebnis laut Daten:* **100 %** (250 Einwohner, keine Gruppe mit 5 oder mehr Personen, die größte hat 4); mit Jahrzehnt statt Jahrgang noch 67 von 250 (26,8 %). Teile: `sql` + `gaps` + `kernpunkte`.
 
 ### Arbeitsblatt-Blueprint AB 6.1 („Ermittlungsakte“)
 
@@ -1792,7 +1794,7 @@ Rahmensatz: „Eine Fitness-App möchte Nutzerdaten mit einer Krankenkasse und W
 |---|---|---|---|---|---|---|---|
 | A6-V-01 | Grundsätze | ★ | `match` | K44 | – | gA/eA | Ordnen Sie den Auszügen aus der Datenschutzerklärung der Fitness-App den jeweils betroffenen Grundsatz der DSGVO zu. |
 | A6-V-02 | Besondere Daten | ★ | `choice` | K46 | – | gA/eA | Geben Sie an, welche der erfassten Daten zu den besonderen Kategorien personenbezogener Daten gehören und welche Maßnahme der Datensicherheit dient. |
-| A6-V-03 | Selbstbestimmung | ★ | `choice` | K44 | – | gA/eA | Geben Sie an, welche Aussage das Recht auf informationelle Selbstbestimmung zutreffend beschreibt. |
+| A6-V-03 | Recht auf Selbstbestimmung | ★ | `choice` | K44 | – | gA/eA | Geben Sie an, welche Aussage das Recht auf informationelle Selbstbestimmung zutreffend beschreibt. |
 | A6-V-04 | Werbung | ★★ | `choice` | K45 | P10 | gA/eA | Beurteilen Sie, unter welchen Voraussetzungen die App Nutzungsdaten für personalisierte Werbung verwenden darf. |
 | A6-V-05 | Kleine Gruppen | ★★ | `sql` | K27, K26, K46 | P1 | gA/eA | Entwerfen Sie eine Abfrage, die alle Kombinationen aus Geburtsjahr und PLZBereich ausgibt, zu denen nur ein NutzerToken gehört. |
 | A6-V-06 | Re-Identifizierbar | ★★ | `zeilen` | K46 | P2 | gA/eA | Geben Sie an, welche Datensätze des Exports trotz Pseudonym einer bekannten Person zugeordnet werden können. |
@@ -1876,7 +1878,7 @@ werden als **Hausaufgabe vor der Generalprobe** im Leitner-Trainer bearbeitet; f
 
 **Kontext-DB „Mensa-Vorbestellsystem“** (auch Basis der Generalprobe, andere Teilaufgaben):
 `Person(<u>PersonNr</u>, Vorname, Nachname, Rolle, Klasse)` · `Gericht(<u>GerichtNr</u>, Bezeichnung, Kategorie, Preis, Vegetarisch)` · `Angebot(<u>AngebotNr</u>, ↑GerichtNr, Datum, Portionen)` · `Bestellung(<u>BestellNr</u>, ↑PersonNr, ↑AngebotNr, Menge, Abgeholt)` – Abgeholt NULL = nicht abgeholt; zusammengelegte Tabelle `BestellUebersicht` für Anomalie-Aufgaben.
-Rahmensatz: „Zur Ermittlerprüfung wertet die Detektei das Vorbestellsystem einer Schulmensa aus.“ Timer 30 min, Abimodus `streng`. eA-markierte Aufgaben (A7-V-12, -14, -15) sind im gA-Kurs ausgeblendet.
+Rahmensatz (STORY 6, wie VERHOER_KONTEXTE): „Letzte Probe vor der Lizenz: ein ganzer Fall, ohne mich.“ Kontext-Einleitung je Aufgabe: Die Mensa einer Gesamtschule lässt das Mittagessen online vorbestellen. Timer 30 min, Abimodus `streng`. Aktenfarbe A7 `#383E47`; Akte 7 hat keine Lab-Aufgaben, Verhör 7 ist im Modus „auto“ frei, sobald Akte 7 freigeschaltet ist. eA-markierte Aufgaben (A7-V-12, -14, -15) sind im gA-Kurs ausgeblendet.
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Aufgabe (gesiezt, Transfer) |
 |---|---|---|---|---|---|---|---|
@@ -1890,11 +1892,11 @@ Rahmensatz: „Zur Ermittlerprüfung wertet die Detektei das Vorbestellsystem ei
 | A7-V-08 | Portionen je Gericht | ★★ | `sql` | K26, K25 | P3, P4 | gA/eA | Entwerfen Sie eine Abfrage, die je Gericht (Nummer, Bezeichnung) die Summe der bestellten Portionen ausgibt. |
 | A7-V-09 | Vielbesteller | ★★ | `sql` | K27, K24 | P1 | gA/eA | Entwerfen Sie eine Abfrage für alle Personen mit mehr als 10 Bestellungen. |
 | A7-V-10 | Analyse | ★★ | `choice` | K28 | P10 | gA/eA | Geben Sie an, welche Beschreibung die Information einer gegebenen Abfrage im Sachzusammenhang zutreffend wiedergibt. |
-| A7-V-11 | Zusammengelegt | ★★ | `zellen` | K09, K07 | P10 | gA/eA | Untersuchen Sie BestellUebersicht und geben Sie die Zellen an, an denen eine Änderungsanomalie möglich ist. |
+| A7-V-11 | Zusammengelegt | ★★ | `zellen` | K09, K07 | P10 | gA/eA | Untersuchen Sie BestellUebersicht (Bestellungen vom 2027-03-16, von Hand nachgetragen) und geben Sie alle Zellen an, die an einer **bereits eingetretenen** Änderungsanomalie (Widerspruch) beteiligt sind – 7 Zellen (Klasse bzw. Preis). |
 | A7-V-12 | Kardinalität | ★★ | `choice` | K34 | P9 | eA | Bestimmen Sie die Kardinalität zwischen Gericht und Angebot anhand der Daten und des Sachzusammenhangs. |
 | A7-V-13 | Top 3 der Woche | ★★★ | `sql` | K24, K22 | P2 | gA/eA | Entwerfen Sie eine Abfrage für die drei Gerichte mit dem höchsten Umsatz in der Woche vom '2027-03-15' bis '2027-03-19'. |
-| A7-V-14 | Allergene | ★★★ | `er` | K39, K36 | P9 | eA | Erweitern Sie das ER-Modell: Gerichte enthalten Allergene (n:m, Mengenangabe). |
-| A7-V-15 | Überführung | ★★★ | `schema` | K41 | P9 | eA | Überführen Sie das erweiterte ER-Modell (Allergene, Vertretung unter Küchenkräften) in Relationen. |
+| A7-V-14 | Allergene | ★★★ | `er` | K39, K36 | P9 | eA | Erweitern Sie das ER-Modell: Gerichte enthalten Allergene (n:m, Mengenangabe; Allergen mit Schlüssel Kuerzel). |
+| A7-V-15 | Überführung | ★★★ | `schema` | K41 | P9 | eA | Überführen Sie das erweiterte ER-Modell (Allergene, Vertretung unter Küchenkräften: *vertritt* rekursiv 1:n – jede Küchenkraft hat höchstens eine feste Vertretung) in Relationen. |
 
 Pool-Mix ★/★★/★★★: **6/6/3 (40/40/20 %)** · Ziehung 8 = 3 × ★ + 3 × ★★ + 2 × ★★★ (gA: aus 12 Aufgaben, ★★★ nur A7-V-13).
 
@@ -1906,7 +1908,7 @@ Pool-Mix ★/★★/★★★: **6/6/3 (40/40/20 %)** · Ziehung 8 = 3 × ★ + 
 |---|---|---|---|---|---|---|---|---|---|
 | GP-eA-a | a | **erläutern / beurteilen** | Kennzeichnungen in Bestellung erläutern; beurteilen, ob (PersonNr, AngebotNr) als Primärschlüssel von Bestellung genügen würde (Mehrfachbestellung). | 4 | 2 | 2 |  | K05, K03, K02 | P8 |
 | GP-eA-b | b | **untersuchen** | BestellUebersicht auf Anomalien untersuchen und den Zusammenhang mit der Redundanz an konkreten Datensätzen erläutern. | 5 | 1 | 3 | 1 | K08, K09, K10, K07 | P10 |
-| GP-eA-c | c | **erweitern** | ER-Modell erweitern: Gerichte enthalten Allergene (n:m, Attribut Hinweis); Küchenkräfte vertreten einander (rekursiv); Schlüsselattribute und Kardinalitäten vollständig. | 6 |  | 3 | 3 | K39, K37, K36, K35 | P9 |
+| GP-eA-c | c | **erweitern** | ER-Modell erweitern: Gerichte enthalten Allergene (n:m, Attribut Hinweis); Küchenkräfte vertreten einander (rekursiv, 1:n: höchstens eine feste Vertretung je Küchenkraft – wie A7-V-15); Schlüsselattribute und Kardinalitäten vollständig. | 6 |  | 3 | 3 | K39, K37, K36, K35 | P9 |
 | GP-eA-d | d | **überführen / begründen** | Den erweiterten Teil in Kurzschreibweise überführen und die Umsetzung von *enthaelt* begründen. | 3 | 1 | 1 | 1 | K41, K42, K04 | P9 |
 | GP-eA-e | e | **entwerfen** | SQL: Bezeichnung und Preis aller vegetarischen Gerichte, die am '2027-03-15' angeboten werden, aufsteigend nach Preis. | 3 | 2 | 1 |  | K23, K17, K21, K32 | P5, P7 |
 | GP-eA-f | f | **entwerfen** | SQL: für jedes Gericht (Nummer, Bezeichnung) die Summe der im März 2027 bestellten Portionen, nur Gerichte mit mehr als 50 Portionen, absteigend sortiert. | 5 | 1 | 3 | 1 | K24, K25, K26, K27, K18 | P1, P3, P4 |
@@ -2152,6 +2154,8 @@ Die Schülerinnen und Schüler …
 | Auswertung | 80–90' | Rangliste, häufigste Fehler je Station (anonym), Fallen-Ausblick auf die Generalprobe. Ergebnisse werden nach Rundenende verworfen. | Plenum | – | – |
 
 ### Typische Schwierigkeiten · Differenzierung · Vorbereitung
+**Umsetzung (Phase 6):** Code-Eingabe auch ohne vorheriges Lösen möglich (höchstens 5 Fehlversuche je Minute); die Lehrkraft sieht die Codes in der Steuerung; Beamer nur mit Lehrkraft-Anmeldung; im Duell erscheint das Ergebnis erst nach dem Schließen der Aufgabe; bei falscher `match`/`choice`-Antwort im Escape Room keine Einzelrückmeldung; Statistik (Modus, Teilnehmerzahl, Datum) nur im RAM.
+
 **Typische Schwierigkeiten:** Teams hängen an einer Station fest → nach 10' gibt die Lehrkraft einen Tipp-Umschlag frei (Zeitstrafe 2'). Dominante Teammitglieder → Rolle „Tastatur wechselt je Station“.
 **Differenzierung:** gA-Ersatzstation S5g (Schlüsselkasten); Zusatzschloss (Bonus) für schnelle Teams: Self-Join auf der Detektei-DB.
 **Vorbereitung:** Live-Runde im Lehrkraft-Bereich testen (SSE durch Schul-WLAN?), Stationsumschläge packen, Beamer-Board, Countdown.
@@ -2165,7 +2169,7 @@ Die Schülerinnen und Schüler …
 | S3 Die Geldkassette | GROUP BY/HAVING (Stadtfest) | `sql`: Anzahl der Gruppen, die eine HAVING-Bedingung erfüllen, und Nummer der stärksten Gruppe | K26, K27, K22 | zwei Zahlen hintereinander (Anzahl + StandNr) |
 | S4 Der Vereinsspind | Anomalien und Schlüssel (TuS-Rohliste) | `match`: drei Szenarien je einer Anomalieart zuordnen + `choice`: geeigneter Primärschlüssel | K08, K02 | Ziffernfolge der Zuordnung + Nummer der Schlüssel-Option |
 | S5 Die Planrolle (eA) | ER → Relationenschema (neuer Mini-Kontext) | `schema`: Überführung in der Schema-Werkbank | K41, K34 | Anzahl der Relationen + Anzahl der Fremdschlüssel |
-| S5g Der Schlüsselkasten (gA-Ersatz) | Schlüsselkandidaten, Ausschnitt-Falle | `zellen`: alle als Primärschlüssel tauglichen Attribute(-kombinationen) markieren | K02 | Anzahl geeigneter Kandidaten + Attributzahl des minimalen Schlüssels |
+| S5g Der Schlüsselkasten (gA-Ersatz) | Schlüsselkandidaten, Ausschnitt-Falle | `choice` (umgesetzt statt `zellen`): die als Primärschlüssel tauglichen Attribute(-kombinationen) auswählen | K02 | Anzahl geeigneter Kandidaten + Attributzahl des minimalen Schlüssels |
 | S6 Der Tresor | Datenschutz (Datenspuren + Szenarien) | `match`: fünf Szenarien den Grundsätzen Zweckbindung, Datenminimierung, Transparenz, Rechtsgrundlage/Einwilligung, Speicherbegrenzung zuordnen | K44, K45 | fünfstellige Ziffernfolge der Zuordnung |
 
 **Live-Pool (20 Aufgaben, je Akte 3–4, Typ `ergebnis`/`choice`/`sql`, kurze Bearbeitungszeit ≤ 90 s):** A1 4 · A2 3 · A3 4 · A4 3 · A5 3 (eA) · A6 3. IDs `K2-L-01…20`; Inhalte nicht identisch mit Lab-, Verhör- oder Prüfungsaufgaben (Transfer). Keine Lab-Punkte, keine Speicherung nach Rundenende (Spec 7.10).
@@ -2201,3 +2205,6 @@ Die Schülerinnen und Schüler …
 | 23 | Verhör 5 | Kontext an DS_PLANUNG angeglichen (klettert, Trainer, bildetAus, besucht/assistiertIn, ternär *wertet* mit Relation Wertung, Wettkampf); VERHOER_KONTEXTE nachgezogen. A5-V-07 heißt „Das Beziehungsattribut“. Ziehung mit maxJeKind (choice 3, er 3) statt „je Bereich mindestens eine“. | – |
 | 24 | Warm-up A5 | 12 Karten (W-A5-01…12, W-A5-09…12 in DS 12) – wie geplant, keine Abweichung. | Spec §10 bestätigt. |
 | 25 | Trainingsplatz T4–T7 | T4 (Kardinalität) und T6 (Überführung) nur eA (in gA-Kursen ausgeblendet); T4 bietet auch n:1 (Leserichtung); T6-Optionen als Schema-Blöcke „Vorschlag A–D“ mit ER-Block. | – |
+| 26 | DS 12 / Akte 6 (Phase 6) | Abfolge des Schlussplädoyers nach diesem Blueprint (Spur 1 ohne GROUP BY, Spur 4 nur AppCheckin mit FestZahlung-Gegenprobe in der Erklärung, Spur 6 ohne Zeitfilter); A6-E1-09 liefert 9 Zeilen; A6-E1-04 zweiteilig (150); A6-E1-05 mit V-7046 statt Phantom-Daten; Cold Case 100 %; Ermittler-Notiz ohne Tafelbild-SQL; A6-V-03 „Recht auf Selbstbestimmung“; V6 zieht 5 aus 8. Aktenfarbe A6 `#4A5A1A`. STORY §7 angeglichen. | – |
+| 27 | DS 13 / Akte 7 (Phase 6) | V7-Rahmensatz aus STORY 6; A7-V-11 nur eingetretene Widersprüche (7 Zellen); *vertritt* 1:n in A7-V-15 und GP-eA-c; Beziehungstyp Gericht–Angebot einheitlich *bietetAn* (auch VERHOER_KONTEXTE, LIESMICH Mensa); Allergen mit Schlüssel Kuerzel, *enthaelt* mit Mengenangabe. Aktenfarbe A7 `#383E47`. | – |
+| 28 | K1 / K2 (Phase 6) | Kür K1 nur eA (Welt 8, `kuer: true`, Punkte ohne Rangwirkung), K1-E1-03 mit Teil b) (`choice`), Intro mit Schulbeispiel; K2: S5g als `choice` statt `zellen`. | – |

@@ -770,6 +770,8 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
         else sendeAllen(r);
       }
     }
+    // Kurs gelöscht: auch die Statistik der Runden (RAM) vergessen – beende() hat sie eben noch fortgeschrieben
+    if (auftrag.kurs) statistik.delete(auftrag.kurs);
   }
 
   return {
