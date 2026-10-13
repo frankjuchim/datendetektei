@@ -126,6 +126,145 @@
    "art": "warmup",
    "fassung": "schueler",
    "niveau": "beide"
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB1_Die_Excel-Liste.docx",
+   "titel": "AB 4.1 · Die Excel-Liste",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB1_Die_Excel-Liste_LSG.docx",
+   "titel": "AB 4.1 · Die Excel-Liste – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB2_Ordnung_ins_Archiv.docx",
+   "titel": "AB 4.2 · Ordnung ins Archiv",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB2_Ordnung_ins_Archiv_LSG.docx",
+   "titel": "AB 4.2 · Ordnung ins Archiv – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+   "titel": "Präsentation Chaos im Vereinsarchiv",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "praesentation",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Anomalie-Rennen.docx",
+   "titel": "Unplugged: Anomalie-Rennen",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Anomalie-Rennen_LSG.docx",
+   "titel": "Unplugged: Anomalie-Rennen – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Schluessel-Detektiv.docx",
+   "titel": "Unplugged: Schlüssel-Detektiv",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Schluessel-Detektiv_LSG.docx",
+   "titel": "Unplugged: Schlüssel-Detektiv – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "Akte4_Vereinsarchiv/4_Lehrerhinweise/DD_A4_Lehrerhinweise.docx",
+   "titel": "Lehrerhinweise Akte 4",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "Warm-up/DD_Warm-up-Karten_A4.docx",
+   "titel": "Warm-up-Karten Akte 4",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
   }
  ]
 }

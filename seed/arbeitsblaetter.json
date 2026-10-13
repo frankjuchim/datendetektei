@@ -124,7 +124,87 @@
    "akte": 4,
    "ordner": "Akte4_Vereinsarchiv",
    "titel": "Akte 4 · Chaos im Vereinsarchiv",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "4.1",
+     "ermittlung": "A4-E1",
+     "ds": [
+      7
+     ],
+     "niveau": "beide",
+     "titel": "Die Excel-Liste",
+     "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB1_Die_Excel-Liste.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB1_Die_Excel-Liste_LSG.docx",
+     "datei": "DD_A4-AB1_Die_Excel-Liste.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "4.2",
+     "ermittlung": "A4-E2",
+     "ds": [
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Ordnung ins Archiv",
+     "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB2_Ordnung_ins_Archiv.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB2_Ordnung_ins_Archiv_LSG.docx",
+     "datei": "DD_A4-AB2_Ordnung_ins_Archiv.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      7,
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Präsentation Chaos im Vereinsarchiv",
+     "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+     "datei": "DD_A4-Praesentation_Vereinsarchiv.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A4-E1",
+     "ds": [
+      7
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Anomalie-Rennen",
+     "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Anomalie-Rennen.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Anomalie-Rennen_LSG.docx",
+     "datei": "DD_A4-Unplugged_Anomalie-Rennen.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A4-E2",
+     "ds": [
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Schlüssel-Detektiv",
+     "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Schluessel-Detektiv.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Schluessel-Detektiv_LSG.docx",
+     "datei": "DD_A4-Unplugged_Schluessel-Detektiv.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      7,
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Lehrerhinweise Akte 4",
+     "quelle": "Akte4_Vereinsarchiv/4_Lehrerhinweise/DD_A4_Lehrerhinweise.docx",
+     "datei": "DD_A4-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "beide",
+     "titel": "Warm-up-Karten Akte 4",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
+     "datei": "DD_A4-Warm-up-Karten.pdf"
+    }
+   ]
   },
   {
    "gruppe": "A5",

@@ -10,6 +10,16 @@
    "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
    "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
    "verfahren": "notizen"
+  },
+  "DD_A4-Lehrerhinweise.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/4_Lehrerhinweise/DD_A4_Lehrerhinweise.docx",
+   "sha256": "e17118004bdf31e19c547c1656f9410ac7bd5304b027e89e35dc23b74b08ad39",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Praesentation_Vereinsarchiv.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+   "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
+   "verfahren": "notizen"
   }
  }
 }
