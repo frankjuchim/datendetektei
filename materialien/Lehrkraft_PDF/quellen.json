@@ -1,4 +1,15 @@
 {
  "_hinweis": "ERZEUGT von werkzeuge/*_pdf.py – SHA-256 der Quelle je PDF; die CI prüft damit, ob die PDFs aktuell sind.",
- "dateien": {}
+ "dateien": {
+  "DD_A2-Lehrerhinweise.pdf": {
+   "quelle": "Akte2_Raeder/4_Lehrerhinweise/DD_A2_Lehrerhinweise.docx",
+   "sha256": "7e38a4e36cc430c11aafa3070d426dd3ae89888e1ed48ecc8f02371ee8089eac",
+   "verfahren": "pdf"
+  },
+  "DD_A2-Praesentation_Raeder.pdf": {
+   "quelle": "Akte2_Raeder/1_Praesentation/DD_A2_Raeder.pptx",
+   "sha256": "2121dbc6fbf1cae6d4f07f379d246de79ab1f49ef710178d504c411a73c14b32",
+   "verfahren": "notizen"
+  }
+ }
 }

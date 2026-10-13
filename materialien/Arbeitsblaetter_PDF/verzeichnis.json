@@ -1,4 +1,75 @@
 {
  "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Schülerfassungen (nur angemeldet, Spec §12.4/E13) – nie Lösungen.",
- "dateien": []
+ "dateien": [
+  {
+   "datei": "DD_A2-AB1_Der_rote_Faden.pdf",
+   "titel": "AB 2.1 · Der rote Faden",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "DD_A2-AB2_Nachtfahrten.pdf",
+   "titel": "AB 2.2 · Nachtfahrten",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Praesentation_Raeder_Handout.pdf",
+   "titel": "Spur der Räder (Handout)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "praesentation",
+   "fassung": "handout",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Unplugged_Roter_Faden.pdf",
+   "titel": "Unplugged: Roter Faden (Kopiervorlage)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "DD_A2-Unplugged_Ermittlungsweg.pdf",
+   "titel": "Unplugged: Ermittlungsweg durchs Schema (Kopiervorlage)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 2",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "warmup",
+   "fassung": "schueler"
+  }
+ ]
 }

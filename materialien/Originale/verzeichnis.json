@@ -1,4 +1,113 @@
 {
  "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. docx/pptx-Originale (Pfade relativ zu materialien/) – nur Superadmin.",
- "dateien": []
+ "dateien": [
+  {
+   "datei": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB1_Der_rote_Faden.docx",
+   "titel": "AB 2.1 · Der rote Faden",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "Akte2_Raeder/5_Loesungen/DD_A2_AB1_Der_rote_Faden_LSG.docx",
+   "titel": "AB 2.1 · Der rote Faden – Lösung",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB2_Nachtfahrten.docx",
+   "titel": "AB 2.2 · Nachtfahrten",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "Akte2_Raeder/5_Loesungen/DD_A2_AB2_Nachtfahrten_LSG.docx",
+   "titel": "AB 2.2 · Nachtfahrten – Lösung",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "Akte2_Raeder/1_Praesentation/DD_A2_Raeder.pptx",
+   "titel": "Spur der Räder",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "praesentation",
+   "fassung": "schueler",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Roter_Faden.docx",
+   "titel": "Unplugged: Roter Faden (Kopiervorlage)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Ermittlungsweg.docx",
+   "titel": "Unplugged: Ermittlungsweg durchs Schema (Kopiervorlage)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "Akte2_Raeder/4_Lehrerhinweise/DD_A2_Lehrerhinweise.docx",
+   "titel": "Lehrerhinweise Akte 2",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "Warm-up/DD_Warm-up-Karten_A2.docx",
+   "titel": "Warm-up-Karten Akte 2",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "warmup",
+   "fassung": "schueler"
+  }
+ ]
 }

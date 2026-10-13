@@ -21,7 +21,80 @@
    "akte": 2,
    "ordner": "Akte2_Raeder",
    "titel": "Akte 2 · Spur der Räder",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "2.1",
+     "ermittlung": "A2-E1",
+     "ds": [
+      3
+     ],
+     "niveau": "beide",
+     "titel": "Der rote Faden",
+     "quelle": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB1_Der_rote_Faden.docx",
+     "loesung": "Akte2_Raeder/5_Loesungen/DD_A2_AB1_Der_rote_Faden_LSG.docx",
+     "datei": "DD_A2-AB1_Der_rote_Faden.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "2.2",
+     "ermittlung": "A2-E2",
+     "ds": [
+      4
+     ],
+     "niveau": "beide",
+     "titel": "Nachtfahrten",
+     "quelle": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB2_Nachtfahrten.docx",
+     "loesung": "Akte2_Raeder/5_Loesungen/DD_A2_AB2_Nachtfahrten_LSG.docx",
+     "datei": "DD_A2-AB2_Nachtfahrten.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      3,
+      4
+     ],
+     "titel": "Spur der Räder",
+     "quelle": "Akte2_Raeder/1_Praesentation/DD_A2_Raeder.pptx",
+     "datei": "DD_A2-Praesentation_Raeder.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A2-E1",
+     "ds": [
+      3
+     ],
+     "titel": "Unplugged: Roter Faden (Kopiervorlage)",
+     "quelle": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Roter_Faden.docx",
+     "datei": "DD_A2-Unplugged_Roter_Faden.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A2-E2",
+     "ds": [
+      4
+     ],
+     "titel": "Unplugged: Ermittlungsweg durchs Schema (Kopiervorlage)",
+     "quelle": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Ermittlungsweg.docx",
+     "datei": "DD_A2-Unplugged_Ermittlungsweg.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      3,
+      4
+     ],
+     "titel": "Lehrerhinweise Akte 2",
+     "quelle": "Akte2_Raeder/4_Lehrerhinweise/DD_A2_Lehrerhinweise.docx",
+     "datei": "DD_A2-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "titel": "Warm-up-Karten Akte 2",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A2.docx",
+     "datei": "DD_A2-Warm-up-Karten.pdf"
+    }
+   ]
   },
   {
    "gruppe": "A3",
