@@ -476,7 +476,11 @@ button.puzzle-teil:hover { background: var(--flaeche); }
 .knopf-icon:disabled { opacity: .35; cursor: not-allowed; }
 
 .match { display: flex; flex-direction: column; gap: var(--a-3); }
-.match-zeile { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--a-2) var(--a-4); align-items: center; padding: var(--a-2) var(--a-3); border: 1px solid var(--rand); border-radius: var(--radius); }
+.match-zeile { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--a-2) var(--a-4); align-items: center; padding: var(--a-2) var(--a-3); border: 1px solid var(--rand); border-radius: var(--radius); }
+/* Probelauf 8: Viele Kategorien (A6-E1-01) dürfen die Beschreibung nicht auf einen Buchstaben stauchen – die Knöpfe
+   rutschen dann in eine eigene Zeile. */
+.match-element { flex: 1 1 16rem; min-width: 0; }
+.match-segment { flex: 0 1 auto; }
 .match-zeile.ok { border-color: var(--gruen); background: var(--gruen-flaeche); }
 .match-zeile.falsch { border-color: var(--siegelrot); background: var(--rot-flaeche); }
 .match-segment .segment-knopf { font-weight: 500; }
@@ -619,9 +623,11 @@ button.puzzle-teil:hover { background: var(--flaeche); }
   .seitenspalte { grid-template-columns: minmax(0, 1fr); }
   .akte-unten, .bilanz-raster { grid-template-columns: minmax(0, 1fr); }
   .puzzle { grid-template-columns: minmax(0, 1fr); }
-  .match-zeile { grid-template-columns: minmax(0, 1fr); }
+  .match-element { flex-basis: 100%; }
 }
 @media (max-width: 699px) {
+  /* Probelauf 8: Relationen auf dem Handy umbrechen statt verstecktem Querscrollen (Vorschläge in T6, Akten 4/5). */
+  .schema-block .relation { white-space: normal; }
   .lern-nav { margin-top: 0; }
   .lern-nav a { padding: 0 var(--a-2); }
   .plan-scroll .plan-svg { min-width: 640px; }
