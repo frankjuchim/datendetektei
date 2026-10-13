@@ -6,6 +6,7 @@
 // und es gibt keine Lern-API). pruefer = erzeugePruefer({ sandbox, schemata }) aus src/sql/pruefer.js (optional; ohne ihn
 // sind sql-Aufgaben nicht prüfbar). warmupKarten = ladeWarmupKarten() aus src/services/warmup.js (optional; ohne sie
 // gibt es keinen Warm-up-Trainer). gastOptionen gehen an erzeugeGast (src/services/gast.js, z. B. materialVerzeichnis).
+// liveInhalte = ladeLiveInhalte() aus src/content/live.js (optional; ohne sie gibt es keinen Live-Modus).
 // Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
@@ -34,6 +35,8 @@ const { warmupRouten } = require('./routes/warmup');
 const { trainingRouten } = require('./routes/training');
 const { erzeugeWarmup } = require('./services/warmup');
 const { erzeugeTraining } = require('./services/training');
+const { erzeugeLive } = require('./services/live');
+const { liveRouten } = require('./routes/live');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -41,7 +44,7 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 function erzeugeApp(
   konfig,
   db,
-  { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null, gastOptionen = {} } = {}
+  { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null, gastOptionen = {}, liveInhalte = null } = {}
 ) {
   const app = express();
   app.disable('x-powered-by');
@@ -61,6 +64,9 @@ function erzeugeApp(
   // Warm-up-Trainer (nur mit Karten) und Trainingsplatz T1–T3 (Plan Phase 3 Task 8).
   const warmup = lernen && warmupKarten ? erzeugeWarmup({ db, lernen, stand, inhalte, karten: warmupKarten, jetzt: uhr }) : null;
   const training = lernen ? erzeugeTraining({ db, lernen, geheimnis: konfig.sessionSecret, jetzt: uhr }) : null;
+  // Live-Modus (Duell, Escape Room): Runden nur im RAM (Plan Phase 6 Task 6).
+  const live = lernen && liveInhalte ? erzeugeLive({ lernen, inhalte: liveInhalte, pruefer, jetzt: uhr }) : null;
+  app.locals.live = live;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -70,7 +76,7 @@ function erzeugeApp(
   app.use('/api/verbund', rateLimit({ fensterMs: 60000, max: 120, ...limits.verbund, jetzt }));
 
   // Verbund-API vor dem allgemeinen JSON-Parser: JSON wird erst nach der Token-Prüfung gelesen.
-  app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null }));
+  app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null, nachLoeschen: live ? live.verbundLoeschung : null }));
 
   app.use(pruefeHerkunft(konfig));
   app.use(express.json({ limit: '100kb' }));
@@ -93,6 +99,7 @@ function erzeugeApp(
   if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
+  if (live) app.use(liveRouten({ live, konfig }));
   // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
   app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen }), pruefer, konfig }));
   app.use(themenRouten({ themen: erzeugeThemen({ inhalte }) }));

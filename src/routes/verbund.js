@@ -23,8 +23,11 @@ function kursIdPruefen(req, res, next) {
   next();
 }
 
-/** kennzahlen: optional, für die Kursübersicht (siehe kursUebersicht in src/kern/konten.js). */
-function verbundRouten(konfig, db, { kennzahlen = null } = {}) {
+/**
+ * kennzahlen: optional, für die Kursübersicht (siehe kursUebersicht in src/kern/konten.js).
+ * nachLoeschen: optional, wird nach einem Löschauftrag mit { sub } bzw. { kurs } aufgerufen (Daten im RAM, z. B. Live-Runden).
+ */
+function verbundRouten(konfig, db, { kennzahlen = null, nachLoeschen = null } = {}) {
   const router = express.Router();
   const jti = new JtiSpeicher();
   const auth = (zweck) => verbundAuth(konfig, jti, zweck);
@@ -33,6 +36,7 @@ function verbundRouten(konfig, db, { kennzahlen = null } = {}) {
     const auftrag = pruefeLoeschAuftrag(req.body);
     if (!auftrag) return res.status(400).json({ error: 'Genau eines von sub oder kurs angeben.' });
     const geloescht = auftrag.sub ? loescheKonto(db, auftrag.sub) : loescheKurs(db, auftrag.kurs);
+    if (typeof nachLoeschen === 'function') nachLoeschen(auftrag);
     res.json({ geloescht });
   });
 
