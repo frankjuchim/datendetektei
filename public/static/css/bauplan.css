@@ -1,0 +1,177 @@
+/* Bauplan: ER-Elemente in Chen-Notation, Blöcke er/mengen, Bauplan-Tisch (DESIGN.md §4.14, §5.7, §6, §7).
+   Nur Tokens – keine Farbliterale. Positionen kommen als SVG-Attribute aus den Modulen (CSP). */
+
+/* ---------- Chen-Elemente (SVG) ---------- */
+.chen-svg { display: block; overflow: visible; font-family: var(--schrift-text); }
+.chen-form { fill: var(--karte); stroke: var(--tinte); stroke-width: 2; }
+.chen-attribut .chen-form { stroke-width: 1.5; }
+.chen-name { fill: var(--tinte); }
+.chen-entitaet .chen-name { font-family: var(--schrift-titel); font-weight: 700; font-size: 23px; }
+.chen-beziehung .chen-name { font-style: italic; font-size: 18px; }
+.chen-attribut .chen-name { font-size: 16.5px; }
+.chen-name.chen-schluessel { font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.chen-kante { stroke: var(--tinte); stroke-width: 1.6; fill: none; }
+.chen-attributlinie { stroke: var(--tinte); stroke-width: 1.2; fill: none; }
+.chen-kard-flaeche { fill: var(--karte); stroke: var(--rand-stark); stroke-width: 1; }
+.chen-kard-text { fill: var(--siegelrot-text); font-family: var(--schrift-mono); font-weight: 600; font-size: 19px; }
+.chen-kard.offen .chen-kard-flaeche { stroke-dasharray: 3 3; }
+.chen-kard.offen .chen-kard-text { fill: var(--tinte-3); font-size: 16px; }
+.chen-kard-fehler { fill: none; stroke: var(--siegelrot); stroke-width: 2.5; }
+.chen-rolle { fill: var(--tinte-2); font-style: italic; font-size: 14px; }
+.chen-etikett-flaeche { fill: var(--blau-flaeche); stroke: var(--blau); stroke-width: 1; }
+.chen-etikett-text { fill: var(--tinte); font-family: var(--schrift-mono); font-size: 12px; font-weight: 600; }
+.chen-fokusrahmen { fill: none; stroke: var(--fokus); stroke-width: 3; visibility: hidden; }
+.chen-el:focus { outline: none; }
+.chen-el:focus-visible .chen-fokusrahmen { visibility: visible; }
+.chen-auswahl-rahmen { fill: none; stroke: var(--siegelrot); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.chen-griff { fill: var(--karte); stroke: var(--siegelrot); stroke-width: 1.5; }
+.chen-el[role="button"] { cursor: pointer; }
+.chen-el[role="button"]:hover .chen-form { stroke: var(--blau); }
+.chen-el.markiert .chen-form { fill: var(--messing-flaeche); stroke: var(--messing-grafik); stroke-width: 2.5; }
+.chen-el.gewaehlt .chen-form { fill: var(--blau-flaeche); stroke: var(--blau); stroke-width: 3; }
+.chen-el.aktiv .chen-form { stroke: var(--siegelrot); stroke-width: 3; stroke-dasharray: 6 4; }
+.chen-el.loesung .chen-form { fill: var(--gruen-flaeche); stroke: var(--gruen); stroke-width: 3; }
+.chen-el.falsch .chen-form { fill: var(--rot-flaeche); stroke: var(--siegelrot); stroke-width: 3; }
+.chen-el.verbinden-start .chen-form { stroke: var(--siegelrot); stroke-width: 3.5; }
+
+/* ---------- Blöcke er und mengen ---------- */
+.er-block, .mengen-block { margin: 0; display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.er-flaeche {
+  overflow-x: auto; min-width: 0; padding: var(--a-3); border: 1px solid var(--rand); border-radius: var(--radius);
+  background-color: var(--karte);
+  background-image: linear-gradient(var(--flaeche) 1px, transparent 1px), linear-gradient(90deg, var(--flaeche) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.er-flaeche .chen-svg, .er-flaeche .mengen-svg { max-width: 100%; height: auto; min-width: min(440px, 100%); margin-inline: auto; }
+.er-block.waehlbar .er-flaeche .chen-svg { min-width: 440px; }
+.er-alternative summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-size: var(--t-s); font-weight: 600; color: var(--tinte-2); }
+.er-liste { display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-2) 0; font-size: var(--t-s); }
+.er-liste-gruppe, .er-liste-attribute { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.er-liste-attribute { padding-left: var(--a-5); }
+.er-liste-art { color: var(--tinte-3); font-size: var(--t-xs); font-family: var(--schrift-mono); text-transform: uppercase; letter-spacing: 0.06em; }
+.er-liste-enden { color: var(--tinte-2); }
+.er-liste .pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; font-weight: 600; }
+.er-kursiv { font-style: italic; }
+.er-liste-markiert { color: var(--messing-text); font-weight: 600; }
+.er-liste-knopf {
+  display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: var(--a-1); min-height: 44px; padding: var(--a-2) var(--a-3);
+  border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); color: var(--tinte);
+  font: inherit; cursor: pointer; text-align: left;
+}
+.er-liste-knopf[aria-pressed="true"] { background: var(--blau-flaeche); border-color: var(--blau); box-shadow: inset 0 0 0 1px var(--blau); }
+.er-liste-knopf.loesung { background: var(--gruen-flaeche); border-color: var(--gruen); }
+.er-liste-knopf.falsch { background: var(--rot-flaeche); border-color: var(--siegelrot); }
+.er-liste-knopf:disabled { cursor: not-allowed; opacity: .7; }
+.er-block.gesperrt .chen-el { cursor: default; }
+.er-zuordnung { display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-3); border-radius: var(--radius); background: var(--flaeche); }
+.er-zuordnung-titel { font-weight: 600; font-size: var(--t-s); }
+
+.mengen-oval { fill: var(--karte); stroke: var(--tinte); stroke-width: 2; }
+.mengen-name { fill: var(--tinte); font-family: var(--schrift-titel); font-weight: 700; font-size: 20px; }
+.mengen-element { fill: var(--tinte); font-family: var(--schrift-mono); font-size: 14px; }
+.mengen-punkt { fill: var(--tinte); }
+.mengen-linie { stroke: var(--siegelrot); stroke-width: 2; stroke-linecap: round; }
+
+/* ---------- Bauplan-Tisch ---------- */
+.bauplan { container-type: inline-size; display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.bp-kopf { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--a-3); }
+.bp-kopf-text { font-size: var(--t-s); color: var(--tinte-2); min-width: 0; flex: 1 1 220px; }
+.bp-ansicht .segment-knopf { display: inline-flex; align-items: center; gap: var(--a-2); }
+.bp-handy-hinweis { display: none; font-size: var(--t-s); color: var(--tinte-2); padding: var(--a-2) var(--a-3); background: var(--blau-flaeche); border-radius: var(--radius); }
+.knopf-link {
+  min-height: 44px; padding: 0 var(--a-1); border: 0; background: none; color: var(--blau); font: inherit; font-weight: 600;
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.bp-werkzeuge { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--a-2); }
+.bp-werkzeuge-links, .bp-zoom { display: flex; flex-wrap: wrap; gap: var(--a-2); }
+.bp-zoom-knopf { min-width: 44px; padding: 0; justify-content: center; font-size: 1.25rem; }
+.bauplan .knopf[aria-pressed="true"] { background: var(--tinte); border-color: var(--tinte); color: var(--papier); }
+.bp-status { font-size: var(--t-s); color: var(--tinte-2); min-height: 1.5em; }
+.bp-status:empty { display: none; }
+
+.bp-arbeit { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--a-4); min-width: 0; }
+.bp-flaeche {
+  min-width: 0; overflow-x: auto; overflow-y: hidden; border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); -webkit-overflow-scrolling: touch;
+}
+.bp-svg { width: 100%; min-width: 620px; height: 460px; touch-action: pan-x pan-y; user-select: none; -webkit-user-select: none; }
+.bp-svg .chen-el { touch-action: none; }
+.bp-karo { fill: var(--karte); }
+.bp-karo-linie { fill: none; stroke: var(--flaeche); stroke-width: 1; }
+.bauplan.verbinden-an .bp-svg { cursor: crosshair; }
+.bauplan.gesperrt .bp-svg .chen-el { cursor: default; }
+
+.bp-seite { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.bp-panel { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); min-width: 0; }
+.bp-panel-titel { margin: 0; }
+.bp-leer { font-size: var(--t-s); color: var(--tinte-2); }
+
+.bp-liste { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.bp-liste-abschnitt { display: flex; flex-direction: column; gap: var(--a-3); align-items: flex-start; }
+.bp-liste-abschnitt > .bp-karte { align-self: stretch; }
+.bp-liste-titel { font-size: var(--t-l); }
+.bp-karte { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); min-width: 0; }
+.bp-liste .bp-karte { border-left: 4px solid var(--tinte); }
+.bp-liste .bp-karte-beziehung { border-left-style: double; }
+.bp-karte-kopf { display: flex; justify-content: space-between; align-items: center; gap: var(--a-2); }
+.bp-fest { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--messing-text); }
+.bp-feldgruppe { display: flex; flex-direction: column; gap: var(--a-1); min-width: 0; }
+.bp-label { font-size: var(--t-xs); font-weight: 600; color: var(--tinte-2); }
+.bp-feld {
+  min-height: 44px; padding: var(--a-2) var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); font: inherit; font-size: var(--t-s); min-width: 0; max-width: 100%;
+}
+.bp-feld[readonly] { background: var(--flaeche); color: var(--tinte-2); }
+.bp-feld:disabled { opacity: .6; cursor: not-allowed; }
+.bp-gruppe { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--a-2); align-items: flex-start; }
+.bp-gruppe legend { padding: 0; margin-bottom: var(--a-2); }
+.bp-attr-liste, .bp-enden { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--a-2); align-self: stretch; }
+.bp-attr, .bp-ende { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2); min-width: 0; }
+.bp-attr.aktiv { padding: var(--a-1); margin: calc(-1 * var(--a-1)); border-radius: var(--radius); background: var(--messing-flaeche); }
+.bp-attr .bp-feld { flex: 1 1 100px; min-width: 0; }
+.bp-ende .bp-ende-ziel { flex: 1 1 150px; }
+.bp-ende .bp-ende-rolle { flex: 1 1 120px; }
+.bp-kard-zeile { display: inline-flex; align-items: center; gap: var(--a-1); }
+.bp-ende-kard { width: 4.5em; font-family: var(--schrift-mono); font-weight: 600; color: var(--siegelrot-text); }
+.bp-schluessel-zeile { display: inline-flex; align-items: center; gap: var(--a-1); min-height: 44px; }
+.bp-schluessel { width: 22px; height: 22px; margin: 0; accent-color: var(--siegelrot); cursor: pointer; }
+.bp-schluessel-label { font-size: var(--t-s); cursor: pointer; }
+.bp-loeschen { align-self: flex-start; color: var(--siegelrot-text); }
+
+/* Prüfergebnis (Kriterienliste wie ein Erwartungshorizont) */
+.bp-ergebnis { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1.5px solid var(--siegelrot); border-radius: var(--radius); background: var(--rot-flaeche); min-width: 0; }
+.bp-ergebnis.geloest { border-color: var(--gruen); background: var(--gruen-flaeche); }
+.bp-ergebnis .stempel { align-self: flex-end; }
+.bp-ergebnis-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: var(--a-2); }
+.bp-ergebnis-kopf h3 { margin: 0; }
+.bp-zaehler { font-family: var(--schrift-titel); font-weight: 700; font-size: var(--t-l); }
+.bp-kriterien, .bp-teile { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-2); font-size: var(--t-s); }
+.bp-kriterien > li { display: grid; grid-template-columns: 1.4em minmax(0, 1fr) auto; gap: var(--a-1) var(--a-2); align-items: baseline; }
+.bp-teile { grid-column: 2 / -1; gap: var(--a-1); color: var(--tinte-2); }
+.bp-teile li { display: grid; grid-template-columns: 1.2em minmax(0, 1fr); gap: var(--a-2); }
+.bp-zeichen { font-weight: 700; }
+.bp-kriterien li.ok > .bp-zeichen, .bp-teile li.ok > .bp-zeichen { color: var(--gruen); }
+.bp-kriterien li.falsch > .bp-zeichen, .bp-teile li.falsch > .bp-zeichen { color: var(--siegelrot-text); }
+
+.bp-loesung { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+
+/* Ansichten: Zeichnen (Fläche + Seitenspalte) oder Liste (Formularkarten + Ergebnis) */
+.bauplan.ansicht-liste .bp-werkzeuge, .bauplan.ansicht-liste .bp-flaeche, .bauplan.ansicht-liste .bp-panel { display: none; }
+.bauplan.ansicht-zeichnen .bp-liste { display: none; }
+@container (min-width: 980px) {
+  .bauplan.ansicht-zeichnen .bp-arbeit { grid-template-columns: minmax(0, 1fr) minmax(260px, 320px); align-items: start; }
+}
+@media (max-width: 599px) {
+  .bauplan.ansicht-zeichnen .bp-handy-hinweis { display: block; }
+  .bp-svg { height: 380px; }
+}
+
+/* ---------- Werkzeugseite ---------- */
+.bauplan-seite .werkzeug-rahmen, .werkbank-seite .werkzeug-rahmen { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.werkzeug-fuss { display: flex; flex-wrap: wrap; gap: var(--a-3); align-items: center; }
+.werkzeug-bestaetigung { display: flex; flex-wrap: wrap; gap: var(--a-3); align-items: center; padding: var(--a-3) var(--a-4); border-radius: var(--radius); background: var(--messing-flaeche); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-ergebnis .stempel.auftritt { animation: none; }
+}
+.bp-panel .bp-karte { border: 0; padding: 0; }

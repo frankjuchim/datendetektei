@@ -23,6 +23,22 @@ const AKTEN_DATENBANKEN = Object.freeze(['fundbuero', 'stadtrad', 'stadtfest', '
  */
 const OEFFENTLICHE_DATENBANKEN = Object.freeze([...AKTEN_DATENBANKEN]);
 
+/** Verhör-Kontexte (seed/datenbanken/verhoer/<kontext>, VERHOER_KONTEXTE.md) – geladen für Prüfer/Verhöre, nie öffentlich. */
+const VERHOER_DATENBANKEN = Object.freeze([
+  'verhoer/bibliothek', 'verhoer/buergerbus', 'verhoer/kiosk', 'verhoer/musikschule', 'verhoer/kletterhalle',
+  'verhoer/fitness', 'verhoer/mensa'
+]);
+
+/**
+ * Prüfungs-Kontexte (seed/datenbanken/pruefung/<kontext>: Klausur, Nachschreibklausur) – nur für Material und
+ * Erwartungshorizonte (scripts/db_bauen.js baut und prüft sie, scripts/sql_pruefen_cli.js nutzt sie); zur Laufzeit
+ * NICHT geladen und nie öffentlich.
+ */
+const PRUEFUNG_DATENBANKEN = Object.freeze(['pruefung/sanitaetsdienst', 'pruefung/kostuemverleih']);
+
+/** Alle beim Start geladenen DBs (ohne Prüfungs-Kontexte). */
+const ALLE_DATENBANKEN = Object.freeze([...AKTEN_DATENBANKEN, ...VERHOER_DATENBANKEN]);
+
 /** Variantentypen in fester Reihenfolge (Spec 7.4); Datei je Typ: <quellen>/<name>/varianten/<typ>.sql. */
 const VARIANTEN_TYPEN = Object.freeze(['null', 'gleichnamig', 'grenze', 'gleichstand', 'leer']);
 
@@ -124,7 +140,7 @@ function variantenBuffer(name, haupt, quellen) {
  * Serialisierte Übungsdatenbanken (ohne Prüfsummen-Check, für Bau und Tests): Haupt-DB aus basis.sql, je Variante
  * basis.sql + Delta. → { <name>: { haupt: Buffer, varianten: { <typ>: Buffer } } }
  */
-function ladeAlle(seedDir = SEED_VERZEICHNIS, { namen = AKTEN_DATENBANKEN } = {}) {
+function ladeAlle(seedDir = SEED_VERZEICHNIS, { namen = ALLE_DATENBANKEN } = {}) {
   const ergebnis = {};
   for (const name of namen) {
     const hauptDb = ladeHaupt(name, { quellen: seedDir });
@@ -167,10 +183,10 @@ function tiefEinfrieren(wert) {
 /**
  * Lädt die Übungsdatenbanken einmal beim Start. Bricht mit Fehler ab, wenn eine basis.sql fehlt, ihre Prüfsumme
  * nicht zum Datenteil passt (vgl. `npm run db:pruefen`) oder eine Variante nicht baut.
- * optionen.namen: zu ladende DBs (Standard: die sieben Akten-DBs); optionen.log: Protokoll (Startzeit).
+ * optionen.namen: zu ladende DBs (Standard: Akten- und Verhör-DBs); optionen.log: Protokoll (Startzeit).
  * → { namen, haupt(name) → Buffer, varianten(name) → { typ: Buffer }, schema(name) → [...] }
  */
-function ladeDatenbanken(seedDir = SEED_VERZEICHNIS, { namen = AKTEN_DATENBANKEN, log = console.log } = {}) {
+function ladeDatenbanken(seedDir = SEED_VERZEICHNIS, { namen = ALLE_DATENBANKEN, log = console.log } = {}) {
   const start = process.hrtime.bigint();
   const eintraege = new Map();
   let anzahlVarianten = 0;
@@ -207,6 +223,9 @@ module.exports = {
   SEED_VERZEICHNIS,
   AKTEN_DATENBANKEN,
   OEFFENTLICHE_DATENBANKEN,
+  VERHOER_DATENBANKEN,
+  PRUEFUNG_DATENBANKEN,
+  ALLE_DATENBANKEN,
   VARIANTEN_TYPEN,
   DATEN_MARKE,
   pruefeBasisText,

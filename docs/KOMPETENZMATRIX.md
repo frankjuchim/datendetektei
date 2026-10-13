@@ -4,7 +4,7 @@
 |---|---|
 | **Bezug** | Spec Abschnitt 4 (DB-K01…K48), 5 (P1–P10), 7.5 (Interaktionen), 10 (Zielgrößen), 2.4 (Abi-Befunde) |
 | **Quelle der Zuordnungen** | `docs/DS_PLANUNG.md` (Lab-, Verhör-, Warm-up-, Prüfungs-Blueprints); beide Dateien wurden aus demselben Datenmodell erzeugt und per Skript gegengeprüft |
-| **Stand** | 2026-10-12 · Phase 0 |
+| **Stand** | 2026-10-12 · Phase 0 · Akten 1–3 (Lab, Verhör 1–3, Warm-up A1–A3) gegen `seed/akten/` und `seed/warmup/` (Feld `kompetenzen`/`fallen`) geprüft: Zuordnungen und Zählungen stimmen (Phase 3) |
 
 **Erfolgskriterium 1 der Spec:** Jede abiturverbindliche Kompetenz (alle außer Kür K06, K13, K48) ist mindestens einer DS, einer Lab-Aufgabe und einer Prüfungsaufgabe (Verhör, Generalprobe oder Klausur) zugeordnet → Abschnitt 2.
 

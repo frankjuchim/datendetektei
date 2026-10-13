@@ -16,6 +16,16 @@ const KONSOLE_ROLLEN = ['schueler', 'lehrkraft', 'superadmin'];
 
 const PUBLIC_DIR = path.join(__dirname, '..', '..', 'public');
 
+/** [Pfad, Muster für :wert (oder null), Datei] der Schülerseiten. */
+const SCHUELER_SEITEN = [
+  ['/akte/:wert', /^[1-8]$/, 'akte.html'], // 8 = Kür K1 (Phase 6 Task 7)
+  ['/ermittlung/:wert', /^(?:A[1-9]\d?|K1)-E[1-9]\d?$/, 'ermittlung.html'],
+  ['/verhoer/:wert', /^[1-7]$/, 'verhoer.html'],
+  ['/warmup', null, 'warmup.html'],
+  ['/training', null, 'training.html'],
+  ['/pinnwand', null, 'pinnwand.html']
+];
+
 const OEFFENTLICH = {
   '/': 'index.html',
   '/gast': 'gast.html',
@@ -36,6 +46,17 @@ function seitenRouten() {
   for (const [pfad, datei] of Object.entries(OEFFENTLICH)) router.get(pfad, seite(datei));
   router.get('/lehrkraft', nurAngemeldet(['lehrkraft', 'superadmin']), seite('lehrkraft.html'));
 
+  // Schülerseiten (Plan Phase 3 Task 9): alle Rollen (Lehrkraft/Superadmin als Vorschau). Ungültige Parameter → 404,
+  // bevor die Anmeldung geprüft wird; Kurs, Freischaltung und Inhalte prüft die Lern-API.
+  const lernenAngemeldet = nurAngemeldet(KONSOLE_ROLLEN);
+  for (const [pfad, muster, datei] of SCHUELER_SEITEN) {
+    const sende = seite(datei);
+    router.get(pfad, (req, res, next) => {
+      if (muster && !muster.test(req.params.wert)) return next();
+      return lernenAngemeldet(req, res, () => sende(req, res));
+    });
+  }
+
   const konsoleAngemeldet = nurAngemeldet(KONSOLE_ROLLEN);
   const konsole = seite('konsole.html');
   router.get('/konsole/:db', (req, res, next) => {
@@ -43,6 +64,18 @@ function seitenRouten() {
     if (!OEFFENTLICHE_DATENBANKEN.includes(name)) return next();
     if (KONSOLE_OHNE_ANMELDUNG.has(name)) return konsole(req, res);
     return konsoleAngemeldet(req, res, () => konsole(req, res));
+  });
+
+  // Zeitlupe (Plan Phase 4 Task 2, DESIGN §5.4): angemeldet (alle Rollen); mit ?db=eisdiele auch ohne Anmeldung
+  // (wie die Konsole). Die Abfrage kommt nie über die URL, sondern über sessionStorage (dd_zeitlupe). Nur öffentliche
+  // Übungs-DBs; alles andere (unbekannt, Verhör-DB, mehrfach, leer) → 404.
+  const zeitlupe = seite('zeitlupe.html');
+  router.get('/werkzeug/zeitlupe', (req, res, next) => {
+    const db = req.query.db;
+    if (db === undefined) return konsoleAngemeldet(req, res, () => zeitlupe(req, res));
+    if (typeof db !== 'string' || !OEFFENTLICHE_DATENBANKEN.includes(db)) return next();
+    if (KONSOLE_OHNE_ANMELDUNG.has(db)) return zeitlupe(req, res);
+    return konsoleAngemeldet(req, res, () => zeitlupe(req, res));
   });
 
   const akten = { akten: AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, niveaus: [...a.niveaus] })) };

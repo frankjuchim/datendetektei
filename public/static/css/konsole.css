@@ -168,6 +168,11 @@
 .diagnose-ort { font-family: var(--schrift-mono); font-size: var(--t-xs); opacity: 0.85; }
 .diagnose code { color: var(--konsole-code); font-family: var(--schrift-mono); }
 .diagnose a { color: var(--konsole-link); }
+/* Links aus der Diagnose in die Verstehenshilfen (Phase 4) */
+.diagnose-werkzeuge { display: flex; flex-wrap: wrap; gap: var(--a-2); margin: 2px 0 var(--a-1); }
+.diagnose .knopf.diagnose-werkzeug { background: transparent; color: var(--konsole-link); border-color: currentColor; }
+.diagnose .knopf.diagnose-werkzeug:hover { background: var(--konsole-hover); color: var(--konsole-text); }
+.diagnose .knopf.diagnose-werkzeug:focus-visible { outline: 3px solid var(--konsole-leise); outline-offset: 2px; }
 .falle {
   flex: none; display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px;
   border-radius: var(--radius-pille); font-family: var(--schrift-mono); font-size: 0.75rem; font-weight: 600;
@@ -187,4 +192,36 @@
   .konsole-knoepfe .taste, .konsole-knoepfe .trenner { display: none; }
   .konsole-modus { grid-column: 1 / -1; text-align: center; }
   .ergebnis { padding: var(--a-3); }
+}
+
+/* ---------- Kür-Sandbox (Schreibmodus, Plan Phase 6 Task 7) ---------- */
+.kuer-band {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-3);
+  margin: 0; padding: var(--a-2) var(--a-4);
+  background: var(--messing-flaeche); color: var(--tinte); font-size: var(--t-s);
+  border-top: 1px solid var(--konsole-rand); border-bottom: 1px solid var(--konsole-rand);
+}
+.kuer-band .stempel { transform: rotate(-2deg); }
+.kuer-band-text { min-width: 0; overflow-wrap: anywhere; }
+.skript-protokoll {
+  list-style: none; margin: 0 0 var(--a-3); padding: 0;
+  font-size: var(--t-s); border: 1px solid var(--konsole-rand); border-radius: var(--radius);
+}
+.skript-protokoll li {
+  display: grid; grid-template-columns: 2.25rem minmax(7rem, auto) minmax(0, 1fr) auto; gap: var(--a-2);
+  align-items: baseline; padding: 6px var(--a-3); border-top: 1px solid var(--konsole-rand); min-width: 0;
+}
+.skript-protokoll li:first-child { border-top: 0; }
+.skript-protokoll li.fehler { background: var(--konsole-fehler-flaeche); color: var(--konsole-fehler-text); }
+.protokoll-nr, .protokoll-zeile { color: var(--konsole-leise); font-size: var(--t-xs); }
+.protokoll-art { color: var(--konsole-pruefen); font-size: var(--t-xs); }
+.protokoll-text { min-width: 0; overflow-wrap: anywhere; }
+.pruefpunkte { list-style: none; margin: var(--a-2) 0 var(--a-3); padding: 0; display: grid; gap: 6px; font-size: var(--t-s); }
+.pruefpunkte li { display: flex; gap: var(--a-2); align-items: baseline; min-width: 0; overflow-wrap: anywhere; }
+.pruefpunkt-zeichen { font-weight: 700; width: 1.25rem; flex: none; text-align: center; }
+.pruefpunkte li.ok .pruefpunkt-zeichen { color: var(--konsole-pruefen); }
+.pruefpunkte li.offen .pruefpunkt-zeichen { color: var(--konsole-ausfuehren); }
+@container (max-width: 520px) {
+  .skript-protokoll li { grid-template-columns: 2rem minmax(0, 1fr); }
+  .skript-protokoll .protokoll-text, .skript-protokoll .protokoll-zeile { grid-column: 2; }
 }

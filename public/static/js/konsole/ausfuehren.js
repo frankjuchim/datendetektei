@@ -16,6 +16,29 @@ export const TEXT_ABGEBROCHEN = 'Abfrage abgebrochen.';
 const TEXT_LADEFEHLER = 'Die Datenbank konnte nicht geladen werden.';
 const TEXT_ABSTURZ = 'Die Abfrage konnte nicht ausgeführt werden.';
 
+/**
+ * Einheitlicher Hinweis der drei Verstehenshilfen (Zeitlupe, Spurenbrett, Sortierfächer), wenn SQL im Browser nicht
+ * startet. Die Werkzeuge stellen sehr viele interne Abfragen und rechnen deshalb nur im Browser – einen Rückfall auf
+ * den Server gibt es (anders als in der Konsole) bewusst nicht.
+ */
+export const TEXT_WERKZEUG_OHNE_WASM =
+  'Dieses Werkzeug braucht WebAssembly im Browser. Dein Browser erlaubt es hier nicht (zum Beispiel wegen einer Einstellung im Schulnetz). Nimm einen aktuellen Browser oder ein anderes Gerät – die Ermittlungskonsole funktioniert auch ohne.';
+
+/**
+ * Wartet auf den Start eines Ausführers für ein Werkzeug. → null (bereit) | { art: 'laden' | 'wasm', text }
+ * 'laden': die Datenbank kam nicht an (z. B. nicht angemeldet); 'wasm': sql.js startet in diesem Browser nicht.
+ */
+export async function werkzeugBereit(ausfuehrer) {
+  try {
+    await ausfuehrer.bereit;
+    return null;
+  } catch (fehler) {
+    const text = (fehler && fehler.message) || '';
+    if (text === TEXT_LADEFEHLER) return { art: 'laden', text };
+    return { art: 'wasm', text: TEXT_WERKZEUG_OHNE_WASM };
+  }
+}
+
 export function erzeugeAusfuehrer({ dbUrl, ohneWasm = false, abbruchMs = ABBRUCH_MS } = {}) {
   if (!dbUrl) throw new Error('dbUrl fehlt.');
   const workerUrl = new URL('./sql-worker.js', import.meta.url);

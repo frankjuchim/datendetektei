@@ -1,0 +1,6 @@
+# Klarnamen, die in Materialien nie vorkommen dürfen (eine Zeile je Name, Groß-/Kleinschreibung egal).
+# Hier echte Namen von Schülerinnen, Schülern, Kolleginnen und Kollegen eintragen, die versehentlich in Beispiele
+# geraten könnten. Alle Namen in Materialien sind erfunden (seed/datenbanken/namen.json, docs/STORY.md).
+# Platzhalternamen realer Vorbilder (Musterformulare) sind ebenfalls tabu:
+Max Mustermann
+Erika Mustermann

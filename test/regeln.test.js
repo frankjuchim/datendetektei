@@ -15,6 +15,10 @@ const { testApp } = require('./helpers');
 
 const SCHEMA = {};
 for (const name of datenbankNamen()) SCHEMA[name] = ladeSchema(name);
+// Verhör-Kontexte (seed/datenbanken/verhoer/<kontext>, Name 'verhoer/<kontext>') für die LIESMICH-Abfragen
+const SCHEMA_VERHOER = {};
+for (const name of require('../scripts/db_bauen').VERHOER_DBS) SCHEMA_VERHOER[name] = ladeSchema(name);
+const schemaVon = (db) => SCHEMA[db] || SCHEMA_VERHOER[db];
 
 function pruefe(sql, optionen = {}) {
   const { ast, fehler } = parse(sql);
@@ -348,11 +352,21 @@ const NUR_AM_ERGEBNIS = {
   stadtfest: 'Schicht im Verbund vervielfacht Umsätze (P2, Vervielfachung)',
   stadtrad: 'nach Namen statt nach Schlüssel gruppiert (P3, Variante gleichnamig)'
 };
-const ERWARTET_FEHLABFRAGE = { datenspuren: ['AND_OR_MISCH'] };
+// Codes, die jede Fehlabfrage der DB-LIESMICH auslösen muss ([] = nur die Falle aus der Kommentarzeile prüfen)
+const ERWARTET_FEHLABFRAGE = {
+  datenspuren: ['AND_OR_MISCH'],
+  'verhoer/bibliothek': [],
+  'verhoer/buergerbus': ['KEIN_VERBUND'],
+  'verhoer/kiosk': [],
+  'verhoer/fitness': ['WHERE_MIT_AGG'],
+  'verhoer/mensa': [],
+  'pruefung/sanitaetsdienst': [],
+  'pruefung/kostuemverleih': []
+};
 
 for (const a of ABFRAGEN.filter((x) => !x.fehlabfrage)) {
   test(`LIESMICH ohne Regelfehler (streng, mit Schema): ${a.datei}:${a.zeile}`, (t) => {
-    const d = pruefe(a.sql, { abimodus: 'streng', schema: SCHEMA[a.db] });
+    const d = pruefe(a.sql, { abimodus: 'streng', schema: schemaVon(a.db) });
     assert.deepEqual(d.filter((x) => x.art === 'fehler'), [], a.sql);
     if (d.length) t.diagnostic(`Hinweise: ${d.map((x) => x.code).join(', ')}`);
   });
@@ -360,7 +374,7 @@ for (const a of ABFRAGEN.filter((x) => !x.fehlabfrage)) {
 
 for (const a of ABFRAGEN.filter((x) => x.fehlabfrage)) {
   test(`LIESMICH-Fehlabfrage: ${a.datei}:${a.zeile}`, () => {
-    const d = pruefe(a.sql, { abimodus: 'streng', schema: SCHEMA[a.db] });
+    const d = pruefe(a.sql, { abimodus: 'streng', schema: schemaVon(a.db) });
     if (NUR_AM_ERGEBNIS[a.db]) {
       // erlaubt: keine Parser-Diagnose; der Prüfer erkennt sie über die Varianten
       assert.ok(!ERWARTET_FEHLABFRAGE[a.db]);
@@ -376,9 +390,9 @@ for (const a of ABFRAGEN.filter((x) => x.fehlabfrage)) {
 
 test('Liste der nur am Ergebnis erkennbaren Fehlabfragen ist vollständig und aktuell', () => {
   const fehl = ABFRAGEN.filter((x) => x.fehlabfrage);
-  assert.equal(fehl.length, 5);
+  assert.equal(fehl.length, 18);
   const ohneDiagnose = fehl
-    .filter((a) => pruefe(a.sql, { abimodus: 'streng', schema: SCHEMA[a.db] }).length === 0)
+    .filter((a) => pruefe(a.sql, { abimodus: 'streng', schema: schemaVon(a.db) }).length === 0)
     .map((a) => a.db)
     .sort();
   assert.deepEqual(ohneDiagnose, Object.keys(NUR_AM_ERGEBNIS).sort());

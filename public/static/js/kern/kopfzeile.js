@@ -155,7 +155,7 @@
     }
 
     // aktuelle Seite in der Fußzeile markieren
-    document.querySelectorAll('.fuss nav a[href^="/"]:not([data-portal-pfad])').forEach((a) => {
+    document.querySelectorAll('.fuss nav a[href^="/"]:not([data-portal-pfad]), .lern-nav a[href^="/"]').forEach((a) => {
       if (a.getAttribute('href') === window.location.pathname) a.setAttribute('aria-current', 'page');
     });
 

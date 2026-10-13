@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "karten": [
+    {
+      "id": "W-A9-01",
+      "akte": 9,
+      "kategorie": "Relationales Modell",
+      "titel": "Begriffe am Fundbuch",
+      "aufgabe": "Benenne an einem Ausschnitt des Fundbuchs **Tabelle**, **Datensatz**, **Attribut** und **Attributwert**.",
+      "loesung": "Tabelle = Fundsache, Datensatz = eine Zeile, Attribut = eine Spalte (z. B. Farbe), Attributwert = eine Zelle (z. B. `gold`).",
+      "minuten": 2,
+      "kompetenz": ["DB-K01", "DB-K47"],
+      "falle": []
+    },
+    {
+      "id": "W-A9-02",
+      "akte": 9,
+      "kategorie": "SQL eine Tabelle",
+      "titel": "Die NULL-Falle",
+      "aufgabe": "Erkläre, warum diese Abfrage keine Zeile liefert, und korrigiere die Bedingung.",
+      "sql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE AbgeholtAm = NULL",
+      "datenbank": "fundbuero",
+      "loesung": "Ein Vergleich mit NULL ergibt nie wahr. Richtig ist `IS NULL`.",
+      "loesungSql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE AbgeholtAm IS NULL",
+      "minuten": 2,
+      "kompetenz": ["DB-K18"],
+      "falle": ["P5"]
+    }
+  ]
+}

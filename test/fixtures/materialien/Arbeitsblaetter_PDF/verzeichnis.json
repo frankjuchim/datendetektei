@@ -1,0 +1,12 @@
+{
+  "dateien": [
+    { "datei": "Akte1/DD_A1-AB1_Der_erste_Auftrag.pdf", "titel": "AB 1.1 Der erste Auftrag", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "Akte5/DD_A5-AB1_Bauplaene_lesen.pdf", "titel": "AB 5.1 Baupläne lesen", "akte": 5, "niveau": "eA", "art": "arbeitsblatt" },
+    { "datei": "Akte1/DD_A1-AB3_Fehlt.pdf", "titel": "AB 1.3 (Datei fehlt)", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "../geheim.pdf", "titel": "Angriff 1", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "Akte1/../../geheim.pdf", "titel": "Angriff 2", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "../Lehrkraft_PDF/Akte1/DD_A1_Lehrerhinweise.pdf", "titel": "Angriff 3", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "Akte1/.versteckt.pdf", "titel": "Angriff 4", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "Akte1/verzeichnis.json", "titel": "falsche Endung", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" }
+  ]
+}

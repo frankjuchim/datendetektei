@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "titel": "Live-Pool Escape Room Weserstedt (K2)",
+  "aufgaben": [
+    {
+      "id": "K2-L-01", "akte": 1, "zeitSek": 45, "titel": "Ohne Wert", "stufe": 1, "kategorie": "SQL eine Tabelle", "fallen": ["P5"],
+      "inhalt": [{ "t": "text", "md": "Im Fundbuch fehlt bei manchen Fundsachen der geschätzte Wert. Welche Bedingung findet **genau diese** Fundsachen?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "code": "WHERE Wert = NULL" },
+        { "id": "b", "code": "WHERE Wert IS NULL" },
+        { "id": "c", "code": "WHERE Wert = 0" },
+        { "id": "d", "code": "WHERE Wert = 'NULL'" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "erklaerung": [{ "t": "text", "md": "Ein fehlender Wert ist NULL – kein Wert, mit dem man rechnen oder vergleichen kann. `= NULL` ist nie wahr, `= 0` und `= 'NULL'` suchen echte Werte. Nur `IS NULL` findet die Lücken." }]
+    },
+    {
+      "id": "K2-L-02", "akte": 1, "zeitSek": 90, "titel": "Spielzeug sortiert", "stufe": 2, "kategorie": "Abfrage analysieren",
+      "inhalt": [
+        { "t": "text", "md": "Gib das Ergebnis der Abfrage an – in der richtigen Reihenfolge. Im Fundbuch stehen fünf Spielzeug-Fundsachen: Spielzeugauto (20 €), Ball (20 €), Kinderuhr (8 €), Kuscheltier (7 €) und Taschenkompass (3 €)." },
+        { "t": "sql", "sql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE Kategorie = 'Spielzeug'\n  AND Wert >= 7\nORDER BY Wert DESC, Bezeichnung" }
+      ],
+      "interaktion": { "kind": "ergebnis", "kopf": ["Bezeichnung", "Wert"], "zeilenAnzahl": 4, "reihenfolge": true },
+      "loesung": { "zeilen": [["Ball", 20], ["Spielzeugauto", 20], ["Kinderuhr", 8], ["Kuscheltier", 7]],
+        "quelleSql": "SELECT Bezeichnung, Wert FROM Fundsache WHERE Kategorie = 'Spielzeug' AND Wert >= 7 ORDER BY Wert DESC, Bezeichnung",
+        "datenbank": "fundbuero" },
+      "erklaerung": [{ "t": "text", "md": "Der Taschenkompass fällt durch `Wert >= 7` heraus. Bei 20 € herrscht Gleichstand – dann entscheidet die zweite Sortierung nach Bezeichnung: **Ball** vor **Spielzeugauto**." }]
+    },
+    {
+      "id": "K2-L-03", "akte": 1, "zeitSek": 90, "titel": "Funde im Deichkamp", "stufe": 2, "kategorie": "SQL eine Tabelle",
+      "inhalt": [{ "t": "text", "md": "Gib Bezeichnung und Funddatum aller Fundsachen aus dem Stadtteil **Deichkamp** aus – die ältesten Funde zuerst." }],
+      "interaktion": { "kind": "sql", "datenbank": "fundbuero", "sortierung": [{ "spalte": 2, "richtung": "ASC" }] },
+      "loesung": { "sql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Stadtteil = 'Deichkamp'\nORDER BY Funddatum" },
+      "erklaerung": [{ "t": "text", "md": "Text in Hochkommata, ohne `DESC` sortiert `ORDER BY` aufsteigend – das älteste Datum steht oben." }]
+    },
+    {
+      "id": "K2-L-04", "akte": 1, "zeitSek": 40, "titel": "Der Unterstrich", "stufe": 1, "kategorie": "SQL eine Tabelle", "fallen": ["P10"],
+      "inhalt": [{ "t": "text", "md": "Wofür steht der Unterstrich im Muster `LIKE 'Schal_'`?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "für **genau ein** beliebiges Zeichen" },
+        { "id": "b", "md": "für beliebig viele Zeichen, auch keines" },
+        { "id": "c", "md": "für ein Leerzeichen" },
+        { "id": "d", "md": "für eine einzelne Ziffer" }
+      ] },
+      "loesung": { "richtig": ["a"] },
+      "erklaerung": [{ "t": "text", "md": "`_` steht für genau ein Zeichen, `%` für beliebig viele. `'Schal_'` passt also auf „Schals“, aber nicht auf „Schal“." }]
+    },
+    {
+      "id": "K2-L-05", "akte": 2, "zeitSek": 60, "titel": "Ohne Verbindung", "stufe": 2, "kategorie": "SQL Verbund", "fallen": ["P2"],
+      "inhalt": [{ "t": "text", "md": "Die Tabelle Kunde hat 80 Zeilen, die Tabelle Station 13. Wie viele Zeilen liefert `SELECT * FROM Kunde, Station` – ganz ohne `WHERE`?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "93" },
+        { "id": "b", "md": "80" },
+        { "id": "c", "md": "1 040" },
+        { "id": "d", "md": "13" }
+      ] },
+      "loesung": { "richtig": ["c"] },
+      "erklaerung": [{ "t": "text", "md": "Ohne Verbundbedingung wird jede Kundenzeile mit jeder Station kombiniert: 80 × 13 = 1 040 Zeilen (Kreuzprodukt)." }]
+    },
+    {
+      "id": "K2-L-06", "akte": 2, "zeitSek": 90, "titel": "Freie E-Bikes", "stufe": 2, "kategorie": "SQL Verbund", "fallen": ["P2", "P7"],
+      "inhalt": [{ "t": "text", "md": "Gib RadID und den Namen der Station aller **E-Bikes** aus, deren Status **frei** ist." }],
+      "interaktion": { "kind": "sql", "datenbank": "stadtrad" },
+      "loesung": { "sql": "SELECT Rad.RadID, Station.Name\nFROM Rad, Station\nWHERE Rad.StationID = Station.StationID\n  AND Rad.Typ = 'E-Bike'\n  AND Rad.Status = 'frei'" },
+      "erklaerung": [{ "t": "text", "md": "Rad und Station werden über die StationID verbunden; die beiden übrigen Bedingungen filtern Typ und Status." }]
+    },
+    {
+      "id": "K2-L-07", "akte": 2, "zeitSek": 45, "titel": "Der richtige Faden", "stufe": 1, "kategorie": "SQL Verbund", "fallen": ["P2", "P7"],
+      "inhalt": [{ "t": "text", "md": "Welche Bedingung verbindet die Tabellen Ausleihe und Kunde richtig?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "code": "Ausleihe.KundenID = Kunde.KundenID" },
+        { "id": "b", "code": "Ausleihe.AusleihID = Kunde.KundenID" },
+        { "id": "c", "code": "KundenID = KundenID" },
+        { "id": "d", "code": "Ausleihe.RadID = Kunde.KundenID" }
+      ] },
+      "loesung": { "richtig": ["a"] },
+      "erklaerung": [{ "t": "text", "md": "Der Fremdschlüssel `Ausleihe.KundenID` verweist auf den Primärschlüssel `Kunde.KundenID`. Ohne Tabellennamen ist `KundenID` mehrdeutig." }]
+    },
+    {
+      "id": "K2-L-08", "akte": 3, "zeitSek": 90, "titel": "Stände nach Art", "stufe": 2, "kategorie": "Abfrage analysieren", "fallen": ["P3"],
+      "inhalt": [
+        { "t": "text", "md": "Die Tabelle Stand hat acht Zeilen: zwei Essensstände, drei Getränkestände und je einen Stand der Art Info, Spiel und Süßes. Gib das Ergebnis an (die Reihenfolge der Zeilen ist egal)." },
+        { "t": "sql", "sql": "SELECT Art, COUNT(*) AS Anzahl\nFROM Stand\nGROUP BY Art" }
+      ],
+      "interaktion": { "kind": "ergebnis", "kopf": ["Art", "Anzahl"], "zeilenAnzahl": 5 },
+      "loesung": { "zeilen": [["Essen", 2], ["Getränke", 3], ["Info", 1], ["Spiel", 1], ["Süßes", 1]],
+        "quelleSql": "SELECT Art, COUNT(*) AS Anzahl FROM Stand GROUP BY Art", "datenbank": "stadtfest" },
+      "erklaerung": [{ "t": "text", "md": "Je Art entsteht genau eine Gruppe – fünf Arten, fünf Zeilen. `COUNT(*)` zählt die Stände in jeder Gruppe." }]
+    },
+    {
+      "id": "K2-L-09", "akte": 3, "zeitSek": 45, "titel": "Bedingung für Gruppen", "stufe": 1, "kategorie": "SQL Aggregation", "fallen": ["P1"],
+      "inhalt": [{ "t": "text", "md": "Es sollen nur Helfer erscheinen, die **mehr als drei Schichten** hatten. In welche Klausel gehört `COUNT(*) > 3`?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "code": "WHERE" },
+        { "id": "b", "code": "HAVING" },
+        { "id": "c", "code": "GROUP BY" },
+        { "id": "d", "code": "ORDER BY" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "erklaerung": [{ "t": "text", "md": "`WHERE` filtert einzelne Zeilen vor dem Gruppieren, `HAVING` filtert ganze Gruppen nach dem Gruppieren – Bedingungen mit Aggregatfunktionen gehören ins `HAVING`." }]
+    },
+    {
+      "id": "K2-L-10", "akte": 3, "zeitSek": 90, "titel": "Bar oder Karte", "stufe": 2, "kategorie": "SQL Aggregation", "fallen": ["P3", "P4"],
+      "inhalt": [{ "t": "text", "md": "Gib für jede Zahlart an, wie viele Bons es gibt (Spalten: Zahlart, Anzahl)." }],
+      "interaktion": { "kind": "sql", "datenbank": "stadtfest" },
+      "loesung": { "sql": "SELECT Zahlart, COUNT(*) AS Anzahl\nFROM Bon\nGROUP BY Zahlart" },
+      "erklaerung": [{ "t": "text", "md": "Gruppiert wird nach Zahlart; `COUNT(*)` zählt die Bons je Gruppe. Die GROUP-BY-Regel ist erfüllt: Zahlart steht im `GROUP BY`, Anzahl ist aggregiert." }]
+    },
+    {
+      "id": "K2-L-11", "akte": 3, "zeitSek": 45, "titel": "Stück zählen", "stufe": 1, "kategorie": "SQL Aggregation", "fallen": ["P4"],
+      "inhalt": [{ "t": "text", "md": "In der Tabelle Position steht je Bon und Produkt die verkaufte **Menge**. Womit erhältst du, wie viele Stück insgesamt verkauft wurden?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "code": "COUNT(Menge)" },
+        { "id": "b", "code": "COUNT(*)" },
+        { "id": "c", "code": "SUM(Menge)" },
+        { "id": "d", "code": "MAX(Menge)" }
+      ] },
+      "loesung": { "richtig": ["c"] },
+      "erklaerung": [{ "t": "text", "md": "`COUNT` zählt Zeilen, `SUM` addiert Werte. Eine Position mit Menge 3 zählt bei `COUNT` einmal, bei `SUM(Menge)` dreifach." }]
+    },
+    {
+      "id": "K2-L-12", "akte": 4, "zeitSek": 50, "titel": "Umzug einer Kundin", "stufe": 1, "kategorie": "Anomalien",
+      "inhalt": [{ "t": "text", "md": "Eine Tabelle speichert zu **jeder** Ausleihe noch einmal Name und Adresse der Kundin. Eine Kundin zieht um. Welches Problem droht?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "Einfügeanomalie" },
+        { "id": "b", "md": "Änderungsanomalie" },
+        { "id": "c", "md": "Löschanomalie" },
+        { "id": "d", "md": "keine Anomalie" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "erklaerung": [{ "t": "text", "md": "Die Adresse steht redundant in vielen Zeilen. Wird sie nur in einem Teil geändert, widersprechen sich die Daten – eine Änderungsanomalie." }]
+    },
+    {
+      "id": "K2-L-13", "akte": 4, "zeitSek": 50, "titel": "Schlüssel der Mitgliedschaft", "stufe": 2, "kategorie": "Schlüssel", "fallen": ["P8"],
+      "inhalt": [
+        { "t": "text", "md": "Ein Mitglied kann in mehreren Abteilungen sein, in jeder aber nur einmal. Welcher Primärschlüssel passt zu dieser Relation?" },
+        { "t": "schema", "relationen": [{ "name": "Mitgliedschaft", "attribute": [{ "name": "MitgliedNr", "fk": "Mitglied" }, { "name": "AbteilungNr", "fk": "Abteilung" }, { "name": "Seit" }] }] }
+      ],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "code": "(MitgliedNr)" },
+        { "id": "b", "code": "(MitgliedNr, AbteilungNr)" },
+        { "id": "c", "code": "(Seit)" },
+        { "id": "d", "code": "(AbteilungNr, Seit)" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "erklaerung": [{ "t": "text", "md": "Erst die Kombination aus Mitglied und Abteilung ist eindeutig. MitgliedNr allein wiederholt sich, sobald jemand in zwei Abteilungen ist." }]
+    },
+    {
+      "id": "K2-L-14", "akte": 4, "zeitSek": 50, "titel": "Doppelt gespeichert", "stufe": 1, "kategorie": "Anomalien",
+      "inhalt": [{ "t": "text", "md": "In der alten Mitgliederliste des TuS steht neben der Beitragsgruppe noch eine weitere Spalte, deren Wert sich **allein aus der Beitragsgruppe** ergibt. Welche?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "Geburtsjahr" },
+        { "id": "b", "md": "Monatsbeitrag" },
+        { "id": "c", "md": "Eintritt" },
+        { "id": "d", "md": "Mitglied" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "erklaerung": [{ "t": "text", "md": "Der Monatsbeitrag hängt nur von der Beitragsgruppe ab und steht deshalb in vielen Zeilen immer wieder – Redundanz." }]
+    },
+    {
+      "id": "K2-L-15", "akte": 5, "niveau": "eA", "zeitSek": 50, "titel": "Wohin mit dem Fremdschlüssel?", "stufe": 2, "kategorie": "Überführung", "fallen": ["P9"],
+      "inhalt": [{ "t": "text", "md": "Zwischen den Entitätstypen *Trainer* und *Gruppe* besteht ein 1:n-Beziehungstyp *betreut* (ein Trainer betreut viele Gruppen). Wo steht nach der Überführung der Fremdschlüssel?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "in der Relation Gruppe" },
+        { "id": "b", "md": "in der Relation Trainer" },
+        { "id": "c", "md": "in einer eigenen Relation betreut" },
+        { "id": "d", "md": "in beiden Relationen" }
+      ] },
+      "loesung": { "richtig": ["a"] },
+      "erklaerung": [{ "t": "text", "md": "Bei 1:n wandert der Primärschlüssel der 1-Seite als Fremdschlüssel in die Relation der n-Seite: Gruppe(GruppeNr, …, ↑TrainerNr)." }]
+    },
+    {
+      "id": "K2-L-16", "akte": 5, "niveau": "eA", "zeitSek": 50, "titel": "Tische zählen", "stufe": 2, "kategorie": "Überführung", "fallen": ["P9"],
+      "inhalt": [{ "t": "text", "md": "Ein ER-Modell hat genau zwei Entitätstypen, *Band* und *Festival*, und einen n:m-Beziehungstyp *spieltAuf*. Wie viele Relationen entstehen bei der Überführung?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "zwei" },
+        { "id": "b", "md": "drei" },
+        { "id": "c", "md": "vier" },
+        { "id": "d", "md": "eine" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "erklaerung": [{ "t": "text", "md": "Jeder Entitätstyp wird eine Relation, der n:m-Beziehungstyp eine eigene Relation mit zwei Fremdschlüsseln: drei Relationen." }]
+    },
+    {
+      "id": "K2-L-17", "akte": 5, "niveau": "eA", "zeitSek": 45, "titel": "Unterstrichen", "stufe": 1, "kategorie": "ER-Modell",
+      "inhalt": [{ "t": "text", "md": "In einem ER-Diagramm in Chen-Notation ist ein Attribut unterstrichen. Was bedeutet das?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "Es ist ein Schlüsselattribut." },
+        { "id": "b", "md": "Es ist ein Fremdschlüssel." },
+        { "id": "c", "md": "Es darf leer bleiben." },
+        { "id": "d", "md": "Es gehört zum Beziehungstyp." }
+      ] },
+      "loesung": { "richtig": ["a"] },
+      "erklaerung": [{ "t": "text", "md": "Unterstrichen werden Schlüsselattribute – sie identifizieren eine Entität eindeutig. Fremdschlüssel gibt es erst im Relationenschema." }]
+    },
+    {
+      "id": "K2-L-18", "akte": 6, "zeitSek": 50, "titel": "Erkannt ohne Namen", "stufe": 1, "kategorie": "Datenschutz",
+      "inhalt": [{ "t": "text", "md": "Jahrgang, Stadtteil und Tarif stehen in einem Export ohne Namen. Zusammen grenzen sie eine Person trotzdem fast eindeutig ein. Wie heißen solche Merkmale?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "Primärschlüssel" },
+        { "id": "b", "md": "Quasi-Identifikatoren" },
+        { "id": "c", "md": "Fremdschlüssel" },
+        { "id": "d", "md": "Pseudonyme" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "erklaerung": [{ "t": "text", "md": "Quasi-Identifikatoren sind einzeln harmlose Merkmale, die in Kombination auf eine Person zurückführen können." }]
+    },
+    {
+      "id": "K2-L-19", "akte": 6, "zeitSek": 75, "titel": "Schultarif im Export", "stufe": 1, "kategorie": "Datenschutz",
+      "inhalt": [{ "t": "text", "md": "Wie viele Fahrten im RadExport wurden im Tarif **Schule** gebucht? Gib die Anzahl mit einer Abfrage aus." }],
+      "interaktion": { "kind": "sql", "datenbank": "datenspuren" },
+      "loesung": { "sql": "SELECT COUNT(*) AS Anzahl\nFROM RadExport\nWHERE Tarif = 'Schule'" },
+      "erklaerung": [{ "t": "text", "md": "`COUNT(*)` zählt die Zeilen, die die Bedingung erfüllen. Jede Zeile im RadExport ist eine Fahrt." }]
+    },
+    {
+      "id": "K2-L-20", "akte": 6, "zeitSek": 50, "titel": "Gleiches Kürzel", "stufe": 1, "kategorie": "Datenschutz",
+      "inhalt": [{ "t": "text", "md": "Ein Export ersetzt jeden Namen durch ein Kürzel, das für dieselbe Person **immer gleich** bleibt. Wie nennt man das?" }],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "md": "Anonymisierung" },
+        { "id": "b", "md": "Verschlüsselung" },
+        { "id": "c", "md": "Pseudonymisierung" },
+        { "id": "d", "md": "Datenminimierung" }
+      ] },
+      "loesung": { "richtig": ["c"] },
+      "erklaerung": [{ "t": "text", "md": "Ein gleichbleibendes Kürzel ist ein Pseudonym: Die Spuren einer Person lassen sich weiter verknüpfen. Anonym wären die Daten erst, wenn kein Rückschluss mehr möglich ist." }]
+    }
+  ]
+}

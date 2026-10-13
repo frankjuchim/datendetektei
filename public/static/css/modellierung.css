@@ -1,0 +1,164 @@
+/* Modellierung (Phase 5): Interaktionen zellen, anomalie (Simulator) und zerlegen (Puzzle).
+   DESIGN.md §4.5 (Karteikarte), §4.13 (Tabellen), §4.15 (Feedback), §6 (Responsive), §7 (Fokus/Bewegung).
+   Nur Tokens aus tokens.css, keine Farbliterale. */
+
+/* ---------- Zellen antippen (zellen; auch die Zellen des Simulators) ---------- */
+.zellen-waehlbar td.zelle-wahl,
+.sim-tabelle td.zelle-wahl { padding: 0; }
+.zelle-knopf {
+  display: flex; align-items: center; gap: var(--a-2); width: 100%; min-width: 44px; min-height: 44px;
+  padding: var(--a-2) var(--a-3); border: 0; background: transparent; color: inherit; font: inherit; text-align: inherit;
+  cursor: pointer; transition: background-color var(--dauer) var(--kurve), box-shadow var(--dauer) var(--kurve);
+}
+td.zahl > .zelle-knopf { justify-content: flex-end; }
+.zelle-knopf:hover { background: var(--flaeche); }
+.zelle-knopf:focus-visible { outline: 3px solid var(--fokus); outline-offset: -3px; }
+.zelle-knopf:disabled { cursor: default; }
+.zelle-knopf:disabled:hover { background: transparent; }
+.zelle-inhalt { display: inline-flex; flex-direction: column; min-width: 0; }
+/* Tabellen mit antippbaren Zellen werden nicht zusammengequetscht: sie scrollen in ihrem Rahmen (DESIGN §4.13) */
+.zellen-waehlbar table.daten, table.daten.sim-tabelle { width: max-content; min-width: 100%; }
+.zelle-nr:empty { display: none; }
+.zelle-nr, .zelle-knopf.markieren[aria-pressed="true"]::after {
+  flex: none; display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px; margin-left: auto;
+  border-radius: var(--radius-pille); background: var(--blau); color: var(--auf-akzent);
+  font-family: var(--schrift-mono); font-size: 0.75rem; font-weight: 700; line-height: 1;
+}
+.zelle-knopf[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--blau); }
+td.gewaehlt { background: var(--blau-flaeche); }
+.zellen-waehlbar .zelle-knopf[aria-pressed="true"]::after {
+  content: "✓"; flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; margin-left: auto;
+  border-radius: var(--radius-pille); background: var(--blau); color: var(--auf-akzent); font-size: 0.75rem; font-weight: 700;
+}
+.zellen-waehlbar .zelle-knopf[aria-pressed="true"]:has(.zelle-nr:not(:empty))::after { content: none; }
+.zelle-knopf.markieren[aria-pressed="true"]::after { content: "✓"; }
+td.loesung, .dbtabelle td.loesung { background: var(--gruen-flaeche); }
+td.loesung .zelle-knopf { box-shadow: inset 0 0 0 2px var(--gruen); }
+td.falsch, .dbtabelle td.falsch { background: var(--rot-flaeche); }
+td.falsch .zelle-knopf { box-shadow: inset 0 0 0 2px var(--siegelrot); }
+
+/* ---------- Anomalie-Simulator ---------- */
+.teil-anomalie { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.auftragskarte {
+  display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-3) var(--a-4) var(--a-4);
+  border-radius: var(--radius-klein); background: var(--karte); box-shadow: var(--schatten-1);
+  border-top: 3px solid var(--siegelrot);
+}
+.auftragskarte > .etikett { padding-bottom: var(--a-2); border-bottom: 1px solid var(--siegelrot); }
+.sim-tabelle caption { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-2); }
+.sim-tabelle td.geaendert { background: var(--messing-flaeche); }
+.zelle-vorher { font-size: var(--t-xs); color: var(--tinte-3); text-decoration: line-through; }
+.sim-tabelle td.widerspruch { background: var(--rot-flaeche); box-shadow: inset 3px 0 0 var(--siegelrot); }
+.sim-tabelle td.widerspruch .zelle-inhalt::after,
+.sim-tabelle td.verlust .zelle-inhalt::after,
+.sim-tabelle td.leer-feld .zelle-inhalt::after {
+  content: "!"; align-self: flex-start; display: inline-grid; place-items: center; width: 18px; height: 18px; margin-top: 2px;
+  border-radius: var(--radius-pille); background: var(--siegelrot); color: var(--auf-akzent); font-size: 0.75rem; font-weight: 700;
+}
+.sim-tabelle tr.geloescht td { color: var(--tinte-3); }
+.sim-tabelle tr.geloescht td .zelle-inhalt { text-decoration: line-through; text-decoration-color: var(--siegelrot); }
+.sim-tabelle td.verlust { background: var(--rot-flaeche); }
+.sim-tabelle tr.neu td { background: var(--messing-flaeche); border-top: 2px dashed var(--messing-grafik); }
+.sim-tabelle td.leer-feld { box-shadow: inset 0 0 0 2px var(--siegelrot); }
+.sim-tabelle td.gewaehlt { background: var(--blau-flaeche); }
+.sim-tabelle td.loesung { background: var(--gruen-flaeche); }
+.sim-tabelle td.falsch { background: var(--rot-flaeche); }
+.sim-tabelle .aktion-spalte { width: 1%; white-space: nowrap; vertical-align: middle; padding: var(--a-1) var(--a-2); }
+.sim-etikett { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; color: var(--siegelrot-text); }
+.klein-knopf { min-height: 44px; padding: 0 var(--a-3); font-size: var(--t-s); }
+.sim-befund {
+  display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-3) var(--a-4);
+  border-radius: var(--radius); background: var(--blau-flaeche); border-left: 3px solid var(--blau);
+}
+.sim-befund .etikett { color: var(--blau); }
+.sim-auftrag, .sim-bestimmen { display: flex; flex-direction: column; gap: var(--a-3); align-items: flex-start; min-width: 0; }
+.anomalie-arten .segment-knopf { min-height: 48px; }
+.anomalie-arten .segment-knopf.loesung { box-shadow: inset 0 0 0 3px var(--gruen); }
+.anomalie-arten .segment-knopf.falsch { box-shadow: inset 0 0 0 3px var(--siegelrot); }
+.sim-loesung:empty { display: none; }
+.sim-loesung, .zerlegen-loesung { display: flex; flex-direction: column; gap: var(--a-2); padding-top: var(--a-3); border-top: 1px dashed var(--rand); }
+
+/* Kriterien (✔/✘) – Rückmeldung des Simulators und des Puzzles */
+.sim-rueckmeldung, .kriterien-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.sim-rueckmeldung li, .kriterien-liste li { display: flex; gap: var(--a-2); align-items: baseline; font-size: var(--t-s); }
+.sim-rueckmeldung li.ok, .kriterien-liste li.ok { color: var(--gruen); }
+.sim-rueckmeldung li.falsch, .kriterien-liste li.falsch { color: var(--siegelrot-text); }
+.kriterium-marke { flex: none; font-weight: 700; }
+
+/* ---------- Zerlegungs-Puzzle ---------- */
+.teil-zerlegen { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.spalten-pool {
+  list-style: none; margin: 0; padding: var(--a-2); display: flex; flex-wrap: wrap; gap: var(--a-2);
+  border: 1.5px dashed var(--rand-stark); border-radius: var(--radius); min-width: 0;
+}
+.spalten-pool.ziel-hover { border-color: var(--blau); background: var(--blau-flaeche); }
+.spalten-chip {
+  display: inline-flex; align-items: center; gap: var(--a-2); min-height: 44px; max-width: 100%; padding: 0 var(--a-3);
+  border: 1.5px solid var(--rand-stark); border-radius: var(--radius-pille); background: var(--karte); color: var(--tinte);
+  font-family: var(--schrift-mono); font-size: 0.875rem; cursor: grab; touch-action: none; user-select: none;
+}
+.spalten-chip:hover { background: var(--flaeche); }
+.spalten-chip.offen { border-style: dashed; border-color: var(--messing-grafik); }
+.chip-name { min-width: 0; overflow-wrap: anywhere; }
+.chip-zahl { font-size: var(--t-xs); color: var(--tinte-3); }
+.spalten-chip.offen .chip-zahl { color: var(--messing-text); }
+.spalten-chip:disabled { cursor: default; opacity: .6; }
+
+.zerlegen-tabellen { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: var(--a-4); align-items: start; }
+.zerlegen-tabelle {
+  display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; padding: var(--a-2) var(--a-3) var(--a-3);
+  border: 2px solid transparent; border-radius: var(--radius-klein); background: var(--karte); box-shadow: var(--schatten-1);
+  transition: border-color var(--dauer) var(--kurve), background-color var(--dauer) var(--kurve);
+}
+.zerlegen-tabelle.ziel { border-color: var(--siegelrot); }
+.zerlegen-tabelle.ziel-hover { border-color: var(--blau); border-style: dashed; background: var(--blau-flaeche); }
+.zerlegen-tabelle.ok { box-shadow: var(--schatten-1), inset 5px 0 0 var(--gruen); }
+.zerlegen-tabelle.falsch { box-shadow: var(--schatten-1), inset 5px 0 0 var(--siegelrot); }
+.zerlegen-kopf { display: flex; align-items: center; gap: var(--a-2); border-bottom: 2px solid var(--siegelrot); }
+.zerlegen-kopf .kriterium-marke { margin-left: auto; }
+.zerlegen-tabelle.ok .zerlegen-kopf .kriterium-marke { color: var(--gruen); }
+.zerlegen-tabelle.falsch .zerlegen-kopf .kriterium-marke { color: var(--siegelrot-text); }
+.zerlegen-kopf .knopf-icon { margin-left: auto; }
+.zerlegen-kopf .kriterium-marke + .knopf-icon { margin-left: 0; }
+.zerlegen-titel {
+  min-height: 44px; padding: 0 var(--a-1); border: 0; background: none; color: var(--tinte); cursor: pointer;
+  font-family: var(--schrift-titel); font-size: var(--t-l); font-weight: 700; text-align: left;
+}
+.zerlegen-titel[aria-pressed="true"] { color: var(--siegelrot-text); }
+.zerlegen-titel[aria-pressed="true"]::after { content: " · Ziel"; font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; }
+.zerlegen-titel:focus-visible { outline: 3px solid var(--fokus); outline-offset: 2px; }
+.zerlegen-spalten { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.zerlegen-spalte { display: flex; align-items: center; gap: var(--a-2); min-width: 0; }
+.leer-zeile { padding: var(--a-2) 0; }
+.schluessel-schalter {
+  flex: none; min-height: 44px; padding: 0 var(--a-2); border: 1.5px solid var(--rand-stark); border-radius: var(--radius-pille);
+  background: var(--karte); color: var(--tinte-2); font: inherit; font-size: var(--t-xs); font-weight: 600; cursor: pointer;
+}
+.schluessel-schalter:hover { background: var(--flaeche); }
+.schluessel-schalter[aria-pressed="true"] { background: var(--siegelrot); border-color: var(--siegelrot); color: var(--auf-akzent); }
+.schluessel-schalter:disabled { cursor: default; }
+.spalte-name { flex: 1; min-width: 0; overflow-wrap: break-word; font-family: var(--schrift-mono); font-size: 0.9375rem; cursor: grab; touch-action: none; user-select: none; }
+.spalte-name.pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; font-weight: 600; }
+select.zerlegen-hinzu {
+  min-height: 44px; width: 100%; padding: 0 var(--a-2); border: 1.5px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); font: inherit; font-size: var(--t-s);
+}
+.zerlegen-hinweise { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--a-1); font-size: var(--t-s); color: var(--siegelrot-text); }
+.zerlegen-gesamt { display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-3) var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); }
+.zerlegen-vorschau .relation { white-space: normal; overflow-wrap: anywhere; }
+.zerlegen-fa { margin: 0; padding-left: 1.2em; font-family: var(--schrift-mono); font-size: var(--t-s); }
+.zerlegen-loesung:empty { display: none; }
+
+/* Ziehen */
+.zieh-geist {
+  position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none;
+  transform: translate(calc(var(--x, -200px) - 50%), calc(var(--y, -200px) - 50%));
+  padding: var(--a-2) var(--a-3); border: 1.5px solid var(--blau); border-radius: var(--radius-pille);
+  background: var(--karte); color: var(--tinte); box-shadow: var(--schatten-2);
+  font-family: var(--schrift-mono); font-size: 0.875rem;
+}
+body.zieht, body.zieht * { cursor: grabbing; user-select: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .zelle-knopf, .zerlegen-tabelle { transition: none; }
+}

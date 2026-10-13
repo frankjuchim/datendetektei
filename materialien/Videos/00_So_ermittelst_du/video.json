@@ -1,0 +1,356 @@
+{
+ "nr": 0,
+ "kurz": "So_ermittelst_du",
+ "akte": 0,
+ "aktenname": "Start (vor Akte 1)",
+ "titel": "So ermittelst du in der Datendetektei",
+ "untertitel": "Anmelden, Stadtplan, Ermittlungen, Konsole mit Ausführen, Prüfen und Zeitlupe, Verhör und Warm-up",
+ "einsatz_kurz": "Start · DS 1 · optional",
+ "einsatz": "Start, DS 1 (optional) · vor Ermittlung 1.1; als Link im Kurs bereitstellen",
+ "laenge": "3–4 min",
+ "zielgruppe": "alle Schülerinnen und Schüler (eA und gA) beim ersten Start",
+ "beispieldaten": "Bildschirmfotos der Plattform (Test-Server, Schülerin „Mika R.“, Kurs „Inf-LK 12“, ohne Lernstand); Konsole und Zeitlupe mit einer eigenen Eisdiele-Abfrage – keine Lösung einer Lab-, Verhör- oder Warm-up-Aufgabe",
+ "lernziele": [
+  "Sich über das Portal InfoLabs anmelden und die Datendetektei öffnen",
+  "Stadtplan, Akten und Ermittlungen finden und eine Ermittlung beginnen",
+  "In der Konsole Abfragen ausführen, prüfen und mit der Zeitlupe untersuchen",
+  "Verhör, Warm-up, Training und „Deine Fallen“ (P1–P10) einordnen"
+ ],
+ "hinweise": [
+  "Alle Bilder sind mit scripts/video_bilder.js aus der echten App im Test-Server der E2E-Tests erzeugt (Fantasie-Schülerin „Mika R.“, kein echter Kurs, keine echten Codes).",
+  "Gezeigt werden nur Übersichten (Stadtplan, Akte, Kopf der Ermittlung, Kopf des Warm-up-Trainers, Verhör-Start) – keine Aufgabenlösungen; Konsole und Zeitlupe mit der eigenen Abfrage „Sorten ab 1,70 €“ auf der Eisdiele.",
+  "Das Portal selbst wird nicht abgefilmt; die Anmeldung wird nur erklärt."
+ ],
+ "youtube": {
+  "titel": "So ermittelst du in der Datendetektei – Plattform-Rundgang (Informatik Datenbanken) | Datendetektei #0",
+  "beschreibung": "Ein kurzer Rundgang durch die Datendetektei Weserstedt: Anmeldung über das Portal InfoLabs, der Stadtplan mit den Akten, Ermittlungen mit Aufgaben, die Ermittlungskonsole mit Ausführen, Prüfen und Zeitlupe, das Verhör am Ende jeder Akte sowie Warm-up und Training. Danach kannst du sofort mit Akte 1 loslegen.\n\nTeil der Unterrichtsreihe „Datendetektei Weserstedt – Ermitteln mit Datenbanken“ (Informatik eA/gA, Abitur ab 2027).\nOhne Anmeldung ausprobieren: https://datendetektei.frankjuchim.de/gast",
+  "tags": [
+   "Informatik",
+   "Datenbanken",
+   "SQL",
+   "Datendetektei",
+   "Plattform",
+   "Tutorial",
+   "InfoLabs",
+   "Unterricht"
+  ]
+ },
+ "bilder": {
+  "start": {
+   "werkzeug": "seite",
+   "pfad": "/",
+   "anmelden": false,
+   "aktionen": [
+    {
+     "pause": 800
+    }
+   ]
+  },
+  "stadtplan": {
+   "werkzeug": "seite",
+   "pfad": "/",
+   "anmelden": true,
+   "aktionen": [
+    {
+     "pause": 1200
+    }
+   ]
+  },
+  "akte": {
+   "werkzeug": "seite",
+   "pfad": "/akte/1",
+   "anmelden": true,
+   "aktionen": [
+    {
+     "pause": 1200
+    }
+   ]
+  },
+  "ermittlung": {
+   "werkzeug": "seite",
+   "pfad": "/ermittlung/A1-E1",
+   "anmelden": true,
+   "aktionen": [
+    {
+     "warte": "#aufgabe-karte"
+    },
+    {
+     "pause": 1500
+    }
+   ]
+  },
+  "konsole": {
+   "werkzeug": "konsole",
+   "db": "eisdiele",
+   "sql": "SELECT Name, Preis\nFROM Sorte\nWHERE Preis >= 1.7\nORDER BY Preis DESC"
+  },
+  "zeitlupe": {
+   "werkzeug": "zeitlupe",
+   "db": "eisdiele",
+   "sql": "SELECT Name, Preis\nFROM Sorte\nWHERE Preis >= 1.7\nORDER BY Preis DESC",
+   "schritt": 1,
+   "ausschnitt": "#zl-karte"
+  },
+  "warmup": {
+   "werkzeug": "seite",
+   "pfad": "/warmup",
+   "anmelden": true,
+   "hoehe": 470,
+   "aktionen": [
+    {
+     "pause": 1500
+    }
+   ]
+  },
+  "verhoer": {
+   "werkzeug": "seite",
+   "pfad": "/verhoer/1",
+   "anmelden": true,
+   "aktionen": [
+    {
+     "pause": 1500
+    }
+   ]
+  }
+ },
+ "folien": [
+  {
+   "typ": "titel",
+   "kapitel": "Einstieg",
+   "regie": "Kamera unten rechts, Titelfolie im Hintergrund.",
+   "sprechertext": "Willkommen im Ermittlerteam! In drei Minuten zeige ich dir, wie du dich in der Datendetektei zurechtfindest: wo du deine Fälle findest, wie du Abfragen ausführst und prüfst und was es mit Verhören und Warm-ups auf sich hat."
+  },
+  {
+   "titel": "Anmelden über das Portal",
+   "kapitel": "Anmelden",
+   "links": [
+    {
+     "bild": "start"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "So geht's",
+      "text": [
+       "- Portal **InfoLabs** öffnen",
+       "- mit **Kurscode** und **persönlichem Code** anmelden",
+       "- „Datendetektei“ wählen – fertig"
+      ]
+     }
+    }
+   ],
+   "teilung": 8.3,
+   "sprechertext": "Angemeldet wirst du nicht hier, sondern über das Portal InfoLabs – mit dem Kurscode deines Kurses und deinem persönlichen Code. Den bekommst du von deiner Lehrkraft, und du verrätst ihn niemandem. Im Portal wählst du die Datendetektei, und schon bist du drin. Ohne Anmeldung kannst du übrigens im Gastmodus einen kleinen Probefall ausprobieren."
+  },
+  {
+   "titel": "Der Stadtplan",
+   "kapitel": "Stadtplan und Akten",
+   "links": [
+    {
+     "bild": "stadtplan"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Akten",
+      "text": [
+       "Jeder Ort ist eine **Akte** mit eigener Datenbank.",
+       "Was im Nebel liegt, schaltet deine Lehrkraft später frei.",
+       "Rechts: dein Rang und deine Punkte."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.3,
+   "sprechertext": "Nach der Anmeldung landest du auf dem Stadtplan von Weserstedt. Jeder Ort ist eine Akte – ein Fall mit einer eigenen Datenbank: das Fundbüro, die Hafenkante, der Festplatz und so weiter. Was noch im Nebel liegt, schaltet deine Lehrkraft frei, wenn ihr so weit seid. Rechts siehst du deinen Rang und deine Punkte."
+  },
+  {
+   "titel": "Akte und Ermittlungen",
+   "links": [
+    {
+     "bild": "akte"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Ermittlungen",
+      "text": [
+       "Je Doppelstunde eine **Ermittlung** mit acht Aufgaben (★ bis ★★★).",
+       "CC = Cold Case: ohne Punkte, für Profis."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.3,
+   "sprechertext": "Tippst du auf eine Akte, siehst du ihre Ermittlungen – eine pro Doppelstunde. Jede Ermittlung hat acht Aufgaben, von einem Stern bis drei Sterne, und am Ende einen Cold Case für alle, die noch mehr wollen. Unten wartet das Verhör der Akte, dazu gleich mehr."
+  },
+  {
+   "titel": "In der Ermittlung",
+   "links": [
+    {
+     "bild": "ermittlung"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Aufbau",
+      "text": [
+       "Oben die Aufgabennummern, darunter Briefing und Ermittler-Notizen.",
+       "Die Datenbank der Akte kannst du frei erkunden („Freie Ermittlung“)."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.3,
+   "sprechertext": "In der Ermittlung stehen oben die Aufgaben, darunter das Briefing von Edda Lorenz, der Chefin der Detektei, und Ermittler-Notizen mit den wichtigsten Begriffen. Die Datenbank der Akte kannst du jederzeit in der freien Ermittlung erkunden. Arbeite die Aufgaben der Reihe nach ab – sie bauen aufeinander auf."
+  },
+  {
+   "titel": "Die Konsole: Ausführen, Prüfen, Zeitlupe",
+   "kapitel": "Konsole",
+   "links": [
+    {
+     "bild": "konsole"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Drei Knöpfe",
+      "text": [
+       "- **Ausführen**: Ergebnis ansehen, so oft du willst",
+       "- **Prüfen**: zählt für die Punkte – Tipps kosten etwas",
+       "- **Zeitlupe**: Klausel für Klausel nachverfolgen"
+      ]
+     }
+    }
+   ],
+   "teilung": 8.3,
+   "regie": "Hier die Eisdiele aus dem Gastmodus mit einer eigenen Abfrage.",
+   "sprechertext": "Das Herz der Detektei ist die Ermittlungskonsole. Links schreibst du deine Abfrage, rechts siehst du das Schema der Datenbank – tipp auf eine Spalte, um sie einzufügen. Mit Ausführen siehst du das Ergebnis, so oft du willst. Mit Prüfen gibst du deine Lösung ab; das zählt für die Punkte. Wenn du feststeckst, gibt es Tipps, die aber etwas Punkte kosten. Und der Knopf Zeitlupe öffnet ein Werkzeug, mit dem du nachverfolgst, was die Datenbank Schritt für Schritt tut."
+  },
+  {
+   "titel": "Die Zeitlupe",
+   "links": [
+    {
+     "bild": "zeitlupe"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Schritt WHERE",
+      "text": [
+       "Die Zeitlupe zeigt, welche Zeilen eine Klausel behält und welche wegfallen – hier 6 von 10 Sorten."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.3,
+   "sprechertext": "In der Zeitlupe läuft deine Abfrage in Zeitlupe ab: erst FROM, dann WHERE und so weiter. Bei jedem Schritt siehst du, welche Zeilen übrig bleiben und welche wegfallen – hier sechs von zehn Sorten. Wenn dein Ergebnis nicht stimmt, findest du so meist sofort die Stelle, an der es schiefgeht."
+  },
+  {
+   "titel": "Rückmeldungen mit Fallen-Nummer",
+   "kapitel": "Fallen",
+   "links": [
+    {
+     "text": "Wenn etwas nicht stimmt, nennt die Rückmeldung die **Falle** – überall mit derselben Nummer:"
+    },
+    {
+     "falle": "P6",
+     "titel": "Bedingungslogik",
+     "text": "Beispiel einer Rückmeldung: „AND bindet stärker als OR. Setz Klammern, damit klar ist, was zusammengehört.“"
+    },
+    {
+     "text": "Unter **Deine Fallen** im Profil siehst du, welche Fallen dich am häufigsten erwischen – genau die übst du im Training."
+    }
+   ],
+   "sprechertext": "Wenn eine Abfrage nicht stimmt, bekommst du eine Rückmeldung – oft mit einer Fallen-Nummer von P1 bis P10, zum Beispiel P6 für Bedingungslogik. Diese Nummern begegnen dir überall: in den Videos, auf den Arbeitsblättern und in deinem Profil. Unter Deine Fallen siehst du, welche dich am häufigsten erwischen. Genau die übst du dann gezielt im Training."
+  },
+  {
+   "typ": "pause",
+   "kapitel": "Jetzt du",
+   "links": [
+    {
+     "text": "Öffne die Datendetektei – oder ohne Anmeldung den **Gastmodus** – und führe in der Konsole deine erste Abfrage aus:"
+    },
+    {
+     "sql": "SELECT Name, Preis\nFROM Sorte\nWHERE Preis < 1.6\nORDER BY Name",
+     "db": "eisdiele",
+     "label": "EISDIELE (GASTMODUS)"
+    },
+    {
+     "text": "Öffne danach die **Zeitlupe**: Wie viele Sorten fallen bei WHERE weg?"
+    }
+   ],
+   "pause_s": 20,
+   "sprechertext": "Jetzt du: Öffne die Datendetektei oder ohne Anmeldung den Gastmodus und führe diese Abfrage auf der Eisdiele aus. Danach öffnest du die Zeitlupe und schaust nach, wie viele Sorten bei WHERE wegfallen. Halte das Video an."
+  },
+  {
+   "titel": "Verhör, Warm-up und Training",
+   "kapitel": "Verhör und Warm-up",
+   "links": [
+    {
+     "bild": "verhoer",
+     "hoehe": 2.45
+    },
+    {
+     "bild": "warmup",
+     "hoehe": 2.45
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Am Ende jeder Akte",
+      "text": [
+       "- **Verhör**: Aufgaben im Abitur-Stil, auf Zeit, ohne Feedback",
+       "- **Warm-up**: 5 Minuten Karteikarten zum Einstieg",
+       "- **Training**: deine Fallen gezielt üben"
+      ]
+     }
+    }
+   ],
+   "teilung": 8.3,
+   "sprechertext": "Am Ende jeder Akte steht ein Verhör: Aufgaben im Abitur-Stil, auf Zeit und ohne Feedback – wie eine kleine Prüfung. Gewinnst du es, bekommt die Pinnwand der Detektei ein neues Beweisstück. Zum Stundenbeginn gibt es Warm-ups, fünf Minuten Karteikarten zu allem, was du schon kennst. Und im Training übst du gezielt deine Fallen."
+  },
+  {
+   "typ": "merke",
+   "kapitel": "Merksätze",
+   "punkte": [
+    "Anmelden über das Portal InfoLabs mit Kurscode und persönlichem Code.",
+    "Stadtplan → Akte → Ermittlung → Aufgaben der Reihe nach.",
+    "Erst **Ausführen**, dann **Prüfen**; bei Fehlern die **Zeitlupe**.",
+    "Fallen-Nummern P1–P10 zeigen, was schiefging – „Deine Fallen“ im Profil.",
+    "Verhör am Ende jeder Akte, Warm-up zum Einstieg."
+   ],
+   "sprechertext": "Kurz zusammengefasst: Anmelden über das Portal, dann Stadtplan, Akte, Ermittlung. Erst ausführen, dann prüfen, und bei Fehlern die Zeitlupe. Die Fallen-Nummern zeigen dir, was schiefging. Und am Ende jeder Akte wartet ein Verhör."
+  },
+  {
+   "typ": "ende",
+   "lab": [
+    {
+     "ermittlung": "1.1",
+     "titel": "Der erste Auftrag",
+     "aufgaben": "A1-E1-01 … 08",
+     "werkzeug": "Konsole und Zeitlupe"
+    }
+   ],
+   "material": [
+    "AB 1.1 „Der erste Auftrag“"
+   ],
+   "naechstes": "Video 1 – SQL-Grundlagen: SELECT, WHERE und die Bedingungsfallen",
+   "sprechertext": "Und jetzt los: Dein erster Fall wartet im Fundbüro, Ermittlung 1.1. Wenn du SQL noch einmal in Ruhe sehen willst, schau dir Video 1 an. Viel Erfolg, Ermittlerin, viel Erfolg, Ermittler!"
+  }
+ ]
+}

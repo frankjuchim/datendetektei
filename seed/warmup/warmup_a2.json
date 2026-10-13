@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "karten": [
+    {
+      "akte": 2,
+      "falle": [],
+      "id": "W-A2-01",
+      "kategorie": "Relationales Modell",
+      "titel": "Kurzschreibweise lesen",
+      "aufgabe": "Erläutere die Kennzeichnungen in `Reparatur(ReparaturID, ↑RadID, Datum, Grund, Kosten)` – `ReparaturID` ist unterstrichen.",
+      "loesung": "`ReparaturID` ist unterstrichen: **Primärschlüssel**, identifiziert jede Reparatur eindeutig. `↑RadID` ist ein **Fremdschlüssel**: verweist auf den Primärschlüssel `RadID` der Tabelle Rad, also auf das reparierte Rad. Datum, Grund und Kosten sind gewöhnliche Attribute.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K04",
+        "DB-K05"
+      ]
+    },
+    {
+      "akte": 2,
+      "falle": [
+        "P2"
+      ],
+      "id": "W-A2-02",
+      "kategorie": "SQL Verbund",
+      "titel": "Fäden zählen",
+      "aufgabe": "Die Tabelle Ausleihe hat 469, die Tabelle Kunde 80 Datensätze. Wie viele Zeilen liefert `SELECT * FROM Ausleihe, Kunde` ohne WHERE – und wie viele mit der Bedingung `Ausleihe.KundenID = Kunde.KundenID`?",
+      "loesung": "Ohne WHERE: Kreuzprodukt 469 · 80 = **37 520** Zeilen. Mit Verbundbedingung bleibt jede Ausleihe genau einmal (jede gehört zu genau einer Kundin bzw. einem Kunden): **469** Zeilen.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K23",
+        "DB-K29"
+      ]
+    },
+    {
+      "akte": 2,
+      "falle": [
+        "P7"
+      ],
+      "id": "W-A2-03",
+      "kategorie": "SQL Verbund",
+      "titel": "Zwei Tabellen",
+      "aufgabe": "Notiere eine Abfrage: Typ jedes Rades und Name der Station, an der es steht.",
+      "datenbank": "stadtrad",
+      "loesung": "Rad und Station über den Fremdschlüssel verbinden; `StationID` gibt es in beiden Tabellen, also mit Präfix.",
+      "loesungSql": "SELECT Rad.Typ, Station.Name\nFROM Rad, Station\nWHERE Rad.StationID = Station.StationID",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K23",
+        "DB-K16"
+      ]
+    },
+    {
+      "akte": 2,
+      "falle": [
+        "P7"
+      ],
+      "id": "W-A2-04",
+      "kategorie": "SQL Verbund",
+      "titel": "Anderer Name, gleicher Verweis",
+      "aufgabe": "Notiere die Verbundbedingung für Ausleihe und Station über die **Zielstation** und begründe, warum du Präfixe brauchst bzw. nicht brauchst.",
+      "datenbank": "stadtrad",
+      "loesung": "`Ausleihe.ZielStation = Station.StationID`. Der Fremdschlüssel heißt anders als der Primärschlüssel, auf den er zeigt. Die Präfixe sind hier nicht zwingend (die Namen sind eindeutig), machen aber den Verweis sichtbar – bei gleichnamigen Spalten wie `StationID` in Rad und Station sind sie Pflicht.",
+      "loesungSql": "SELECT Ausleihe.AusleihID, Station.Name\nFROM Ausleihe, Station\nWHERE Ausleihe.ZielStation = Station.StationID",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K03",
+        "DB-K16"
+      ]
+    },
+    {
+      "akte": 2,
+      "falle": [
+        "P2"
+      ],
+      "id": "W-A2-05",
+      "kategorie": "SQL Verbund",
+      "titel": "Ermittlungsweg",
+      "aufgabe": "Gesucht sind die Namen aller Kundinnen und Kunden, die ein Lastenrad ausgeliehen haben. Gib die benötigten Tabellen und die Verbundbedingungen an.",
+      "datenbank": "stadtrad",
+      "loesung": "Tabellen: Kunde, Ausleihe, Rad. Verbundbedingungen: `Ausleihe.KundenID = Kunde.KundenID` und `Ausleihe.RadID = Rad.RadID` (drei Tabellen → zwei Bedingungen), dazu der Filter `Rad.Typ = 'Lastenrad'`.",
+      "loesungSql": "SELECT DISTINCT Kunde.Vorname, Kunde.Nachname\nFROM Kunde, Ausleihe, Rad\nWHERE Ausleihe.KundenID = Kunde.KundenID\n  AND Ausleihe.RadID = Rad.RadID\n  AND Rad.Typ = 'Lastenrad'",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K24",
+        "DB-K30"
+      ]
+    },
+    {
+      "akte": 2,
+      "falle": [
+        "P7"
+      ],
+      "id": "W-A2-06",
+      "kategorie": "SQL Verbund",
+      "titel": "Station zweimal",
+      "aufgabe": "Notiere eine Abfrage: `AusleihID` mit dem Namen der Start- und dem Namen der Zielstation.",
+      "datenbank": "stadtrad",
+      "loesung": "Station zweimal mit zwei Aliasen in FROM, je eine Verbundbedingung über `StartStation` und `ZielStation`.",
+      "loesungSql": "SELECT a.AusleihID, s1.Name AS Startort, s2.Name AS Zielort\nFROM Ausleihe a, Station s1, Station s2\nWHERE a.StartStation = s1.StationID\n  AND a.ZielStation = s2.StationID",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K24",
+        "DB-K16"
+      ]
+    },
+    {
+      "akte": 2,
+      "falle": [
+        "P5"
+      ],
+      "id": "W-A2-07",
+      "kategorie": "SQL Verbund",
+      "titel": "Unterwegs",
+      "aufgabe": "Notiere eine Abfrage: alle laufenden Ausleihen (noch ohne Ende) mit `AusleihID` und dem Namen der Kundin bzw. des Kunden.",
+      "datenbank": "stadtrad",
+      "loesung": "Laufend heißt: `Ende IS NULL` – nicht `= NULL`. Kunde über `KundenID` verbinden.",
+      "loesungSql": "SELECT a.AusleihID, k.Vorname, k.Nachname\nFROM Ausleihe a, Kunde k\nWHERE a.KundenID = k.KundenID\n  AND a.Ende IS NULL",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K18",
+        "DB-K23"
+      ]
+    },
+    {
+      "akte": 2,
+      "falle": [
+        "P2"
+      ],
+      "id": "W-A2-08",
+      "kategorie": "SQL Verbund",
+      "titel": "Fehlerzeile",
+      "aufgabe": "Die Abfrage soll Kundenname, Radtyp und Startstation jeder Ausleihe liefern, liefert aber viel zu viele Zeilen. Ergänze die fehlende Verbundbedingung.",
+      "sql": "SELECT k.Nachname, r.Typ, s.Name\nFROM Ausleihe a, Kunde k, Rad r, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.StartStation = s.StationID",
+      "datenbank": "stadtrad",
+      "loesung": "Vier Tabellen brauchen drei Verbundbedingungen. Es fehlt `AND a.RadID = r.RadID` – sonst wird jede Ausleihe mit allen 45 Rädern kombiniert.",
+      "loesungSql": "SELECT k.Nachname, r.Typ, s.Name\nFROM Ausleihe a, Kunde k, Rad r, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.RadID = r.RadID\n  AND a.StartStation = s.StationID",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K24"
+      ]
+    }
+  ]
+}

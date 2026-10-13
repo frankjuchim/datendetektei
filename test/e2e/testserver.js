@@ -12,6 +12,10 @@ const { sicherheitsHeader } = require('../../src/kern/sicherheit');
 const { testApp, meldeAn } = require('../helpers');
 const { ladeDatenbanken } = require('../../src/sql/datenbanken');
 const { erzeugeSandbox } = require('../../src/sql/sandbox');
+const { erzeugePruefer } = require('../../src/sql/pruefer');
+const { erzeugeInhalte } = require('../../src/services/inhalte');
+const { ladeWarmupKarten } = require('../../src/services/warmup');
+const { ladeLiveInhalte } = require('../../src/content/live');
 
 const WURZEL = path.join(__dirname, '..', '..');
 const SEITEN = path.join(__dirname, 'seiten');
@@ -33,10 +37,16 @@ function baueTestDb(name) {
  * Startet den Test-Server auf 127.0.0.1 (freier Port).
  * strengeCsp: CSP ohne 'wasm-unsafe-eval' (simuliert ein Umfeld, in dem WebAssembly nicht ausgeführt werden darf).
  * mitDatenbanken: echte Übungs-DBs (basis.sql) und Sandbox wie im Betrieb (/db/, /api/db/, /api/sql/ausfuehren).
+ * mitInhalten: zusätzlich die echten Akten (seed/akten), der SQL-Prüfer und die Warm-up-Karten wie in src/server.js
+ *   (Lern-API, Verhöre, Warm-up, Trainingsplatz, Live-Modus aus seed/live); schließt mitDatenbanken ein. rateLimits: Überschreibungen für Tests.
+ * aktenDateien: weitere Akten-Dateien (z. B. test/fixtures/akte_beispiel.json) zusätzlich zu seed/akten (wie AKTEN_DATEIEN).
+ * aktenVerzeichnis: anderes Verzeichnis statt seed/akten (z. B. eine Kopie ohne einzelne Akten).
+ * materialVerzeichnis: Wurzel der Materialien (z. B. test/fixtures/materialien).
  * Die Plattform-URL ist die tatsächliche Adresse (mit Port), damit die Origin-Prüfung für POSTs greift.
  * → { url, t (testApp-Ergebnis), anmelden(nutzer) → Cookie „dd_s=…“, schliessen() }
  */
-async function starteTestServer({ strengeCsp = false, mitDatenbanken = false } = {}) {
+async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mitInhalten = false, rateLimits = null, aktenDateien = null, materialVerzeichnis = null, aktenVerzeichnis = null, videos = undefined } = {}) {
+  if (mitInhalten) mitDatenbanken = true;
   let weiter = (req, res) => {
     res.statusCode = 503;
     res.end();
@@ -46,7 +56,8 @@ async function starteTestServer({ strengeCsp = false, mitDatenbanken = false } =
   const url = `http://127.0.0.1:${server.address().port}`;
 
   let sandbox = null;
-  const appOptionen = {};
+  const appOptionen = materialVerzeichnis ? { materialVerzeichnis } : {};
+  if (videos !== undefined) appOptionen.videos = videos;
   if (mitDatenbanken) {
     const datenbanken = ladeDatenbanken(undefined, { log: () => {} });
     sandbox = erzeugeSandbox({
@@ -56,8 +67,25 @@ async function starteTestServer({ strengeCsp = false, mitDatenbanken = false } =
       )
     });
     Object.assign(appOptionen, { datenbanken, sandbox });
+    if (mitInhalten) {
+      appOptionen.pruefer = erzeugePruefer({
+        sandbox,
+        schemata: Object.fromEntries(datenbanken.namen.map((n) => [n, datenbanken.schema(n)]))
+      });
+      appOptionen.warmupKarten = ladeWarmupKarten();
+      appOptionen.liveInhalte = ladeLiveInhalte({ datenbanken });
+    }
   }
-  const t = testApp({ plattformUrl: url }, appOptionen);
+  const konfigTest = { plattformUrl: url, ...(rateLimits ? { rateLimits } : {}) };
+  const t = testApp(konfigTest, (db) => {
+    if (!mitInhalten) return appOptionen;
+    const inhalte = erzeugeInhalte(db);
+    inhalte.laden({
+      ...(aktenDateien && aktenDateien.length ? { dateien: aktenDateien } : {}),
+      ...(aktenVerzeichnis ? { verzeichnis: aktenVerzeichnis } : {})
+    });
+    return { ...appOptionen, inhalte };
+  });
   const { app } = t;
   const dbs = { fundbuero: baueTestDb('fundbuero'), eisdiele: baueTestDb('eisdiele') };
   const aussen = express();

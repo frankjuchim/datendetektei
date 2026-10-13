@@ -1,0 +1,3350 @@
+{
+  "version": 2,
+  "welt": 2,
+  "titel": "Spur der Räder",
+  "farbe": "#2C5A85",
+  "levels": [
+    {
+      "id": "A2-E1",
+      "nr": "2.1",
+      "titel": "Der rote Faden",
+      "ds": [
+        3
+      ],
+      "ab": "AB 2.1 Der rote Faden",
+      "niveau": "alle",
+      "briefing": "StadtRad Weserstedt vermisst fünf Lastenräder, und die Antwort steckt in mehreren Tabellen zugleich. Verbinde die Tabellen über ihre Fremdschlüssel und prüfe im Spurenbrett, welche Fäden übrig bleiben. Vorsicht: Ohne Verbundbedingung bekommst du jede Zeile mit jeder!",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "stadtrad"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:**\n- **Primärschlüssel** (unterstrichen): identifiziert jeden Datensatz eindeutig.\n- **Fremdschlüssel** (↑): verweist auf den Primärschlüssel einer Tabelle; er **darf anders heißen** (`Ausleihe.StartStation` → `Station.StationID`) und darf NULL sein (Rad in der Werkstatt).\n\n**Verbund-Rezept:** ① alle beteiligten Tabellen in FROM ② je Tabellenpaar eine Verbundbedingung FK = PK (n Tabellen → mindestens n − 1 Bedingungen) ③ gleichnamige Spalten mit Tabellenpräfix ④ erst dann weitere Bedingungen mit AND.\n\nOhne ② entsteht das **Kreuzprodukt**: jede Zeile der einen Tabelle mit jeder Zeile der anderen."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Reparatur.Datum, Reparatur.Grund, Rad.Typ\nFROM Reparatur, Rad\nWHERE Reparatur.RadID = Rad.RadID"
+        }
+      ],
+      "coldCase": "A2-E1-CC",
+      "aufgaben": [
+        "A2-E1-01",
+        "A2-E1-02",
+        "A2-E1-03",
+        "A2-E1-04",
+        "A2-E1-05",
+        "A2-E1-06",
+        "A2-E1-07",
+        "A2-E1-08"
+      ]
+    },
+    {
+      "id": "A2-E2",
+      "nr": "2.2",
+      "titel": "Nachtfahrten",
+      "ds": [
+        4
+      ],
+      "ab": "AB 2.2 Nachtfahrten",
+      "niveau": "alle",
+      "briefing": "Fünf Ausleihen ohne Ende – jetzt willst du wissen, wer sie gestartet hat. Plane deinen Weg durchs Schema über drei oder vier Tabellen und nutze Tabellenaliase, wenn du eine Tabelle zweimal brauchst. Laufende Ausleihen findest du mit IS NULL.",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "stadtrad"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:**\n- **Ermittlungsweg:** Frage → benötigte Attribute → Tabellen → Verbundbedingungen → Filter → Sortierung.\n- **Tabellenalias** ohne AS direkt hinter dem Tabellennamen: `FROM Ausleihe a, Kunde k`. Wer einen Alias vergibt, verwendet ihn überall.\n- **Zwei Fremdschlüssel auf dieselbe Tabelle** (`StartStation`, `ZielStation`) → Station zweimal in FROM, mit zwei Aliasen (`Station s1, Station s2`).\n- Laufende Ausleihen haben `Ende IS NULL` und `ZielStation IS NULL` → ein Verbund über `ZielStation` lässt sie verschwinden."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT k.Vorname, k.Nachname, a.Start\nFROM Ausleihe a, Kunde k\nWHERE a.KundenID = k.KundenID\n  AND k.Tarif = 'Schule'"
+        }
+      ],
+      "coldCase": "A2-E2-CC",
+      "aufgaben": [
+        "A2-E2-01",
+        "A2-E2-02",
+        "A2-E2-03",
+        "A2-E2-04",
+        "A2-E2-05",
+        "A2-E2-06",
+        "A2-E2-07",
+        "A2-E2-08"
+      ]
+    }
+  ],
+  "boss": {
+    "id": "A2-V",
+    "titel": "Verhör 2 · Bürgerbus",
+    "kontextDb": "verhoer/buergerbus",
+    "rahmensatz": "Wer Räder verfolgen kann, kann auch Busse verfolgen – zeig es mir.",
+    "abimodus": "streng",
+    "dauerMin": 20,
+    "anzahl": 6,
+    "mix": {
+      "1": 2,
+      "2": 3,
+      "3": 1
+    },
+    "maxJeKind": {
+      "choice": 1
+    },
+    "pool": [
+      "A2-V-01",
+      "A2-V-02",
+      "A2-V-03",
+      "A2-V-04",
+      "A2-V-05",
+      "A2-V-06",
+      "A2-V-07",
+      "A2-V-08",
+      "A2-V-09",
+      "A2-V-10",
+      "A2-V-11",
+      "A2-V-12"
+    ]
+  },
+  "aufgaben": [
+    {
+      "id": "A2-E1-01",
+      "titel": "Der Pfeil im Schema",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K03",
+        "DB-K05"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "So steht die Tabelle der Räder in Hollwedels Schema. Welche Aussagen über die Kennzeichnungen stimmen?"
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Station",
+              "attribute": [
+                {
+                  "name": "StationID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Stadtteil"
+                },
+                {
+                  "name": "Stellplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Rad",
+              "attribute": [
+                {
+                  "name": "RadID",
+                  "pk": true
+                },
+                {
+                  "name": "Typ"
+                },
+                {
+                  "name": "Baujahr"
+                },
+                {
+                  "name": "StationID",
+                  "fk": "Station"
+                },
+                {
+                  "name": "Status"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": true,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "`RadID` ist unterstrichen: Es ist der Primärschlüssel von Rad und identifiziert jedes Rad eindeutig."
+          },
+          {
+            "id": "b",
+            "md": "`↑StationID` ist ein Fremdschlüssel: Er verweist auf den Primärschlüssel `StationID` der Tabelle Station."
+          },
+          {
+            "id": "c",
+            "md": "`StationID` ist der Primärschlüssel von Rad, weil es mit ↑ markiert ist."
+          },
+          {
+            "id": "d",
+            "md": "Der Pfeil bedeutet, dass `StationID` in Rad nie leer (NULL) sein darf."
+          },
+          {
+            "id": "e",
+            "md": "Der Pfeil zeigt, dass Station auf Rad verweist."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a",
+          "b"
+        ]
+      },
+      "tipps": [
+        "Unterstrichen = Primärschlüssel, ↑ = Fremdschlüssel. Der Verweis zeigt immer **zum** Primärschlüssel der anderen Tabelle."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Der **Primärschlüssel** `RadID` (unterstrichen) identifiziert jedes Rad. Der **Fremdschlüssel** `↑StationID` verweist von Rad auf den Primärschlüssel von Station – die Richtung ist Rad → Station. Ein Fremdschlüssel darf NULL sein: Räder in der Werkstatt oder unterwegs stehen an keiner Station."
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-02",
+      "titel": "Zeichen der Kurzschreibweise",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Relationales Modell",
+      "kompetenzen": [
+        "DB-K04",
+        "DB-K05"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Hollwedel plant eine zusätzliche Tabelle für die Ladeplätze an den Stationen. Ordne jeder Kennzeichnung ihre Bedeutung zu."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Station",
+              "attribute": [
+                {
+                  "name": "StationID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Stadtteil"
+                },
+                {
+                  "name": "Stellplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Rad",
+              "attribute": [
+                {
+                  "name": "RadID",
+                  "pk": true
+                },
+                {
+                  "name": "Typ"
+                },
+                {
+                  "name": "Baujahr"
+                },
+                {
+                  "name": "StationID",
+                  "fk": "Station"
+                },
+                {
+                  "name": "Status"
+                }
+              ]
+            },
+            {
+              "name": "Ladeplatz",
+              "attribute": [
+                {
+                  "name": "StationID",
+                  "pk": true,
+                  "fk": "Station"
+                },
+                {
+                  "name": "PlatzNr",
+                  "pk": true
+                },
+                {
+                  "name": "Leistung"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "interaktion": {
+        "kind": "match",
+        "elemente": [
+          {
+            "id": "e1",
+            "md": "`RadID` in Rad ist unterstrichen."
+          },
+          {
+            "id": "e2",
+            "md": "`StationID` in Rad trägt einen Pfeil ↑."
+          },
+          {
+            "id": "e3",
+            "md": "In Ladeplatz sind `StationID` und `PlatzNr` **beide** unterstrichen."
+          },
+          {
+            "id": "e4",
+            "md": "`StationID` in Ladeplatz ist unterstrichen **und** trägt einen Pfeil ↑."
+          }
+        ],
+        "kategorien": [
+          {
+            "id": "p",
+            "md": "Primärschlüssel: identifiziert jeden Datensatz eindeutig"
+          },
+          {
+            "id": "f",
+            "md": "Fremdschlüssel: verweist auf den Primärschlüssel einer anderen Tabelle"
+          },
+          {
+            "id": "z",
+            "md": "zusammengesetzter Primärschlüssel: erst beide Werte zusammen sind eindeutig"
+          },
+          {
+            "id": "b",
+            "md": "Fremdschlüssel, der zugleich Teil des Primärschlüssels ist"
+          }
+        ]
+      },
+      "loesung": {
+        "e1": "p",
+        "e2": "f",
+        "e3": "z",
+        "e4": "b"
+      },
+      "tipps": [
+        "Lies die Zeichen einzeln: Unterstreichung sagt „Schlüssel dieser Tabelle“, der Pfeil sagt „verweist auf eine andere Tabelle“."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "In `Ladeplatz` identifiziert erst das Paar (StationID, PlatzNr) einen Ladeplatz – an jeder Station gibt es einen Platz 1. `StationID` ist dort zugleich Fremdschlüssel auf Station: Ein Attribut kann unterstrichen **und** mit ↑ gekennzeichnet sein."
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-03",
+      "titel": "Spurenbrett",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K03"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Auf dem Spurenbrett ist jedes der sechs Räder mit jeder der vier Stationen durch einen Faden verbunden – das ist das Kreuzprodukt `FROM Rad, Station`. Jeder Faden ist eine Zeile der Tabelle darunter. Tippe alle Fäden (Zeilen) an, die die Verbundbedingung erfüllen:"
+        },
+        {
+          "t": "spurenbrett",
+          "datenbank": "stadtrad",
+          "tabellen": [
+            {
+              "name": "Rad",
+              "zeilen": [
+                2,
+                3,
+                10,
+                13,
+                14,
+                31
+              ]
+            },
+            {
+              "name": "Station",
+              "zeilen": [
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ]
+        },
+        {
+          "t": "sql",
+          "sql": "WHERE Rad.StationID = Station.StationID",
+          "nummern": false
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Rad × Station (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Rad.RadID"
+            },
+            {
+              "name": "Rad.Typ"
+            },
+            {
+              "name": "Rad.StationID",
+              "fk": "Station"
+            },
+            {
+              "name": "Station.StationID"
+            },
+            {
+              "name": "Station.Name"
+            }
+          ],
+          "zeilen": [
+            [
+              2,
+              "Citybike",
+              4,
+              3,
+              "Marktplatz"
+            ],
+            [
+              2,
+              "Citybike",
+              4,
+              4,
+              "Rathaus"
+            ],
+            [
+              2,
+              "Citybike",
+              4,
+              5,
+              "Alte Werft"
+            ],
+            [
+              2,
+              "Citybike",
+              4,
+              6,
+              "Fischmarkt"
+            ],
+            [
+              3,
+              "Citybike",
+              3,
+              3,
+              "Marktplatz"
+            ],
+            [
+              3,
+              "Citybike",
+              3,
+              4,
+              "Rathaus"
+            ],
+            [
+              3,
+              "Citybike",
+              3,
+              5,
+              "Alte Werft"
+            ],
+            [
+              3,
+              "Citybike",
+              3,
+              6,
+              "Fischmarkt"
+            ],
+            [
+              10,
+              "Lastenrad",
+              null,
+              3,
+              "Marktplatz"
+            ],
+            [
+              10,
+              "Lastenrad",
+              null,
+              4,
+              "Rathaus"
+            ],
+            [
+              10,
+              "Lastenrad",
+              null,
+              5,
+              "Alte Werft"
+            ],
+            [
+              10,
+              "Lastenrad",
+              null,
+              6,
+              "Fischmarkt"
+            ],
+            [
+              13,
+              "E-Bike",
+              3,
+              3,
+              "Marktplatz"
+            ],
+            [
+              13,
+              "E-Bike",
+              3,
+              4,
+              "Rathaus"
+            ],
+            [
+              13,
+              "E-Bike",
+              3,
+              5,
+              "Alte Werft"
+            ],
+            [
+              13,
+              "E-Bike",
+              3,
+              6,
+              "Fischmarkt"
+            ],
+            [
+              14,
+              "Citybike",
+              6,
+              3,
+              "Marktplatz"
+            ],
+            [
+              14,
+              "Citybike",
+              6,
+              4,
+              "Rathaus"
+            ],
+            [
+              14,
+              "Citybike",
+              6,
+              5,
+              "Alte Werft"
+            ],
+            [
+              14,
+              "Citybike",
+              6,
+              6,
+              "Fischmarkt"
+            ],
+            [
+              31,
+              "Citybike",
+              4,
+              3,
+              "Marktplatz"
+            ],
+            [
+              31,
+              "Citybike",
+              4,
+              4,
+              "Rathaus"
+            ],
+            [
+              31,
+              "Citybike",
+              4,
+              5,
+              "Alte Werft"
+            ],
+            [
+              31,
+              "Citybike",
+              4,
+              6,
+              "Fischmarkt"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "stadtrad",
+            "sql": "SELECT r.RadID, r.Typ, r.StationID, s.StationID, s.Name FROM Rad r, Station s WHERE r.RadID IN (2, 3, 10, 13, 14, 31) AND s.StationID IN (3, 4, 5, 6) ORDER BY r.RadID, s.StationID"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "zeilen",
+        "block": 3,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zeilen": [
+          1,
+          4,
+          12,
+          19,
+          21
+        ],
+        "quelleSql": "SELECT r.RadID, r.Typ, r.StationID, s.StationID, s.Name FROM Rad r, Station s WHERE r.RadID IN (2, 3, 10, 13, 14, 31) AND s.StationID IN (3, 4, 5, 6) AND r.StationID = s.StationID"
+      },
+      "tipps": [
+        "Ein Faden bleibt nur, wenn die beiden StationID-Spalten in derselben Zeile übereinstimmen.",
+        "Vergleiche mit NULL ergeben nie „wahr“."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Von 24 Fäden bleiben 5 – je Rad mit Station genau einer. **Rad 10** steht mit `StationID` NULL in der Werkstatt: Kein Vergleich mit NULL ist wahr, also bleibt kein Faden. **Alte Werft** taucht nicht auf, weil keines dieser Räder auf sie verweist. Ohne die Verbundbedingung bleiben alle 24 Zeilen stehen (P2: Kreuzprodukt)."
+        },
+        {
+          "t": "spurenbrett",
+          "datenbank": "stadtrad",
+          "tabellen": [
+            {
+              "name": "Rad",
+              "zeilen": [
+                2,
+                3,
+                10,
+                13,
+                14,
+                31
+              ]
+            },
+            {
+              "name": "Station",
+              "zeilen": [
+                3,
+                4,
+                5,
+                6
+              ]
+            }
+          ],
+          "bedingung": "Rad.StationID = Station.StationID"
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-04",
+      "titel": "Wohin zeigt der Pfeil?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Relationales Modell",
+      "kompetenzen": [
+        "DB-K04",
+        "DB-K03"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Juri hat die Relation Ausleihe abgeschrieben und dabei die Pfeile vergessen. `AusleihID` ist der Primärschlüssel. Wähle vor jedem Attribut, ob ein ↑ hingehört."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Station",
+              "attribute": [
+                {
+                  "name": "StationID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Stadtteil"
+                },
+                {
+                  "name": "Stellplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Rad",
+              "attribute": [
+                {
+                  "name": "RadID",
+                  "pk": true
+                },
+                {
+                  "name": "Typ"
+                },
+                {
+                  "name": "Baujahr"
+                },
+                {
+                  "name": "StationID",
+                  "fk": "Station"
+                },
+                {
+                  "name": "Status"
+                }
+              ]
+            },
+            {
+              "name": "Kunde",
+              "attribute": [
+                {
+                  "name": "KundenID",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Jahrgang"
+                },
+                {
+                  "name": "Tarif"
+                },
+                {
+                  "name": "Stadtteil"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "code",
+          "code": "Ausleihe(AusleihID, [[g1]]RadID, [[g2]]KundenID, [[g3]]StartStation,\n         [[g4]]ZielStation, [[g5]]Start, Ende, DauerMin, Preis)",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Ergänze, worauf die Fremdschlüssel verweisen:"
+        },
+        {
+          "t": "tabelle",
+          "kopf": [
+            "Fremdschlüssel",
+            "verweist auf Relation",
+            "und dort auf das Attribut"
+          ],
+          "zeilen": [
+            [
+              "StartStation",
+              "[[g6]]",
+              "[[g7]]"
+            ],
+            [
+              "ZielStation",
+              "[[g8]]",
+              "StationID"
+            ],
+            [
+              "KundenID",
+              "[[g9]]",
+              "KundenID"
+            ]
+          ]
+        }
+      ],
+      "interaktion": {
+        "kind": "gaps",
+        "felder": {
+          "g1": {
+            "typ": "auswahl",
+            "optionen": [
+              "↑",
+              "kein Pfeil"
+            ]
+          },
+          "g2": {
+            "typ": "auswahl",
+            "optionen": [
+              "↑",
+              "kein Pfeil"
+            ]
+          },
+          "g3": {
+            "typ": "auswahl",
+            "optionen": [
+              "↑",
+              "kein Pfeil"
+            ]
+          },
+          "g4": {
+            "typ": "auswahl",
+            "optionen": [
+              "↑",
+              "kein Pfeil"
+            ]
+          },
+          "g5": {
+            "typ": "auswahl",
+            "optionen": [
+              "↑",
+              "kein Pfeil"
+            ]
+          },
+          "g6": {
+            "typ": "auswahl",
+            "optionen": [
+              "Station",
+              "Rad",
+              "Kunde",
+              "Ausleihe"
+            ]
+          },
+          "g7": {
+            "typ": "auswahl",
+            "optionen": [
+              "StationID",
+              "StartStation",
+              "Name",
+              "RadID"
+            ]
+          },
+          "g8": {
+            "typ": "auswahl",
+            "optionen": [
+              "Station",
+              "Rad",
+              "Kunde",
+              "Ausleihe"
+            ]
+          },
+          "g9": {
+            "typ": "auswahl",
+            "optionen": [
+              "Station",
+              "Rad",
+              "Kunde",
+              "Ausleihe"
+            ]
+          }
+        }
+      },
+      "loesung": {
+        "g1": [
+          "↑"
+        ],
+        "g2": [
+          "↑"
+        ],
+        "g3": [
+          "↑"
+        ],
+        "g4": [
+          "↑"
+        ],
+        "g5": [
+          "kein Pfeil"
+        ],
+        "g6": [
+          "Station"
+        ],
+        "g7": [
+          "StationID"
+        ],
+        "g8": [
+          "Station"
+        ],
+        "g9": [
+          "Kunde"
+        ]
+      },
+      "tipps": [
+        "Ein Fremdschlüssel muss nicht so heißen wie der Primärschlüssel, auf den er zeigt.",
+        "`Start` ist ein Zeitpunkt, kein Verweis."
+      ],
+      "erklaerung": [
+        {
+          "t": "code",
+          "code": "Ausleihe(AusleihID, ↑RadID, ↑KundenID, ↑StartStation, ↑ZielStation, Start, Ende, DauerMin, Preis)",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "`StartStation` und `ZielStation` heißen anders als `StationID`, verweisen aber beide auf den Primärschlüssel von **Station** (P7). Der Name verrät den Verweis nicht – das Schema schon. `Start` ist ein gewöhnliches Attribut (Zeitpunkt)."
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-05",
+      "titel": "585 Fäden",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wie viele Zeilen liefern die beiden Abfragen auf der **ganzen** StadtRad-Datenbank? Die Tabellengrößen findest du im Schema-Browser; für die zweite Abfrage hilft ein Blick in die Spalte `StationID` von Rad."
+        },
+        {
+          "t": "sql",
+          "sql": "-- Abfrage 1\nSELECT *\nFROM Rad, Station"
+        },
+        {
+          "t": "sql",
+          "sql": "-- Abfrage 2\nSELECT *\nFROM Rad, Station\nWHERE Rad.StationID = Station.StationID"
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "Zeilen Abfrage 1",
+          "Zeilen Abfrage 2"
+        ],
+        "zeilenAnzahl": 1,
+        "reihenfolge": false
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            585,
+            26
+          ]
+        ],
+        "quelleSql": "SELECT COUNT(*), SUM(Rad.StationID = Station.StationID) FROM Rad, Station",
+        "datenbank": "stadtrad"
+      },
+      "tipps": [
+        "Kreuzprodukt: Anzahl Zeilen der einen Tabelle mal Anzahl Zeilen der anderen.",
+        "Mit Verbundbedingung bleibt jedes Rad genau einmal – sofern es überhaupt an einer Station steht."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Abfrage 1 bildet das Kreuzprodukt: 45 Räder × 13 Stationen = **585** Zeilen. Abfrage 2 lässt je Rad nur die eine passende Station übrig. 19 Räder haben `StationID` NULL (Werkstatt, unterwegs, vermisst) und fallen ganz heraus: 45 − 19 = **26** Zeilen."
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-06",
+      "titel": "Wo steht welches Rad?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K16"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Hollwedel will eine Standortliste: Gib für jedes Rad, das an einer Station steht, `RadID`, `Typ` und den **Namen** der Station aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null",
+          "leer"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Rad.RadID, Rad.Typ, Station.Name\nFROM Rad, Station\nWHERE Rad.StationID = Station.StationID"
+      },
+      "tipps": [
+        "`StationID` gibt es in Rad **und** in Station – schreib den Tabellennamen davor: `Rad.StationID`.",
+        "Verbund-Rezept: beide Tabellen in FROM, dann FK = PK in WHERE."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Rad.RadID, Rad.Typ, Station.Name\nFROM Rad, Station\nWHERE Rad.StationID = Station.StationID"
+        },
+        {
+          "t": "text",
+          "md": "`StationID` kommt in beiden Tabellen vor; ohne Präfix ist die Spalte mehrdeutig (P7). Räder ohne Station (NULL) erscheinen im Verbund nicht – das ist kein Fehler der Abfrage."
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-07",
+      "titel": "Keine Citybikes am Bahnhof",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P2",
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Hollwedel vermisst Lastenräder und will wissen, welche größeren Räder noch da sind: Gib `RadID`, `Typ` und den Stationsnamen aller Räder aus, die **keine** Citybikes sind und an einer Station im Stadtteil Bahnhofsviertel stehen – sortiert nach Stationsname."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null",
+          "leer"
+        ],
+        "sortierung": [
+          {
+            "spalte": "Name",
+            "richtung": "ASC"
+          }
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Rad.RadID, Rad.Typ, Station.Name\nFROM Rad, Station\nWHERE Rad.StationID = Station.StationID\n  AND Station.Stadtteil = 'Bahnhofsviertel'\n  AND Rad.Typ != 'Citybike'\nORDER BY Station.Name"
+      },
+      "tipps": [
+        "Erst die Verbundbedingung, dann die weiteren Bedingungen mit AND.",
+        "„Nicht gleich“ schreibst du im Abitur als `!=`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Rad.RadID, Rad.Typ, Station.Name\nFROM Rad, Station\nWHERE Rad.StationID = Station.StationID\n  AND Station.Stadtteil = 'Bahnhofsviertel'\n  AND Rad.Typ != 'Citybike'\nORDER BY Station.Name"
+        },
+        {
+          "t": "text",
+          "md": "Ohne `Rad.StationID = Station.StationID` würde jedes Nicht-Citybike mit **jeder** Station im Bahnhofsviertel kombiniert (P2). Den Stadtteil liefert nur Station; deshalb braucht es den Verbund."
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-08",
+      "titel": "Gerade unterwegs",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K18"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Welche **Lastenräder** sind gerade ausgeliehen? Eine Ausleihe läuft noch, solange kein `Ende` eingetragen ist. Gib `RadID`, `Start` und `KundenID` dieser Ausleihen aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Ausleihe.RadID, Ausleihe.Start, Ausleihe.KundenID\nFROM Ausleihe, Rad\nWHERE Ausleihe.RadID = Rad.RadID\n  AND Rad.Typ = 'Lastenrad'\n  AND Ausleihe.Ende IS NULL"
+      },
+      "tipps": [
+        "Den Typ kennt nur Rad, das Ende nur Ausleihe – du brauchst beide Tabellen.",
+        "Leere Felder findest du mit `IS NULL`, nicht mit `= NULL`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Ausleihe.RadID, Ausleihe.Start, Ausleihe.KundenID\nFROM Ausleihe, Rad\nWHERE Ausleihe.RadID = Rad.RadID\n  AND Rad.Typ = 'Lastenrad'\n  AND Ausleihe.Ende IS NULL",
+          "markiere": [
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`Ende = NULL` liefert nie eine Zeile (P5). Fünf Ausleihen, alle mitten in der Nacht – und keine wurde je beendet. Über `Rad.Status = 'ausgeliehen'` findest du sie übrigens nicht: Diese Räder stehen auf `vermisst`."
+        }
+      ]
+    },
+    {
+      "id": "A2-E1-CC",
+      "titel": "Cold Case: Räder ohne Heimat",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K23"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: In deiner Standortliste (A2-E1-06) fehlen einige Räder. Finde sie mit einer Abfrage nur auf Rad – gib `RadID`, `Typ` und `Status` aller Räder aus, die an keiner Station stehen. Überlege: Was passiert mit ihnen im Verbund?"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT RadID, Typ, Status\nFROM Rad\nWHERE StationID IS NULL"
+      },
+      "tipps": [
+        "An keiner Station heißt: `StationID` ist leer."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT RadID, Typ, Status\nFROM Rad\nWHERE StationID IS NULL"
+        },
+        {
+          "t": "text",
+          "md": "19 Räder haben keine Station: in der Werkstatt, gerade ausgeliehen oder vermisst. Im Verbund `Rad.StationID = Station.StationID` ist der Vergleich mit NULL nie wahr – diese Räder verschwinden still aus dem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-01",
+      "titel": "Welche Verbindung gehört wohin?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K03"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Im FROM stehen `Ausleihe a, Rad r, Kunde k, Station s`. Ordne jedem Tabellenpaar die passende Verbundbedingung zu. Eine Bedingung passt zu keinem Paar."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Station",
+              "attribute": [
+                {
+                  "name": "StationID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Stadtteil"
+                },
+                {
+                  "name": "Stellplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Rad",
+              "attribute": [
+                {
+                  "name": "RadID",
+                  "pk": true
+                },
+                {
+                  "name": "Typ"
+                },
+                {
+                  "name": "Baujahr"
+                },
+                {
+                  "name": "StationID",
+                  "fk": "Station"
+                },
+                {
+                  "name": "Status"
+                }
+              ]
+            },
+            {
+              "name": "Kunde",
+              "attribute": [
+                {
+                  "name": "KundenID",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Jahrgang"
+                },
+                {
+                  "name": "Tarif"
+                },
+                {
+                  "name": "Stadtteil"
+                }
+              ]
+            },
+            {
+              "name": "Ausleihe",
+              "attribute": [
+                {
+                  "name": "AusleihID",
+                  "pk": true
+                },
+                {
+                  "name": "RadID",
+                  "fk": "Rad"
+                },
+                {
+                  "name": "KundenID",
+                  "fk": "Kunde"
+                },
+                {
+                  "name": "StartStation",
+                  "fk": "Station"
+                },
+                {
+                  "name": "ZielStation",
+                  "fk": "Station"
+                },
+                {
+                  "name": "Start"
+                },
+                {
+                  "name": "Ende"
+                },
+                {
+                  "name": "DauerMin"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "interaktion": {
+        "kind": "match",
+        "elemente": [
+          {
+            "id": "e1",
+            "md": "Ausleihe – Rad"
+          },
+          {
+            "id": "e2",
+            "md": "Ausleihe – Kunde"
+          },
+          {
+            "id": "e3",
+            "md": "Ausleihe – Station (Startstation)"
+          },
+          {
+            "id": "e4",
+            "md": "Rad – Station (aktueller Standort)"
+          }
+        ],
+        "kategorien": [
+          {
+            "id": "k1",
+            "md": "`a.RadID = r.RadID`"
+          },
+          {
+            "id": "k2",
+            "md": "`a.KundenID = k.KundenID`"
+          },
+          {
+            "id": "k3",
+            "md": "`a.StartStation = s.StationID`"
+          },
+          {
+            "id": "k4",
+            "md": "`r.StationID = s.StationID`"
+          },
+          {
+            "id": "k5",
+            "md": "`a.StationID = s.StationID`"
+          }
+        ]
+      },
+      "loesung": {
+        "e1": "k1",
+        "e2": "k2",
+        "e3": "k3",
+        "e4": "k4"
+      },
+      "tipps": [
+        "Eine Verbundbedingung verbindet immer einen Fremdschlüssel mit dem Primärschlüssel, auf den er zeigt."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Jede Bedingung lautet FK = PK. `a.StationID` gibt es nicht: In Ausleihe heißen die Fremdschlüssel auf Station `StartStation` und `ZielStation` (P7)."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-02",
+      "titel": "Ausleihen am Stadtfest-Samstag",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K16",
+        "DB-K19"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Am Stadtfest-Samstag, dem 2026-08-29, war viel los. Gib Vorname und Nachname der Kundinnen und Kunden sowie die Startzeit aller Ausleihen dieses Tages aus. Verwende Tabellenaliase (`Ausleihe a, Kunde k`)."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "grenze"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT k.Vorname, k.Nachname, a.Start\nFROM Ausleihe a, Kunde k\nWHERE a.KundenID = k.KundenID\n  AND a.Start LIKE '2026-08-29%'"
+      },
+      "tipps": [
+        "`Start` enthält Datum **und** Uhrzeit. Mit `LIKE '2026-08-29%'` erwischst du jede Uhrzeit des Tages.",
+        "Hast du in FROM einen Alias vergeben, verwendest du ihn überall: `k.Vorname`, nicht `Kunde.Vorname`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT k.Vorname, k.Nachname, a.Start\nFROM Ausleihe a, Kunde k\nWHERE a.KundenID = k.KundenID\n  AND a.Start LIKE '2026-08-29%'"
+        },
+        {
+          "t": "text",
+          "md": "Der Alias steht ohne AS direkt hinter dem Tabellennamen. `a.Start = '2026-08-29'` fände nichts, weil `Start` auch die Uhrzeit enthält – `LIKE` mit `%` lässt sie offen."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-03",
+      "titel": "Der gerissene Faden",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24"
+      ],
+      "fallen": [
+        "P2",
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Juri wollte Nachname, Radtyp und Startzeit aller Ausleihen von Lastenrädern ermitteln. Das Ergebnis ist Unsinn. Tippe die Zeile an, in der der Faden falsch geknüpft ist."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT k.Nachname, r.Typ, a.Start\nFROM Ausleihe a, Kunde k, Rad r\nWHERE a.KundenID = k.KundenID\n  AND a.RadID = r.StationID\n  AND r.Typ = 'Lastenrad'"
+        }
+      ],
+      "interaktion": {
+        "kind": "lines",
+        "block": 1,
+        "anzahl": 1
+      },
+      "loesung": {
+        "zeilen": [
+          4
+        ]
+      },
+      "tipps": [
+        "Prüfe jede Verbundbedingung: Steht links ein Fremdschlüssel und rechts **sein** Primärschlüssel?"
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT k.Nachname, r.Typ, a.Start\nFROM Ausleihe a, Kunde k, Rad r\nWHERE a.KundenID = k.KundenID\n  AND a.RadID = r.RadID\n  AND r.Typ = 'Lastenrad'",
+          "markiere": [
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`a.RadID` verweist auf den Primärschlüssel `r.RadID`, nicht auf `r.StationID`. Die falsche Bedingung verknüpft Ausleihen mit Rädern, die zufällig an einer Station mit derselben Nummer stehen (P2, falscher Pfad)."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-04",
+      "titel": "Vier Tabellen, eine Spur",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Teure Fahrten fallen auf. Gib für alle Ausleihen mit einem Preis **über** 10 € Vorname und Nachname der Kundin bzw. des Kunden, den Typ des Rades und den Namen der **Startstation** aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT k.Vorname, k.Nachname, r.Typ, s.Name\nFROM Ausleihe a, Kunde k, Rad r, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.RadID = r.RadID\n  AND a.StartStation = s.StationID\n  AND a.Preis > 10"
+      },
+      "tipps": [
+        "Vier Tabellen brauchen mindestens drei Verbundbedingungen.",
+        "Die Startstation erreichst du über `a.StartStation`, nicht über den Standort des Rades."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT k.Vorname, k.Nachname, r.Typ, s.Name\nFROM Ausleihe a, Kunde k, Rad r, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.RadID = r.RadID\n  AND a.StartStation = s.StationID\n  AND a.Preis > 10"
+        },
+        {
+          "t": "text",
+          "md": "Vier Tabellen → drei Verbundbedingungen (n − 1). Fehlt eine, wird jede Zeile mit allen Datensätzen der nicht verbundenen Tabelle kombiniert (P2). Der Pfad über `r.StationID` hätte den **heutigen** Standort des Rades geliefert, nicht den Start der Fahrt."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-05",
+      "titel": "Von hier nach dort",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K16"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gib für alle abgeschlossenen Ausleihen (mit `Ende`) die `AusleihID` sowie den Namen der Start- und den Namen der Zielstation aus. Station brauchst du dafür zweimal – mit den Aliasen `s1` und `s2`."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT a.AusleihID, s1.Name AS Startort, s2.Name AS Zielort\nFROM Ausleihe a, Station s1, Station s2\nWHERE a.StartStation = s1.StationID\n  AND a.ZielStation = s2.StationID\n  AND a.Ende IS NOT NULL"
+      },
+      "tipps": [
+        "Mit nur **einer** Station-Tabelle müssten Start und Ziel dieselbe Station sein.",
+        "Spaltenaliase (`AS Startort`) machen die zwei Namensspalten unterscheidbar."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT a.AusleihID, s1.Name AS Startort, s2.Name AS Zielort\nFROM Ausleihe a, Station s1, Station s2\nWHERE a.StartStation = s1.StationID\n  AND a.ZielStation = s2.StationID\n  AND a.Ende IS NOT NULL"
+        },
+        {
+          "t": "text",
+          "md": "Zwei Fremdschlüssel auf dieselbe Tabelle → Station zweimal in FROM, jede Kopie mit eigenem Alias (P7). `StartStation = StationID AND ZielStation = StationID` mit nur einer Station-Tabelle liefert nur Rundfahrten."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-06",
+      "titel": "Die leere Zielstation",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ein Ausschnitt der Ausleihen vom 2026-09-20. Wie viele Zeilen liefert jede der beiden Abfragen **auf diesem Ausschnitt**?"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Ausleihe (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "AusleihID",
+              "pk": true
+            },
+            {
+              "name": "RadID",
+              "fk": "Rad"
+            },
+            {
+              "name": "KundenID",
+              "fk": "Kunde"
+            },
+            {
+              "name": "StartStation",
+              "fk": "Station"
+            },
+            {
+              "name": "ZielStation",
+              "fk": "Station"
+            },
+            {
+              "name": "Start"
+            },
+            {
+              "name": "Ende"
+            }
+          ],
+          "zeilen": [
+            [
+              458,
+              37,
+              21,
+              5,
+              1,
+              "2026-09-20 11:38",
+              "2026-09-20 12:00"
+            ],
+            [
+              459,
+              8,
+              58,
+              2,
+              1,
+              "2026-09-20 13:23",
+              "2026-09-20 13:31"
+            ],
+            [
+              460,
+              17,
+              56,
+              4,
+              4,
+              "2026-09-20 13:51",
+              "2026-09-20 14:00"
+            ],
+            [
+              461,
+              29,
+              37,
+              3,
+              null,
+              "2026-09-20 15:09",
+              null
+            ],
+            [
+              462,
+              20,
+              15,
+              11,
+              null,
+              "2026-09-20 15:22",
+              null
+            ],
+            [
+              463,
+              9,
+              54,
+              9,
+              null,
+              "2026-09-20 16:02",
+              null
+            ]
+          ],
+          "quelle": {
+            "datenbank": "stadtrad",
+            "sql": "SELECT AusleihID, RadID, KundenID, StartStation, ZielStation, Start, Ende FROM Ausleihe WHERE AusleihID BETWEEN 458 AND 463"
+          }
+        },
+        {
+          "t": "sql",
+          "sql": "-- Abfrage A\nSELECT AusleihID\nFROM Ausleihe\nWHERE ZielStation IS NULL"
+        },
+        {
+          "t": "sql",
+          "sql": "-- Abfrage B\nSELECT AusleihID\nFROM Ausleihe\nWHERE ZielStation = NULL"
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "Zeilen Abfrage A",
+          "Zeilen Abfrage B"
+        ],
+        "zeilenAnzahl": 1,
+        "reihenfolge": false
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            3,
+            0
+          ]
+        ],
+        "quelleSql": "SELECT SUM(ZielStation IS NULL), COUNT(ZielStation = NULL) FROM Ausleihe WHERE AusleihID BETWEEN 458 AND 463",
+        "datenbank": "stadtrad"
+      },
+      "tipps": [
+        "NULL heißt „weiß keiner“. Ist „weiß keiner“ gleich „weiß keiner“?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Abfrage A findet die drei laufenden Ausleihen 461–463. Abfrage B liefert **keine** Zeile: Ein Vergleich mit `= NULL` ist nie wahr, auch nicht bei leeren Feldern (P5). Leere Felder prüfst du immer mit `IS NULL`."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-07",
+      "titel": "Nachtfahrten",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K18"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Jetzt folgst du dem Faden bis zum Kundenkonto: Gib für alle **laufenden** Ausleihen (ohne `Ende`) von **Lastenrädern**, die an der Station **Hafenkante** begonnen haben, `KundenID`, Vorname, Nachname und `Start` aus – sortiert nach `Start`."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null"
+        ],
+        "sortierung": [
+          {
+            "spalte": "Start",
+            "richtung": "ASC"
+          }
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT k.KundenID, k.Vorname, k.Nachname, a.Start\nFROM Ausleihe a, Kunde k, Rad r, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.RadID = r.RadID\n  AND a.StartStation = s.StationID\n  AND r.Typ = 'Lastenrad'\n  AND s.Name = 'Hafenkante'\n  AND a.Ende IS NULL\nORDER BY a.Start"
+      },
+      "tipps": [
+        "Ermittlungsweg: Kunde ← Ausleihe → Rad, Ausleihe → Station (über die **Start**station).",
+        "Eine Verbindung über `ZielStation` kann es bei laufenden Fahrten nicht geben – die ist leer."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT k.KundenID, k.Vorname, k.Nachname, a.Start\nFROM Ausleihe a, Kunde k, Rad r, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.RadID = r.RadID\n  AND a.StartStation = s.StationID\n  AND r.Typ = 'Lastenrad'\n  AND s.Name = 'Hafenkante'\n  AND a.Ende IS NULL\nORDER BY a.Start"
+        },
+        {
+          "t": "text",
+          "md": "Fünf Nächte, fünf Lastenräder, immer ab Hafenkante zwischen 01:00 und 02:00 Uhr – und immer dasselbe Kundenkonto. Wer Station über `a.ZielStation` verbindet, verliert alle laufenden Ausleihen, weil der Vergleich mit NULL nie wahr ist (P5)."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-08",
+      "titel": "Die längsten Fahrten",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K22",
+        "DB-K16"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gib die fünf längsten abgeschlossenen Fahrten aus: `DauerMin`, Vorname und Nachname der Kundin bzw. des Kunden sowie den Namen der Start- und der Zielstation – die längste zuerst."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null",
+          "grenze"
+        ],
+        "sortierung": [
+          {
+            "spalte": "DauerMin",
+            "richtung": "DESC"
+          }
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT a.DauerMin, k.Vorname, k.Nachname, s1.Name AS Startort, s2.Name AS Zielort\nFROM Ausleihe a, Kunde k, Station s1, Station s2\nWHERE a.KundenID = k.KundenID\n  AND a.StartStation = s1.StationID\n  AND a.ZielStation = s2.StationID\nORDER BY a.DauerMin DESC\nLIMIT 5"
+      },
+      "tipps": [
+        "Station zweimal: `Station s1, Station s2`.",
+        "Erst `ORDER BY … DESC`, dann `LIMIT 5`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT a.DauerMin, k.Vorname, k.Nachname, s1.Name AS Startort, s2.Name AS Zielort\nFROM Ausleihe a, Kunde k, Station s1, Station s2\nWHERE a.KundenID = k.KundenID\n  AND a.StartStation = s1.StationID\n  AND a.ZielStation = s2.StationID\nORDER BY a.DauerMin DESC\nLIMIT 5"
+        },
+        {
+          "t": "text",
+          "md": "Laufende Fahrten haben keine Dauer und keine Zielstation – der Verbund über `a.ZielStation` schließt sie ohnehin aus. Zwischen Platz 5 (75 Minuten) und Platz 6 (70 Minuten) gibt es keinen Gleichstand; sonst wäre `LIMIT 5` zufällig."
+        }
+      ]
+    },
+    {
+      "id": "A2-E2-CC",
+      "titel": "Cold Case: Rundfahrten",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: Wer beendet seine Fahrt an derselben Station, an der er sie begonnen hat? Gib `AusleihID`, Vorname, Nachname, den Namen und den Stadtteil dieser Station aus. Reicht hier **ein** Alias für Station?"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "stadtrad",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT a.AusleihID, k.Vorname, k.Nachname, s.Name, s.Stadtteil\nFROM Ausleihe a, Kunde k, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.StartStation = s.StationID\n  AND a.ZielStation = s.StationID"
+      },
+      "tipps": [
+        "Wenn Start und Ziel dieselbe Station sein **sollen**, darf dieselbe Station-Zeile beide Bedingungen erfüllen."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT a.AusleihID, k.Vorname, k.Nachname, s.Name, s.Stadtteil\nFROM Ausleihe a, Kunde k, Station s\nWHERE a.KundenID = k.KundenID\n  AND a.StartStation = s.StationID\n  AND a.ZielStation = s.StationID"
+        },
+        {
+          "t": "text",
+          "md": "Hier reicht eine Station-Tabelle: Beide Fremdschlüssel müssen auf **dieselbe** Station zeigen. `s.Stadtteil` braucht das Präfix, weil auch Kunde ein Attribut `Stadtteil` hat (P7). Sieben Fahrten sind Rundfahrten."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-01",
+      "titel": "Fremdschlüssel",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K03"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, welche Aussage die Bedeutung von ↑FahrerNr in der Relation Fahrt korrekt beschreibt."
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "`FahrerNr` in Fahrt verweist auf den Primärschlüssel `FahrerNr` der Relation Fahrer; so ist jeder Fahrt die Person zugeordnet, die sie gefahren ist."
+          },
+          {
+            "id": "b",
+            "md": "`FahrerNr` ist der Primärschlüssel der Relation Fahrt."
+          },
+          {
+            "id": "c",
+            "md": "`FahrerNr` in Fahrt muss eindeutig sein; jede Person fährt höchstens eine Fahrt."
+          },
+          {
+            "id": "d",
+            "md": "`FahrerNr` in Fahrer verweist auf die Fahrten, die diese Person gefahren ist."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "↑FahrerNr ist ein Fremdschlüssel: Er verweist von Fahrt auf den Primärschlüssel von Fahrer. Er ist nicht eindeutig – eine Person fährt viele Fahrten."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-02",
+      "titel": "Kennzeichnungen",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Relationales Modell",
+      "kompetenzen": [
+        "DB-K04",
+        "DB-K05"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Ordnen Sie** den Kennzeichnungen der Relation Fahrt ihre Bedeutung zu."
+        }
+      ],
+      "interaktion": {
+        "kind": "match",
+        "elemente": [
+          {
+            "id": "e1",
+            "md": "`FahrtNr` ist unterstrichen."
+          },
+          {
+            "id": "e2",
+            "md": "`Kennzeichen` trägt einen Pfeil ↑."
+          },
+          {
+            "id": "e3",
+            "md": "`StartHalt` trägt einen Pfeil ↑."
+          },
+          {
+            "id": "e4",
+            "md": "`Fahrgaeste` hat keine Kennzeichnung."
+          }
+        ],
+        "kategorien": [
+          {
+            "id": "p",
+            "md": "Primärschlüssel von Fahrt"
+          },
+          {
+            "id": "b",
+            "md": "Fremdschlüssel auf den Primärschlüssel von Bus"
+          },
+          {
+            "id": "h",
+            "md": "Fremdschlüssel auf `HaltID` in Haltestelle"
+          },
+          {
+            "id": "n",
+            "md": "gewöhnliches Attribut, weder Primär- noch Fremdschlüssel"
+          },
+          {
+            "id": "x",
+            "md": "Fremdschlüssel auf ein Attribut `StartHalt` in Haltestelle"
+          }
+        ]
+      },
+      "loesung": {
+        "e1": "p",
+        "e2": "b",
+        "e3": "h",
+        "e4": "n"
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "`StartHalt` (und ebenso `ZielHalt`) verweist auf `HaltID` – der Fremdschlüssel heißt anders als der Primärschlüssel, auf den er zeigt (P7). `Kennzeichen` ist ein natürlicher Schlüssel aus Text."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-03",
+      "titel": "Fahrten mit Fahrer",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für alle Fahrten Datum, Abfahrt und Nachname der Fahrerin bzw. des Fahrers ausgibt."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/buergerbus",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Fahrt.Datum, Fahrt.Abfahrt, Fahrer.Nachname\nFROM Fahrt, Fahrer\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.Datum, Fahrt.Abfahrt, Fahrer.Nachname\nFROM Fahrt, Fahrer\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr"
+        },
+        {
+          "t": "text",
+          "md": "Verbund über den Fremdschlüssel `Fahrt.FahrerNr`. Ohne Verbundbedingung entstünde das Kreuzprodukt mit 70 · 8 Zeilen (P2); ein zusätzlicher Verbund mit Bus würde Fahrten ohne erfasstes Kennzeichen verlieren."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-04",
+      "titel": "Kreuzprodukt",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "text",
+          "md": "Die Tabelle Fahrer enthält 8, die Tabelle Bus 4 Datensätze. **Geben Sie an**, wie viele Datensätze die folgende Abfrage liefert."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT *\nFROM Fahrer, Bus"
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "Anzahl der Datensätze"
+        ],
+        "zeilenAnzahl": 1,
+        "reihenfolge": false
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            32
+          ]
+        ],
+        "quelleSql": "SELECT COUNT(*) FROM Fahrer, Bus",
+        "datenbank": "verhoer/buergerbus"
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Ohne Verbundbedingung bildet SQL das Kreuzprodukt: 8 · 4 = 32 Datensätze."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-05",
+      "titel": "Passende Paare",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gegeben ist ein Ausschnitt aus dem Kreuzprodukt der Relationen Fahrt und Fahrer. **Geben Sie an**, welche Zeilen die Bedingung `Fahrt.FahrerNr = Fahrer.FahrerNr` erfüllen."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Fahrt × Fahrer (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Fahrt.FahrtNr"
+            },
+            {
+              "name": "Fahrt.FahrerNr",
+              "fk": "Fahrer"
+            },
+            {
+              "name": "Fahrer.FahrerNr"
+            },
+            {
+              "name": "Fahrer.Vorname"
+            },
+            {
+              "name": "Fahrer.Nachname"
+            }
+          ],
+          "zeilen": [
+            [
+              1,
+              1,
+              1,
+              "Gesa",
+              "Bredehorn"
+            ],
+            [
+              1,
+              1,
+              2,
+              "Hauke",
+              "Rohlfs"
+            ],
+            [
+              1,
+              1,
+              3,
+              "Ulf",
+              "Meinecke"
+            ],
+            [
+              2,
+              2,
+              1,
+              "Gesa",
+              "Bredehorn"
+            ],
+            [
+              2,
+              2,
+              2,
+              "Hauke",
+              "Rohlfs"
+            ],
+            [
+              2,
+              2,
+              3,
+              "Ulf",
+              "Meinecke"
+            ],
+            [
+              18,
+              2,
+              1,
+              "Gesa",
+              "Bredehorn"
+            ],
+            [
+              18,
+              2,
+              2,
+              "Hauke",
+              "Rohlfs"
+            ],
+            [
+              18,
+              2,
+              3,
+              "Ulf",
+              "Meinecke"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/buergerbus",
+            "sql": "SELECT f.FahrtNr, f.FahrerNr, fa.FahrerNr, fa.Vorname, fa.Nachname FROM Fahrt f, Fahrer fa WHERE f.FahrtNr IN (1, 2, 18) AND fa.FahrerNr IN (1, 2, 3) ORDER BY f.FahrtNr, fa.FahrerNr"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "zeilen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zeilen": [
+          0,
+          4,
+          7
+        ],
+        "quelleSql": "SELECT f.FahrtNr, f.FahrerNr, fa.FahrerNr, fa.Vorname, fa.Nachname FROM Fahrt f, Fahrer fa WHERE f.FahrtNr IN (1, 2, 18) AND fa.FahrerNr IN (1, 2, 3) AND f.FahrerNr = fa.FahrerNr"
+      },
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Je Fahrt bleibt genau eine Zeile: die mit übereinstimmender FahrerNr. Fahrt 2 und Fahrt 18 gehören beide zu FahrerNr 2."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-06",
+      "titel": "Volle Busse",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Fahrten der Fahrerin mit der FahrerNr 4 ausgibt, bei denen **mehr als** 6 Fahrgäste gezählt wurden. Auszugeben sind FahrtNr, Datum, Fahrgaeste sowie Vor- und Nachname der Fahrerin."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/buergerbus",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Fahrt.FahrtNr, Fahrt.Datum, Fahrt.Fahrgaeste, Fahrer.Vorname, Fahrer.Nachname\nFROM Fahrt, Fahrer\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr\n  AND Fahrer.FahrerNr = 4\n  AND Fahrt.Fahrgaeste > 6"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.FahrtNr, Fahrt.Datum, Fahrt.Fahrgaeste, Fahrer.Vorname, Fahrer.Nachname\nFROM Fahrt, Fahrer\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr\n  AND Fahrer.FahrerNr = 4\n  AND Fahrt.Fahrgaeste > 6"
+        },
+        {
+          "t": "text",
+          "md": "Gefiltert wird über den Schlüssel `FahrerNr = 4`, nicht über den Namen – Namen müssen nicht eindeutig sein (P7). „Mehr als 6“ heißt `> 6`; die Fahrt mit genau 6 Fahrgästen gehört nicht dazu."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-07",
+      "titel": "Start und Ziel",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K16"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die zu jeder Fahrt die FahrtNr sowie die Namen der Start- und der Zielhaltestelle ausgibt."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/buergerbus",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Fahrt.FahrtNr, s1.Name AS Start, s2.Name AS Ziel\nFROM Fahrt, Haltestelle s1, Haltestelle s2\nWHERE Fahrt.StartHalt = s1.HaltID\n  AND Fahrt.ZielHalt = s2.HaltID"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.FahrtNr, s1.Name AS Start, s2.Name AS Ziel\nFROM Fahrt, Haltestelle s1, Haltestelle s2\nWHERE Fahrt.StartHalt = s1.HaltID\n  AND Fahrt.ZielHalt = s2.HaltID"
+        },
+        {
+          "t": "text",
+          "md": "Zwei Fremdschlüssel verweisen auf Haltestelle; die Relation wird deshalb zweimal mit verschiedenen Tabellenaliasen eingebunden (P7)."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-08",
+      "titel": "Große Busse",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Vor- und Nachnamen aller Fahrerinnen und Fahrer **ohne Wiederholung** ausgibt, die mindestens einmal einen Bus mit **mehr als** 8 Sitzplätzen gefahren haben."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/buergerbus",
+        "varianten": [
+          "null",
+          "gleichnamig"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT DISTINCT Fahrer.Vorname, Fahrer.Nachname\nFROM Fahrer, Fahrt, Bus\nWHERE Fahrer.FahrerNr = Fahrt.FahrerNr\n  AND Fahrt.Kennzeichen = Bus.Kennzeichen\n  AND Bus.Sitzplaetze > 8"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT DISTINCT Fahrer.Vorname, Fahrer.Nachname\nFROM Fahrer, Fahrt, Bus\nWHERE Fahrer.FahrerNr = Fahrt.FahrerNr\n  AND Fahrt.Kennzeichen = Bus.Kennzeichen\n  AND Bus.Sitzplaetze > 8"
+        },
+        {
+          "t": "text",
+          "md": "Fahrer und Bus sind nur über Fahrt verbunden: drei Tabellen, zwei Verbundbedingungen (P2). `DISTINCT` entfernt Wiederholungen, weil dieselbe Person viele Fahrten hat."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-09",
+      "titel": "Fehlerzeile",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24"
+      ],
+      "fallen": [
+        "P2",
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Die folgende Abfrage soll zu jeder Fahrt das Datum, den Nachnamen der Fahrerin bzw. des Fahrers und den Namen der Starthaltestelle ausgeben. **Geben Sie** die fehlerhafte Zeile **an**."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.Datum, Fahrer.Nachname, Haltestelle.Name\nFROM Fahrt, Fahrer, Haltestelle\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr\n  AND Fahrer.FahrerNr = Haltestelle.HaltID"
+        }
+      ],
+      "interaktion": {
+        "kind": "lines",
+        "block": 3,
+        "anzahl": 1
+      },
+      "loesung": {
+        "zeilen": [
+          4
+        ]
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.Datum, Fahrer.Nachname, Haltestelle.Name\nFROM Fahrt, Fahrer, Haltestelle\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr\n  AND Fahrt.StartHalt = Haltestelle.HaltID",
+          "markiere": [
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Zeile 4 verknüpft FahrerNr mit HaltID – zwei Attribute ohne Verweis aufeinander (falscher Pfad, P2). Richtig ist der Fremdschlüssel `Fahrt.StartHalt`, der anders heißt als `HaltID` (P7)."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-10",
+      "titel": "Fehlende Zählung",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K23"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für alle Fahrten **ohne** eingetragene Fahrgastzahl die FahrtNr, das Datum sowie Vor- und Nachname der Fahrerin bzw. des Fahrers ausgibt."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/buergerbus",
+        "varianten": [
+          "null"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Fahrt.FahrtNr, Fahrt.Datum, Fahrer.Vorname, Fahrer.Nachname\nFROM Fahrt, Fahrer\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr\n  AND Fahrt.Fahrgaeste IS NULL"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.FahrtNr, Fahrt.Datum, Fahrer.Vorname, Fahrer.Nachname\nFROM Fahrt, Fahrer\nWHERE Fahrt.FahrerNr = Fahrer.FahrerNr\n  AND Fahrt.Fahrgaeste IS NULL"
+        },
+        {
+          "t": "text",
+          "md": "Nicht gezählt = NULL; geprüft wird mit `IS NULL` (P5). `Fahrgaeste = 0` beschreibt eine gezählte Fahrt ohne Fahrgäste, `= NULL` liefert keine Zeile."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-11",
+      "titel": "Spitzenfahrten",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K22"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die die fünf Fahrten mit den meisten Fahrgästen ausgibt: FahrtNr, Fahrgaeste sowie die Namen der Start- und der Zielhaltestelle, absteigend nach Fahrgästen sortiert."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/buergerbus",
+        "varianten": [
+          "null",
+          "gleichnamig"
+        ],
+        "sortierung": [
+          {
+            "spalte": "Fahrgaeste",
+            "richtung": "DESC"
+          }
+        ],
+        "aliasPflicht": false,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Fahrt.FahrtNr, Fahrt.Fahrgaeste, s1.Name AS Start, s2.Name AS Ziel\nFROM Fahrt, Haltestelle s1, Haltestelle s2\nWHERE Fahrt.StartHalt = s1.HaltID\n  AND Fahrt.ZielHalt = s2.HaltID\nORDER BY Fahrt.Fahrgaeste DESC\nLIMIT 5"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.FahrtNr, Fahrt.Fahrgaeste, s1.Name AS Start, s2.Name AS Ziel\nFROM Fahrt, Haltestelle s1, Haltestelle s2\nWHERE Fahrt.StartHalt = s1.HaltID\n  AND Fahrt.ZielHalt = s2.HaltID\nORDER BY Fahrt.Fahrgaeste DESC\nLIMIT 5"
+        },
+        {
+          "t": "text",
+          "md": "Haltestelle wird zweimal mit Alias eingebunden (P7); `ORDER BY … DESC` vor `LIMIT 5`. Zwischen Platz 5 (10 Fahrgäste) und Platz 6 (9) liegt kein Gleichstand."
+        }
+      ]
+    },
+    {
+      "id": "A2-V-12",
+      "titel": "Ortsteilwechsel",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P6",
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ehrenamtliche fahren den Bürgerbus der Gemeinde Brookdorf. Jede Fahrt wird mit Fahrerin bzw. Fahrer, Bus, Start- und Zielhaltestelle, Datum, Abfahrtszeit und gezählter Fahrgastzahl erfasst; wird nicht gezählt, bleibt `Fahrgaeste` leer (NULL)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Haltestelle",
+              "attribute": [
+                {
+                  "name": "HaltID",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Ortsteil"
+                }
+              ]
+            },
+            {
+              "name": "Fahrer",
+              "attribute": [
+                {
+                  "name": "FahrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Bus",
+              "attribute": [
+                {
+                  "name": "Kennzeichen",
+                  "pk": true
+                },
+                {
+                  "name": "Sitzplaetze"
+                }
+              ]
+            },
+            {
+              "name": "Fahrt",
+              "attribute": [
+                {
+                  "name": "FahrtNr",
+                  "pk": true
+                },
+                {
+                  "name": "FahrerNr",
+                  "fk": "Fahrer"
+                },
+                {
+                  "name": "Kennzeichen",
+                  "fk": "Bus"
+                },
+                {
+                  "name": "StartHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "ZielHalt",
+                  "fk": "Haltestelle"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Abfahrt"
+                },
+                {
+                  "name": "Fahrgaeste"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Fahrten ausgibt, die im Ortsteil Nordheide beginnen und in einem **anderen** Ortsteil enden. Auszugeben sind FahrtNr, Datum sowie die Namen der Start- und der Zielhaltestelle."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/buergerbus",
+        "varianten": [
+          "null",
+          "gleichnamig"
+        ],
+        "aliasPflicht": false,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Fahrt.FahrtNr, Fahrt.Datum, s1.Name AS Start, s2.Name AS Ziel\nFROM Fahrt, Haltestelle s1, Haltestelle s2\nWHERE Fahrt.StartHalt = s1.HaltID\n  AND Fahrt.ZielHalt = s2.HaltID\n  AND s1.Ortsteil = 'Nordheide'\n  AND s2.Ortsteil != 'Nordheide'"
+      },
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Fahrt.FahrtNr, Fahrt.Datum, s1.Name AS Start, s2.Name AS Ziel\nFROM Fahrt, Haltestelle s1, Haltestelle s2\nWHERE Fahrt.StartHalt = s1.HaltID\n  AND Fahrt.ZielHalt = s2.HaltID\n  AND s1.Ortsteil = 'Nordheide'\n  AND s2.Ortsteil != 'Nordheide'"
+        },
+        {
+          "t": "text",
+          "md": "Der Ortsteil muss für Start **und** Ziel geprüft werden – das geht nur mit zwei Aliasen (P7). Ohne `s2.Ortsteil != 'Nordheide'` kämen die sieben Fahrten innerhalb von Nordheide hinzu (P6)."
+        }
+      ]
+    }
+  ]
+}

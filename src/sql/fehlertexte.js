@@ -7,7 +7,7 @@
  * ordneZu(meldung)   → { code, text }
  * meldung: Text der Rohmeldung, ein Error-Objekt (message) oder { code, … } mit einem internen Code:
  *   ZEITLIMIT { ms }, ZEILENLIMIT { max }, VERBOTEN { wort }, ZU_LANG { max }, UEBERLASTET, NICHT_LESEND,
- *   MEHRERE_ANWEISUNGEN, LEER, ABSTURZ, BEENDET.
+ *   MEHRERE_ANWEISUNGEN, LEER, ERGEBNIS_ZU_GROSS, ABSTURZ, BEENDET.
  * Texte: geduzt, Ursache und Weg, ohne Lösung; aus der Rohmeldung wird höchstens der betroffene Name übernommen.
  */
 (function (wurzel, fabrik) {
@@ -60,6 +60,9 @@
     },
     LEER: function () {
       return 'Die Abfrage ist leer. Schreib eine Abfrage, die mit SELECT beginnt.';
+    },
+    ERGEBNIS_ZU_GROSS: function () {
+      return 'Das Ergebnis deiner Abfrage ist zu groß (riesige Werte oder sehr lange Texte) und wurde abgebrochen.';
     },
     ABSTURZ: function () {
       return 'Beim Prüfen ist technisch etwas schiefgegangen – an deiner Abfrage liegt es nicht unbedingt. Versuch es gleich noch einmal.';

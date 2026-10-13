@@ -9,13 +9,16 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.2.0">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.2.0">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.2.0">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.2.0">
-  <script src="/static/js/kern/thema.js?v=0.2.0"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.2.0" defer></script>
-  <script src="/static/js/start.js?v=0.2.0" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/lernen.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/pinnwand.css?v=0.7.0">
+  <script src="/static/js/kern/thema.js?v=0.7.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.7.0" defer></script>
+  <script src="/static/js/start.js?v=0.7.0" defer></script>
+  <script type="module" src="/static/js/lernen/stadtplan.js?v=0.7.0"></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -47,6 +50,43 @@
     </div>
   </header>
   <main class="inhalt" id="inhalt" tabindex="-1">
+    <section class="stadtplan-bereich" id="stadtplan-bereich" aria-labelledby="stadtplan-titel" hidden>
+      <nav class="lern-nav" aria-label="Ermitteln">
+        <a href="/" aria-current="page"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-plan"/></svg>Stadtplan</a>
+        <a href="/pinnwand"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-faden"/></svg>Pinnwand</a>
+        <a href="/warmup"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-karte"/></svg>Warm-up</a>
+        <a href="/training"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-hantel"/></svg>Training</a>
+        <a href="/themen"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>Themen</a>
+      </nav>
+      <div class="seiten-kopf">
+        <span class="etikett">Lagebesprechung · Detektei Lorenz</span>
+        <h1 id="stadtplan-titel">Stadtplan Weserstedt</h1>
+        <p id="begruessung">Jede Akte ist ein Ort in der Stadt. Tippe einen Ort an, um die Akte zu öffnen. Was im Nebel liegt, schaltet deine Lehrkraft später frei.</p>
+      </div>
+      <div id="seite" class="seite">
+        <p class="laedt">Stadtplan wird geladen …</p>
+      </div>
+      <div id="start-angemeldet" class="abschnitt">
+        <div id="start-lehrkraft" class="knopf-reihe" hidden>
+          <a class="knopf primaer" href="/lehrkraft"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Zum Lehrkraft-Bereich</a>
+          <a class="knopf" href="/themen#niveaus">Niveau-Übersicht eA/gA</a>
+        </div>
+        <div class="freie-ermittlung-start">
+          <h3>Freie Ermittlung</h3>
+          <p class="hinweis-klein">Probier eigene Abfragen auf den Datenbanken der Akten aus – ohne Bewertung.</p>
+          <ul class="db-liste">
+            <li><a href="/konsole/fundbuero"><span class="db-name">Fundbüro</span><span class="db-akte">Akte 1 · eine Tabelle</span></a></li>
+            <li><a href="/konsole/stadtrad"><span class="db-name">StadtRad</span><span class="db-akte">Akten 2 und 6 · Verbund</span></a></li>
+            <li><a href="/konsole/stadtfest"><span class="db-name">Stadtfest</span><span class="db-akte">Akten 3 und 6 · Gruppieren</span></a></li>
+            <li><a href="/konsole/tus"><span class="db-name">TuS Weserstedt</span><span class="db-akte">Akte 4 · Vereinsarchiv</span></a></li>
+            <li><a href="/konsole/detektei"><span class="db-name">Detektei</span><span class="db-akte">Akten 5 und 6 · Fall-Datenbank</span></a></li>
+            <li><a href="/konsole/datenspuren"><span class="db-name">Datenspuren</span><span class="db-akte">Akte 6 · Finale</span></a></li>
+            <li><a href="/konsole/eisdiele"><span class="db-name">Eisdiele</span><span class="db-akte">Probefall · <span class="db-frei">ohne Anmeldung</span></span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <div id="start-oeffentlich" class="start-oeffentlich">
     <div class="start-raster">
       <section class="aktendeckel start-hero" aria-labelledby="titel">
         <span class="reiter rot">Akte 0 · Aufnahme ins Ermittlerteam</span>
@@ -71,27 +111,6 @@
             </div>
             <p class="hinweis-klein">Die Anmeldung läuft über das Portal InfoLabs – mit dem Kurscode und deinem persönlichen
               Code. Ohne Anmeldung kannst du im Gastmodus einen Probefall ansehen; dabei wird nichts gespeichert.</p>
-          </div>
-          <div id="start-angemeldet" class="abschnitt" hidden>
-            <h2>Willkommen zurück, <span id="begruessung-name"></span></h2>
-            <p id="start-schueler" class="hinweis-klein">Deine erste Akte liegt schon auf dem Tisch – sobald deine Lehrkraft sie freischaltet, geht es los.</p>
-            <div id="start-lehrkraft" class="knopf-reihe" hidden>
-              <a class="knopf primaer" href="/lehrkraft"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Zum Lehrkraft-Bereich</a>
-              <a class="knopf" href="/themen#niveaus">Niveau-Übersicht eA/gA</a>
-            </div>
-            <div class="freie-ermittlung-start">
-              <h3>Freie Ermittlung</h3>
-              <p class="hinweis-klein">Probier eigene Abfragen auf den Datenbanken der Akten aus – ohne Bewertung.</p>
-              <ul class="db-liste">
-                <li><a href="/konsole/fundbuero"><span class="db-name">Fundbüro</span><span class="db-akte">Akte 1 · eine Tabelle</span></a></li>
-                <li><a href="/konsole/stadtrad"><span class="db-name">StadtRad</span><span class="db-akte">Akten 2 und 6 · Verbund</span></a></li>
-                <li><a href="/konsole/stadtfest"><span class="db-name">Stadtfest</span><span class="db-akte">Akten 3 und 6 · Gruppieren</span></a></li>
-                <li><a href="/konsole/tus"><span class="db-name">TuS Weserstedt</span><span class="db-akte">Akte 4 · Vereinsarchiv</span></a></li>
-                <li><a href="/konsole/detektei"><span class="db-name">Detektei</span><span class="db-akte">Akten 5 und 6 · Fall-Datenbank</span></a></li>
-                <li><a href="/konsole/datenspuren"><span class="db-name">Datenspuren</span><span class="db-akte">Akte 6 · Finale</span></a></li>
-                <li><a href="/konsole/eisdiele"><span class="db-name">Eisdiele</span><span class="db-akte">Probefall · <span class="db-frei">ohne Anmeldung</span></span></a></li>
-              </ul>
-            </div>
           </div>
         </div>
       </section>
@@ -126,6 +145,7 @@
       </div>
       <ol class="akten-liste" id="akten-liste" hidden></ol>
     </section>
+    </div>
   </main>
   <footer class="fuss">
     <nav aria-label="Weitere Seiten">

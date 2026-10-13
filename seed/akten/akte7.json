@@ -1,0 +1,2888 @@
+{
+  "version": 2,
+  "welt": 7,
+  "titel": "Generalprobe",
+  "farbe": "#383E47",
+  "levels": [
+    {
+      "id": "A7-E1",
+      "nr": "7.1",
+      "titel": "Die Ermittlerprüfung",
+      "ds": [
+        13
+      ],
+      "ab": "Generalprobe eA/gA",
+      "briefing": "Heute ist Ermittlerprüfung: eine Aufgabe im Abitur-Format, ohne Story und ohne Tipps. Lies die Operatoren genau und behalte die Zeit im Blick. Danach wird nach Kernpunkten korrigiert – und es gibt Lizenzen.",
+      "intro": [
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:** Die Ermittlerprüfung schreibst du **auf Papier**: die Generalprobe im Abitur-Format (eA 30 BE, gA 25 BE), rund **2 Minuten je BE**. Danach korrigiert ihr euch gegenseitig nach dem Erwartungshorizont und kreuzt jede gefundene Falle auf der Fallen-Checkliste an.\n\nIm Lab gibt es in dieser Akte keine Ermittlungsaufgaben. Die Lab-Generalprobe ist **Verhör 7**: acht Aufgaben im Abitur-Stil zu einem neuen Kontext, 30 Minuten, Abimodus streng, keine Rückmeldung während des Verhörs."
+        },
+        {
+          "t": "tabelle",
+          "kopf": [
+            "Falle",
+            "Prüffrage an deine Lösung"
+          ],
+          "zeilen": [
+            [
+              "P1 WHERE ↔ HAVING",
+              "Steht jede Bedingung mit Aggregatfunktion in HAVING und jede Bedingung an einzelne Datensätze in WHERE?"
+            ],
+            [
+              "P2 Verbund",
+              "Hat jede Tabelle im FROM ihre Verbundbedingung? Vervielfacht eine überflüssige Tabelle die Summen?"
+            ],
+            [
+              "P3 GROUP-BY-Regel",
+              "Ist jede Spalte im SELECT aggregiert oder gruppiert – und gruppiere ich nach dem Schlüssel, nicht nur nach dem Namen?"
+            ],
+            [
+              "P4 COUNT ↔ SUM",
+              "Zähle ich Datensätze (COUNT) oder addiere ich Mengen (SUM)?"
+            ],
+            [
+              "P5 NULL und Literale",
+              "IS NULL statt = NULL? Text und Datum in Hochkommata, Datum als JJJJ-MM-TT?"
+            ],
+            [
+              "P6 Bedingungslogik",
+              "Klammern bei AND und OR gesetzt? Grenzen (< oder <=, BETWEEN) wie gefordert?"
+            ],
+            [
+              "P7 Benennung",
+              "Gleichnamige Spalten mit dem Tabellennamen qualifiziert? Die richtige Spalte gewählt?"
+            ],
+            [
+              "P8 Schlüssel",
+              "Eindeutigkeit für alle denkbaren Daten begründet – nicht nur am Ausschnitt?"
+            ],
+            [
+              "P9 ER und Überführung",
+              "Kardinalitäten in beide Richtungen gelesen? n:m als eigene Relation, 1:n als Fremdschlüssel auf der n-Seite?"
+            ],
+            [
+              "P10 Operator",
+              "Den Operator erfüllt? „Erläutern“ heißt begründen am Beispiel, „analysieren“ heißt im Sachzusammenhang."
+            ]
+          ]
+        },
+        {
+          "t": "hinweis",
+          "md": "**Operatoren:** *nennen/angeben* – ohne Begründung · *erläutern* – mit Beispiel nachvollziehbar machen · *beurteilen* – begründetes Urteil · *analysieren* – im Sachzusammenhang beschreiben · *entwerfen* – SQL-Abfrage notieren · *erweitern/überführen* – Modell bzw. Schema vervollständigen."
+        }
+      ],
+      "aufgaben": []
+    }
+  ],
+  "boss": {
+    "id": "A7-V",
+    "titel": "Verhör 7 · Mensa",
+    "kontextDb": "verhoer/mensa",
+    "rahmensatz": "Letzte Probe vor der Lizenz: ein ganzer Fall, ohne mich.",
+    "abimodus": "streng",
+    "dauerMin": 30,
+    "anzahl": 8,
+    "mix": {
+      "1": 3,
+      "2": 3,
+      "3": 2
+    },
+    "maxJeKind": {
+      "choice": 2,
+      "sql": 4
+    },
+    "pool": [
+      "A7-V-01",
+      "A7-V-02",
+      "A7-V-03",
+      "A7-V-04",
+      "A7-V-05",
+      "A7-V-06",
+      "A7-V-07",
+      "A7-V-08",
+      "A7-V-09",
+      "A7-V-10",
+      "A7-V-11",
+      "A7-V-12",
+      "A7-V-13",
+      "A7-V-14",
+      "A7-V-15"
+    ]
+  },
+  "aufgaben": [
+    {
+      "id": "A7-V-01",
+      "titel": "Schlüssel",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Bestellung (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "BestellNr",
+              "pk": true
+            },
+            {
+              "name": "PersonNr",
+              "fk": "Person"
+            },
+            {
+              "name": "AngebotNr",
+              "fk": "Angebot"
+            },
+            {
+              "name": "Menge"
+            },
+            {
+              "name": "Abgeholt"
+            }
+          ],
+          "zeilen": [
+            [
+              201,
+              34,
+              44,
+              1,
+              null
+            ],
+            [
+              202,
+              9,
+              45,
+              1,
+              null
+            ],
+            [
+              203,
+              26,
+              45,
+              1,
+              "13:11"
+            ],
+            [
+              204,
+              6,
+              45,
+              1,
+              "11:58"
+            ],
+            [
+              205,
+              17,
+              45,
+              1,
+              "11:55"
+            ],
+            [
+              206,
+              14,
+              45,
+              1,
+              "13:01"
+            ],
+            [
+              207,
+              36,
+              45,
+              1,
+              "12:35"
+            ],
+            [
+              208,
+              30,
+              45,
+              1,
+              "11:51"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/mensa",
+            "sql": "SELECT BestellNr, PersonNr, AngebotNr, Menge, Abgeholt\nFROM Bestellung\nWHERE BestellNr BETWEEN 201 AND 208\nORDER BY BestellNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Die Mensa erlaubt ausdrücklich, dass dieselbe Person dasselbe Tagesangebot mehrfach bestellt (zum Beispiel morgens für sich und mittags noch einmal für eine Freundin). **Beurteilen Sie**, ob die Attributkombination (PersonNr, AngebotNr) anstelle von BestellNr als Primärschlüssel der Relation Bestellung geeignet wäre. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Geeignet: Im Ausschnitt kommt keine Kombination aus PersonNr und AngebotNr doppelt vor."
+          },
+          {
+            "id": "b",
+            "md": "Nicht geeignet: Bestellt eine Person dasselbe Angebot zweimal, entstehen zwei Datensätze mit denselben Werten für (PersonNr, AngebotNr) – die Kombination identifiziert eine Bestellung nicht eindeutig."
+          },
+          {
+            "id": "c",
+            "md": "Geeignet: Beide Attribute sind Fremdschlüssel und verweisen jeweils auf genau einen Datensatz."
+          },
+          {
+            "id": "d",
+            "md": "Nicht geeignet: Ein Primärschlüssel darf grundsätzlich nicht aus Fremdschlüsseln zusammengesetzt sein."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "b"
+        ]
+      },
+      "tipps": [
+        "Ein Ausschnitt kann Eindeutigkeit nur widerlegen, nie beweisen – was erlaubt die Mensa ausdrücklich?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Ein Primärschlüssel muss für **alle** zulässigen Daten eindeutig sein. Weil Mehrfachbestellungen erlaubt sind, kann (PersonNr, AngebotNr) doppelt vorkommen – in den vollständigen Daten bestellt Person 6 das Angebot 45 zweimal (BestellNr 204 und 209). Dass der Ausschnitt keine Wiederholung zeigt, beweist nichts (P8). Fremdschlüssel dürfen sehr wohl Teil eines Primärschlüssels sein (z. B. bei n:m-Relationen)."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-02",
+      "titel": "Anomalie",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Für eine Auswertung wurden alle Bestellungen vom 2027-03-16 in einer zusammengelegten Tabelle `BestellUebersicht` gespeichert:"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "BestellUebersicht",
+          "kopf": [
+            {
+              "name": "BestellNr"
+            },
+            {
+              "name": "PersonNr"
+            },
+            {
+              "name": "Name"
+            },
+            {
+              "name": "Klasse"
+            },
+            {
+              "name": "Datum"
+            },
+            {
+              "name": "Gericht"
+            },
+            {
+              "name": "Preis"
+            },
+            {
+              "name": "Menge"
+            }
+          ],
+          "zeilen": [
+            [
+              202,
+              9,
+              "Hilke Akgül",
+              "9a",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              203,
+              26,
+              "Nele Döscher",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              204,
+              6,
+              "Arne Demir",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              205,
+              17,
+              "Ida Eggers",
+              "8b",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              206,
+              14,
+              "Insa Gerdts",
+              "10b",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              207,
+              36,
+              "Dana Eggers",
+              null,
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              208,
+              30,
+              "Ole Lindemann",
+              "10b",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              209,
+              6,
+              "Arne Demir",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              210,
+              31,
+              "Jannik Dirksen",
+              "7c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              211,
+              8,
+              "Karla Siemers",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              212,
+              28,
+              "Taalke Bargmann",
+              "9c",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              2
+            ],
+            [
+              213,
+              7,
+              "Pia Fehrmann",
+              "5c",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              2
+            ],
+            [
+              214,
+              14,
+              "Insa Gerdts",
+              "10c",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              1
+            ],
+            [
+              215,
+              16,
+              "Clara Pundt",
+              "9a",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              1
+            ],
+            [
+              216,
+              17,
+              "Ida Eggers",
+              "8b",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.25,
+              1
+            ],
+            [
+              217,
+              33,
+              "Ida Bultjer",
+              null,
+              "2027-03-16",
+              "Tomatensuppe",
+              2.25,
+              2
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/mensa",
+            "sql": "SELECT BestellNr, PersonNr, Name, Klasse, Datum, Gericht, Preis, Menge\nFROM BestellUebersicht\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Die Bestellung 217 wird storniert; ihre Zeile wird aus `BestellUebersicht` gelöscht. **Geben Sie an**, welche Anomalie dabei auftritt. [1 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Löschanomalie: Mit der Zeile gehen auch Bezeichnung und Preis der Tomatensuppe verloren, weil sie in keiner anderen Zeile gespeichert sind."
+          },
+          {
+            "id": "b",
+            "md": "Änderungsanomalie: Der Preis der Tomatensuppe müsste vor dem Löschen in mehreren Zeilen geändert werden."
+          },
+          {
+            "id": "c",
+            "md": "Einfügeanomalie: Nach dem Löschen muss für die Tomatensuppe eine neue Zeile eingefügt werden."
+          },
+          {
+            "id": "d",
+            "md": "Keine Anomalie: Gelöscht wird nur die stornierte Bestellung, alle übrigen Angaben bleiben erhalten."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "In wie vielen Zeilen steht die Tomatensuppe?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Die Tomatensuppe steht nur in Zeile 217. Wird diese Bestellung gelöscht, verschwinden ungewollt auch die Angaben zum Gericht (Bezeichnung, Preis) – ebenso Name und Klasse von Ida Bultjer, die nur hier vorkommt: **Löschanomalie**. Die Anomalie wird am konkreten Datensatz benannt, nicht nur als Begriff (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-03",
+      "titel": "Vegetarisch",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die Bezeichnung und Preis aller vegetarischen Gerichte ausgibt, die weniger als 4,00 € kosten. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/mensa",
+        "varianten": [],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Preis\nFROM Gericht\nWHERE Vegetarisch = 'ja'\n  AND Preis < 4"
+      },
+      "tipps": [
+        "Text-Literale stehen in einfachen Hochkommata."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Preis\nFROM Gericht\nWHERE Vegetarisch = 'ja'\n  AND Preis < 4"
+        },
+        {
+          "t": "text",
+          "md": "Das Ergebnis hat 7 Zeilen. Der Wert `'ja'` ist ein Text-Literal und steht in Hochkommata (P5). „Weniger als 4,00 €“ heißt `< 4` – die Gemüselasagne kostet genau 4,00 € und gehört nicht dazu."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-04",
+      "titel": "Tagesangebot",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K32"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die Bezeichnungen aller Gerichte ausgibt, die am 15. März 2027 angeboten werden. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/mensa",
+        "varianten": [],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Gericht.Bezeichnung\nFROM Gericht, Angebot\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.Datum = '2027-03-15'"
+      },
+      "tipps": [
+        "Das Datum steht in Angebot, die Bezeichnung in Gericht."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Gericht.Bezeichnung\nFROM Gericht, Angebot\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.Datum = '2027-03-15'"
+        },
+        {
+          "t": "text",
+          "md": "Verbund über den Fremdschlüssel GerichtNr; das Datum wird als Text-Literal im Format `'JJJJ-MM-TT'` notiert (P5). Ergebnis: Spaghetti Bolognese, Käsespätzle, Linseneintopf mit Würstchen, Schokopudding."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-05",
+      "titel": "Gruppenergebnis",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K29"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Gegeben ist ein Ausschnitt der Tabelle Bestellung (alle Bestellungen mit den Nummern 190 bis 197):"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Bestellung (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "BestellNr",
+              "pk": true
+            },
+            {
+              "name": "PersonNr",
+              "fk": "Person"
+            },
+            {
+              "name": "AngebotNr",
+              "fk": "Angebot"
+            },
+            {
+              "name": "Menge"
+            },
+            {
+              "name": "Abgeholt"
+            }
+          ],
+          "zeilen": [
+            [
+              190,
+              29,
+              42,
+              3,
+              "13:30"
+            ],
+            [
+              191,
+              12,
+              42,
+              3,
+              "12:44"
+            ],
+            [
+              192,
+              21,
+              42,
+              2,
+              "13:05"
+            ],
+            [
+              193,
+              25,
+              43,
+              1,
+              null
+            ],
+            [
+              194,
+              30,
+              43,
+              2,
+              null
+            ],
+            [
+              195,
+              8,
+              43,
+              1,
+              "12:53"
+            ],
+            [
+              196,
+              11,
+              43,
+              1,
+              "12:20"
+            ],
+            [
+              197,
+              18,
+              44,
+              1,
+              "12:37"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/mensa",
+            "sql": "SELECT BestellNr, PersonNr, AngebotNr, Menge, Abgeholt\nFROM Bestellung\nWHERE BestellNr BETWEEN 190 AND 197\nORDER BY BestellNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** das Ergebnis der folgenden Abfrage **an**. Die Reihenfolge der Zeilen ist beliebig. [2 BE]"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT AngebotNr, COUNT(*) AS Bestellungen, SUM(Menge) AS Portionen\nFROM Bestellung\nWHERE BestellNr BETWEEN 190 AND 197\nGROUP BY AngebotNr"
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "AngebotNr",
+          "Bestellungen",
+          "Portionen"
+        ],
+        "zeilenAnzahl": 3,
+        "reihenfolge": false
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            42,
+            3,
+            8
+          ],
+          [
+            43,
+            4,
+            5
+          ],
+          [
+            44,
+            1,
+            1
+          ]
+        ],
+        "quelleSql": "SELECT AngebotNr, COUNT(*) AS Bestellungen, SUM(Menge) AS Portionen\nFROM Bestellung\nWHERE BestellNr BETWEEN 190 AND 197\nGROUP BY AngebotNr",
+        "datenbank": "verhoer/mensa"
+      },
+      "tipps": [
+        "Je AngebotNr entsteht genau eine Zeile; COUNT zählt Zeilen, SUM addiert Mengen."
+      ],
+      "erklaerung": [
+        {
+          "t": "tabelle",
+          "kopf": [
+            "AngebotNr",
+            "Bestellungen",
+            "Portionen"
+          ],
+          "zeilen": [
+            [
+              "42",
+              "3",
+              "8"
+            ],
+            [
+              "43",
+              "4",
+              "5"
+            ],
+            [
+              "44",
+              "1",
+              "1"
+            ]
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Drei Gruppen (Angebote 42, 43, 44). `COUNT(*)` zählt die Bestellungen der Gruppe, `SUM(Menge)` addiert die bestellten Portionen – die NULL-Werte in Abgeholt spielen hier keine Rolle."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-06",
+      "titel": "WHERE oder HAVING",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Gesucht sind alle Gerichte (Nummer und Bezeichnung), von denen insgesamt **mehr als 30 Portionen** bestellt wurden. **Geben Sie an**, welche der vier Abfragen diese Frage korrekt beantwortet. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "code": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung\nHAVING SUM(Bestellung.Menge) > 30"
+          },
+          {
+            "id": "b",
+            "code": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\n  AND SUM(Bestellung.Menge) > 30\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung"
+          },
+          {
+            "id": "c",
+            "code": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\n  AND Bestellung.Menge > 30\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung"
+          },
+          {
+            "id": "d",
+            "code": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung\nHAVING COUNT(*) > 30"
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Eine Bedingung über eine ganze Gruppe darf erst nach dem Gruppieren geprüft werden."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) ist richtig (6 Gerichte). b) prüft eine Aggregatfunktion in WHERE – das ist nicht zulässig, Bedingungen über Gruppen gehören in HAVING (P1). c) prüft die Menge **einer** Bestellung (höchstens 3) und liefert 0 Zeilen. d) zählt Bestellungen statt Portionen und liefert 5 Gerichte (COUNT ↔ SUM)."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-07",
+      "titel": "Nicht abgeholt",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K18"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die für alle nicht abgeholten Bestellungen den Vor- und Nachnamen der bestellenden Person, das Datum des Angebots und die Bezeichnung des Gerichts ausgibt. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/mensa",
+        "varianten": [],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Person.Vorname, Person.Nachname, Angebot.Datum, Gericht.Bezeichnung\nFROM Person, Bestellung, Angebot, Gericht\nWHERE Person.PersonNr = Bestellung.PersonNr\n  AND Bestellung.AngebotNr = Angebot.AngebotNr\n  AND Angebot.GerichtNr = Gericht.GerichtNr\n  AND Bestellung.Abgeholt IS NULL"
+      },
+      "tipps": [
+        "Vier Tabellen brauchen drei Verbundbedingungen.",
+        "Wie prüft man in SQL, ob ein Wert fehlt?"
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Person.Vorname, Person.Nachname, Angebot.Datum, Gericht.Bezeichnung\nFROM Person, Bestellung, Angebot, Gericht\nWHERE Person.PersonNr = Bestellung.PersonNr\n  AND Bestellung.AngebotNr = Angebot.AngebotNr\n  AND Angebot.GerichtNr = Gericht.GerichtNr\n  AND Bestellung.Abgeholt IS NULL"
+        },
+        {
+          "t": "text",
+          "md": "Verbund über vier Tabellen mit drei Verbundbedingungen; „nicht abgeholt“ heißt `Abgeholt IS NULL` – ein Vergleich `= NULL` ist nie wahr und liefert keine Zeile (P5). Ergebnis: 31 Zeilen."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-08",
+      "titel": "Portionen je Gericht",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K25"
+      ],
+      "fallen": [
+        "P3",
+        "P4"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die für jedes Gericht die Gerichtnummer, die Bezeichnung und die Summe der bestellten Portionen ausgibt. Gerichte ohne Bestellung müssen nicht erscheinen. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/mensa",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung, SUM(Bestellung.Menge) AS Portionen\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung"
+      },
+      "tipps": [
+        "Bestellte Portionen stehen in Bestellung.Menge, nicht in Angebot.Portionen.",
+        "Gruppieren Sie nach dem Schlüssel des Gerichts."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung, SUM(Bestellung.Menge) AS Portionen\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung"
+        },
+        {
+          "t": "text",
+          "md": "Die Portionen sind die **Summe** der Mengen – `COUNT(*)` würde nur Bestellungen zählen (P4); `Angebot.Portionen` wären die geplanten, nicht die bestellten Portionen. Gruppiert wird nach dem Schlüssel GerichtNr und der Bezeichnung (GROUP-BY-Regel, P3): Zwei verschiedene Gerichte mit gleicher Bezeichnung dürfen nicht zusammenfallen. Ergebnis: 13 Zeilen, z. B. Spaghetti Bolognese 68, Currywurst mit Pommes 63."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-09",
+      "titel": "Vielbesteller",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27",
+        "DB-K24"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die alle Personen mit mehr als 10 Bestellungen ausgibt – jeweils mit Personennummer, Vor- und Nachname sowie der Anzahl ihrer Bestellungen. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/mensa",
+        "varianten": [
+          "gleichnamig",
+          "grenze"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Person.PersonNr, Person.Vorname, Person.Nachname, COUNT(*) AS Bestellungen\nFROM Person, Bestellung\nWHERE Person.PersonNr = Bestellung.PersonNr\nGROUP BY Person.PersonNr, Person.Vorname, Person.Nachname\nHAVING COUNT(*) > 10"
+      },
+      "tipps": [
+        "Die Bedingung „mehr als 10 Bestellungen“ bezieht sich auf eine ganze Gruppe."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Person.PersonNr, Person.Vorname, Person.Nachname, COUNT(*) AS Bestellungen\nFROM Person, Bestellung\nWHERE Person.PersonNr = Bestellung.PersonNr\nGROUP BY Person.PersonNr, Person.Vorname, Person.Nachname\nHAVING COUNT(*) > 10"
+        },
+        {
+          "t": "text",
+          "md": "Die Bedingung über die Anzahl gehört in HAVING, nicht in WHERE (P1). Gezählt werden Bestellungen (`COUNT(*)`), nicht Portionen. Ergebnis: Pia Pundt (14), Ida Eggers (12), Insa Akgül (11); eine Person mit genau 10 Bestellungen gehört nicht dazu."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-10",
+      "titel": "Analyse",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K28"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Angebot.Datum, SUM(Bestellung.Menge) AS Portionen\nFROM Angebot, Bestellung\nWHERE Angebot.AngebotNr = Bestellung.AngebotNr\n  AND Bestellung.Abgeholt IS NULL\nGROUP BY Angebot.Datum\nHAVING SUM(Bestellung.Menge) >= 3\nORDER BY Portionen DESC"
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, welche Beschreibung die Information, die die Abfrage liefert, im Sachzusammenhang zutreffend wiedergibt. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Für jeden Tag, an dem insgesamt mindestens drei bestellte Portionen nicht abgeholt wurden, das Datum und die Zahl dieser liegengebliebenen Portionen – der Tag mit den meisten liegengebliebenen Portionen zuerst."
+          },
+          {
+            "id": "b",
+            "md": "Für jeden Tag, an dem mindestens drei Bestellungen nicht abgeholt wurden, das Datum und die Anzahl dieser Bestellungen – absteigend sortiert."
+          },
+          {
+            "id": "c",
+            "md": "Für jeden Tag das Datum und die Zahl aller dort bestellten Portionen, sofern es mindestens drei waren – absteigend sortiert."
+          },
+          {
+            "id": "d",
+            "md": "Die Abfrage verbindet Angebot und Bestellung, wählt die Zeilen mit `Abgeholt IS NULL` aus, gruppiert nach `Datum`, behält Gruppen mit `SUM(Menge) >= 3` und sortiert absteigend nach `Portionen`."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Was bedeuten NULL in Abgeholt und die Summe der Mengen für die Mensa?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) beschreibt die Information im Sachzusammenhang (Ergebnis: 6 Tage, Spitze 2027-03-12 mit 7 Portionen). b) verwechselt Portionen mit Bestellungen (SUM ↔ COUNT) – mit `COUNT(*)` wären es 5 Tage. c) übersieht die Bedingung „nicht abgeholt“. d) beschreibt nur die Technik der Abfrage, nicht die Information im Sachzusammenhang – der Operator „analysieren“ verlangt aber den Sachzusammenhang (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-11",
+      "titel": "Zusammengelegt",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K09",
+        "DB-K07"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Für eine Auswertung wurden alle Bestellungen vom 2027-03-16 in einer zusammengelegten Tabelle `BestellUebersicht` gespeichert; Änderungen werden dort von Hand nachgetragen:"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "BestellUebersicht",
+          "kopf": [
+            {
+              "name": "BestellNr"
+            },
+            {
+              "name": "PersonNr"
+            },
+            {
+              "name": "Name"
+            },
+            {
+              "name": "Klasse"
+            },
+            {
+              "name": "Datum"
+            },
+            {
+              "name": "Gericht"
+            },
+            {
+              "name": "Preis"
+            },
+            {
+              "name": "Menge"
+            }
+          ],
+          "zeilen": [
+            [
+              202,
+              9,
+              "Hilke Akgül",
+              "9a",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              203,
+              26,
+              "Nele Döscher",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              204,
+              6,
+              "Arne Demir",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              205,
+              17,
+              "Ida Eggers",
+              "8b",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              206,
+              14,
+              "Insa Gerdts",
+              "10b",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              207,
+              36,
+              "Dana Eggers",
+              null,
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              208,
+              30,
+              "Ole Lindemann",
+              "10b",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              209,
+              6,
+              "Arne Demir",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              210,
+              31,
+              "Jannik Dirksen",
+              "7c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              211,
+              8,
+              "Karla Siemers",
+              "5c",
+              "2027-03-16",
+              "Hähnchen-Curry mit Reis",
+              4.75,
+              1
+            ],
+            [
+              212,
+              28,
+              "Taalke Bargmann",
+              "9c",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              2
+            ],
+            [
+              213,
+              7,
+              "Pia Fehrmann",
+              "5c",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              2
+            ],
+            [
+              214,
+              14,
+              "Insa Gerdts",
+              "10c",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              1
+            ],
+            [
+              215,
+              16,
+              "Clara Pundt",
+              "9a",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.5,
+              1
+            ],
+            [
+              216,
+              17,
+              "Ida Eggers",
+              "8b",
+              "2027-03-16",
+              "Chili sin Carne",
+              3.25,
+              1
+            ],
+            [
+              217,
+              33,
+              "Ida Bultjer",
+              null,
+              "2027-03-16",
+              "Tomatensuppe",
+              2.25,
+              2
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/mensa",
+            "sql": "SELECT BestellNr, PersonNr, Name, Klasse, Datum, Gericht, Preis, Menge\nFROM BestellUebersicht\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "In der Tabelle ist es bereits zu Änderungsanomalien gekommen. **Untersuchen Sie** die Tabelle und **geben Sie** alle Zellen **an**, die an einem solchen Widerspruch beteiligt sind – also alle Vorkommen eines Attributs, das für dieselbe Person bzw. dasselbe Gericht nicht überall denselben Wert hat. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "zellen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zellen": [
+          [
+            4,
+            3
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            11,
+            6
+          ],
+          [
+            12,
+            3
+          ],
+          [
+            12,
+            6
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            14,
+            6
+          ]
+        ]
+      },
+      "tipps": [
+        "Ein Widerspruch hat immer mindestens zwei Seiten: Markieren Sie jedes beteiligte Vorkommen."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Insa Gerdts (PersonNr 14) steht in Zeile 206 mit Klasse 10b und in Zeile 214 mit 10c. Chili sin Carne kostet in den Zeilen 212–215 3,50 €, in Zeile 216 aber 3,25 € – eine Preisänderung wurde nicht in allen Zeilen nachgetragen. Ursache ist die Redundanz: Klasse und Preis hängen von der Person bzw. vom Gericht ab, nicht von der Bestellung, und stehen deshalb mehrfach in der Tabelle. Arne Demir und Ida Eggers stehen ebenfalls mehrfach, aber widerspruchsfrei da (P10: am Datensatz untersuchen)."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-12",
+      "titel": "Kardinalität",
+      "stufe": 2,
+      "punkte": 20,
+      "niveau": "eA",
+      "kategorie": "ER-Modell",
+      "kompetenzen": [
+        "DB-K34"
+      ],
+      "fallen": [
+        "P9"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Im ER-Modell sind die Entitätstypen Gericht und Angebot über den Beziehungstyp *bietetAn* verbunden."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Angebot (Ausschnitt: Woche vom 15. bis 19. März 2027)",
+          "kopf": [
+            {
+              "name": "AngebotNr",
+              "pk": true
+            },
+            {
+              "name": "GerichtNr",
+              "fk": "Gericht"
+            },
+            {
+              "name": "Datum"
+            },
+            {
+              "name": "Portionen"
+            }
+          ],
+          "zeilen": [
+            [
+              41,
+              1,
+              "2027-03-15",
+              25
+            ],
+            [
+              42,
+              4,
+              "2027-03-15",
+              20
+            ],
+            [
+              43,
+              10,
+              "2027-03-15",
+              20
+            ],
+            [
+              44,
+              13,
+              "2027-03-15",
+              20
+            ],
+            [
+              45,
+              3,
+              "2027-03-16",
+              20
+            ],
+            [
+              46,
+              6,
+              "2027-03-16",
+              20
+            ],
+            [
+              47,
+              9,
+              "2027-03-16",
+              20
+            ],
+            [
+              48,
+              7,
+              "2027-03-17",
+              20
+            ],
+            [
+              49,
+              2,
+              "2027-03-17",
+              20
+            ],
+            [
+              50,
+              11,
+              "2027-03-17",
+              20
+            ],
+            [
+              51,
+              5,
+              "2027-03-18",
+              20
+            ],
+            [
+              52,
+              8,
+              "2027-03-18",
+              20
+            ],
+            [
+              53,
+              13,
+              "2027-03-18",
+              20
+            ],
+            [
+              54,
+              7,
+              "2027-03-19",
+              20
+            ],
+            [
+              55,
+              4,
+              "2027-03-19",
+              20
+            ],
+            [
+              56,
+              12,
+              "2027-03-19",
+              20
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/mensa",
+            "sql": "SELECT AngebotNr, GerichtNr, Datum, Portionen\nFROM Angebot\nWHERE Datum BETWEEN '2027-03-15' AND '2027-03-19'\nORDER BY AngebotNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Bestimmen Sie** die Kardinalität des Beziehungstyps *bietetAn* zwischen Gericht und Angebot anhand der Daten und des Sachzusammenhangs. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Gericht **1** – *bietetAn* – **n** Angebot: Ein Gericht kann in mehreren Tagesangeboten vorkommen (z. B. GerichtNr 13 am 15. und am 18. März), jedes Angebot gehört zu genau einem Gericht."
+          },
+          {
+            "id": "b",
+            "md": "Gericht **n** – *bietetAn* – **1** Angebot: Zu einem Angebot gehören mehrere Gerichte, ein Gericht gehört zu genau einem Angebot."
+          },
+          {
+            "id": "c",
+            "md": "Gericht **n** – *bietetAn* – **m** Angebot: Weil GerichtNr in Angebot mehrfach vorkommt, ist die Beziehung n:m."
+          },
+          {
+            "id": "d",
+            "md": "Gericht **1** – *bietetAn* – **1** Angebot: Jede Zeile von Angebot enthält genau eine GerichtNr."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Lesen Sie in beide Richtungen: Wie viele Angebote je Gericht, wie viele Gerichte je Angebot?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Jedes Angebot hat genau einen Wert für GerichtNr (ein Gericht je Angebot), dasselbe Gericht kommt in mehreren Angeboten vor – in den vollständigen Daten bis zu 7-mal. Also Gericht **1** – **n** Angebot; die Kardinalität wird in beide Richtungen gelesen (P9). Dass GerichtNr in Angebot mehrfach vorkommt, macht die Beziehung nicht n:m."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-13",
+      "titel": "Top 3 der Woche",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K22"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. `Menge` ist die Zahl der bestellten Portionen, `Abgeholt` die Uhrzeit der Ausgabe – NULL, wenn das Essen nicht abgeholt wurde. `Portionen` im Angebot sind die geplanten Portionen. `Vegetarisch` hat die Werte `'ja'` und `'nein'`, `Rolle` die Werte `'Schüler'`, `'Lehrkraft'` und `'Personal'`."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Person",
+              "attribute": [
+                {
+                  "name": "PersonNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Rolle"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Kategorie"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Vegetarisch"
+                }
+              ]
+            },
+            {
+              "name": "Angebot",
+              "attribute": [
+                {
+                  "name": "AngebotNr",
+                  "pk": true
+                },
+                {
+                  "name": "GerichtNr",
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Datum"
+                },
+                {
+                  "name": "Portionen"
+                }
+              ]
+            },
+            {
+              "name": "Bestellung",
+              "attribute": [
+                {
+                  "name": "BestellNr",
+                  "pk": true
+                },
+                {
+                  "name": "PersonNr",
+                  "fk": "Person"
+                },
+                {
+                  "name": "AngebotNr",
+                  "fk": "Angebot"
+                },
+                {
+                  "name": "Menge"
+                },
+                {
+                  "name": "Abgeholt"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die drei Gerichte mit dem höchsten Umsatz in der Woche vom 15. bis 19. März 2027 ausgibt – mit Gerichtnummer, Bezeichnung und Umsatz, absteigend nach Umsatz. Der Umsatz einer Bestellung ist Menge × Preis des Gerichts. [4 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/mensa",
+        "varianten": [
+          "gleichnamig",
+          "grenze"
+        ],
+        "abimodus": "streng",
+        "sortierung": [
+          {
+            "spalte": 3,
+            "richtung": "DESC"
+          }
+        ]
+      },
+      "loesung": {
+        "sql": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung, SUM(Bestellung.Menge * Gericht.Preis) AS Umsatz\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\n  AND Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19'\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung\nORDER BY Umsatz DESC\nLIMIT 3"
+      },
+      "tipps": [
+        "Drei Tabellen brauchen zwei Verbundbedingungen – fehlt eine, wird jede Bestellung vervielfacht."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Gericht.GerichtNr, Gericht.Bezeichnung, SUM(Bestellung.Menge * Gericht.Preis) AS Umsatz\nFROM Gericht, Angebot, Bestellung\nWHERE Gericht.GerichtNr = Angebot.GerichtNr\n  AND Angebot.AngebotNr = Bestellung.AngebotNr\n  AND Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19'\nGROUP BY Gericht.GerichtNr, Gericht.Bezeichnung\nORDER BY Umsatz DESC\nLIMIT 3"
+        },
+        {
+          "t": "text",
+          "md": "Ohne die Verbundbedingung `Angebot.AngebotNr = Bestellung.AngebotNr` entsteht ein Kreuzprodukt, und die Umsätze werden vervielfacht (P2). Der Umsatz ist `SUM(Bestellung.Menge * Gericht.Preis)`; `BETWEEN` schließt beide Grenztage ein, `LIMIT 3` nur zusammen mit `ORDER BY`. Ergebnis: Currywurst mit Pommes 63,75 €, Spaghetti Bolognese 63,00 €, Käsespätzle 52,50 €."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-14",
+      "titel": "Allergene",
+      "stufe": 3,
+      "punkte": 30,
+      "niveau": "eA",
+      "kategorie": "ER-Modell",
+      "kompetenzen": [
+        "DB-K39",
+        "DB-K36"
+      ],
+      "fallen": [
+        "P9"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Gegeben ist ein Ausschnitt des ER-Modells (Gericht und Angebot)."
+        },
+        {
+          "t": "text",
+          "md": "Die Mensa will künftig Allergene erfassen. Für jedes Allergen werden ein **Kürzel** (z. B. „A“ für glutenhaltiges Getreide), das das Allergen eindeutig kennzeichnet, und eine **Bezeichnung** gespeichert. Ein Gericht kann mehrere Allergene enthalten, und dasselbe Allergen kommt in mehreren Gerichten vor. Für jedes Gericht und jedes darin enthaltene Allergen soll außerdem eine **Mengenangabe** (z. B. „Spuren“) gespeichert werden."
+        },
+        {
+          "t": "text",
+          "md": "**Erweitern** Sie das ER-Modell entsprechend. Schlüsselattribute und Kardinalitäten sind vollständig anzugeben. [5 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "er",
+        "modus": "ergaenzen",
+        "start": {
+          "graph": {
+            "entitaeten": [
+              {
+                "id": "e1",
+                "name": "Gericht",
+                "attribute": [
+                  {
+                    "name": "GerichtNr",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Bezeichnung",
+                    "schluessel": false
+                  },
+                  {
+                    "name": "Preis",
+                    "schluessel": false
+                  }
+                ]
+              },
+              {
+                "id": "e2",
+                "name": "Angebot",
+                "attribute": [
+                  {
+                    "name": "AngebotNr",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Datum",
+                    "schluessel": false
+                  },
+                  {
+                    "name": "Portionen",
+                    "schluessel": false
+                  }
+                ]
+              }
+            ],
+            "beziehungen": [
+              {
+                "id": "b1",
+                "name": "bietetAn",
+                "enden": [
+                  {
+                    "entitaet": "e1",
+                    "kard": "1"
+                  },
+                  {
+                    "entitaet": "e2",
+                    "kard": "n"
+                  }
+                ],
+                "attribute": []
+              }
+            ]
+          },
+          "layout": {
+            "e1": {
+              "x": 520,
+              "y": 200
+            },
+            "e2": {
+              "x": 1000,
+              "y": 200
+            },
+            "b1": {
+              "x": 760,
+              "y": 200
+            },
+            "e1.0": {
+              "x": 520,
+              "y": 100
+            },
+            "e1.1": {
+              "x": 370,
+              "y": 200
+            },
+            "e1.2": {
+              "x": 650,
+              "y": 150
+            },
+            "e2.0": {
+              "x": 1000,
+              "y": 100
+            },
+            "e2.1": {
+              "x": 1130,
+              "y": 150
+            },
+            "e2.2": {
+              "x": 1150,
+              "y": 200
+            }
+          }
+        }
+      },
+      "loesung": {
+        "muster": [
+          {
+            "entitaeten": [
+              {
+                "id": "m1",
+                "name": "Gericht",
+                "attribute": [
+                  {
+                    "name": "GerichtNr",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Bezeichnung",
+                    "schluessel": false
+                  },
+                  {
+                    "name": "Preis",
+                    "schluessel": false
+                  }
+                ]
+              },
+              {
+                "id": "m2",
+                "name": "Angebot",
+                "attribute": [
+                  {
+                    "name": "AngebotNr",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Datum",
+                    "schluessel": false
+                  },
+                  {
+                    "name": "Portionen",
+                    "schluessel": false
+                  }
+                ]
+              },
+              {
+                "id": "m3",
+                "name": "Allergen",
+                "attribute": [
+                  {
+                    "name": "Kuerzel",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Bezeichnung",
+                    "schluessel": false
+                  }
+                ]
+              }
+            ],
+            "beziehungen": [
+              {
+                "id": "mb1",
+                "name": "bietetAn",
+                "enden": [
+                  {
+                    "entitaet": "m1",
+                    "kard": "1"
+                  },
+                  {
+                    "entitaet": "m2",
+                    "kard": "n"
+                  }
+                ],
+                "attribute": []
+              },
+              {
+                "id": "mb2",
+                "name": "enthaelt",
+                "enden": [
+                  {
+                    "entitaet": "m1",
+                    "kard": "n"
+                  },
+                  {
+                    "entitaet": "m3",
+                    "kard": "m"
+                  }
+                ],
+                "attribute": [
+                  {
+                    "name": "Mengenangabe"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "synonyme": {
+          "Allergen": [
+            "Allergie",
+            "Allergenstoff",
+            "Zusatzstoff"
+          ],
+          "Kuerzel": [
+            "AllergenKuerzel",
+            "Kennbuchstabe",
+            "Kennung",
+            "Code",
+            "AllergenNr"
+          ],
+          "Mengenangabe": [
+            "Menge",
+            "Anteil",
+            "Hinweis",
+            "Gehalt"
+          ],
+          "enthaelt": [
+            "beinhaltet",
+            "hat",
+            "enthaeltAllergen"
+          ]
+        },
+        "aequivalenzen": [
+          "nm_aufgeloest"
+        ]
+      },
+      "tipps": [
+        "An welchem Element hängt eine Angabe, die nur für ein Paar aus Gericht und Allergen gilt?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Neuer Entitätstyp **Allergen** mit dem Schlüsselattribut *Kuerzel* und der Bezeichnung; Beziehungstyp *enthaelt* zwischen Gericht (**n**) und Allergen (**m**). Die Mengenangabe hängt vom Paar Gericht–Allergen ab und ist deshalb ein **Attribut des Beziehungstyps**, nicht von Gericht oder Allergen (P9). Gleichwertig ist eine Zwischenentität mit zwei 1:n-Beziehungen."
+        }
+      ]
+    },
+    {
+      "id": "A7-V-15",
+      "titel": "Überführung",
+      "stufe": 3,
+      "punkte": 30,
+      "niveau": "eA",
+      "kategorie": "Überführung",
+      "kompetenzen": [
+        "DB-K41"
+      ],
+      "fallen": [
+        "P9"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Das ER-Modell wurde um Allergene und um die Vertretung unter den Küchenkräften erweitert: Jede Küchenkraft hat höchstens eine feste Vertretung, eine Küchenkraft kann aber mehrere andere vertreten."
+        },
+        {
+          "t": "er",
+          "graph": {
+            "entitaeten": [
+              {
+                "id": "e1",
+                "name": "Gericht",
+                "attribute": [
+                  {
+                    "name": "GerichtNr",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Bezeichnung",
+                    "schluessel": false
+                  },
+                  {
+                    "name": "Preis",
+                    "schluessel": false
+                  }
+                ]
+              },
+              {
+                "id": "e2",
+                "name": "Allergen",
+                "attribute": [
+                  {
+                    "name": "Kuerzel",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Bezeichnung",
+                    "schluessel": false
+                  }
+                ]
+              },
+              {
+                "id": "e3",
+                "name": "Kuechenkraft",
+                "attribute": [
+                  {
+                    "name": "KraftNr",
+                    "schluessel": true
+                  },
+                  {
+                    "name": "Vorname",
+                    "schluessel": false
+                  },
+                  {
+                    "name": "Nachname",
+                    "schluessel": false
+                  }
+                ]
+              }
+            ],
+            "beziehungen": [
+              {
+                "id": "b1",
+                "name": "enthaelt",
+                "enden": [
+                  {
+                    "entitaet": "e1",
+                    "kard": "n"
+                  },
+                  {
+                    "entitaet": "e2",
+                    "kard": "m"
+                  }
+                ],
+                "attribute": [
+                  {
+                    "name": "Mengenangabe"
+                  }
+                ]
+              },
+              {
+                "id": "b2",
+                "name": "vertritt",
+                "enden": [
+                  {
+                    "entitaet": "e3",
+                    "kard": "1",
+                    "rolle": "Vertretung"
+                  },
+                  {
+                    "entitaet": "e3",
+                    "kard": "n",
+                    "rolle": "Vertretene"
+                  }
+                ],
+                "attribute": []
+              }
+            ]
+          },
+          "layout": {
+            "e1": {
+              "x": 200,
+              "y": 200
+            },
+            "e2": {
+              "x": 680,
+              "y": 200
+            },
+            "e3": {
+              "x": 1140,
+              "y": 200
+            },
+            "b1": {
+              "x": 440,
+              "y": 200
+            },
+            "b2": {
+              "x": 1140,
+              "y": 400
+            },
+            "e1.0": {
+              "x": 200,
+              "y": 100
+            },
+            "e1.1": {
+              "x": 50,
+              "y": 200
+            },
+            "e1.2": {
+              "x": 330,
+              "y": 150
+            },
+            "e2.0": {
+              "x": 680,
+              "y": 100
+            },
+            "e2.1": {
+              "x": 830,
+              "y": 200
+            },
+            "e3.0": {
+              "x": 1140,
+              "y": 100
+            },
+            "e3.1": {
+              "x": 1290,
+              "y": 200
+            },
+            "e3.2": {
+              "x": 990,
+              "y": 200
+            },
+            "b1.0": {
+              "x": 440,
+              "y": 295
+            }
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Überführen** Sie den abgebildeten Ausschnitt des ER-Modells in ein Relationenschema in Kurzschreibweise. Gericht ist bereits überführt. [5 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "schema",
+        "modus": "frei",
+        "start": [
+          {
+            "name": "Gericht",
+            "attribute": [
+              {
+                "name": "GerichtNr",
+                "pk": true
+              },
+              {
+                "name": "Bezeichnung"
+              },
+              {
+                "name": "Preis"
+              }
+            ]
+          }
+        ]
+      },
+      "loesung": {
+        "muster": [
+          [
+            {
+              "name": "Gericht",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                },
+                {
+                  "name": "Preis"
+                }
+              ]
+            },
+            {
+              "name": "Allergen",
+              "attribute": [
+                {
+                  "name": "Kuerzel",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                }
+              ]
+            },
+            {
+              "name": "enthaelt",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true,
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Kuerzel",
+                  "pk": true,
+                  "fk": "Allergen"
+                },
+                {
+                  "name": "Mengenangabe"
+                }
+              ]
+            },
+            {
+              "name": "Kuechenkraft",
+              "attribute": [
+                {
+                  "name": "KraftNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "VertretungNr",
+                  "fk": "Kuechenkraft"
+                }
+              ]
+            }
+          ]
+        ],
+        "synonyme": {
+          "enthaelt": [
+            "GerichtAllergen",
+            "Allergenangabe",
+            "beinhaltet"
+          ],
+          "Kuechenkraft": [
+            "Kuechenpersonal",
+            "Kuechenmitarbeiter",
+            "Koch"
+          ],
+          "VertretungNr": [
+            "VertreterNr",
+            "VertretungsNr",
+            "VertreterinNr",
+            "VertretenDurch",
+            "VertretungKraftNr"
+          ],
+          "Kuerzel": [
+            "AllergenKuerzel",
+            "Kennbuchstabe",
+            "Code"
+          ],
+          "Mengenangabe": [
+            "Menge",
+            "Anteil",
+            "Hinweis"
+          ]
+        }
+      },
+      "tipps": [
+        "n:m → eigene Relation; rekursiv 1:n → Fremdschlüssel in derselben Relation mit eigenem Namen."
+      ],
+      "erklaerung": [
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Allergen",
+              "attribute": [
+                {
+                  "name": "Kuerzel",
+                  "pk": true
+                },
+                {
+                  "name": "Bezeichnung"
+                }
+              ]
+            },
+            {
+              "name": "enthaelt",
+              "attribute": [
+                {
+                  "name": "GerichtNr",
+                  "pk": true,
+                  "fk": "Gericht"
+                },
+                {
+                  "name": "Kuerzel",
+                  "pk": true,
+                  "fk": "Allergen"
+                },
+                {
+                  "name": "Mengenangabe"
+                }
+              ]
+            },
+            {
+              "name": "Kuechenkraft",
+              "attribute": [
+                {
+                  "name": "KraftNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "VertretungNr",
+                  "fk": "Kuechenkraft"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "*enthaelt* (n:m) wird eine eigene Relation mit beiden Fremdschlüsseln als zusammengesetztem Primärschlüssel und dem Beziehungsattribut Mengenangabe. *vertritt* (rekursiv 1:n) wird **keine** eigene Relation: Kuechenkraft erhält den Fremdschlüssel ↑VertretungNr, der auf Kuechenkraft selbst verweist – mit eigenem Namen, weil KraftNr schon vergeben ist (P9)."
+        }
+      ]
+    }
+  ]
+}

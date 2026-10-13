@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "titel": "Probefall Eisdiele Weserstedt",
+  "datenbank": "eisdiele",
+  "briefing": "Pia Wendland, Inhaberin der Eisdiele Weserstedt im Lindenhof, hat einen Streit zu schlichten: Ihre Aushilfe schwört, Stracciatella sei der Sommerhit, weil sie am häufigsten verkauft wurde – Pia ist sicher, es war Vanille. Dazu will sie wissen, ob sich die neue vegane Sorte lohnt. Hilf ihr mit ein paar Abfragen und probier dabei die Ermittlungskonsole aus.",
+  "intro": [
+    { "t": "schema", "relationen": [
+      { "name": "Sorte", "attribute": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ] },
+      { "name": "Verkauf", "attribute": [ { "name": "VerkaufNr", "pk": true }, { "name": "SorteNr", "fk": "Sorte" }, { "name": "Datum" }, { "name": "Kugeln" } ] }
+    ] },
+    { "t": "hinweis", "md": "**So funktioniert der Probefall:** `Preis` ist der Preis **je Kugel**, `Vegan` ist `'ja'` oder `'nein'`, die Verkäufe stammen aus der Woche vom 2026-07-06 bis 2026-07-12. Antworte und tippe auf **Prüfen** – ein **Tipp** hilft weiter, **Lösung zeigen** deckt alles auf. Im Gastmodus wird nichts gespeichert." }
+  ],
+  "aufgaben": [
+    {
+      "id": "G-01",
+      "titel": "Nur vegane Kugeln",
+      "stufe": 1,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": ["DB-K15", "DB-K32"],
+      "fallen": ["P5"],
+      "inhalt": [
+        { "t": "text", "md": "Eine Kundin fragt nach Eis ohne tierische Zutaten. Gib **Name** und **Preis** aller Sorten aus, die vegan sind." }
+      ],
+      "interaktion": { "kind": "sql", "datenbank": "eisdiele" },
+      "loesung": { "sql": "SELECT Name, Preis\nFROM Sorte\nWHERE Vegan = 'ja'" },
+      "tipps": [
+        "Die Spalte `Vegan` enthält Text. Text steht in SQL immer in Hochkommata."
+      ],
+      "erklaerung": [
+        { "t": "text", "md": "Drei Sorten sind vegan: Erdbeere, Zitrone und Sanddorn-Mango. Die Bedingung `Vegan = 'ja'` vergleicht mit einem **Textliteral** – ohne Hochkommata hielte SQL `ja` für einen Spaltennamen (Falle P5)." }
+      ]
+    },
+    {
+      "id": "G-02",
+      "titel": "Die drei teuersten Kugeln",
+      "stufe": 1,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": ["DB-K21", "DB-K22", "DB-K29"],
+      "fallen": [],
+      "inhalt": [
+        { "t": "text", "md": "Pia will die Preistafel neu schreiben und lässt diese Abfrage laufen. Sag voraus, was herauskommt – Zeile für Zeile, in der richtigen Reihenfolge." },
+        { "t": "sql", "sql": "SELECT Name, Preis\nFROM Sorte\nORDER BY Preis DESC, Name ASC\nLIMIT 3" },
+        { "t": "dbtabelle", "tabelle": "Sorte",
+          "kopf": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" } ],
+          "zeilen": [
+            [1, "Vanille", 1.5], [2, "Schokolade", 1.5], [3, "Erdbeere", 1.6], [4, "Zitrone", 1.4], [5, "Haselnuss", 1.7],
+            [6, "Sanddorn-Mango", 1.8], [7, "Stracciatella", 1.7], [8, "Karamell", 1.8], [9, "Pistazie", 2], [10, "Schoko-Minze", 1.7]
+          ],
+          "quelle": { "datenbank": "eisdiele", "sql": "SELECT SorteNr, Name, Preis FROM Sorte ORDER BY SorteNr" } }
+      ],
+      "interaktion": { "kind": "ergebnis", "kopf": ["Name", "Preis"], "zeilenAnzahl": 3, "reihenfolge": true },
+      "loesung": {
+        "zeilen": [ ["Pistazie", 2], ["Karamell", 1.8], ["Sanddorn-Mango", 1.8] ],
+        "quelleSql": "SELECT Name, Preis\nFROM Sorte\nORDER BY Preis DESC, Name ASC\nLIMIT 3",
+        "datenbank": "eisdiele"
+      },
+      "tipps": [
+        "Zuerst zählt der Preis (größter zuerst). Nur bei gleichem Preis entscheidet das Alphabet."
+      ],
+      "erklaerung": [
+        { "t": "text", "md": "Pistazie ist mit 2,00 € am teuersten. Karamell und Sanddorn-Mango kosten beide 1,80 € – hier greift die **zweite Sortierstufe** `Name ASC`, also Karamell vor Sanddorn-Mango. `LIMIT 3` schneidet danach ab." }
+      ]
+    },
+    {
+      "id": "G-03",
+      "titel": "Alles mit Schoko",
+      "stufe": 1,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": ["DB-K19", "DB-K29"],
+      "fallen": ["P6"],
+      "inhalt": [
+        { "t": "text", "md": "Für einen Schoko-Tag sucht Pia passende Sorten mit der Bedingung `WHERE Name LIKE '%Schoko%'`. Tippe alle Zeilen an, die diese Bedingung erfüllen." },
+        { "t": "dbtabelle", "tabelle": "Sorte",
+          "kopf": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ],
+          "zeilen": [
+            [1, "Vanille", 1.5, "nein"], [2, "Schokolade", 1.5, "nein"], [3, "Erdbeere", 1.6, "ja"], [4, "Zitrone", 1.4, "ja"],
+            [5, "Haselnuss", 1.7, "nein"], [6, "Sanddorn-Mango", 1.8, "ja"], [7, "Stracciatella", 1.7, "nein"],
+            [8, "Karamell", 1.8, "nein"], [9, "Pistazie", 2, "nein"], [10, "Schoko-Minze", 1.7, "nein"]
+          ],
+          "quelle": { "datenbank": "eisdiele", "sql": "SELECT SorteNr, Name, Preis, Vegan FROM Sorte ORDER BY SorteNr" } }
+      ],
+      "interaktion": { "kind": "zeilen", "block": 1, "mehrfach": true },
+      "loesung": { "zeilen": [1, 9], "quelleSql": "SELECT SorteNr, Name, Preis, Vegan FROM Sorte WHERE Name LIKE '%Schoko%'" },
+      "tipps": [
+        "`%` steht für beliebig viele Zeichen – auch für gar keins. „Schoko“ darf also am Anfang, in der Mitte oder am Ende stehen."
+      ],
+      "erklaerung": [
+        { "t": "text", "md": "Treffer sind **Schokolade** und **Schoko-Minze**. Das Muster `'%Schoko%'` verlangt nur, dass die Zeichenfolge „Schoko“ irgendwo im Namen vorkommt. Stracciatella enthält zwar Schokostückchen, aber nicht das Wort im Namen." }
+      ]
+    },
+    {
+      "id": "G-04",
+      "titel": "Kassensturz am Sonntag",
+      "stufe": 2,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": ["DB-K23", "DB-K32"],
+      "fallen": ["P2", "P5"],
+      "inhalt": [
+        { "t": "text", "md": "Am Sonntag, dem 2026-07-12, war die Eisdiele voll. Gib zu **jedem Verkauf an diesem Tag** den **Namen der Sorte** und die **Anzahl der Kugeln** aus." }
+      ],
+      "interaktion": { "kind": "sql", "datenbank": "eisdiele" },
+      "loesung": { "sql": "SELECT Sorte.Name, Verkauf.Kugeln\nFROM Sorte, Verkauf\nWHERE Sorte.SorteNr = Verkauf.SorteNr\n  AND Verkauf.Datum = '2026-07-12'" },
+      "tipps": [
+        "Der Name steht in `Sorte`, Datum und Kugeln stehen in `Verkauf`. Verbinde beide Tabellen über den Fremdschlüssel `SorteNr`.",
+        "Ein Datum schreibst du als Text im Format `'JJJJ-MM-TT'`."
+      ],
+      "erklaerung": [
+        { "t": "text", "md": "Am Sonntag gab es **8 Verkäufe**. Die Verbundbedingung `Sorte.SorteNr = Verkauf.SorteNr` hängt an jeden Verkauf genau seine Sorte. Fehlt sie, kombiniert SQL jede Sorte mit jedem Verkauf – an diesem Tag 10 × 8 = 80 Zeilen (Falle P2)." }
+      ]
+    },
+    {
+      "id": "G-05",
+      "titel": "Wer hat recht?",
+      "stufe": 2,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": ["DB-K25", "DB-K26", "DB-K28"],
+      "fallen": ["P4"],
+      "inhalt": [
+        { "t": "text", "md": "Pia meint mit „Sommerhit“ die Sorte, von der in dieser Woche die **meisten Kugeln** über die Theke gingen. Welche Abfrage beantwortet genau ihre Frage?" }
+      ],
+      "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
+        { "id": "a", "code": "SELECT Sorte.Name, COUNT(*) AS Anzahl\nFROM Sorte, Verkauf\nWHERE Sorte.SorteNr = Verkauf.SorteNr\nGROUP BY Sorte.SorteNr, Sorte.Name\nORDER BY Anzahl DESC\nLIMIT 1" },
+        { "id": "b", "code": "SELECT Sorte.Name, SUM(Verkauf.Kugeln) AS Menge\nFROM Sorte, Verkauf\nWHERE Sorte.SorteNr = Verkauf.SorteNr\nGROUP BY Sorte.SorteNr, Sorte.Name\nORDER BY Menge DESC\nLIMIT 1" },
+        { "id": "c", "code": "SELECT Sorte.Name, MAX(Verkauf.Kugeln) AS Menge\nFROM Sorte, Verkauf\nWHERE Sorte.SorteNr = Verkauf.SorteNr\nGROUP BY Sorte.SorteNr, Sorte.Name\nORDER BY Menge DESC\nLIMIT 1" },
+        { "id": "d", "code": "SELECT Sorte.Name, SUM(Sorte.Preis) AS Menge\nFROM Sorte, Verkauf\nWHERE Sorte.SorteNr = Verkauf.SorteNr\nGROUP BY Sorte.SorteNr, Sorte.Name\nORDER BY Menge DESC\nLIMIT 1" }
+      ] },
+      "loesung": { "richtig": ["b"] },
+      "tipps": [
+        "Ein einzelner Verkauf kann mehrere Kugeln umfassen. Zählst du Verkäufe oder addierst du Kugeln?"
+      ],
+      "erklaerung": [
+        { "t": "text", "md": "**Beide haben recht – sie zählen Verschiedenes.** `COUNT(*)` zählt Verkäufe: Da liegt Stracciatella mit 12 vorn (die Aushilfe). `SUM(Verkauf.Kugeln)` addiert die Kugeln: Da gewinnt Vanille mit 36 Kugeln (Pia). `MAX` liefert nur den größten Einzelverkauf, `SUM(Sorte.Preis)` addiert Preise. Zählen oder summieren? Genau das ist Falle P4." }
+      ]
+    },
+    {
+      "id": "G-06",
+      "titel": "Die Umsatzbringer",
+      "stufe": 3,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": ["DB-K20", "DB-K26", "DB-K27"],
+      "fallen": ["P1", "P3"],
+      "inhalt": [
+        { "t": "text", "md": "Lohnt sich eine Sorte? Der **Umsatz** einer Sorte ist die Summe aus Kugeln × Preis je Kugel über alle ihre Verkäufe. Gib **Nummer**, **Name** und **Umsatz** aller Sorten aus, die in dieser Woche **mehr als 50 €** Umsatz gebracht haben." }
+      ],
+      "interaktion": { "kind": "sql", "datenbank": "eisdiele" },
+      "loesung": { "sql": "SELECT Sorte.SorteNr, Sorte.Name, SUM(Verkauf.Kugeln * Sorte.Preis) AS Umsatz\nFROM Sorte, Verkauf\nWHERE Sorte.SorteNr = Verkauf.SorteNr\nGROUP BY Sorte.SorteNr, Sorte.Name\nHAVING SUM(Verkauf.Kugeln * Sorte.Preis) > 50" },
+      "tipps": [
+        "Rechne in der Summe: Kugeln mal Preis je Verkauf, aufaddiert je Sorte – also gruppiert nach der Sorte.",
+        "Die Bedingung „mehr als 50 €“ betrifft die Summe einer Gruppe. Solche Bedingungen gehören ins HAVING, nicht ins WHERE."
+      ],
+      "erklaerung": [
+        { "t": "text", "md": "Nur **Vanille** schafft mehr als 50 € (36 Kugeln × 1,50 € = 54 €). WHERE filtert einzelne Verkäufe **vor** dem Gruppieren, HAVING filtert Gruppen **danach** – eine Bedingung an `SUM(…)` gehört deshalb ins HAVING (Falle P1). Alle Spalten im SELECT sind gruppiert oder aggregiert (GROUP-BY-Regel, P3). Die neue Sorte Sanddorn-Mango kommt übrigens nur auf 9 €." }
+      ]
+    }
+  ]
+}

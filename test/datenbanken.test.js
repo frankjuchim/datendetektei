@@ -11,7 +11,7 @@ const path = require('node:path');
 const Database = require('better-sqlite3');
 const request = require('supertest');
 
-const { ladeDatenbanken, OEFFENTLICHE_DATENBANKEN, AKTEN_DATENBANKEN } = require('../src/sql/datenbanken');
+const { ladeDatenbanken, OEFFENTLICHE_DATENBANKEN, AKTEN_DATENBANKEN, VERHOER_DATENBANKEN } = require('../src/sql/datenbanken');
 const { erzeugeApp } = require('../src/app');
 const { oeffneDb } = require('../src/db');
 const { testKonfig, testApp } = require('./helpers');
@@ -42,8 +42,8 @@ function tempSeed(namen) {
 
 // ---------------------------------------------------------------- ladeDatenbanken
 
-test('ladeDatenbanken: alle sieben Akten-DBs bekannt, öffentliche Liste fest', () => {
-  assert.deepEqual(datenbanken.namen, SIEBEN);
+test('ladeDatenbanken: Akten- und Verhör-DBs geladen, öffentliche Liste fest (nur die sieben Akten-DBs)', () => {
+  assert.deepEqual(datenbanken.namen, [...SIEBEN, ...VERHOER_DATENBANKEN]);
   assert.deepEqual(AKTEN_DATENBANKEN, SIEBEN);
   assert.deepEqual([...OEFFENTLICHE_DATENBANKEN].sort(), [...SIEBEN].sort());
   assert.ok(Object.isFrozen(OEFFENTLICHE_DATENBANKEN));
@@ -101,7 +101,7 @@ test('ladeDatenbanken: unbekannter Name ist ein Fehler', () => {
 
 test('ladeDatenbanken: Startzeit wird protokolliert', () => {
   assert.equal(protokoll.length, 1);
-  assert.match(protokoll[0], /7 Datenbanken/);
+  assert.match(protokoll[0], new RegExp(`${SIEBEN.length + VERHOER_DATENBANKEN.length} Datenbanken`));
   assert.match(protokoll[0], /\d+ ms/);
 });
 
@@ -212,5 +212,22 @@ test('GET /api/db/<name>/schema: unbekannt, Variante, Pfadtricks → 404 JSON', 
     const res = await request(a).get(pfad);
     assert.equal(res.status, 404, pfad);
     assert.deepEqual(res.body, { error: 'Nicht gefunden.' }, pfad);
+  }
+});
+
+test('Verhör-Kontexte Musikschule, Kletterhalle, Fitness-App und Mensa: geladen, aber nie öffentlich unter /db/ oder /api/db/', async () => {
+  const a = app();
+  for (const kontext of ['musikschule', 'kletterhalle', 'fitness', 'mensa']) {
+    const name = `verhoer/${kontext}`;
+    assert.ok(VERHOER_DATENBANKEN.includes(name), name);
+    assert.ok(!OEFFENTLICHE_DATENBANKEN.includes(name), name);
+    assert.ok(Buffer.isBuffer(datenbanken.haupt(name)), name);
+    for (const pfad of [`/db/${kontext}.sqlite`, `/db/verhoer/${kontext}.sqlite`, `/db/verhoer%2F${kontext}.sqlite`,
+      `/db/verhoer_${kontext}.sqlite`, `/api/db/${kontext}/schema`, `/api/db/verhoer%2F${kontext}/schema`,
+      `/api/db/verhoer/${kontext}/schema`]) {
+      const res = await request(a).get(pfad);
+      assert.equal(res.status, 404, pfad);
+      assert.doesNotMatch(res.headers['content-type'] || '', /sqlite/, pfad);
+    }
   }
 });

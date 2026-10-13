@@ -15,6 +15,13 @@
 //   abnahme(db) → [{ name, ok, ist, soll }] – Tabelle „Abnahme-Prüfungen“ der DB-LIESMICH
 // `zufall` = erzeugeZufall("datendetektei:<name>:v1") (scripts/db/zufall.js), `namen` = ladeNamen()
 // (scripts/db/namen.js), `kontext.datenbank(name)` = schon fertig gebaute DB (Bau-Reihenfolge, z. B. für Datenspuren).
+//
+// Verhör-Kontexte (seed/datenbanken/VERHOER_KONTEXTE.md, Plan Phase 3 Task 11) heißen `verhoer/<kontext>`
+// (Ordner seed/datenbanken/verhoer/<kontext>/, Modul scripts/db/verhoer_<kontext>.js) und sind vollständig kuratiert.
+// Sie werden mitgebaut und von ladeAlle() mitgeliefert, sind aber NIE öffentlich (/db/ nur über eine Positivliste der
+// Übungs-DBs; der Name enthält einen Schrägstrich und passt schon deshalb auf keine Route /db/:name.sqlite).
+// Prüfungs-Kontexte (Klausur, Nachschreibklausur) heißen `pruefung/<kontext>` (Modul scripts/db/pruefung_<kontext>.js),
+// werden ebenso kuratiert gebaut und geprüft, aber zur Laufzeit gar nicht geladen (nur Material-Prüfung).
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -30,11 +37,20 @@ const {
 const SEED_VERZEICHNIS = path.join(__dirname, '..', 'seed', 'datenbanken');
 const MODUL_VERZEICHNIS = path.join(__dirname, 'db');
 
-/** Bau-Reihenfolge (DB-übergreifende Ableitungen brauchen ihre Quellen vorher). */
+/** Bau-Reihenfolge der Übungs-DBs (DB-übergreifende Ableitungen brauchen ihre Quellen vorher). */
 const REIHENFOLGE = ['fundbuero', 'stadtrad', 'stadtfest', 'tus', 'detektei', 'datenspuren', 'eisdiele'];
 
+/** Verhör-Kontexte (nie öffentlich); Name = Pfad unter seed/datenbanken. */
+const VERHOER_DBS = [...require('../src/sql/datenbanken').VERHOER_DATENBANKEN];
+
+/** Prüfungs-Kontexte (Klausur, Nachschreibklausur; nur Material, nie öffentlich, zur Laufzeit nicht geladen). */
+const PRUEFUNG_DBS = [...require('../src/sql/datenbanken').PRUEFUNG_DATENBANKEN];
+
+/** Alle DBs, die gebaut und geprüft werden (zur Laufzeit geladen: alle außer PRUEFUNG_DBS). */
+const ALLE_DBS = [...REIHENFOLGE, ...VERHOER_DBS, ...PRUEFUNG_DBS];
+
 /** Vollständig kuratierte DBs ohne Generator (basis.sql = schema.sql + pflicht.sql). */
-const KURATIERT = ['tus', 'eisdiele'];
+const KURATIERT = ['tus', 'eisdiele', ...VERHOER_DBS, ...PRUEFUNG_DBS];
 
 /** Welche DBs vor einer DB gebaut sein müssen (für --db). */
 const ABHAENGIGKEITEN = { datenspuren: ['fundbuero', 'stadtrad', 'stadtfest', 'tus', 'detektei'] };
@@ -55,9 +71,14 @@ function extrahiereSqlBloecke(markdown) {
   return bloecke;
 }
 
-/** Lädt scripts/db/<name>.js, falls vorhanden (sonst null). */
+/** Dateiname des Moduls einer DB: `verhoer/kiosk` → `verhoer_kiosk`. */
+function modulName(name) {
+  return name.replace(/\//g, '_');
+}
+
+/** Lädt scripts/db/<modulName>.js, falls vorhanden (sonst null). */
 function ladeModul(name, verzeichnis = MODUL_VERZEICHNIS) {
-  const datei = path.join(verzeichnis, `${name}.js`);
+  const datei = path.join(verzeichnis, `${modulName(name)}.js`);
   return fs.existsSync(datei) ? require(datei) : null;
 }
 
@@ -136,7 +157,7 @@ function baueDb(name, { quellen = SEED_VERZEICHNIS, modul, kontext, namen } = {}
         if (!p.ok) bericht.meldungen.push(`Abnahme „${p.name}“: ist ${JSON.stringify(p.ist)}, soll ${JSON.stringify(p.soll)}`);
       }
     } else {
-      bericht.meldungen.push(`abnahme() fehlt in scripts/db/${name}.js`);
+      bericht.meldungen.push(`abnahme() fehlt in scripts/db/${modulName(name)}.js`);
     }
     bericht.beispiele = beispielabfragen(db, leseFalls(path.join(ordner, 'LIESMICH.md')));
     for (const b of bericht.beispiele) {
@@ -155,7 +176,7 @@ function baueDb(name, { quellen = SEED_VERZEICHNIS, modul, kontext, namen } = {}
  * `module`: { name: modul|null } überschreibt das Laden aus scripts/db/.
  * → [{ name, db, bericht, ziel }]
  */
-function baueAlle({ quellen = SEED_VERZEICHNIS, reihenfolge = REIHENFOLGE, nur, module = {} } = {}) {
+function baueAlle({ quellen = SEED_VERZEICHNIS, reihenfolge = ALLE_DBS, nur, module = {} } = {}) {
   if (nur && !reihenfolge.includes(nur)) throw new Error(`Unbekannte Datenbank: ${nur} (bekannt: ${reihenfolge.join(', ')})`);
   const benoetigt = nur ? new Set([nur, ...(ABHAENGIGKEITEN[nur] || [])]) : null;
   const gebaut = new Map();
@@ -244,7 +265,7 @@ function datenzeilen(db) {
  * Baut, schreibt bzw. prüft basis.sql. → Exit-Code (0 ok, 1 Fehler/Abweichung).
  * „Generator fehlt“ ist nur ein Hinweis (Exit 0): Schema, Übernahme und Pflicht werden gebaut, basis.sql nicht geschrieben.
  */
-function lauf({ quellen = SEED_VERZEICHNIS, reihenfolge = REIHENFOLGE, nur, pruefen = false, module = {}, log = console.log } = {}) {
+function lauf({ quellen = SEED_VERZEICHNIS, reihenfolge = ALLE_DBS, nur, pruefen = false, module = {}, log = console.log } = {}) {
   let code = 0;
   const ergebnisse = baueAlle({ quellen, reihenfolge, nur, module });
   for (const { name, db, bericht, ziel } of ergebnisse) {
@@ -314,10 +335,14 @@ if (require.main === module) {
 module.exports = {
   SEED_VERZEICHNIS,
   REIHENFOLGE,
+  VERHOER_DBS,
+  PRUEFUNG_DBS,
+  ALLE_DBS,
   KURATIERT,
   ABHAENGIGKEITEN,
   extrahiereSqlBloecke,
   VARIANTEN_TYPEN,
+  modulName,
   ladeModul,
   baueDb,
   varianten,

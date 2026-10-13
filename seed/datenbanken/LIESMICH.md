@@ -23,7 +23,10 @@ und 9. Alle Personen, Orte, Firmen und Vereine sind frei erfunden.
 `TuS.Mitglied.Geburtsjahr` und `Datenspuren.VereinExport.Geburtsjahr/Stadtteil` (Tarnname „Nora Falter“).
 
 Die Kontexte der Verhöre, der Generalprobe und der Klausuren (eigene kleine DBs, Transfer) sind in
-[`VERHOER_KONTEXTE.md`](VERHOER_KONTEXTE.md) beschrieben; ihre SQL-Dateien entstehen zusammen mit den Aufgaben.
+[`VERHOER_KONTEXTE.md`](VERHOER_KONTEXTE.md) beschrieben. Ihre SQL-Dateien liegen unter `verhoer/<kontext>/` (gleicher
+Aufbau wie oben, vollständig kuratiert wie TuS/Eisdiele, Modul `scripts/db/verhoer_<kontext>.js`) und werden von
+`scripts/db_bauen.js` unter dem Namen `verhoer/<kontext>` gebaut, geprüft und zur Laufzeit geladen – **nie öffentlich**
+(kein `/db/…`). Fertig: `verhoer/bibliothek` (V1), `verhoer/buergerbus` (V2), `verhoer/kiosk` (V3).
 
 ### Dateien je DB-Ordner
 
