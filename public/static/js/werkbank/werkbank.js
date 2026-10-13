@@ -235,7 +235,6 @@ export function erzeugeWerkbank(opt = {}) {
       geaendert(true);
     });
     li.appendChild(fk);
-    if (a.fk) li.appendChild(zielAuswahl(r, a, ri, ai));
     if (modus === 'frei') {
       const weg = el('button', 'knopf-icon wk-entfernen', '✕');
       weg.type = 'button';
@@ -249,6 +248,8 @@ export function erzeugeWerkbank(opt = {}) {
       });
       li.appendChild(weg);
     }
+    // Zielrelation zuletzt: steht in einer eigenen Zeile unter dem Attribut (werkbank.css)
+    if (a.fk) li.appendChild(zielAuswahl(r, a, ri, ai));
     return li;
   }
 

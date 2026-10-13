@@ -128,7 +128,7 @@
 .bp-attr-liste, .bp-enden { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--a-2); align-self: stretch; }
 .bp-attr, .bp-ende { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2); min-width: 0; }
 .bp-attr.aktiv { padding: var(--a-1); margin: calc(-1 * var(--a-1)); border-radius: var(--radius); background: var(--messing-flaeche); }
-.bp-attr .bp-feld { flex: 1 1 140px; }
+.bp-attr .bp-feld { flex: 1 1 100px; min-width: 0; }
 .bp-ende .bp-ende-ziel { flex: 1 1 150px; }
 .bp-ende .bp-ende-rolle { flex: 1 1 120px; }
 .bp-kard-zeile { display: inline-flex; align-items: center; gap: var(--a-1); }

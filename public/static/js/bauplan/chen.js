@@ -151,15 +151,50 @@ export function grenzen(graph, layout) {
 const GRENZE = 5000;
 const klemme = (v) => Math.max(0, Math.min(GRENZE, Math.round(v)));
 
-/** Freie Position für ein Attribut rund um seinen Besitzer (Plätze auf zwei Ringen). */
-export function attributPlatz(besitzer, art, belegt) {
-  const ringe = art === 'beziehung' ? [[125, 95], [185, 135]] : [[150, 100], [215, 150]];
+/** Strecke p–q schneidet das Rechteck b { x0, x1, y0, y1 }? (Liang-Barsky) */
+function streckeTrifft(p, q, b) {
+  let t0 = 0;
+  let t1 = 1;
+  const dx = q.x - p.x;
+  const dy = q.y - p.y;
+  for (const [pp, qq] of [[-dx, p.x - b.x0], [dx, b.x1 - p.x], [-dy, p.y - b.y0], [dy, b.y1 - p.y]]) {
+    if (pp === 0) {
+      if (qq < 0) return false;
+      continue;
+    }
+    const r = qq / pp;
+    if (pp < 0) {
+      if (r > t1) return false;
+      if (r > t0) t0 = r;
+    } else {
+      if (r < t0) return false;
+      if (r < t1) t1 = r;
+    }
+  }
+  return true;
+}
+
+/** Rechteck um einen Mittelpunkt (halbe Breite/Höhe, Rand). */
+const rechteck = (p, hb, hh, rand = 0) => ({ x0: p.x - hb - rand, x1: p.x + hb + rand, y0: p.y - hh - rand, y1: p.y + hh + rand });
+
+/**
+ * Freie Position für ein Attribut rund um seinen Besitzer (Plätze auf zwei Ringen).
+ * hindernisse (optional): Strecken [{ p, q }] (Beziehungskanten), die die Ellipse nicht berühren soll.
+ */
+export function attributPlatz(besitzer, art, belegt, hindernisse = [], name = '') {
+  const ringe = art === 'beziehung' ? [[125, 95], [185, 135], [245, 175], [305, 215]] : [[150, 100], [215, 150], [280, 200], [345, 250]];
   // Winkel (Grad, 0 = rechts, −90 = oben); Entitätstypen zuerst oben, Beziehungstypen zuerst unten
   const winkel = art === 'beziehung' ? [90, 55, 125, 20, 160, -90, -20, -160] : [-90, -60, -120, -30, -150, 0, 180, 30, 150, 90];
-  const frei = (x, y) => belegt.every((q) => Math.abs(q.x - x) > 95 || Math.abs(q.y - y) > 44);
-  for (const [rx, ry] of ringe) {
+  const rx = attrRx(name) + 6;
+  const frei = (x, y) =>
+    // belegt: Mittelpunkte, optional mit halber Breite/Höhe (hb, hh) des Elements dort
+    belegt.every((q) => Math.abs(q.x - x) > (q.hb ? q.hb + rx - 6 : 95) || Math.abs(q.y - y) > (q.hh ? q.hh + MASSE.attrRy + 4 : 54)) &&
+    hindernisse.every((h) => !streckeTrifft(h.p, h.q, rechteck({ x, y }, rx, MASSE.attrRy + 6))) &&
+    // die eigene Attributlinie läuft durch kein anderes Element
+    belegt.every((q) => (q.x === besitzer.x && q.y === besitzer.y) || !streckeTrifft(besitzer, { x, y }, rechteck(q, 40, 16)));
+  for (const [rx0, ry] of ringe) {
     for (const w of winkel) {
-      const x = besitzer.x + rx * Math.cos((w * Math.PI) / 180);
+      const x = besitzer.x + rx0 * Math.cos((w * Math.PI) / 180);
       const y = besitzer.y + ry * Math.sin((w * Math.PI) / 180);
       if (x < 40 || y < 30) continue;
       if (frei(x, y)) return { x: klemme(x), y: klemme(y) };
@@ -186,7 +221,7 @@ export function ergaenzeLayout(graph, layout = {}) {
   for (const e of alle.filter((x) => x.art === 'entitaet')) {
     if (aus[e.id]) continue;
     for (;;) {
-      const x = 160 + (platz % 3) * 400;
+      const x = 300 + (platz % 3) * 400;
       const y = 200 + Math.floor(platz / 3) * 330;
       platz++;
       if (frei(x, y, 180, 90) || platz > 200) {
@@ -195,33 +230,59 @@ export function ergaenzeLayout(graph, layout = {}) {
       }
     }
   }
-  // Beziehungstypen: Schwerpunkt der Entitätstypen
+  // Beziehungstypen: Schwerpunkt der Entitätstypen; verschoben, bis weder die Raute auf einer Kante noch eine ihrer
+  // Kanten (samt Plättchen) auf einem fremden Element liegt
+  const entIds = new Set(alle.filter((x) => x.art === 'entitaet').map((x) => x.id));
+  const kantenVon = (e, lay) => kanten(e.el, lay, entIds).map((k) => ({ p: k.start, q: k.bis, mitte: k.mitte, ende: k.ende.entitaet }));
+  const strecken = [];
+  for (const e of alle.filter((x) => x.art === 'beziehung')) if (aus[e.id]) strecken.push(...kantenVon(e, aus));
+  const rahmenVon = (e) => {
+    const { hb, hh } = ausdehnung(e);
+    return rechteck(aus[e.id], hb, hh, 4);
+  };
   for (const e of alle.filter((x) => x.art === 'beziehung')) {
     if (aus[e.id]) continue;
     const punkte = (e.el.enden || []).map((x) => aus[x.entitaet]).filter(Boolean);
-    let x;
-    let y;
+    let x0;
+    let y0;
     if (!punkte.length) {
-      x = 360;
-      y = 120;
+      x0 = 360;
+      y0 = 120;
     } else {
-      x = punkte.reduce((s, q) => s + q.x, 0) / punkte.length;
-      y = punkte.reduce((s, q) => s + q.y, 0) / punkte.length;
+      x0 = punkte.reduce((s, q) => s + q.x, 0) / punkte.length;
+      y0 = punkte.reduce((s, q) => s + q.y, 0) / punkte.length;
       const verschieden = new Set((e.el.enden || []).map((q) => q.entitaet)).size;
-      if (verschieden === 1) y += 200;
+      if (verschieden === 1) y0 += 200;
     }
-    let versuch = 0;
-    while (!frei(x, y, 120, 60) && versuch < 12) {
-      y += versuch % 2 ? -110 * (versuch + 1) : 110 * (versuch + 1);
-      versuch++;
-    }
-    aus[e.id] = { x: klemme(x), y: klemme(y) };
+    const { hb, hh } = ausdehnung(e);
+    const versuche = [[0, 0]];
+    for (let i = 1; i <= 6; i++) versuche.push([0, 110 * i], [0, -110 * i], [140 * i, 0], [-140 * i, 0], [140 * i, 110 * i], [-140 * i, 110 * i]);
+    const passt = (x, y) => {
+      if (!frei(x, y, 120, 60)) return false;
+      const box = rechteck({ x, y }, hb, hh, 6);
+      if (strecken.some((s) => streckeTrifft(s.p, s.q, box))) return false;
+      const probe = { ...aus, [e.id]: { x, y } };
+      for (const k of kantenVon(e, probe)) {
+        for (const f of alle) {
+          if (f.id === e.id || f.id === k.ende || !aus[f.id]) continue;
+          const r = rahmenVon(f);
+          if (streckeTrifft(k.p, k.q, r)) return false;
+          const pl = rechteck(k.mitte, MASSE.plaettchen / 2, MASSE.plaettchen / 2);
+          if (pl.x0 < r.x1 && r.x0 < pl.x1 && pl.y0 < r.y1 && r.y0 < pl.y1) return false;
+        }
+      }
+      return x > hb && y > hh;
+    };
+    const treffer = versuche.map(([dx, dy]) => [x0 + dx, y0 + dy]).find(([x, y]) => passt(x, y)) || [x0, y0];
+    aus[e.id] = { x: klemme(treffer[0]), y: klemme(treffer[1]) };
+    strecken.push(...kantenVon(e, aus));
   }
-  // Attribute
+  // Attribute: rund um ihren Besitzer, ohne Kanten und Plättchen zu berühren
   for (const e of alle.filter((x) => x.art === 'attribut')) {
     if (aus[e.id]) continue;
     const b = aus[e.besitzer.id] || { x: 200, y: 200 };
-    aus[e.id] = attributPlatz(b, e.besitzer.enden ? 'beziehung' : 'entitaet', belegt());
+    const mitMassen = alle.filter((f) => aus[f.id]).map((f) => ({ ...aus[f.id], ...ausdehnung(f) }));
+    aus[e.id] = attributPlatz(b, e.besitzer.enden ? 'beziehung' : 'entitaet', mitMassen, strecken, e.el.name);
   }
   return aus;
 }

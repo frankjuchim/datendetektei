@@ -1,5 +1,6 @@
 // Akte-Übersicht (/akte/:nr, DESIGN.md §5.2): Kopf mit Ring, Ort und Briefing, je Ermittlung eine Karte mit Stand,
-// Stempel und Aufgabenkacheln (offen, gelöst, angesehen), Verhör der Akte und Werkzeuge (Freie Ermittlung, Warm-up).
+// Stempel und Aufgabenkacheln (offen, gelöst, angesehen), Verhör der Akte und Werkzeuge (Freie Ermittlung, Warm-up;
+// in Akte 5 zusätzlich Bauplan-Tisch und Schema-Werkbank).
 
 const V = new URL(import.meta.url).search;
 const [A, R] = await Promise.all([import('../kern/api.js' + V), import('../kern/render.js' + V)]);
@@ -94,6 +95,14 @@ function werkzeuge(akte) {
   const t = A.linkKnopf('Trainingsplatz', '/training', 'knopf');
   t.prepend(R.icon('i-hantel'));
   reihe.append(w, t);
+  if (akte.nr === 5) {
+    // Modellierungs-Werkzeuge (Phase 5): frei zeichnen und Relationen anlegen, ohne Prüfung
+    const b = A.linkKnopf('Bauplan-Tisch', '/werkzeug/bauplan', 'knopf');
+    b.prepend(R.icon('i-bauplan'));
+    const wb = A.linkKnopf('Schema-Werkbank', '/werkzeug/werkbank', 'knopf');
+    wb.prepend(R.icon('i-karte'));
+    reihe.append(b, wb);
+  }
   karte.appendChild(reihe);
   return karte;
 }

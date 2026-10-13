@@ -46,6 +46,8 @@
   min-height: 44px; flex: 1 1 140px; padding: var(--a-2); border: 1px solid var(--siegelrot); border-radius: var(--radius);
   background: var(--karte); color: var(--tinte); font: inherit; font-size: var(--t-s); min-width: 0; max-width: 100%;
 }
+/* Zielrelation eines Fremdschlüssels in eigener Zeile unter dem Attribut (sonst bricht der Entfernen-Knopf allein um) */
+.wk-attr .wk-ziel { flex: 1 1 100%; }
 .wk-entfernen { color: var(--tinte-3); }
 .wk-leer { font-size: var(--t-s); color: var(--tinte-2); }
 .wk-rueckmeldung { display: flex; flex-direction: column; gap: var(--a-1); padding-top: var(--a-2); border-top: 1px solid var(--rand); font-size: var(--t-s); }
