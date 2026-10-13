@@ -13,13 +13,16 @@ const ORT = {
   4: ['Vereinsheim TuS', 'Mühlenfeld', 'tus'],
   5: ['Detektei', 'Altstadt', 'detektei'],
   6: ['Rathaus', 'Altstadt', 'datenspuren'],
-  7: ['Detektei, Prüfungszimmer', 'Altstadt', null]
+  7: ['Detektei, Prüfungszimmer', 'Altstadt', null],
+  8: ['Detektei, Werkstatt (Kür)', 'Altstadt', 'detektei'] // Kür K1 (Phase 6 Task 7): nicht im Abitur, ohne Rangwirkung
 };
 const ERLEDIGT = new Set(['geloest', 'nachgeloest', 'bearbeitet']);
 const STATUS = { offen: 'offen', geloest: 'gelöst', nachgeloest: 'nachgelöst', angesehen: 'Lösung angesehen', bearbeitet: 'bearbeitet' };
 
 const seite = document.getElementById('seite');
-const nr = Number((/^\/akte\/([1-7])$/.exec(window.location.pathname) || [])[1]);
+const nr = Number((/^\/akte\/([1-8])$/.exec(window.location.pathname) || [])[1]);
+const KUER_NR = 8;
+const aktenName = (n) => (n === KUER_NR ? 'Kür K1' : `Akte ${n}`);
 
 function kachel(a, ermittlung, cc = false) {
   const link = el('a', 'kachel' + (cc ? ' cc' : ''), cc ? 'CC' : a.id.slice(-2));
@@ -90,11 +93,14 @@ function werkzeuge(akte) {
     a.prepend(R.icon('i-konsole'));
     reihe.appendChild(a);
   }
-  const w = A.linkKnopf(`Warm-up Akte ${akte.nr}`, `/warmup?akte=${akte.nr}`, 'knopf');
-  w.prepend(R.icon('i-karte'));
+  if (!akte.kuer) {
+    const w = A.linkKnopf(`Warm-up Akte ${akte.nr}`, `/warmup?akte=${akte.nr}`, 'knopf');
+    w.prepend(R.icon('i-karte'));
+    reihe.appendChild(w);
+  }
   const t = A.linkKnopf('Trainingsplatz', '/training', 'knopf');
   t.prepend(R.icon('i-hantel'));
-  reihe.append(w, t);
+  reihe.appendChild(t);
   if (akte.nr === 5) {
     // Modellierungs-Werkzeuge (Phase 5): frei zeichnen und Relationen anlegen, ohne Prüfung
     const b = A.linkKnopf('Bauplan-Tisch', '/werkzeug/bauplan', 'knopf');
@@ -122,15 +128,17 @@ async function start() {
   const akte = stand.akten.find((a) => a.nr === nr);
   const info = (plan.akten || []).find((a) => a.nr === nr);
   const [ort, stadtteil] = ORT[nr];
-  document.title = `Akte ${nr}: ${(akte || info || {}).titel || ''} – Datendetektei`;
+  document.title = `${aktenName(nr)}: ${(akte || info || {}).titel || ''} – Datendetektei`;
   if (!akte || !akte.frei) {
     const nichtImNiveau = info && !info.niveaus.includes(stand.kurs.niveau);
     seite.replaceChildren(
       ...[
         A.vorschauHinweis(kontext),
         A.leerKarte(
-          `Akte ${nr}: ${(info || {}).titel || ''}`,
-          nichtImNiveau ? 'Diese Akte gehört nicht zu eurem Kursniveau.' : 'Diese Akte liegt noch im Nebel. Deine Lehrkraft schaltet sie frei, sobald ihr so weit seid.',
+          `${aktenName(nr)}${(info || {}).titel ? ': ' + info.titel : ''}`,
+          nr === KUER_NR
+            ? 'Die Kür ist nicht im Abitur und nur für das erhöhte Anforderungsniveau vorgesehen. Deine Lehrkraft schaltet sie frei, wenn Zeit dafür ist.'
+            : nichtImNiveau ? 'Diese Akte gehört nicht zu eurem Kursniveau.' : 'Diese Akte liegt noch im Nebel. Deine Lehrkraft schaltet sie frei, sobald ihr so weit seid.',
           [A.linkKnopf('Zum Stadtplan', '/', 'knopf')]
         )
       ].filter(Boolean)
@@ -139,13 +147,14 @@ async function start() {
   }
   const geschlossen = akte.ermittlungen.length > 0 && akte.ermittlungen.every((e) => e.geloest >= e.anzahl);
   const kopf = el('section', 'aktendeckel akte-kopf-karte');
-  kopf.appendChild(el('span', 'reiter rot', `Akte ${nr}`));
+  kopf.appendChild(el('span', 'reiter rot', aktenName(nr)));
   const innen = el('div', 'aktendeckel-innen');
   const zeile = el('div', 'akte-detail-kopf');
   zeile.appendChild(R.ring(akte.anteil, { geschlossen, label: `${Math.round(akte.anteil * 100)} Prozent der Punkte` }));
   const titel = h('div', 'seiten-kopf', el('p', 'etikett', `${ort} · ${stadtteil}`), el('h1', null, akte.titel), el('p', 'zahlen', `${akte.punkte} von ${akte.maxPunkte} Punkten`));
   zeile.appendChild(titel);
-  if (geschlossen) zeile.appendChild(R.stempel('Akte geschlossen', 'geloest'));
+  if (akte.kuer) zeile.appendChild(R.stempel('KÜR – nicht im Abitur', 'kuer'));
+  else if (geschlossen) zeile.appendChild(R.stempel('Akte geschlossen', 'geloest'));
   innen.appendChild(zeile);
   if (!akte.freigeschaltet) innen.appendChild(el('p', 'banner', 'Diese Akte ist im Kurs noch nicht freigeschaltet – Sie sehen sie als Lehrkraft.'));
   kopf.appendChild(innen);

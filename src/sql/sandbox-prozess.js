@@ -13,12 +13,20 @@
  *
  * Je Abfrage eine frische In-Memory-Kopie (new Database(buffer)); Messung: < 0,2 ms je Kopie bei den
  * vorhandenen DBs. So kann auch ein unerwarteter Schreibweg nie in die nächste Abfrage durchschlagen.
+ *
+ * Kür K1 (Schreibmodus): { typ: 'skript', id, start: null | { datenbank } | { skript }, anweisungen: [{ sql, zeile }],
+ * pruefungen } – frische DB (':memory:' bzw. Kopie des Buffers), foreign_keys an, max_page_count, Anweisungen einzeln
+ * mit Grenzprüfung nach jeder schreibenden Anweisung, danach Prüfabfragen mit query_only. Die DB wird immer
+ * geschlossen; es entstehen keine Dateien (ATTACH/VACUUM/PRAGMA/TEMP weist schon der Elternprozess ab).
  */
 
 const Database = require('better-sqlite3');
+const { schemaVonDb, bezeichner } = require('./schema');
 
 let datenbanken = Object.create(null);
 let maxZeilen = 5000;
+let grenzen = { tabellen: 20, zeilen: 500, bytes: 1024 * 1024 };
+const MAX_PRUEF_ZEILEN = 1000;
 
 /** Über IPC (serialization: 'advanced') kommen Buffer ggf. als Uint8Array an; better-sqlite3 braucht Buffer. */
 function alsBuffer(b) {
@@ -76,6 +84,139 @@ function fuehreAus({ db: name, variante, sql }) {
   }
 }
 
+/* ---------- Kür K1: Schreibmodus ---------- */
+
+/** Eigene Tabellen der DB mit Zeilenzahl: Map name → zeilen. */
+function tabellenZaehlen(db) {
+  const m = new Map();
+  for (const name of db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").pluck().all()) {
+    m.set(name, db.prepare('SELECT COUNT(*) FROM ' + bezeichner(name)).pluck().get());
+  }
+  return m;
+}
+
+/** Grenzen nach einer schreibenden Anweisung → null oder Fehlerobjekt. */
+function grenzVerletzung(db, startTabellen) {
+  const jetzt = tabellenZaehlen(db);
+  const eigene = [...jetzt.keys()].filter((t) => !startTabellen.has(t));
+  if (eigene.length > grenzen.tabellen) return { code: 'zu_viele_tabellen', text: 'Zu viele Tabellen', max: grenzen.tabellen };
+  for (const [name, n] of jetzt) {
+    const erlaubt = Math.max(grenzen.zeilen, startTabellen.get(name) || 0);
+    if (n > erlaubt) return { code: 'zu_viele_zeilen', text: 'Zu viele Zeilen', tabelle: name, max: grenzen.zeilen };
+  }
+  return null;
+}
+
+function leseZeilen(stmt, max) {
+  stmt.raw(true);
+  const spalten = stmt.columns().map((x) => x.name);
+  const zeilen = [];
+  let abgeschnitten = false;
+  for (const zeile of stmt.iterate()) {
+    if (zeilen.length >= max) {
+      abgeschnitten = true;
+      break;
+    }
+    zeilen.push(zeile);
+  }
+  return { spalten, zeilen, anzahl: zeilen.length, abgeschnitten };
+}
+
+function fuehreSkriptAus({ start, anweisungen, pruefungen }) {
+  const anfang = process.hrtime.bigint();
+  let db;
+  if (start && start.datenbank) {
+    const buf = buffer(start.datenbank, null);
+    if (!buf) return fehler('unbekannte_db', 'Unbekannte Datenbank');
+    db = new Database(buf);
+  } else {
+    db = new Database(':memory:');
+  }
+  try {
+    db.pragma('foreign_keys = ON');
+    db.pragma('temp_store = MEMORY');
+    db.pragma('trusted_schema = OFF');
+    if (start && typeof start.skript === 'string') {
+      try {
+        db.exec(start.skript);
+      } catch (e) {
+        return fehler('start_fehler', e && e.message);
+      }
+    }
+    const startTabellen = tabellenZaehlen(db);
+    const seiten = db.pragma('page_count', { simple: true });
+    const groesse = db.pragma('page_size', { simple: true });
+    db.pragma(`max_page_count = ${seiten + Math.max(1, Math.floor(grenzen.bytes / groesse))}`);
+
+    const protokoll = [];
+    let ergebnis = null;
+    const liste = Array.isArray(anweisungen) ? anweisungen : [];
+    for (let i = 0; i < liste.length; i++) {
+      const a = liste[i] || {};
+      const nr = i + 1;
+      const ort = { anweisung: nr, zeile: a.zeile, art: artKurz(a.sql), protokoll };
+      let stmt;
+      try {
+        stmt = db.prepare(String(a.sql));
+      } catch (e) {
+        if (e instanceof RangeError && /more than one statement/i.test(e.message)) return { ...fehler('mehrere_anweisungen', e.message), ...ort };
+        return { ...fehler('sql_fehler', e.message), sqliteCode: e.code || null, ...ort };
+      }
+      try {
+        if (stmt.reader) {
+          ergebnis = { ...leseZeilen(stmt, maxZeilen), nr };
+          protokoll.push({ nr, zeile: a.zeile, art: ort.art, aenderungen: null });
+        } else {
+          const info = stmt.run();
+          protokoll.push({ nr, zeile: a.zeile, art: ort.art, aenderungen: info.changes });
+          const v = grenzVerletzung(db, startTabellen);
+          if (v) return { ok: false, ...v, ...ort, protokoll: protokoll.slice(0, -1) };
+        }
+      } catch (e) {
+        if (e && e.code === 'SQLITE_FULL') return { ok: false, code: 'zu_gross', text: 'Datenbank zu groß', max: grenzen.bytes, ...ort };
+        return { ...fehler('sql_fehler', e && e.message), sqliteCode: (e && e.code) || null, ...ort };
+      }
+    }
+    const tabellen = schemaVonDb(db);
+    // Prüfabfragen: nur lesend auf der DB nach dem Skript
+    db.pragma('query_only = ON');
+    const eigene = tabellen.map((t) => t.tabelle).filter((t) => !startTabellen.has(t));
+    const ergebnisse = (Array.isArray(pruefungen) ? pruefungen : []).map((p) => {
+      if (p.art === 'daten') {
+        const min = p.min || 1;
+        return { ok: eigene.length > 0 && eigene.every((t) => tabellen.find((x) => x.tabelle === t).zeilen >= min) };
+      }
+      try {
+        const stmt = db.prepare(String(p.sql));
+        if (!stmt.reader) return { fehler: 'keine Abfrage' };
+        const r = leseZeilen(stmt, MAX_PRUEF_ZEILEN);
+        return { spalten: r.spalten, zeilen: r.zeilen, anzahl: r.anzahl };
+      } catch (e) {
+        return { fehler: String((e && e.message) || 'Fehler') };
+      }
+    });
+    const ms = Number(process.hrtime.bigint() - anfang) / 1e6;
+    return { ok: true, protokoll, ergebnis, tabellen, pruefungen: ergebnisse, ms: Math.round(ms * 10) / 10 };
+  } catch (e) {
+    if (e && e.code === 'SQLITE_FULL') return { ok: false, code: 'zu_gross', text: 'Datenbank zu groß', max: grenzen.bytes };
+    return fehler('sql_fehler', e && e.message);
+  } finally {
+    db.close();
+  }
+}
+
+/** Art einer Anweisung (erstes Wort bzw. CREATE/DROP/ALTER + Objekt) ohne führende Kommentare. */
+function artKurz(sql) {
+  const t = String(sql || '')
+    .replace(/^(\s*(--[^\n]*\n?|\/\*[\s\S]*?\*\/))*/, '')
+    .trim();
+  const w = t.split(/[\s(]+/).filter(Boolean).map((x) => x.toUpperCase());
+  if (!w.length) return '';
+  if ((w[0] === 'CREATE' || w[0] === 'DROP' || w[0] === 'ALTER') && w[1]) return w[1] === 'UNIQUE' && w[2] ? `${w[0]} UNIQUE ${w[2]}` : `${w[0]} ${w[1]}`;
+  if (w[0] === 'REPLACE') return 'INSERT';
+  return w[0].replace(/[^A-Z_]/g, '') || w[0];
+}
+
 process.on('message', (nachricht) => {
   if (!nachricht || typeof nachricht !== 'object') return;
   if (nachricht.typ === 'start') {
@@ -86,11 +227,20 @@ process.on('message', (nachricht) => {
       datenbanken[name] = { haupt: alsBuffer(eintrag && eintrag.haupt), varianten };
     }
     if (Number.isInteger(nachricht.maxZeilen) && nachricht.maxZeilen > 0) maxZeilen = nachricht.maxZeilen;
+    if (nachricht.grenzen && typeof nachricht.grenzen === 'object') grenzen = { ...grenzen, ...nachricht.grenzen };
     process.send({ typ: 'bereit' });
   } else if (nachricht.typ === 'abfrage') {
     let ergebnis;
     try {
       ergebnis = fuehreAus(nachricht);
+    } catch (e) {
+      ergebnis = fehler('sql_fehler', e && e.message);
+    }
+    process.send({ typ: 'ergebnis', id: nachricht.id, ergebnis });
+  } else if (nachricht.typ === 'skript') {
+    let ergebnis;
+    try {
+      ergebnis = fuehreSkriptAus(nachricht);
     } catch (e) {
       ergebnis = fehler('sql_fehler', e && e.message);
     }

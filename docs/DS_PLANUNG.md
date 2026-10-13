@@ -2044,7 +2044,7 @@ AFB-Verteilung: I 9 BE (30 %) · II 15 BE (50 %) · III 6 BE (20 %)
 | Unplugged | – (Teamplanung auf Papier) |
 | Video | – |
 | Verhör | – |
-| Niveau | Kür (eA/gA) |
+| Niveau | Kür (nur eA – entfällt im gA-Pfad, Spec §3.4/§18) |
 
 ### Lernziele
 Die Schülerinnen und Schüler …
@@ -2099,6 +2099,15 @@ FROM Person p LEFT JOIN verdaechtig v ON p.PersonNr = v.PersonNr;
 | K1-E1-06 | Unsere Datenbank | ★★★ | `sql` | K48, K41 | – | Kür | KÜR-Teamprojekt: eigene Mini-DB (3–4 Tabellen, eine n:m-Beziehung) planen, mit CREATE/INSERT umsetzen und drei Abfragen im Abitur-Stil formulieren (Prüfung: Kernkriterien-Check der Sandbox, Dokumentation auf Projektkarte). |
 
 Stufenmix ★/★★/★★★: **2/2/2 (33/33/33 %)** · Interaktionsarten: `sql`
+
+**Umsetzung (Phase 6, `seed/akten/kuer.json`):** Welt 8 mit `kuer: true`, ohne Rangwirkung (AUFGABENFORMAT §1.1); alle
+`sql`-Teile sind Schreib-Aufgaben (§6.6.1) mit Prüfpunkten. Start: 01 leer, 02 Tabelle Ermittler (leer), 03
+„Detektei-light“ (Ermittler 1–3), 04/05 Kopie der Detektei-DB, 06 leer. K1-E1-03 hat zusätzlich Teil b) (`choice`:
+Warum wurde LeiterNr 7 abgewiesen?), damit das Deuten der Fehlermeldung geprüft wird; K1-E1-06 = `sql` (Kernkriterien:
+≥ 3 Tabellen, Primärschlüssel je Tabelle, Beziehungstabelle mit zusammengesetztem Primärschlüssel aus zwei
+Fremdschlüsseln, je Tabelle ≥ 2 Datensätze) + `kernpunkte` (drei Abfragen im Abitur-Stil, Schema auf der Projektkarte).
+Das Intro zeigt das Tafelbild mit einem Schulbeispiel (Klasse/Schueler) statt Ermittler/Fall, damit es die Lösungen von
+K1-E1-01/03 nicht vorwegnimmt.
 
 ### Typische Schwierigkeiten · Differenzierung · Vorbereitung
 **Typische Schwierigkeiten**

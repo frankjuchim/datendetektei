@@ -32,7 +32,8 @@ dem Modellierungs-Kern `src/er`).
 | Feld | Pflicht | Bedeutung |
 |---|---|---|
 | `version` | ja | immer `2` |
-| `welt` | ja | Aktennummer 1–7 (9 nur in der Test-Beispielakte); jede Nummer nur in einer Datei |
+| `welt` | ja | Aktennummer 1–7 (8 = Kür mit `kuer: true`, 9 nur in der Test-Beispielakte); jede Nummer nur in einer Datei |
+| `kuer` | nein | `true` nur für die Kür K1 (`seed/akten/kuer.json`, `welt: 8`), siehe 1.1 |
 | `titel` | ja | Name der Akte („Das Fundbüro“) |
 | `farbe` | empfohlen | Aktenfarbe `#RRGGBB` (fehlt sie: Standardfarbe der Akte) |
 | `levels` | ja | Ermittlungen der Akte (Reihenfolge = Reihenfolge in der Oberfläche) |
@@ -46,6 +47,18 @@ geladene Fassung bleibt aktiv. Einzelne fehlerhafte Aufgaben werden ausgelassen 
 geladen. Alles wird protokolliert (Seed-Bericht im Superadmin-Bereich).
 
 Jede Datei gehört genau einem Bearbeiter bzw. Agenten (`akte1.json` …), damit parallel geschrieben werden kann.
+
+### 1.1 Kür K1 (`seed/akten/kuer.json`, Phase 6)
+
+Die Kür „Eigene Datenbank bauen“ (Spec §3.3, DS_PLANUNG K1) ist eine eigene Welt **8** mit `"kuer": true`:
+
+- ids `K1-E<k>` (Ermittlung) und `K1-E<k>-<nn>` (Aufgaben); kein Verhör (`boss` fehlt).
+- Nur eA: Ermittlungen und Aufgaben mit `niveau: "eA"` – im gA-Pfad ist die Kür ausgeblendet (Spec §3.4, §18).
+- **Ohne Rangwirkung:** Kür-Punkte zählen zu den Gesamtpunkten, aber nicht zum Rang (Anteil an den Punkten der
+  freigeschalteten Akten), nicht zum Abzeichen „Akte geschlossen“, nicht zu den Welten der Verbund-Kursübersicht und
+  nicht zum Manifest-`umfang`; das Manifest nennt weiter die sieben Akten (`welten`). Die Lehrkraft schaltet die Kür wie
+  eine Akte frei (Einstellung `akten` enthält dann `8`); auf dem Stadtplan steht sie als eigener Abschnitt unter dem Plan.
+- Alles sichtbar markiert „KÜR – nicht im Abitur“; `sql`-Aufgaben sind Schreib-Aufgaben (6.6.1).
 
 ## 2. Ermittlung (Level)
 
@@ -443,6 +456,59 @@ in der Sandbox, Vergleich als Multimenge (Zahlen auf 1e-6, Text getrimmt, NULL e
 der die Aufgabe als `{ datenbank, varianten, sortierung, aliasPflicht, abimodus, loesung: { sql } }` erhält.
 Leer: nur Leerraum. Max. 4 000 Zeichen. Rückmeldung `{ diagnose, zeilen }` (Anzahl der Zeilen des **Schüler**ergebnisses).
 
+### 6.6.1 `sql` mit `schreiben: true` – Kür-Sandbox (nur Kür K1)
+
+```json
+"interaktion": { "kind": "sql", "schreiben": true, "abimodus": "aus",
+                 "start": { "titel": "Detektei-light (Ermittler)", "skript": "CREATE TABLE Ermittler (…);\nINSERT INTO …" } },
+"loesung": {
+  "sql": "CREATE TABLE Fall (…);\nINSERT INTO Fall VALUES (10, 'Das Phantom', 1);",
+  "pruefung": [
+    { "text": "Die Tabelle Fall gibt es mit FallNr als Primärschlüssel.",
+      "sql": "SELECT SUM(pk > 0) = 1 AND SUM(pk > 0 AND lower(name) = 'fallnr') = 1 FROM pragma_table_info('Fall')" },
+    { "art": "skript", "text": "Du verwendest LEFT JOIN … ON.", "muster": "\\bLEFT\\s+JOIN\\b[\\s\\S]*\\bON\\b" },
+    { "art": "ergebnis", "text": "Dein letztes SELECT liefert genau die Personen ohne Fall." }
+  ]
+}
+```
+
+Die Schülerin schreibt ein **Skript** (mehrere Anweisungen, getrennt durch `;`). „Ausführen“ und „Prüfen“ laufen
+immer auf dem Server in der Sandbox (Kindprozess, `src/sql/sandbox.js` `fuehreSkriptAus`): je Anfrage eine **frische
+In-Memory-DB** – leer, eine Kopie einer öffentlichen Übungs-DB (`start.datenbank`) oder aus dem Startskript
+(`start.skript`) –, `PRAGMA foreign_keys = ON`, danach das Skript. Nichts bleibt gespeichert; das Skript liegt nur im
+`localStorage` des Geräts. Ausführen: `POST /api/kurse/:kurs/aufgaben/:id/skript { skript }` (Protokoll je Anweisung,
+Ergebnis des letzten `SELECT`, Schema; leeres Skript = nur das Startschema).
+
+| Feld | Pflicht | Bedeutung |
+|---|---|---|
+| `schreiben` | ja | `true` – nur in der Kür-Akte (und der Test-Beispielakte) |
+| `abimodus` | ja | immer `"aus"` (keine Abitur-Regeln; die Konsole zeigt das Band „KÜR – nicht im Abitur“ mit dem Hinweis auf `FROM … WHERE`) |
+| `start` | nein | `{ titel }` (leere DB), `{ titel, datenbank }` (Kopie einer öffentlichen Übungs-DB) oder `{ titel, skript }` (Startskript, ≤ 20 000 Zeichen). An den Browser geht nur `titel` |
+| `datenbank`, `varianten`, `sortierung`, `aliasPflicht` | – | gibt es hier nicht |
+| `loesung.sql` | ja | Musterskript (≤ 10 000 Zeichen, nur erlaubte Anweisungen) |
+| `loesung.pruefung` | ja | 1–30 Prüfpunkte (Tabelle unten); `text` ist die Rückmeldung an die Schülerin – ohne Lösungsdaten formulieren |
+
+| `art` | Felder | erfüllt, wenn … |
+|---|---|---|
+| `abfrage` (Standard) | `sql` | die Prüfabfrage auf der DB nach dem Skript genau einen wahren Wert liefert (eine Zeile, eine Spalte, ≠ 0/NULL/'') – z. B. über `sqlite_master`, `pragma_table_info('T')`, `pragma_foreign_key_list('T')`, Zählabfragen |
+| `gleich` | `sql` | die Prüfabfrage dasselbe Ergebnis (Multimenge) liefert wie auf der DB nach dem Musterskript |
+| `daten` | `min` | jede eigene (nicht vom Start mitgebrachte) Tabelle mindestens `min` Datensätze hat |
+| `ergebnis` | – | das letzte `SELECT` des Skripts dasselbe Ergebnis liefert wie das letzte `SELECT` des Musterskripts (Multimenge, Spaltenanzahl und -reihenfolge zählen, Spaltennamen nicht) |
+| `zeilen` | `min` | das letzte `SELECT` mindestens `min` Zeilen liefert |
+| `skript` | `muster` | der reguläre Ausdruck (ohne Groß/Klein) auf das Skript ohne Texte und Kommentare passt |
+
+Prüfabfragen stammen aus dem Inhalt (dürfen also `pragma_…` nutzen) und laufen nur lesend (`query_only`). Richtig ⇔ das
+Skript läuft ohne Fehler und alle Prüfpunkte sind erfüllt. Rückmeldung `{ diagnose, pruefpunkte: [{ text, ok }] }`;
+bricht das Skript ab, `pruefpunkte: null` und eine Diagnose „Anweisung n (Zeile z): …“ (deutsche Texte aus
+`src/sql/fehlertexte_schreiben.js`, z. B. „Fremdschlüssel verletzt …“). Schreib-Skripte landen nie in den
+Fehlabfragen. Max. 10 000 Zeichen.
+
+**Sandbox-Grenzen** (je Anfrage): Zeitlimit 1,5 s für Startskript + Skript + Prüfabfragen (danach SIGKILL), höchstens
+200 Anweisungen, 20 eigene Tabellen, 500 Datensätze je Tabelle (Starttabellen: mindestens ihr Startbestand), 1 MB
+zusätzlicher Speicher (`max_page_count`), 5 000 Ergebniszeilen (angezeigt 300). Verboten (außerhalb von Texten und
+Kommentaren): `ATTACH`, `DETACH`, `PRAGMA` (auch `pragma_…`), `VACUUM`, `load_extension`, `TEMP`/`TEMPORARY`,
+`TRIGGER`, `VIEW`, `VIRTUAL`, Punkt-Befehle – Begründung in `src/sql/skript.js`.
+
 ### 6.7 `zeilen` – Zeilen einer `dbtabelle` antippen
 
 ```json
@@ -693,6 +759,14 @@ erfüllbar und Summe = `anzahl`, Musterantwort wird vom Prüfer als richtig erka
 - `zeitlupe`, `spurenbrett`, `sortierfaecher` (5.6): öffentliche Akten-DB, nicht im Verhör, Abfrage EH-konform und über
   `visual.js` darstellbar (`start` kommt vor, Sortierfächer mit Gruppen, `zeilen` vorhanden, ≤ 2 000 Fäden), Block-SQL ≠
   Musterlösung einer `sql`-Aufgabe derselben Akte.
+- `sql` mit `schreiben: true` (6.6.1): nur in der Kür (`kuer: true`) bzw. der Test-Beispielakte, `abimodus: "aus"`,
+  kein `datenbank`/`varianten`/`sortierung`/`aliasPflicht`; `start` mit `titel` und höchstens einem von `datenbank`
+  (öffentliche Übungs-DB) oder `skript`; Musterskript zulässig (verbotene Wörter, Länge, Anweisungen), läuft samt Start
+  in der Sandbox und erfüllt **jeden** Prüfpunkt (Fehler nennt den Prüfpunkt); Prüfpunkte mit bekannter `art` und
+  passenden Feldern, `muster` als regulärer Ausdruck gültig; **Gegenprobe:** mit dem Skript `SELECT 1;` darf nicht
+  jeder Prüfpunkt erfüllt sein.
+- Kür (`kuer: true`): `welt` 8 (und `welt` 8 nur mit `kuer`), kein Verhör, ids `K1-E<k>` / `K1-E<k>-<nn>`, alles
+  `niveau: "eA"`.
 - `lines.block` zeigt auf `sql`/`code`, `zeilen.block` auf `dbtabelle`; Indizes im Bereich.
 - Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block und keine Verstehenshilfen;
   Mix je Stufe samt `maxJeKind` erfüllbar (maximaler Fluss Stufe → Art), sonst Fehler; für gA-Kurse (nur `alle`) Hinweis.

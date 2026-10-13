@@ -387,6 +387,34 @@ function waehleAkte(nr, vonPlan = false) {
   if (vonPlan && window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) detail.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
+/* ---------- Kür (Phase 6 Task 7): eigener Abschnitt unter dem Plan, nur eA, ohne Rangwirkung ---------- */
+
+function kuerKarte() {
+  const k = stand.akten.find((a) => a.kuer);
+  if (!k) return null; // gA-Kurse sehen die Kür nicht (Spec §3.4)
+  const box = el('section', 'aktendeckel kuer-karte');
+  box.id = 'kuer-karte';
+  box.setAttribute('aria-labelledby', 'kuer-titel');
+  box.appendChild(el('span', 'reiter', 'Kür K1'));
+  const innen = el('div', 'aktendeckel-innen');
+  const t = el('h2', null, k.titel);
+  t.id = 'kuer-titel';
+  innen.appendChild(h('div', 'kuer-kopf', t, R.stempel('KÜR – nicht im Abitur', 'kuer', { groesse: 'klein' })));
+  innen.appendChild(el('p', 'hinweis-klein', 'Detektei-Werkstatt: Tabellen selbst anlegen, Datensätze einfügen, Fremdschlüssel erleben – mit eigener Sandbox. Zählt nicht für deinen Rang.'));
+  if (k.frei) {
+    const e = k.ermittlungen[0];
+    if (e) innen.appendChild(el('p', 'etikett zahlen', `${e.geloest} von ${e.anzahl} erledigt · ${k.punkte} Punkte`));
+    const reihe = el('div', 'knopf-reihe');
+    if (e) reihe.appendChild(A.linkKnopf(e.geloest === 0 ? 'Kür beginnen' : 'Weiter in der Kür', `/ermittlung/${e.id}`, 'knopf'));
+    reihe.appendChild(A.linkKnopf('Kür öffnen', `/akte/${k.nr}`, 'knopf'));
+    innen.appendChild(reihe);
+  } else {
+    innen.appendChild(el('p', 'hinweis-klein', 'Deine Lehrkraft schaltet die Kür frei, wenn Zeit dafür ist.'));
+  }
+  box.appendChild(innen);
+  return box;
+}
+
 /* ---------- Aktenliste (Handy) ---------- */
 
 function aktenListe() {
@@ -455,7 +483,7 @@ async function start() {
   detail.setAttribute('aria-live', 'polite');
   detail.append(el('span', 'reiter rot', 'Akte'), el('div', 'aktendeckel-innen'));
 
-  const planSpalte = h('div', 'plan-spalte', karte, aktenListe(), pinnwand(), h('div', 'bilanz-raster', fallenKarte(), abzeichenKarte()));
+  const planSpalte = h('div', 'plan-spalte', ...[karte, aktenListe(), kuerKarte(), pinnwand(), h('div', 'bilanz-raster', fallenKarte(), abzeichenKarte())].filter(Boolean));
   const seitenspalte = h('div', 'seitenspalte', rangKarte(), detail, steckbrief());
   const wechsel = A.kursWechselLink(kontext);
   seite.replaceChildren(...[A.vorschauHinweis(kontext), wechsel, h('div', 'stadtplan-raster', planSpalte, seitenspalte)].filter(Boolean));

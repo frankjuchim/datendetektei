@@ -6,6 +6,8 @@
 // Punkte: Lab-Punkte (fortschritt der Ermittlungs-Aufgaben) + bester beendeter Verhör-Versuch je Akte + Trainingsplatz.
 // Rang: Anteil der Lab-Punkte an den Level-Punkten der FREIGESCHALTETEN Akten, nur sichtbare Aufgaben (Niveau gA blendet
 // eA-Ermittlungen und eA-Aufgaben aus). Cold Cases zählen weder für Punkte noch für Rang, Freischaltung oder Abzeichen.
+// Kür (Akte mit kuer: true, Phase 6 Task 7): nur eA, Punkte zählen zu den Gesamtpunkten, aber nicht zum Rang, nicht zu
+// den Verbund-Welten und nicht zum Abzeichen „Akte geschlossen“.
 
 const {
   AKTEN,
@@ -70,6 +72,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
 
   /** Ist die Akte im Kurs-Niveau vorhanden? (Akte 5 nur eA; Akten, deren Ermittlungen alle eA sind) */
   function akteSichtbar(akte, niveau) {
+    if (akte.kuer && niveau === NIVEAU_GA) return false; // Kür K1 entfällt im gA-Pfad (Spec §3.4, §18)
     const plan = AKTEN.find((a) => a.nr === akte.nr);
     if (plan && !plan.niveaus.includes(niveau)) return false;
     if (akte.levels.length && !akte.levels.some((l) => niveauSichtbar(niveau, l.niveau))) return false;
@@ -148,7 +151,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
         for (const id of sl.aufgaben) ist += fm.has(id) ? fm.get(id).punkte : 0;
       }
       akten.set(akte.nr, { ist, max, anteil: max ? Math.min(1, ist / max) : 0 });
-      if (istFreigeschaltet(einst, akte.nr)) {
+      if (istFreigeschaltet(einst, akte.nr) && !akte.kuer) {
         rangIst += ist;
         rangMax += max;
       }
@@ -198,6 +201,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
         continue;
       }
       for (const akte of inhalte.akten()) {
+        if (akte.kuer) continue;
         if (d.id === 'akte-geschlossen' && !akte.levels.length) continue;
         if (d.id === 'beweisstueck' && !(akte.boss && akte.boss.pool.length)) continue;
         liste.push({ id: `${d.id}-${akte.nr}`, name: d.name, beschreibung: d.beschreibung, akte: akte.nr, akteTitel: akte.titel });
@@ -342,6 +346,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
         nr: akte.nr,
         titel: akte.titel,
         farbe: akte.farbe,
+        kuer: !!akte.kuer,
         freigeschaltet,
         frei,
         punkte: ak.ist,
@@ -379,7 +384,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
       for (const [nr, a] of kz.akten) summen.set(nr, (summen.get(nr) || 0) + a.anteil);
     }
     const titel = new Map(AKTEN.map((a) => [a.nr, a.titel]));
-    for (const a of inhalte.akten()) if (!titel.has(a.nr)) titel.set(a.nr, a.titel);
+    for (const a of inhalte.akten()) if (!titel.has(a.nr) && !a.kuer) titel.set(a.nr, a.titel);
     const welten = [...titel.entries()]
       .sort((x, y) => x[0] - y[0])
       .map(([nr, t]) => ({ nr, titel: t, anteil: subs.length ? (summen.get(nr) || 0) / subs.length : 0 }));

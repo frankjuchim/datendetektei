@@ -115,7 +115,7 @@
       const li = DD.el('li');
       const label = DD.el('label', 'schalter-zeile');
       const text = DD.el('span', 'schalter-text');
-      text.appendChild(DD.el('span', 'schalter-name', 'Akte ' + a.nr + ' · ' + a.titel));
+      text.appendChild(DD.el('span', 'schalter-name', a.kuer ? a.titel + ' (nicht im Abitur)' : 'Akte ' + a.nr + ' · ' + a.titel));
       if (nurEa) text.appendChild(DD.el('span', 'niveau ea', 'eA'));
       const hinweis = nurEa ? DD.el('span', 'schalter-hinweis', 'bei gA ausgeblendet') : null;
       if (hinweis) text.appendChild(hinweis);

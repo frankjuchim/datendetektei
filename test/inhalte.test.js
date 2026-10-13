@@ -50,9 +50,9 @@ test('Beispielakte wird geladen: Bericht, Tabellen, Zugriffsfunktionen', (t) => 
   assert.deepEqual(inhalte.bericht(), bericht, 'Seed-Bericht im Speicher');
 
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM akten WHERE nr = 9 AND aktiv = 1'), 1);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 26);
   assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'lab'"), 20);
-  assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'cc'"), 1);
+  assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'cc'"), 2);
   assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'verhoer'"), 4);
   assert.match(db.prepare("SELECT fingerabdruck FROM aufgaben WHERE id = 'A9-E1-02'").get().fingerabdruck, /^[0-9a-f]{64}$/);
 
@@ -112,7 +112,7 @@ test('Fingerabdruck: unveränderte Datei wird übersprungen (auch bei anderer Sc
   schreibe(dir, 'akte9.json', JSON.stringify(umgestellt));
   const b = inhalte.laden({ verzeichnis: dir });
   assert.equal(b.dateien[0].status, 'unveraendert');
-  assert.equal(b.dateien[0].aufgaben, 25);
+  assert.equal(b.dateien[0].aufgaben, 26);
   assert.deepEqual(db.prepare('SELECT id, geaendert FROM aufgaben ORDER BY id').all(), vorher);
 });
 
@@ -132,7 +132,7 @@ test('Upsert nach id: geänderte Aufgabe wird aktualisiert, Lernstand bleibt', (
   assert.equal(inhalte.aufgabe('A9-E1-01').titel, 'Neuer Titel');
   assert.notEqual(db.prepare("SELECT fingerabdruck FROM aufgaben WHERE id = 'A9-E1-01'").get().fingerabdruck, fpVorher);
   assert.equal(db.prepare("SELECT fingerabdruck FROM aufgaben WHERE id = 'A9-E1-02'").get().fingerabdruck, fp2Vorher);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 25, 'keine Dubletten');
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 26, 'keine Dubletten');
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM fortschritt'), 1, 'Lernstand bleibt');
 });
 
@@ -155,7 +155,7 @@ test('fehlende Aufgaben werden deaktiviert, nicht gelöscht – und bei Rückkeh
 
   schreibe(dir, 'akte9.json', beispiel());
   inhalte.laden({ verzeichnis: dir });
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 26);
   assert.ok(inhalte.aufgabe('A9-E1-12'));
 });
 
@@ -174,7 +174,7 @@ test('kaputte Datei (kein JSON) wird übersprungen; zuletzt geladene Fassung ble
   const b = inhalte.laden({ verzeichnis: dir });
   assert.equal(b.dateien[0].status, 'uebersprungen');
   assert.ok(b.dateien[0].fehler.length > 0);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 26);
   assert.ok(inhalte.akte(9));
   assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 });
@@ -195,7 +195,7 @@ test('Datei mit Fehler auf Dateiebene wird übersprungen (levels fehlt, falsche 
     const b = inhalte.laden({ verzeichnis: dir });
     assert.equal(b.dateien[0].status, 'uebersprungen', kaputt.toString());
     assert.equal(inhalte.akte(9).titel, 'Probeakte (nur Tests)');
-    assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
+    assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 26);
   }
   // Wurzel ist kein Objekt
   schreibe(dir, 'akte9.json', '[1, 2]');
@@ -259,7 +259,7 @@ test('Akte, deren Datei nicht mehr geladen wird, wird mit ihren Aufgaben deaktiv
   assert.deepEqual(b.entfernt, [9]);
   assert.equal(inhalte.akte(9), null);
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 0);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 25, 'nicht gelöscht');
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 26, 'nicht gelöscht');
   assert.deepEqual(inhalte.umfang(), { ...STANDARD_UMFANG });
 });
 

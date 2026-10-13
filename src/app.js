@@ -23,6 +23,7 @@ const { modellWerkzeugRouten } = require('./routes/modellwerkzeuge');
 const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
+const { kuerRouten } = require('./routes/kuer');
 const { lehrkraftRouten } = require('./routes/lehrkraft');
 const { lehrkraftAuswertungRouten } = require('./routes/lehrkraft_auswertung');
 const { gastRouten } = require('./routes/gast');
@@ -115,6 +116,8 @@ function erzeugeApp(
   app.use(modellWerkzeugRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
   if (lernen) app.use(schuelerRouten({ lernen, konfig }));
+  // Kür K1: Ausführen in der Schreib-Konsole (Sandbox, frische In-Memory-DB je Anfrage, nichts gespeichert).
+  if (lernen && sandbox && typeof sandbox.fuehreSkriptAus === 'function') app.use(kuerRouten({ lernen, sandbox, konfig }));
   // Kurs-Einstellungen für Lehrkräfte (Akten, Niveau, Verhör); Kennzahlen nur mit geladenen Inhalten.
   app.use(lehrkraftRouten({ db, stand }));
   // Auswertung, CSV, Vorschau, Beamer-Board-API und Superadmin-Funktionen (Phase 6 Task 3).

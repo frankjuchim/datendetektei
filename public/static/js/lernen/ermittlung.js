@@ -12,10 +12,12 @@ const [A, R, I, K, T] = await Promise.all([
   import('./konsole_lern.js' + V),
   import('./pinnwand_teile.js' + V)
 ]);
+/** Kür K1: Schreib-Konsole erst laden, wenn eine Aufgabe sie braucht. */
+let schreibModul = null;
 const { el, h, knopf } = R;
 
 const seite = document.getElementById('seite');
-const ermittlungId = (/^\/ermittlung\/(A\d{1,2}-E\d{1,2})$/.exec(window.location.pathname) || [])[1];
+const ermittlungId = (/^\/ermittlung\/((?:A\d{1,2}|K1)-E\d{1,2})$/.exec(window.location.pathname) || [])[1];
 const ERLEDIGT = new Set(['geloest', 'nachgeloest', 'bearbeitet']);
 const STATUS_TEXT = { offen: 'offen', geloest: 'gelöst', nachgeloest: 'nachgelöst', angesehen: 'Lösung angesehen', bearbeitet: 'bearbeitet' };
 
@@ -65,7 +67,7 @@ function zeichneKopf() {
   const e = daten.ermittlung;
   const kopf = el('header', 'ermittlung-kopf');
   const pfad = el('p', 'etikett pfad');
-  const akteLink = el('a', 'etikett-link', `Akte ${daten.akte.nr} · ${daten.akte.titel}`);
+  const akteLink = el('a', 'etikett-link', daten.akte.kuer ? daten.akte.titel : `Akte ${daten.akte.nr} · ${daten.akte.titel}`);
   akteLink.href = `/akte/${daten.akte.nr}`;
   pfad.append(akteLink, document.createTextNode(` › Ermittlung ${e.nr || ''}`));
   const titel = h('div', 'seiten-kopf', pfad, el('h1', null, e.titel));
@@ -187,6 +189,7 @@ function hatKernTeile(a) {
 
 function sqlTeilFabrik(antwort) {
   return (ia, kontextTeil, nr) => {
+    if (ia.schreiben === true && schreibModul) return schreibTeil(antwort, ia, kontextTeil, nr);
     const konsole = K.erzeugeLernKonsole({
       datenbank: ia.datenbank,
       dbTitel: R.DATENBANK_TITEL[ia.datenbank] || ia.datenbank,
@@ -212,6 +215,31 @@ function sqlTeilFabrik(antwort) {
   };
 }
 
+/** Kür K1: Teil mit Schreib-Konsole (Skript statt Abfrage, Prüfpunkte statt Zeilenzahl). */
+function schreibTeil(antwort, ia, kontextTeil, nr) {
+  const konsole = schreibModul.erzeugeSchreibKonsole({
+    kursId: kurs.id,
+    aufgabeId: antwort.aufgabe.id,
+    startTitel: ia.start && ia.start.titel ? ia.start.titel : 'leere Datenbank',
+    entwurf: `dd-entwurf:aufgabe:${antwort.aufgabe.id}:${nr}`,
+    aktionen: { pruefen: () => pruefen(), tipp: () => tipp(), loesung: () => loesungFragen() },
+    beiAenderung: () => kontextTeil.geaendert()
+  });
+  return {
+    kind: 'sql',
+    konsole,
+    ui: el('p', 'teil-hinweis', 'Schreib dein Skript in die Kür-Sandbox.'),
+    antwort: () => konsole.wert(),
+    leer: () => konsole.wert().trim() === '',
+    setze: (s) => typeof s === 'string' && konsole.setzeWert(s),
+    feedback(r) {
+      if (r && (Array.isArray(r.pruefpunkte) || Array.isArray(r.diagnose))) konsole.zeigePruefung(r);
+    },
+    loesung() {},
+    sperren() {}
+  };
+}
+
 async function oeffneAufgabe(id, verlauf = false) {
   if (verlauf) {
     const url = new URL(window.location.href);
@@ -228,6 +256,8 @@ async function oeffneAufgabe(id, verlauf = false) {
     ziel.removeAttribute('aria-busy');
     return;
   }
+  const braucht = [].concat(antwort.aufgabe.interaktion).some((ia) => ia && ia.kind === 'sql' && ia.schreiben === true);
+  if (braucht && !schreibModul) schreibModul = await import('./konsole_schreiben.js' + V);
   baueAufgabe(antwort);
   ziel.removeAttribute('aria-busy');
 }
@@ -460,6 +490,9 @@ function teilErgebnisText(r) {
     if (t.zeilenzahl === 'zu_wenige') saetze.push('Deine Ergebnistabelle hat zu wenige Zeilen.');
     if (t.nurReihenfolge) saetze.push('Alle Zeilen stimmen, nur die Reihenfolge nicht. Prüf das ORDER BY.');
     if (Number.isInteger(t.zeilen) && Array.isArray(t.diagnose)) saetze.push(`Deine Abfrage liefert ${A.mehrzahl(t.zeilen, 'Zeile', 'Zeilen')}.`);
+    // Kür K1: Prüfpunkte der Schreib-Aufgabe (die Liste steht in der Sandbox)
+    if (Array.isArray(t.pruefpunkte)) saetze.push(`${t.pruefpunkte.filter((p) => p && p.ok).length} von ${t.pruefpunkte.length} Prüfpunkten erfüllt – die Liste steht unter der Kür-Sandbox.`);
+    else if (t.pruefpunkte === null && Array.isArray(t.diagnose) && t.diagnose.length) saetze.push('Dein Skript bricht ab – die Meldung steht unter der Kür-Sandbox.');
     // Modellierung (Phase 5): Bauplan-Tisch (Kriterienliste) und Schema-Werkbank (Teilfeedback je Relation)
     if (Array.isArray(t.kriterien) && Number.isInteger(t.gesamt)) saetze.push(`${t.richtig} von ${t.gesamt} Kriterien erfüllt – die Liste am Bauplan zeigt, was noch fehlt.`);
     if (Array.isArray(t.relationen)) {
@@ -543,7 +576,7 @@ function weiterKnoepfe() {
       l.id = 'k-weiter';
       reihe.appendChild(l);
     }
-    reihe.appendChild(A.linkKnopf(`Zur Akte ${daten.akte.nr}`, `/akte/${daten.akte.nr}`, 'knopf'));
+    reihe.appendChild(A.linkKnopf(daten.akte.kuer ? 'Zur Kür' : `Zur Akte ${daten.akte.nr}`, `/akte/${daten.akte.nr}`, 'knopf'));
     if (daten.ermittlung.coldCase && !istCc) {
       const cc = knopf('Cold Case ansehen', 'knopf leise');
       cc.addEventListener('click', () => oeffneAufgabe(daten.ermittlung.coldCase.id, true));
@@ -732,7 +765,7 @@ async function start() {
   const nav = el('nav', 'ermittlung-nav');
   nav.setAttribute('aria-label', 'Ermittlungen');
   if (daten.vorher) nav.appendChild(A.linkKnopf(`‹ ${daten.vorher.titel}`, `/ermittlung/${daten.vorher.id}`, 'knopf leise'));
-  nav.appendChild(A.linkKnopf(`Akte ${daten.akte.nr}: ${daten.akte.titel}`, `/akte/${daten.akte.nr}`, 'knopf leise'));
+  nav.appendChild(A.linkKnopf(daten.akte.kuer ? daten.akte.titel : `Akte ${daten.akte.nr}: ${daten.akte.titel}`, `/akte/${daten.akte.nr}`, 'knopf leise'));
   if (daten.nachher) nav.appendChild(A.linkKnopf(`${daten.nachher.titel} ›`, `/ermittlung/${daten.nachher.id}`, 'knopf leise'));
   teile.push(nav);
   seite.replaceChildren(...teile.filter(Boolean));
