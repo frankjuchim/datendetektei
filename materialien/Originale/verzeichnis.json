@@ -126,6 +126,130 @@
    "art": "warmup",
    "fassung": "schueler",
    "niveau": "beide"
+  },
+  {
+   "datei": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB1_Kassensturz.docx",
+   "titel": "AB 3.1 · Kassensturz",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB1_Kassensturz_LSG.docx",
+   "titel": "AB 3.1 · Kassensturz – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB2_Die_Statistik_luegt_nicht.docx",
+   "titel": "AB 3.2 · Die Statistik lügt nicht",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB2_Die_Statistik_luegt_nicht_LSG.docx",
+   "titel": "AB 3.2 · Die Statistik lügt nicht – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
+   "titel": "Die Stadtfest-Kasse",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "praesentation",
+   "fassung": "schueler"
+  },
+  {
+   "datei": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten.docx",
+   "titel": "Unplugged: Menschliches GROUP BY (Bon-Karten, Fächerschilder)",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten_LSG.docx",
+   "titel": "Unplugged: Menschliches GROUP BY (Bon-Karten, Fächerschilder) – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten.docx",
+   "titel": "Unplugged: Menschliche Zeitlupe (Klausel- und Bedingungskarten)",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten_LSG.docx",
+   "titel": "Unplugged: Menschliche Zeitlupe (Klausel- und Bedingungskarten) – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "Akte3_Stadtfest/4_Lehrerhinweise/DD_A3_Lehrerhinweise.docx",
+   "titel": "Lehrerhinweise Akte 3",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "Warm-up/DD_Warm-up-Karten_A3.docx",
+   "titel": "Warm-up-Karten Akte 3",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "warmup",
+   "fassung": "schueler"
   }
  ]
 }

@@ -26,6 +26,22 @@
     1,
     2
    ]
+  },
+  {
+   "datei": "DD_A3-Praesentation_Stadtfest.pdf",
+   "titel": "Die Stadtfest-Kasse (mit Notizen)",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "praesentation",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "DD_A3-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 3",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft"
   }
  ]
 }

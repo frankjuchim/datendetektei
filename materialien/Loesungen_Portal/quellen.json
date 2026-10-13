@@ -15,6 +15,31 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A1.docx",
    "sha256": "5c76d35060b26a39d27678fa3277d4d8109ed4f7d9510bb705f045297cc9cda1",
    "verfahren": "pdf"
+  },
+  "DD_A3-AB1_Kassensturz_Loesung.pdf": {
+   "quelle": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB1_Kassensturz_LSG.docx",
+   "sha256": "e68a9a4b4e88edb9185cdd2777685a260845503ba06570257aa36229c3a54433",
+   "verfahren": "pdf"
+  },
+  "DD_A3-AB2_Die_Statistik_luegt_nicht_Loesung.pdf": {
+   "quelle": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB2_Die_Statistik_luegt_nicht_LSG.docx",
+   "sha256": "47ebbb57b2da52e4f44a2118d59c71e18466d3fddbe78deaf244e245f05b1015",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Unplugged_GROUP_BY_Karten_Loesung.pdf": {
+   "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten_LSG.docx",
+   "sha256": "7cac0fd6e45e0f7b957f12c11dcc443ad7b1ea19d1d31d39a7604bbd5088c694",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Unplugged_Zeitlupe_Karten_Loesung.pdf": {
+   "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten_LSG.docx",
+   "sha256": "c0bf8d73e6c62f4036bb4dd4a5e721989475781905872ca6dc47b977984ca929",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Warm-up-Karten_Loesungen.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
+   "sha256": "498e6c384d532b7c9c46e0fefc84940f88af31777df7e7aae432e13704a6e191",
+   "verfahren": "pdf"
   }
  }
 }

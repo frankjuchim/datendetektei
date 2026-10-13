@@ -35,6 +35,64 @@
    "art": "warmup",
    "fassung": "loesung",
    "niveau": "beide"
+  },
+  {
+   "datei": "DD_A3-AB1_Kassensturz_Loesung.pdf",
+   "titel": "AB 3.1 · Kassensturz – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "DD_A3-AB2_Die_Statistik_luegt_nicht_Loesung.pdf",
+   "titel": "AB 3.2 · Die Statistik lügt nicht – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "DD_A3-Unplugged_GROUP_BY_Karten_Loesung.pdf",
+   "titel": "Unplugged: Menschliches GROUP BY (Bon-Karten, Fächerschilder) – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "DD_A3-Unplugged_Zeitlupe_Karten_Loesung.pdf",
+   "titel": "Unplugged: Menschliche Zeitlupe (Klausel- und Bedingungskarten) – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "DD_A3-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 3 – mit Lösungen",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "warmup",
+   "fassung": "loesung"
   }
  ]
 }

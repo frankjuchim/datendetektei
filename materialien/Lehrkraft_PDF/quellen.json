@@ -10,6 +10,16 @@
    "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
    "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
    "verfahren": "notizen"
+  },
+  "DD_A3-Lehrerhinweise.pdf": {
+   "quelle": "Akte3_Stadtfest/4_Lehrerhinweise/DD_A3_Lehrerhinweise.docx",
+   "sha256": "3deaa0119f35a53f9843a349dd356f7f44561ad3c1d5b6d8c938b62ba043668e",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Praesentation_Stadtfest.pdf": {
+   "quelle": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
+   "sha256": "dbd824b248f6793d49bfe5020dd44f43c44865d4908fa8792b85f0c83d15b2f2",
+   "verfahren": "notizen"
   }
  }
 }

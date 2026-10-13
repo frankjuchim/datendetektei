@@ -35,6 +35,36 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A1.docx",
    "sha256": "5c76d35060b26a39d27678fa3277d4d8109ed4f7d9510bb705f045297cc9cda1",
    "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A3-AB1_Kassensturz.pdf": {
+   "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB1_Kassensturz.docx",
+   "sha256": "70ce042fb065ab66ae4f42cf11134e4b1261baf0b09fe679494e45a6194d87b4",
+   "verfahren": "pdf"
+  },
+  "DD_A3-AB2_Die_Statistik_luegt_nicht.pdf": {
+   "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB2_Die_Statistik_luegt_nicht.docx",
+   "sha256": "0d301bd932c755fc3d6eba8bd6c8146e0d659af88ac78b67970a3b8c6992a48c",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Praesentation_Stadtfest_Handout.pdf": {
+   "quelle": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
+   "sha256": "dbd824b248f6793d49bfe5020dd44f43c44865d4908fa8792b85f0c83d15b2f2",
+   "verfahren": "handout"
+  },
+  "DD_A3-Unplugged_GROUP_BY_Karten.pdf": {
+   "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten.docx",
+   "sha256": "5fbac4401cfa177eae322d008f4d16ca2a31cc151dd0b660964023f3a8548fcc",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Unplugged_Zeitlupe_Karten.pdf": {
+   "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten.docx",
+   "sha256": "e10eba08c170e9b201397fceed1dd507b0a9ba44ffc5bf0afa5e1290ba2022b6",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
+   "sha256": "498e6c384d532b7c9c46e0fefc84940f88af31777df7e7aae432e13704a6e191",
+   "verfahren": "ohne-loesungsteil"
   }
  }
 }

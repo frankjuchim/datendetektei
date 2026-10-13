@@ -117,7 +117,74 @@
    "akte": 3,
    "ordner": "Akte3_Stadtfest",
    "titel": "Akte 3 · Die Stadtfest-Kasse",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "3.1",
+     "ermittlung": "A3-E1",
+     "ds": [
+      5
+     ],
+     "niveau": "beide",
+     "titel": "Kassensturz",
+     "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB1_Kassensturz.docx",
+     "loesung": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB1_Kassensturz_LSG.docx",
+     "datei": "DD_A3-AB1_Kassensturz.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "3.2",
+     "ermittlung": "A3-E2",
+     "ds": [
+      6
+     ],
+     "niveau": "beide",
+     "titel": "Die Statistik lügt nicht",
+     "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB2_Die_Statistik_luegt_nicht.docx",
+     "loesung": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB2_Die_Statistik_luegt_nicht_LSG.docx",
+     "datei": "DD_A3-AB2_Die_Statistik_luegt_nicht.pdf"
+    },
+    {
+     "art": "praesentation",
+     "titel": "Die Stadtfest-Kasse",
+     "quelle": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
+     "datei": "DD_A3-Praesentation_Stadtfest.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A3-E1",
+     "ds": [
+      5
+     ],
+     "titel": "Unplugged: Menschliches GROUP BY (Bon-Karten, Fächerschilder)",
+     "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten.docx",
+     "loesung": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten_LSG.docx",
+     "datei": "DD_A3-Unplugged_GROUP_BY_Karten.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A3-E2",
+     "ds": [
+      6
+     ],
+     "titel": "Unplugged: Menschliche Zeitlupe (Klausel- und Bedingungskarten)",
+     "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten.docx",
+     "loesung": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten_LSG.docx",
+     "datei": "DD_A3-Unplugged_Zeitlupe_Karten.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "titel": "Lehrerhinweise Akte 3",
+     "quelle": "Akte3_Stadtfest/4_Lehrerhinweise/DD_A3_Lehrerhinweise.docx",
+     "datei": "DD_A3-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "titel": "Warm-up-Karten Akte 3",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
+     "datei": "DD_A3-Warm-up-Karten.pdf"
+    }
+   ]
   },
   {
    "gruppe": "A4",
