@@ -20,6 +20,20 @@ const F = require('../content/format');
 const M = require('../content/modellierung');
 const PL = require('../content/plaedoyer');
 const { STANDARD_UMFANG } = require('../kern/manifest');
+const { AKTEN } = require('../domain');
+
+/**
+ * Reine Zählung über geladene Akten: welten, level (Ermittlungen; Akte 7 „Generalprobe“ ist ein Level ohne
+ * Ermittlungen, Spec §10), aufgaben (Lab-Aufgaben der Ermittlungen, ohne Cold Cases), bosse (Akten mit Verhör-Pool).
+ */
+function umfangVon(akten) {
+  return {
+    welten: akten.length,
+    level: akten.reduce((s, a) => s + (a.levels.length || (a.nr === 7 ? 1 : 0)), 0),
+    aufgaben: akten.reduce((s, a) => s + a.levels.reduce((t, l) => t + l.aufgaben.length, 0), 0),
+    bosse: akten.filter((a) => a.boss && a.boss.pool.length > 0).length
+  };
+}
 
 const STANDARD_VERZEICHNIS = path.join(__dirname, '..', '..', 'seed', 'akten');
 /** Teil des Fingerabdrucks: ändert sich die Lade-Logik, wird jede Datei einmal neu eingespielt. */
@@ -478,17 +492,16 @@ function erzeugeInhalte(db, { log = () => {} } = {}) {
     };
   }
 
-  /** Manifest-umfang (Vertrag §7): ohne geladene Akten die Spec-Standardwerte (aufgaben 0). */
+  /**
+   * Manifest-umfang (Vertrag §7, Spec §10): gezählt werden nur die Akten des Plans (1–7) – Kür, Beispielakte und
+   * andere Dateien nicht; welten = Akten des Plans (wie die welten-Liste des Manifests). Ohne Plan-Akten die
+   * Spec-Standardwerte (aufgaben 0). Cold Cases und Verhör-Pools sind keine Lab-Aufgaben; der Live-Pool liegt nicht in
+   * seed/akten.
+   */
   function umfang() {
-    const akten = [...katalog.akten.values()];
-    if (!akten.length) return { ...STANDARD_UMFANG };
-    return {
-      welten: akten.length,
-      // Ermittlungen; Akte 7 (Generalprobe) ist ein Level ohne Ermittlungen (Spec §10)
-      level: akten.reduce((s, a) => s + (a.levels.length || (a.nr === 7 ? 1 : 0)), 0),
-      aufgaben: akten.reduce((s, a) => s + a.levels.reduce((t, l) => t + l.aufgaben.length, 0), 0),
-      bosse: akten.filter((a) => a.boss && a.boss.pool.length > 0).length
-    };
+    const plan = [...katalog.akten.values()].filter((a) => AKTEN.some((p) => p.nr === a.nr));
+    if (!plan.length) return { ...STANDARD_UMFANG };
+    return { ...umfangVon(plan), welten: AKTEN.length };
   }
 
   return {
@@ -516,5 +529,6 @@ module.exports = {
   oeffentlicherBlock,
   oeffentlicheInteraktion,
   STANDARD_VERZEICHNIS,
-  STUFEN_PUNKTE
+  STUFEN_PUNKTE,
+  umfangVon
 };

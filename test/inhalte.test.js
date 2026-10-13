@@ -8,7 +8,7 @@ const os = require('node:os');
 const path = require('node:path');
 const request = require('supertest');
 const { oeffneDb } = require('../src/db');
-const { ladeInhalte, erzeugeInhalte } = require('../src/services/inhalte');
+const { ladeInhalte, erzeugeInhalte, umfangVon } = require('../src/services/inhalte');
 const { erzeugeApp } = require('../src/app');
 const { STANDARD_UMFANG } = require('../src/kern/manifest');
 const { testKonfig } = require('./helpers');
@@ -88,7 +88,7 @@ test('Beispielakte wird geladen: Bericht, Tabellen, Zugriffsfunktionen', (t) => 
 
   assert.deepEqual(inhalte.verhoerPool(9), ['A9-V-01', 'A9-V-02', 'A9-V-03', 'A9-V-04']);
   assert.deepEqual(inhalte.verhoerPool(3), []);
-  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
+  assert.deepEqual(umfangVon(inhalte.akten()), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 });
 
 test('ladeInhalte(db, { dateien }) als Funktion; erzeugeInhalte liest den letzten Stand aus der DB', (t) => {
@@ -98,7 +98,7 @@ test('ladeInhalte(db, { dateien }) als Funktion; erzeugeInhalte liest den letzte
   assert.equal(bericht.dateien[0].status, 'geladen');
   const inhalte = erzeugeInhalte(db); // z. B. nach Neustart, bevor geladen wird
   assert.equal(inhalte.aufgabe('A9-E1-01').titel.length > 0, true);
-  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
+  assert.deepEqual(umfangVon(inhalte.akten()), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 });
 
 test('Fingerabdruck: unveränderte Datei wird übersprungen (auch bei anderer Schlüsselreihenfolge)', (t) => {
@@ -151,7 +151,7 @@ test('fehlende Aufgaben werden deaktiviert, nicht gelöscht – und bei Rückkeh
   assert.equal(inhalte.aufgabeOeffentlich('A9-E1-12'), null);
   assert.ok(!inhalte.ermittlung('A9-E1').aufgaben.includes('A9-E1-12'));
   assert.deepEqual(inhalte.verhoerPool(9), ['A9-V-01', 'A9-V-02', 'A9-V-03']);
-  assert.equal(inhalte.umfang().aufgaben, 19);
+  assert.equal(umfangVon(inhalte.akten()).aufgaben, 19);
 
   schreibe(dir, 'akte9.json', beispiel());
   inhalte.laden({ verzeichnis: dir });
@@ -176,7 +176,7 @@ test('kaputte Datei (kein JSON) wird übersprungen; zuletzt geladene Fassung ble
   assert.ok(b.dateien[0].fehler.length > 0);
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
   assert.ok(inhalte.akte(9));
-  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
+  assert.deepEqual(umfangVon(inhalte.akten()), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 });
 
 test('Datei mit Fehler auf Dateiebene wird übersprungen (levels fehlt, falsche version, welt ungültig)', (t) => {
@@ -223,7 +223,7 @@ test('einzelne fehlerhafte Aufgaben werden ausgelassen (inkl. Verweisen), der Re
   assert.ok(!inhalte.ermittlung('A9-E1').aufgaben.includes('A9-E1-01'));
   assert.ok(!inhalte.verhoerPool(9).includes('A9-V-02'));
   assert.ok(inhalte.aufgabe('A9-E1-02'));
-  assert.equal(inhalte.umfang().aufgaben, 20 - 4);
+  assert.equal(umfangVon(inhalte.akten()).aufgaben, 20 - 4);
 });
 
 test('id, die schon in einer anderen Akte vergeben ist, wird ausgelassen', (t) => {
@@ -412,11 +412,12 @@ test('Zugriffsfunktionen liefern unveränderliche Objekte (Katalog nicht von au�
 
 /* ---------- Manifest ---------- */
 
-test('Manifest: umfang aus dem Seed (Beispielakte), ohne Akten Spec-Standardwerte mit aufgaben 0', async (t) => {
+test('Manifest: Beispielakte (welt 9) zählt nicht; ohne Akten des Plans Spec-Standardwerte mit aufgaben 0', async (t) => {
   const { db, inhalte } = geladen(t);
   const app = erzeugeApp(testKonfig(), db, { inhalte });
   const res = await request(app).get('/api/plattform');
-  assert.deepEqual(res.body.umfang, { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
+  assert.deepEqual(res.body.umfang, { welten: 7, level: 13, aufgaben: 0, bosse: 7 });
+  assert.deepEqual(umfangVon(inhalte.akten()), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 
   const leerDb = oeffneDb(':memory:');
   const leer = erzeugeInhalte(leerDb);
@@ -444,5 +445,7 @@ test('umfang: level zählt Akte 7 (Generalprobe ohne Ermittlungen) mit, Cold Cas
   const db = oeffneDb(':memory:');
   const inhalte = erzeugeInhalte(db);
   inhalte.laden({ verzeichnis: dir });
-  assert.deepEqual(inhalte.umfang(), { welten: 2, level: 3, aufgaben: 20, bosse: 2 });
+  assert.deepEqual(umfangVon(inhalte.akten()), { welten: 2, level: 3, aufgaben: 20, bosse: 2 });
+  // Manifest: nur Akten des Plans (Akte 7), welten = 7 wie die welten-Liste
+  assert.deepEqual(inhalte.umfang(), { welten: 7, level: 1, aufgaben: 0, bosse: 1 });
 });
