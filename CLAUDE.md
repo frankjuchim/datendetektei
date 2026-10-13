@@ -47,16 +47,19 @@ src/services/  inhalte, lernen, verhoer, warmup, training, live, auswertung, mat
 src/routes/    schueler, lehrkraft, admin, gast, live, sso, verbund
 public/        Seiten + static/{css,fonts,img,js,vendor}; sql.js vendort (sql-wasm.js/.wasm, sql-asm.js);
                Werkzeuge static/js/{zeitlupe,spurenbrett,sortierfaecher,bauplan,werkbank}
-seed/          akten/*.json, datenbanken/<name>/{schema,pflicht}.sql + varianten/*.sql, warmup/, gast/, arbeitsblaetter.json
+seed/          akten/*.json, datenbanken/<name>/{schema,pflicht}.sql + varianten/*.sql, warmup/, gast/, live/,
+               fallebene.json, arbeitsblaetter.json (Material ↔ Ermittlung), videos.json (YouTube-Links)
 materialien/   docx/pptx je Akte (maßgeblich) + erzeugte PDFs: Arbeitsblaetter_PDF = Schülerfassungen (nur angemeldet; öffentlich nur Gast-Auswahl Gast_PDF, E13; auch
                Präsentations-Handouts), Loesungen_Portal + Lehrkraft_PDF nur Lehrkraft, Originale (docx/pptx) nur
                Superadmin – jeweils Whitelist verzeichnis.json (Spec §12.4)
-werkzeuge/     Python: *_pdf.py, material_sql_pruefen.py, materialien_pruefen.py, video_folien.py, fonts/
+werkzeuge/     Python: akten_design.py, *_pdf.py, material_sql_pruefen.py, materialien_pruefen.py, kompetenz_abdeckung.py,
+               video_folien.py, fonts/, tests/
+quellen/       material/*.py – Erstellungshilfen der Materialien (danach sind die docx/pptx maßgeblich)
 scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen.js
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 6; spätere Phasen ergänzen hier)
+## Befehle (Stand Phase 7)
 
 ```
 npm install
@@ -74,9 +77,34 @@ npm run e2e              # Playwright (test/e2e/*.e2e.js); Chromium aus /opt/pw-
                          # (Phase 5: test/e2e/modellierung.e2e.js mit echten Akten 4/5 → docs/screenshots/phase5/)
                          # (Phase 6: test/e2e/probelauf.e2e.js – Testkurs mit Lehrkraft + 3 Schüler:innen über alle
                          #  Akten, Live-Duell, Board, Urkunden, Kür → docs/screenshots/phase6/probelauf_*)
-npm run pruefen          # alles: test, validate, Material-SQL, Materialien
+npm run pruefen          # alles: test, validate, material:tests, material:vollstaendig, material:sql, material:pruefen,
+                         # material:kompetenzen (streng; begründete Ausnahmen in werkzeuge/kompetenz_abdeckung.py)
+
+# Materialien (Phase 7; LibreOffice + python-docx/-pptx, pypdf, Pillow; Details docs/MATERIALIEN.md)
+npm run arbeitsblaetter  # Schülerfassungen → materialien/Arbeitsblaetter_PDF (Warm-up ohne Lösungsteil)
+npm run loesungen        # Lösungen → materialien/Loesungen_Portal
+npm run praesentationen  # Handouts (Arbeitsblaetter_PDF) + Fassungen mit Notizen (Lehrkraft_PDF)
+npm run lehrkraft        # Lehrerhinweise, Gesamt, Generalprobe, Klausuren, Video-Folien → materialien/Lehrkraft_PDF
+npm run originale        # materialien/Originale/verzeichnis.json (docx/pptx, nur Superadmin)
+npm run material:pdf     # alle fünf in dieser Reihenfolge (nur fehlende/veraltete; --alle erzwingt alles)
+npm run material:vollstaendig  # --pruefen aller Pipeline-Skripte (Vollständigkeit, SHA-256-Aktualität; ohne LibreOffice)
+npm run material:sql     # jede SQL-Anweisung in docx/pptx gegen ihre DB (EH §8, Ergebnistabellen)
+npm run material:pruefen # Begriffe, `<>`/JOIN, Klarnamen (werkzeuge/klarnamen.txt), PDF-Namen, Schülerfassungen ohne Lösung
+npm run material:kompetenzen   # KOMPETENZMATRIX × Akten × Warm-up × Material (--streng)
+npm run material:tests   # Python-Tests werkzeuge/tests (u. a. Schüler-PDFs ohne Lösung/Story-Auflösung)
+npm run videos           # Videos: video.json → Folien (pptx) + Drehbuch (md); npm run videos:bilder rendert vorher die
+                         # Plattform-Bilder (Playwright); npm run videos:pruefen; npm run db:video baut video/schachturnier
 ```
 docx/pptx rendern: `soffice --headless --convert-to pdf --outdir <scratch> <datei>`.
+
+**Materialien (Phase 7):** `quellen/material/akte<n>.py`, `gesamt.py`, `kuer.py` sind nur **Erstellungshilfen** – danach
+sind die docx/pptx in `materialien/` maßgeblich und werden direkt bearbeitet. Ein Skript nie „nebenbei“ neu laufen
+lassen: es überschreibt alle seine Dateien (nicht byte-reproduzierbar). Muss es laufen (z. B. `gesamt.py` für die
+Materialliste nach neuen Einträgen in `seed/arbeitsblaetter.json`), danach unveränderte Dateien per `git checkout`
+zurückholen, `npm run material:pdf` laufen lassen, die geänderten Seiten rendern und ansehen und PDFs + `quellen.json` +
+Verzeichnisse mitcommitten. Neue Materialien immer über `seed/arbeitsblaetter.json` eintragen (die Whitelists
+`verzeichnis.json` erzeugt die Pipeline – nie von Hand). Erklärvideos: Links nur in `seed/videos.json` (nur YouTube,
+Link-Knopf, kein Embed). Sichtprüfung der Phase 7: `docs/screenshots/phase7/`.
 
 Seiten (Phase 6): `/pinnwand` (Beweisstücke, Indizienkette des Schlussplädoyers, Steckbrief nach Regel E10),
 `/live` (Live-Runde beitreten), `/lehrkraft` (Reiter Übersicht, Einstellungen, Auswertung, Vorschau, Live, Board,
@@ -135,7 +163,7 @@ P10 Operator verfehlt.
   `test/fixtures/akte_beispiel.json` + Tests (Vertrag §9).
 - Nach Änderungen an `public/static/**`: `?v=`-Version in `public/*.html` und `package.json` erhöhen.
 - docx/pptx in `materialien/` sind maßgeblich → direkt bearbeiten, danach rendern und ansehen; PDFs neu erzeugen
-  (`npm run arbeitsblaetter|loesungen|lehrkraft`) und mitcommitten. SQL in docx im Absatzformat „SQL-Code“.
+  (`npm run material:pdf`) und mitcommitten; `npm run pruefen` grün. SQL in docx im Absatzformat „SQL-Code“.
 
 ## Datenschutz und Sicherheit (Vertrag §9/§10, Spec §7.14)
 - **Lösungen, Erklärungen, nicht abgerufene Tipps verlassen den Server nie vor dem Lösen/Aufdecken**; Verhör-Aufgaben
