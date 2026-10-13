@@ -484,8 +484,11 @@ def er_png(graph, layout, pfad, massstab=3.0, markiert=(), hintergrund="FFFFFF")
         if rolle:
             p = layout[e["id"]]
             n = k["normal"]
-            a1 = (k["mitte"][0] + n[0] * 26, k["mitte"][1] + n[1] * 26)
-            a2 = (k["mitte"][0] - n[0] * 26, k["mitte"][1] - n[1] * 26)
+            # Abstand so, dass die Rolle das Kardinalitätsplättchen nicht verdeckt (auch bei steilen Kanten)
+            rb = _font("kursiv", 14).getlength(rolle)
+            ab = max(26, ER_MASSE["plaettchen"] / 2 + 6 + abs(n[0]) * rb / 2 + abs(n[1]) * 9)
+            a1 = (k["mitte"][0] + n[0] * ab, k["mitte"][1] + n[1] * ab)
+            a2 = (k["mitte"][0] - n[0] * ab, k["mitte"][1] - n[1] * ab)
             q = a1 if math.hypot(a1[0] - p["x"], a1[1] - p["y"]) >= math.hypot(a2[0] - p["x"], a2[1] - p["y"]) else a2
             text_mitte(*P(*q), rolle, _font("kursiv", 14 * s), farbe="#" + TINTE_2, art="kursiv")
     bild.save(pfad, dpi=(int(96 * s), int(96 * s)))

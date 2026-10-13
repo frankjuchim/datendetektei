@@ -41,6 +41,16 @@
    "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
    "verfahren": "notizen"
   },
+  "DD_A5-Lehrerhinweise.pdf": {
+   "quelle": "Akte5_Bauplan/4_Lehrerhinweise/DD_A5_Lehrerhinweise.docx",
+   "sha256": "987201f1556d4b2ea34ea141517dff8ad174f1969fcc0758e397744269c9a6de",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Praesentation_Bauplan.pdf": {
+   "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
+   "sha256": "1554fa23b8ae2fdd0d48eeb8744e030f61c810d2e5df875963b162ba8c072cfd",
+   "verfahren": "notizen"
+  },
   "DD_A6-Lehrerhinweise.pdf": {
    "quelle": "Akte6_Datenspuren/4_Lehrerhinweise/DD_A6_Lehrerhinweise.docx",
    "sha256": "bcfa046b6a39ba722958281cf400f39dae0e9c21bbc34ea309231f8231c3949f",

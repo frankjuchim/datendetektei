@@ -126,6 +126,46 @@
    "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
    "verfahren": "ohne-loesungsteil"
   },
+  "DD_A5-AB1_Bauplaene_lesen.pdf": {
+   "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB1_Bauplaene_lesen.docx",
+   "sha256": "46fa4bfd3bee5b4909f38c32b8e834ecd95de8e527d0a0a33c7e2913ee787897",
+   "verfahren": "pdf"
+  },
+  "DD_A5-AB2_Der_Architekturwettbewerb.pdf": {
+   "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB2_Der_Architekturwettbewerb.docx",
+   "sha256": "883dafb0945aee2356ffc13c16704dc22fef0bdfb25596217417e65e47d737e1",
+   "verfahren": "pdf"
+  },
+  "DD_A5-AB3_Vom_Plan_zur_Datenbank.pdf": {
+   "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB3_Vom_Plan_zur_Datenbank.docx",
+   "sha256": "02df89edd44d0d93c12708181818c1bac455d8b5a7ab3ce4c05b4c28fb629f66",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Praesentation_Bauplan_Handout.pdf": {
+   "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
+   "sha256": "1554fa23b8ae2fdd0d48eeb8744e030f61c810d2e5df875963b162ba8c072cfd",
+   "verfahren": "handout"
+  },
+  "DD_A5-Unplugged_Architekturwettbewerb.pdf": {
+   "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Architekturwettbewerb.docx",
+   "sha256": "d2ba87231131d036dc97e0c8ab401586fdac497d39fca0b957b9210b41883c21",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Unplugged_Faeden-Kardinalitaeten.pdf": {
+   "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Faeden-Kardinalitaeten.docx",
+   "sha256": "db083ea405b3f58ba506d84e2e4b8e8503a6e0dcbb31f45f9b278f6905805bce",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Unplugged_Regelkarten.pdf": {
+   "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Regelkarten.docx",
+   "sha256": "17e88e09e4d7f9f5ac029239e22d9236e985f162ce1e0e7a136f5634c64afb05",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A5.docx",
+   "sha256": "de3770fb1e6b425fc3862e3487b6f24a38eaf7bc83ec876d15b082feb0b15719",
+   "verfahren": "ohne-loesungsteil"
+  },
   "DD_A6-AB1_Das_Phantom.pdf": {
    "quelle": "Akte6_Datenspuren/2_Arbeitsblaetter/DD_A6_AB1_Das_Phantom.docx",
    "sha256": "412d8fbbbe6793f58d5f7a529bb3e539312234e7e35634216728af2453dba003",

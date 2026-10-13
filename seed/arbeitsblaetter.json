@@ -371,7 +371,111 @@
    "akte": 5,
    "ordner": "Akte5_Bauplan",
    "titel": "Akte 5 · Der Bauplan",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "5.1",
+     "ermittlung": "A5-E1",
+     "ds": [
+      9
+     ],
+     "niveau": "eA",
+     "titel": "Baupläne lesen",
+     "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB1_Bauplaene_lesen.docx",
+     "loesung": "Akte5_Bauplan/5_Loesungen/DD_A5_AB1_Bauplaene_lesen_LSG.docx",
+     "datei": "DD_A5-AB1_Bauplaene_lesen.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "5.2",
+     "ermittlung": "A5-E2",
+     "ds": [
+      10
+     ],
+     "niveau": "eA",
+     "titel": "Der Architekturwettbewerb",
+     "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB2_Der_Architekturwettbewerb.docx",
+     "loesung": "Akte5_Bauplan/5_Loesungen/DD_A5_AB2_Der_Architekturwettbewerb_LSG.docx",
+     "datei": "DD_A5-AB2_Der_Architekturwettbewerb.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "5.3",
+     "ermittlung": "A5-E3",
+     "ds": [
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Vom Plan zur Datenbank",
+     "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB3_Vom_Plan_zur_Datenbank.docx",
+     "loesung": "Akte5_Bauplan/5_Loesungen/DD_A5_AB3_Vom_Plan_zur_Datenbank_LSG.docx",
+     "datei": "DD_A5-AB3_Vom_Plan_zur_Datenbank.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      9,
+      10,
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Präsentation Der Bauplan",
+     "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
+     "datei": "DD_A5-Praesentation_Bauplan.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A5-E1",
+     "ds": [
+      9
+     ],
+     "niveau": "eA",
+     "titel": "Unplugged: Fäden-Kardinalitäten (Rollenkarten)",
+     "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Faeden-Kardinalitaeten.docx",
+     "datei": "DD_A5-Unplugged_Faeden-Kardinalitaeten.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A5-E2",
+     "ds": [
+      10
+     ],
+     "niveau": "eA",
+     "titel": "Unplugged: Architekturwettbewerb (Bewertungsbogen)",
+     "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Architekturwettbewerb.docx",
+     "datei": "DD_A5-Unplugged_Architekturwettbewerb.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A5-E3",
+     "ds": [
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Unplugged: Regelkarten-Umzug",
+     "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Regelkarten.docx",
+     "datei": "DD_A5-Unplugged_Regelkarten.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      9,
+      10,
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Lehrerhinweise Akte 5",
+     "quelle": "Akte5_Bauplan/4_Lehrerhinweise/DD_A5_Lehrerhinweise.docx",
+     "datei": "DD_A5-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "eA",
+     "titel": "Warm-up-Karten Akte 5",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A5.docx",
+     "datei": "DD_A5-Warm-up-Karten.pdf"
+    }
+   ]
   },
   {
    "gruppe": "A6",

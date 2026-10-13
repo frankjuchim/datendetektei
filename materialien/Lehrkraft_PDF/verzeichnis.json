@@ -110,6 +110,34 @@
    ]
   },
   {
+   "datei": "DD_A5-Praesentation_Bauplan.pdf",
+   "titel": "Präsentation Der Bauplan (mit Notizen)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 5",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
    "datei": "DD_A6-Praesentation_Datenspuren.pdf",
    "titel": "Präsentation Datenspuren (mit Notizen)",
    "akte": 6,

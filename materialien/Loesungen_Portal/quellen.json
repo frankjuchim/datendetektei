@@ -81,6 +81,26 @@
    "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
    "verfahren": "pdf"
   },
+  "DD_A5-AB1_Bauplaene_lesen_Loesung.pdf": {
+   "quelle": "Akte5_Bauplan/5_Loesungen/DD_A5_AB1_Bauplaene_lesen_LSG.docx",
+   "sha256": "10267700f83f563d88ce7a604342ea1516cfdbecb9a12a708d0789119c4cb57e",
+   "verfahren": "pdf"
+  },
+  "DD_A5-AB2_Der_Architekturwettbewerb_Loesung.pdf": {
+   "quelle": "Akte5_Bauplan/5_Loesungen/DD_A5_AB2_Der_Architekturwettbewerb_LSG.docx",
+   "sha256": "13448f1bad830a610fb700d5bf08fcc3f6d7b21dc5ce6a46411856a0f12c01a1",
+   "verfahren": "pdf"
+  },
+  "DD_A5-AB3_Vom_Plan_zur_Datenbank_Loesung.pdf": {
+   "quelle": "Akte5_Bauplan/5_Loesungen/DD_A5_AB3_Vom_Plan_zur_Datenbank_LSG.docx",
+   "sha256": "7ed5810e22c81d8e3196dc37072217e13b42db8911a5206fd855c0824ff300b9",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Warm-up-Karten_Loesungen.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A5.docx",
+   "sha256": "de3770fb1e6b425fc3862e3487b6f24a38eaf7bc83ec876d15b082feb0b15719",
+   "verfahren": "pdf"
+  },
   "DD_A6-AB1_Das_Phantom_Loesung.pdf": {
    "quelle": "Akte6_Datenspuren/5_Loesungen/DD_A6_AB1_Das_Phantom_LSG.docx",
    "sha256": "dc94afb0e142a414890207e90c167a61c1dd84f272efd1bcf3cca3c6797f5fc5",
