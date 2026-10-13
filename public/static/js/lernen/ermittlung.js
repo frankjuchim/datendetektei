@@ -548,7 +548,7 @@ function zeigeRichtig(r) {
   kopf.append(text, R.stempel('Gelöst', 'geloest', { groesse: 'gross', auftritt: true }));
   karte.appendChild(kopf);
   if (Array.isArray(r.neueAbzeichen) && r.neueAbzeichen.length) {
-    karte.appendChild(el('p', 'abzeichen-neu', `Neues Abzeichen: ${r.neueAbzeichen.map((x) => x.name).join(', ')}`));
+    karte.appendChild(el('p', 'abzeichen-neu', `${r.neueAbzeichen.length > 1 ? 'Neue Abzeichen' : 'Neues Abzeichen'}: ${r.neueAbzeichen.map((x) => (x.akte ? `${x.name} (Akte ${x.akte})` : x.name)).join(', ')}`));
   }
   karte.appendChild(weiterKnoepfe());
   aktuell.feedback.replaceChildren(karte);

@@ -133,7 +133,7 @@ export async function zeige(panel, ctx) {
         );
       }
       if (!d.rangliste.length) rangliste.appendChild(el('li', null, 'Noch keine Punkte im Kurs.'));
-      const erfolge = el('ul', 'board-mini');
+      const erfolge = el('ul', 'board-mini erfolge');
       erfolge.setAttribute('aria-label', 'Letzte Erfolge');
       for (const e of d.erfolge) erfolge.appendChild(h('li', null, el('span', 'stempel klein ' + (e.art === 'geloest' ? 'geloest' : 'abi'), ART[e.art] || e.art), el('span', null, erfolgText(e)), el('span')));
       if (!d.erfolge.length) erfolge.appendChild(el('li', null, 'Noch keine Erfolge.'));
