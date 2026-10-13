@@ -141,7 +141,7 @@ export async function zeige(panel, ctx) {
   spalte.appendChild(k2);
 
   const { karte: k3 } = G.karte('Rangliste und Beamer-Board', null, { id: 'ei-board' });
-  const score = schalterZeile('ei-scoreboard', 'Scoreboard', 'Kurs-Rangliste mit Anzeigenamen für die Schülerinnen und Schüler (die Schüleransicht dazu folgt)', e.scoreboard, nurLesen);
+  const score = schalterZeile('ei-scoreboard', 'Scoreboard', 'Ihre Schülerinnen und Schüler sehen auf dem Stadtplan die Rangliste des Kurses: die besten 10 und zusätzlich ihren eigenen Platz, jeweils mit Anzeigename, Rang und Punkten – sichtbar nur für Mitglieder dieses Kurses. Standard: aus.', e.scoreboard, nurLesen);
   const beamer = schalterZeile('ei-beamer', 'Beamer-Board', 'eigener, geheimer Link je Kurs – ohne Anmeldung am Beamer', e.beamer, nurLesen);
   const schalterListe = h('ul', 'akten-schalter', h('li', null, score.label), h('li', null, beamer.label));
   k3.appendChild(schalterListe);

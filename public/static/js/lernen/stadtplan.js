@@ -1,6 +1,8 @@
 // Stadtplan v1 (Startseite angemeldet, DESIGN.md §5.1, Spec §7.7): eigene SVG-Illustration im Akten-Stil mit sechs
 // Orten für sieben Akten (Detektei = Akte 5 und 7, zweiter Ring), Fortschrittsring je Ort, gesperrte Akten im Nebel,
 // Faden der bearbeiteten Akten; daneben Rang, Steckbrief, Akte-Detail, „Deine Fallen“, Abzeichen und die Pinnwand.
+// Scoreboard (Vertrag §4): nur wenn die Lehrkraft es einschaltet (stand.kurs.scoreboard) die Karte „Rangliste deines
+// Kurses“ aus GET /api/kurse/:kurs/rangliste – Top 10 + eigener Platz (DESIGN §4.9 Ranglisten-Zeile).
 // Steckbrief und Beweisstücke kommen aus GET /api/kurse/:kurs/pinnwand (Regel E10, Phase 6); die große Pinnwand
 // steht unter /pinnwand.
 // Auf dem Handy ist der Plan waagerecht wischbar, darunter steht die Aktenliste. Ausgaben nur als Textknoten.
@@ -33,6 +35,7 @@ const seite = document.getElementById('seite');
 
 let stand = null;
 let pinnwandDaten = null; // GET …/pinnwand (oder null, wenn nicht verfügbar)
+let ranglisteDaten = null; // GET …/rangliste (nur bei eingeschaltetem Scoreboard, sonst null)
 let akten = []; // je Akte 1–7: { nr, titel, sichtbar, frei, anteil, ermittlungen, verhoer, geschlossen, punkte }
 let gewaehlt = null;
 
@@ -247,6 +250,50 @@ function rangKarte() {
   if (stand.punkte.verhoer) teile.push(`Verhöre ${stand.punkte.verhoer}`);
   if (stand.punkte.training) teile.push(`Training ${stand.punkte.training}`);
   if (teile.length) karte.appendChild(el('p', 'etikett', `Ermittlungen ${stand.punkte.lab} · ${teile.join(' · ')}`));
+  return karte;
+}
+
+/* ---------- Scoreboard: Rangliste des Kurses ---------- */
+
+function rangZeile(z) {
+  const li = el('li', 'rang-zeile' + (z.ich ? ' ich' : '') + (z.platz <= 3 ? ' oben' : ''));
+  const name = h('span', 'rang-name', el('strong', null, z.name), z.ich ? el('span', 'rang-du', '(du)') : null, el('span', 'rang-stufe', z.rang));
+  li.append(el('span', 'rang-platz zahlen', `${z.platz}.`), name, el('span', 'rang-wert zahlen', A.zahl(z.punkte)));
+  li.setAttribute('aria-label', `Platz ${z.platz}: ${z.name}${z.ich ? ' (du)' : ''}, ${z.rang}, ${A.mehrzahl(z.punkte, 'Punkt', 'Punkte')}`);
+  if (z.ich) li.setAttribute('aria-current', 'true');
+  return li;
+}
+
+function ranglisteKarte(lehrkraft) {
+  const d = ranglisteDaten;
+  if (!d) return null;
+  const karte = el('section', 'karte kurs-rangliste');
+  karte.id = 'kurs-rangliste';
+  karte.setAttribute('aria-labelledby', 'kurs-rangliste-titel');
+  const t = el('h2', null, lehrkraft ? 'Rangliste des Kurses' : 'Rangliste deines Kurses');
+  t.id = 'kurs-rangliste-titel';
+  karte.appendChild(h('div', 'kurs-rangliste-kopf', el('p', 'etikett', `Scoreboard · ${d.kurs.name}`), t));
+  if (!d.rangliste.length) {
+    karte.appendChild(el('p', 'hinweis-klein', 'Noch niemand im Kurs auf der Liste.'));
+    return karte;
+  }
+  const ol = el('ol', 'rang-liste');
+  for (const z of d.rangliste) ol.appendChild(rangZeile(z));
+  if (d.eigene) {
+    const luecke = el('li', 'rang-luecke', '…');
+    luecke.setAttribute('aria-hidden', 'true');
+    ol.append(luecke, rangZeile(d.eigene));
+  }
+  karte.appendChild(ol);
+  karte.appendChild(
+    el(
+      'p',
+      'hinweis-klein',
+      lehrkraft
+        ? 'Vorschau: Schülerinnen und Schüler sehen die besten 10 und zusätzlich ihren eigenen Platz. Gleiche Punkte – gleicher Platz.'
+        : 'Die besten 10 deines Kurses und dein eigener Platz. Gleiche Punkte – gleicher Platz. Sichtbar sind nur Anzeigenamen.'
+    )
+  );
   return karte;
 }
 
@@ -472,6 +519,8 @@ async function start() {
     seite.replaceChildren(A.fehlerKarte(f, { text: 'Neu laden', href: '/' }));
     return;
   }
+  // Scoreboard nur, wenn die Lehrkraft es eingeschaltet hat (sonst gibt es die Route für Schüler:innen nicht)
+  ranglisteDaten = stand.kurs.scoreboard ? await A.holen(A.kursApi(kontext.kurs.id, '/rangliste')).catch(() => null) : null;
   const planVon = new Map((plan.akten || []).map((a) => [a.nr, a]));
   akten = [1, 2, 3, 4, 5, 6, 7].map((nr) => akteDaten(nr, planVon.get(nr)));
 
@@ -489,7 +538,7 @@ async function start() {
   detail.append(el('span', 'reiter rot', 'Akte'), el('div', 'aktendeckel-innen'));
 
   const planSpalte = h('div', 'plan-spalte', ...[karte, aktenListe(), kuerKarte(), pinnwand(), h('div', 'bilanz-raster', fallenKarte(), abzeichenKarte())].filter(Boolean));
-  const seitenspalte = h('div', 'seitenspalte', rangKarte(), detail, steckbrief());
+  const seitenspalte = h('div', 'seitenspalte', ...[rangKarte(), detail, ranglisteKarte(lehrkraft), steckbrief()].filter(Boolean));
   const wechsel = A.kursWechselLink(kontext);
   seite.replaceChildren(...[A.vorschauHinweis(kontext), wechsel, h('div', 'stadtplan-raster', planSpalte, seitenspalte)].filter(Boolean));
 

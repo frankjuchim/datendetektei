@@ -42,6 +42,7 @@ Ergebnis unten, Abschnitt 3).
 | POST /api/kurse/k:17/aufgaben/:id/pruefen, /tipp | 401 | 200 | 403 | 200 | 403 | 200 |
 | GET /api/kurse/k:17/aufgaben/&lt;Verhör-Aufgabe&gt; | 401 | 404 | 403 | 404 | 403 | 404 |
 | GET /api/kurse/k:17/verhoere/:akte, /warmup, /training, /pinnwand, /live | 401 | 200 | 403 | 200 | 403 | 200 |
+| GET /api/kurse/k:17/rangliste (Scoreboard an; aus: S 404, L/SA 200 Vorschau) | 401 | 200 | 403 | 200 | 403 | 200 |
 | GET /api/kurse/k:17/live/inhalte | 401 | 403 | 403 | 200 | 403 | 200 |
 | POST /api/kurse/k:17/live (Runde starten) | 401 | 403 | 403 | 200/409 | 403 | 200/409 |
 | GET /api/live/:runde · POST …/steuerung | 401 · 401 | 200 · 403 | 403 · 403 | 200 · 200 | 403 · 403 | 200 · 200 |
@@ -75,6 +76,7 @@ Gesperrter Kurs (G): Schüler:innen 403 auf alle Kurs-APIs, Lehrkraft/Superadmin
 | `/api/kurse/:kurs/warmup/…` | alle | Karte erst auf `aufdecken` (Selbstkontrolle, gewollt) | 120/min | ok (`warmup.test.js`) |
 | `/api/kurse/:kurs/training/…` | alle | Lösung nach Prüfen bzw. auf Wunsch (ohne Punkte), Aufgabe HMAC-signiert | 120/min | ok (`training*.test.js`) |
 | `GET /api/kurse/:kurs/pinnwand` | alle | Indizien erst nach dem Lösen, Auflösung nach dem letzten Schritt, Steckbrief nach E10 | – | ok (`fallebene.test.js`) |
+| `GET /api/kurse/:kurs/rangliste` | alle | nur Platz, Anzeigename, Rang, Punkte der Schüler:innen des Kurses (Top 10 + eigener Platz), keine `sub`, keine Lehrkräfte; Schalter aus → 404 für Schüler; gesperrter Kurs nur L/SA | – | ok (`rangliste.test.js`, `rechte.test.js`) |
 | Live: `/api/kurse/:kurs/live`, `/inhalte`, `/api/live/:runde/*`, SSE `…/ereignisse` | alle | Duell-Lösung nur in der Steuerungssicht der Lehrkraft; Codes nur fürs lösende Team; Beamer ohne Codes/Lösungen; Ergebnis erst nach dem Schließen | Body ≤ 20 000 Zeichen; 30/120 je Konto; 30 Runden, 80 Teilnehmer, 250 SSE je Runde, 3 SSE je Konto; Codes 5/min je Team **und Konto** (B4); falsche Escape-Antworten 10/min je Team **und Konto** (B9); 4 h Höchstdauer | ok + B4, B9 (`live.test.js`) |
 | `GET /api/lehrkraft/kurse`, `PUT …/einstellungen`, `POST …/board-schluessel` | alle, G | keine | Felder streng geprüft | ok (`lehrkraft.test.js`) |
 | `…/auswertung`, `…/auswertung.csv` | alle | – | – | ok: CSV ohne `sub`, Formel-Schutz (`=+-@`) (`auswertung.test.js`) |

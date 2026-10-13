@@ -72,7 +72,7 @@ Verstehens- und Modellierungswerkzeuge: `/werkzeug/zeitlupe`, `/werkzeug/spurenb
 
 | Seite | Inhalt |
 |---|---|
-| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt |
+| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt; Rangliste des Kurses (Top 10 + eigener Platz), nur wenn die Lehrkraft das Scoreboard einschaltet |
 | `/akte/<n>`, `/ermittlung/<id>` | Akte und Ermittlung (Lab-Aufgaben, Konsole, Schlussplädoyer in Akte 6) |
 | `/verhoer/<n>`, `/warmup`, `/training` | Verhöre, Warm-up (Leitner), Trainingsplatz |
 | `/pinnwand` | Beweisstücke der gewonnenen Verhöre, Indizienkette des Plädoyers, Steckbrief des Phantoms |
