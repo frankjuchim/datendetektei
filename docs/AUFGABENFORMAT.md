@@ -961,6 +961,15 @@ der richtigen Optionen „(A, B)“) · `attributeRichtig` (Summe der Attributza
 (1-basiert) wählt bei mehrteiligen Aufgaben den Teil. Der Code steht **nie** im JSON und verlässt den Server erst, wenn
 ein Team die Station gelöst hat.
 
+**Bremsen beim Raten** (Server, `src/services/live.js`, nur im RAM, mit dem Rundenende bzw. der Verbund-Löschung
+verworfen): höchstens **5 falsche Codes** (`/code`) und höchstens **10 falsche Antworten** (`/antwort`) je Team und
+Minute (gleitendes Fenster), jeweils **zusätzlich je Konto** – ein Team-Wechsel umgeht sie nicht. Darüber antwortet der
+Server mit 429, `Retry-After` (Sekunden) und `{ error, bremse: true }`; die Schülerseite zeigt dann den Text des
+Servers („Zu viele falsche Antworten – atmet kurz durch …“). Während der Antwort-Bremse wird **jede** Antwort
+abgelehnt, auch eine richtige (sonst ließe sich mit dem Durchprobieren einfach weitermachen); gebremste Anfragen
+werden nicht geprüft und ändern nichts (keine Wertung, keine Zeitstrafe). Richtige und leere Antworten zählen nicht
+mit; das Fenster gilt über Stationswechsel hinweg. Das Duell hat keine solche Bremse (eine Antwort je Person und Aufgabe).
+
 Der Validator (`validiereLive`, in `npm run validate`) prüft das Format, die Aufgaben intern als Test-Akte (welt 9:
 A9-E1 = Pool, A9-E2 = Stationen) mit allen Regeln aus §8 (SQL in der Sandbox), dass kein Text (ab 20 Zeichen) aus
 `seed/akten` stammt (Transfer), und die Codes: berechenbar, 3–8 Ziffern (Sicherheitsprüfung F4: zwei Ziffern wären trotz Code-Bremse erratbar), je Station verschieden, nicht in der

@@ -13,7 +13,9 @@
 // - Escape Room: Stationen nach Kurs-Niveau (eA: S5, gA: S5g). Je Team die aktuelle Station; richtige Antwort →
 //   der Server liefert den Code (aus der Lösung berechnet, src/content/live.js) – nur an dieses Team (Antwort und
 //   eigene Sicht). Code-Eingabe öffnet die nächste Station (falscher Code abgelehnt; höchstens 5 Fehlversuche je
-//   Team und Minute und zusätzlich je Konto, damit ein Team-Wechsel die Bremse nicht umgeht). Tipp-Umschlag nach
+//   Team und Minute und zusätzlich je Konto, damit ein Team-Wechsel die Bremse nicht umgeht). Ebenso gebremst:
+//   höchstens 10 falsche Antworten je Team und Minute und zusätzlich je Konto (sonst ließen sich Auswahl-Stationen
+//   durchprobieren); danach 429 auch für richtige Antworten, bis das Fenster frei ist. Tipp-Umschlag nach
 //   Freigabe durch die Lehrkraft oder nach tippNachMin an der Station, kostet tippStrafeMin Minuten (einmal je Station). Countdown dauerMin; danach keine Antworten/Codes mehr (verlängerbar).
 // - Ende (Lehrkraft, Verbund-Löschung des Kurses, 4 h Höchstdauer): Ergebnis (Rangliste) berechnen, alle Antworten
 //   und Teamstände verwerfen, Ereignis „ende“ an alle Verbindungen, Verbindungen schließen; die Runde wird nach
@@ -40,6 +42,7 @@ const GRENZEN = Object.freeze({
   verbindungenJeRunde: 250,
   verbindungenJeKonto: 3,
   codeFehlversucheJeMinute: 5,
+  falscheAntwortenJeMinute: 10,
   statistikJeKurs: 10
 });
 const MODI = ['duell', 'escape'];
@@ -214,7 +217,7 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
 
   function neuesTeam(r, nr) {
     const t = jetzt();
-    return { nr, station: 0, geloest: false, strafeMs: 0, tipps: new Set(), stationSeit: r.escape.start !== null ? t : null, fertigT: null, fortschrittT: t, falscheCodes: [] };
+    return { nr, station: 0, geloest: false, strafeMs: 0, tipps: new Set(), stationSeit: r.escape.start !== null ? t : null, fertigT: null, fortschrittT: t, falscheCodes: [], falscheAntworten: [] };
   }
 
   function teamZeit(r, team, t = jetzt()) {
@@ -384,6 +387,7 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
     r.ehemalige = new Set(r.teilnehmer.keys());
     r.antworten.clear();
     r.falscheCodesKonto.clear();
+    r.falscheAntwortenKonto.clear();
     if (r.escape) r.escape.teams.clear();
     r.teilnehmer.clear();
     r.status = 'beendet';
@@ -496,6 +500,7 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
       verbindungen: new Set(),
       antworten: new Map(),
       falscheCodesKonto: new Map(), // sub → Zeitpunkte falscher Codes (nur RAM, nur während der Runde)
+      falscheAntwortenKonto: new Map(), // sub → Zeitpunkte falscher Escape-Antworten (nur RAM, nur während der Runde)
       duell: null,
       escape: null,
       ergebnis: null,
@@ -587,6 +592,24 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
     return tm;
   }
 
+  /**
+   * Bremse je Team und je Konto (gleitendes Fenster von einer Minute): räumt alte Zeitpunkte ab und wirft 429 mit
+   * retryAfter, wenn eine der Listen die Grenze erreicht hat. Liefert die bereinigte Konto-Liste zum Eintragen.
+   */
+  function bremse(tm, feld, kontoMap, sub, grenze, text, t) {
+    tm[feld] = tm[feld].filter((x) => t - x < MIN);
+    const eigene = (kontoMap.get(sub) || []).filter((x) => t - x < MIN);
+    kontoMap.set(sub, eigene);
+    const gebremst = [tm[feld], eigene].filter((l) => l.length >= grenze);
+    if (gebremst.length) {
+      const f = new HttpFehler(429, text);
+      f.retryAfter = Math.max(1, Math.ceil((Math.max(...gebremst.map((l) => l[l.length - grenze])) + MIN - t) / 1000));
+      f.bremse = true; // die Seite zeigt dann den Text des Servers statt des allgemeinen 429-Texts
+      throw f;
+    }
+    return eigene;
+  }
+
   /** POST /api/live/:runde/antwort – Duell { aufgabe, antwort } bzw. Escape { antwort }. */
   async function antworten(sitzung, rundeId, body) {
     const { r, z } = zugang(sitzung, rundeId, { schreiben: true });
@@ -615,9 +638,21 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
     const st = r.escape.stationen[tm.station];
     if (tm.geloest) return { ok: true, code: st.code };
     const nr = tm.station;
+    // Bremse vor der Prüfung – sie sperrt auch richtige Antworten, sonst ließe sich trotz Bremse weiterprobieren.
+    bremse(tm, 'falscheAntworten', r.falscheAntwortenKonto, z.sub, GRENZEN.falscheAntwortenJeMinute,
+      'Zu viele falsche Antworten – atmet kurz durch und prüft eure Lösung noch einmal.', eingang);
     const erg = await pruefe(st.aufgabe, b.antwort);
     if (r.status !== 'laeuft' || tm.station !== nr) throw new HttpFehler(409, 'Die Station hat sich inzwischen geändert.');
-    if (!erg.ok) return { ok: false, rueckmeldung: kurzeRueckmeldung(st.aufgabe, erg) };
+    if (!erg.ok) {
+      // nur echte Falschantworten zählen (leere Eingaben nicht); Zeitpunkt des Eingangs
+      if (!erg.leer) {
+        tm.falscheAntworten.push(eingang);
+        const liste = r.falscheAntwortenKonto.get(z.sub) || [];
+        liste.push(eingang);
+        r.falscheAntwortenKonto.set(z.sub, liste);
+      }
+      return { ok: false, rueckmeldung: kurzeRueckmeldung(st.aufgabe, erg) };
+    }
     tm.geloest = true;
     tm.fortschrittT = jetzt();
     sendeAllen(r);
@@ -633,15 +668,8 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
     if (!/^\d{1,12}$/.test(code)) throw new HttpFehler(400, 'Der Code besteht nur aus Ziffern.');
     const t = jetzt();
     // Bremse je Team und je Konto: sonst ließe sich durch Wechsel in leere Teams weiterraten (Sicherheits-Review Phase 8).
-    tm.falscheCodes = tm.falscheCodes.filter((x) => t - x < MIN);
-    const eigene = (r.falscheCodesKonto.get(z.sub) || []).filter((x) => t - x < MIN);
-    r.falscheCodesKonto.set(z.sub, eigene);
-    const gebremst = [tm.falscheCodes, eigene].filter((l) => l.length >= GRENZEN.codeFehlversucheJeMinute);
-    if (gebremst.length) {
-      const f = new HttpFehler(429, 'Das Schloss klemmt nach so vielen falschen Codes – wartet eine Minute.');
-      f.retryAfter = Math.max(1, Math.ceil((Math.max(...gebremst.map((l) => l[l.length - GRENZEN.codeFehlversucheJeMinute])) + MIN - t) / 1000));
-      throw f;
-    }
+    const eigene = bremse(tm, 'falscheCodes', r.falscheCodesKonto, z.sub, GRENZEN.codeFehlversucheJeMinute,
+      'Das Schloss klemmt nach so vielen falschen Codes – wartet eine Minute.', t);
     const st = r.escape.stationen[tm.station];
     if (code !== st.code) {
       tm.falscheCodes.push(t);
@@ -778,6 +806,7 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
       if (auftrag.sub) {
         r.teilnehmer.delete(auftrag.sub);
         r.falscheCodesKonto.delete(auftrag.sub);
+        r.falscheAntwortenKonto.delete(auftrag.sub);
         for (const [k, a] of r.antworten) if (a.sub === auftrag.sub) r.antworten.delete(k);
         for (const v of [...r.verbindungen]) if (v.sub === auftrag.sub) schliesseVerbindung(r, v);
         // Beendete Runde mit dieser Person: Ergebnis (Namen) sofort löschen statt erst nach der Frist

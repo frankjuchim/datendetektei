@@ -17,7 +17,7 @@
 //   POST /api/live/:runde/tipp                {}
 //   POST /api/live/:runde/steuerung           { aktion: naechste|schliessen|los|tippsFrei|verlaengern|ende, an?, min?, nach? }
 // Rate-Limits je Konto: alle POSTs 120/min (konfig.rateLimits.lernen), Antworten 30/min (konfig.rateLimits.pruefenSql);
-// falsche Codes begrenzt der Dienst je Team. Körper über 20 000 Zeichen → 413.
+// falsche Codes (5/min) und falsche Escape-Antworten (10/min) begrenzt der Dienst je Team und je Konto (429 { error, bremse: true }). Körper über 20 000 Zeichen → 413.
 
 const path = require('node:path');
 const express = require('express');
@@ -121,7 +121,7 @@ function liveRouten({ live, konfig, sperre = auftragsSperre() }) {
   router.use((err, req, res, next) => {
     if (err && (err.name === 'HttpFehler' || err.name === 'AntwortFehler') && err.status >= 400 && err.status < 600) {
       if (err.retryAfter) res.set('Retry-After', String(err.retryAfter));
-      return res.status(err.status).json({ error: err.message });
+      return res.status(err.status).json(err.bremse ? { error: err.message, bremse: true } : { error: err.message });
     }
     next(err);
   });

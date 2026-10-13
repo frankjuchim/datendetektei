@@ -523,3 +523,70 @@ test('Probelauf 8: Doppelklick auf „Nächste Aufgabe“ überspringt keine Auf
   assert.equal(z.duell.frage.nr, 2);
   for (const nach of ['x', -1, 1.5]) assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach })).status, 400, String(nach));
 });
+
+test('Probelauf 8 (Entscheidung): Bremse für falsche Escape-Antworten – 10 je Team und Minute, zusätzlich je Konto', async () => {
+  const e = await start();
+  const r = await runde(e, { modus: 'escape', teams: 6 });
+  assert.equal((await e.s1.post(R(r.id, '/beitreten'), { team: 1 })).status, 200);
+  assert.equal((await e.s2.post(R(r.id, '/beitreten'), { team: 1 })).status, 200);
+  assert.equal((await e.s3.post(R(r.id, '/beitreten'), { team: 3 })).status, 200);
+  await e.l.post(R(r.id, '/steuerung'), { aktion: 'los' });
+  const FALSCH = { antwort: 'SELECT Bezeichnung FROM Fundsache' };
+  // 10 falsche Antworten des Teams (verteilt auf zwei Konten) werden normal geprüft
+  for (let i = 0; i < 10; i++) {
+    const a = await (i % 2 ? e.s2 : e.s1).post(R(r.id, '/antwort'), FALSCH);
+    assert.equal(a.status, 200, `Antwort ${i + 1}`);
+    assert.equal(a.body.ok, false);
+  }
+  // die 11. ist gebremst – auch eine richtige (sonst ließe sich trotz Bremse weiterprobieren)
+  const gebremst = await e.s1.post(R(r.id, '/antwort'), FALSCH);
+  assert.equal(gebremst.status, 429);
+  assert.match(gebremst.body.error, /falsche Antworten/);
+  assert.equal(gebremst.body.bremse, true, 'die Seite zeigt den Text des Servers');
+  assert.ok(Number(gebremst.headers['retry-after']) >= 1 && Number(gebremst.headers['retry-after']) <= 60);
+  const richtigGebremst = await e.s2.post(R(r.id, '/antwort'), { antwort: SQL('S1') });
+  assert.equal(richtigGebremst.status, 429);
+  assert.ok(!('code' in richtigGebremst.body));
+  // keine Wertung: Station, Lösestand, Zeitstrafe unverändert
+  let team = (await e.s1.get(R(r.id))).body.escape.team;
+  assert.equal(team.station.nr, 1);
+  assert.equal(team.geloest, false);
+  assert.ok(!('code' in team));
+  // andere Teams sind nicht betroffen
+  const anderes = await e.s3.post(R(r.id, '/antwort'), FALSCH);
+  assert.equal(anderes.status, 200);
+  // Team-Wechsel umgeht die Bremse nicht: s1 (5 eigene Falschantworten) wechselt in ein leeres Team …
+  assert.equal((await e.s1.post(R(r.id, '/beitreten'), { team: 2 })).status, 200);
+  for (let i = 0; i < 5; i++) assert.equal((await e.s1.post(R(r.id, '/antwort'), FALSCH)).status, 200);
+  // … und ist nach insgesamt 10 eigenen Falschantworten auch dort gebremst
+  const nachWechsel = await e.s1.post(R(r.id, '/antwort'), FALSCH);
+  assert.equal(nachWechsel.status, 429, 'Bremse je Konto gilt auch nach dem Team-Wechsel');
+  assert.ok(nachWechsel.headers['retry-after']);
+  // nach gut einer Minute wieder frei
+  e.uhr.t += 61000;
+  const ok = await e.s2.post(R(r.id, '/antwort'), { antwort: SQL('S1') });
+  assert.equal(ok.status, 200);
+  assert.deepEqual(ok.body, { ok: true, code: CODES.S1 });
+  assert.equal((await e.s1.post(R(r.id, '/antwort'), FALSCH)).status, 200);
+  team = (await e.s2.get(R(r.id))).body.escape.team;
+  assert.equal(team.code, CODES.S1);
+});
+
+test('Probelauf 8 (Entscheidung): richtige Escape-Antworten zählen nicht zur Bremse; Ende verwirft die Zähler', async () => {
+  const e = await start();
+  const r = await runde(e, { modus: 'escape', teams: 6 });
+  assert.equal((await e.s1.post(R(r.id, '/beitreten'), { team: 1 })).status, 200);
+  await e.l.post(R(r.id, '/steuerung'), { aktion: 'los' });
+  const FALSCH = { antwort: 'SELECT Bezeichnung FROM Fundsache' };
+  for (let i = 0; i < 9; i++) assert.equal((await e.s1.post(R(r.id, '/antwort'), FALSCH)).status, 200);
+  // richtige Antwort und erneutes Abholen des Codes zählen nicht
+  assert.equal((await e.s1.post(R(r.id, '/antwort'), { antwort: SQL('S1') })).body.ok, true);
+  assert.equal((await e.s1.post(R(r.id, '/antwort'), { antwort: SQL('S1') })).body.ok, true);
+  assert.equal((await e.s1.post(R(r.id, '/code'), { code: CODES.S1 })).body.ok, true);
+  // Station 2: die 10. Falschantwort geht noch, die 11. nicht (Fenster gilt stationsübergreifend)
+  assert.equal((await e.s1.post(R(r.id, '/antwort'), FALSCH)).status, 200);
+  assert.equal((await e.s1.post(R(r.id, '/antwort'), FALSCH)).status, 429);
+  // Zähler nur im RAM der Runde: beim Ende verworfen
+  await e.l.post(R(r.id, '/steuerung'), { aktion: 'ende' });
+  assert.equal(e.live.intern(r.id).falscheAntwortenKonto.size, 0);
+});
