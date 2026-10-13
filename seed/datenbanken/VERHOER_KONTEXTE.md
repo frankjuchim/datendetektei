@@ -8,7 +8,7 @@ Klausur-Blueprints) lösbar und trennscharf machen. Die SQL-Dateien (`seed/daten
 `pflicht.sql`, `varianten/*.sql`, `LIESMICH.md`) werden vollständig kuratiert (kein Generator) und von
 `scripts/db_bauen.js` unter dem Namen `verhoer/<kontext>` gebaut und geprüft (nie öffentlich). Fertig: V1
 `verhoer/bibliothek`, V2 `verhoer/buergerbus`, V3 `verhoer/kiosk` (Phase 3, Task 11), V4 `verhoer/musikschule`,
-V5 `verhoer/kletterhalle` (Phase 5, Task 6) – die jeweilige `LIESMICH.md`
+V5 `verhoer/kletterhalle` (Phase 5, Task 6), V6 `verhoer/fitness`, V7 `verhoer/mensa` (Phase 6, Task 1) – die jeweilige `LIESMICH.md`
 nennt die konkreten Pflicht-Datensätze und ist für die Aufgaben maßgeblich.
 
 **Gemeinsame Regeln**
@@ -277,7 +277,9 @@ Messgerät verbunden war.
 
 *Hinweis zur Umsetzung von A6-V-05:* Im Verhör wird eine Fassung des Exports **mit genau einer Zeile je NutzerToken**
 (Stichtag) verwendet, damit `GROUP BY Geburtsjahr, PLZBereich HAVING COUNT(*) = 1` ohne Unterabfrage korrekt ist; die
-Mehrtagesfassung dient nur der Diskussion „Zeilen ≠ Personen“ (P4).
+Mehrtagesfassung dient nur der Diskussion „Zeilen ≠ Personen“ (P4). Umsetzung (Phase 6): beide Fassungen in einer DB – `Export` =
+Stichtagsfassung (2026-10-05, 25 Zeilen), `ExportVerlauf` = Mehrtagesfassung (60 Zeilen, gleiche Spalten); das
+Geburtsjahr 1949 der Kontextkarte ist die einzige Ausnahme vom Wertebereich 1950–2008.
 
 ---
 
@@ -324,6 +326,10 @@ die Tagesangebote zu.
 | Vielbesteller | genau drei Personen mit mehr als 10 Bestellungen, eine mit genau 10 | A7-V-09 |
 | Top 3 der Woche | Umsätze 2027-03-15 … 19 auf Platz 3 und 4 verschieden | A7-V-13 |
 | LIMIT 3 (Analyse) | nicht abgeholte Bestellungen je Person ohne Gleichstand auf Platz 3/4 | GP-g |
+
+*Umsetzung (Phase 6):* Fr 2027-03-26 ist Karfreitag – der März endet in den Daten mit Do 2027-03-25; zusätzlich eine
+Februarwoche (2027-02-22 … 26), damit „im März 2027“ (GP-f) ein echter Zeilenfilter ist. Einzelheiten in
+`verhoer/mensa/LIESMICH.md`.
 
 ---
 
