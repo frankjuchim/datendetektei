@@ -56,6 +56,26 @@ class AbdeckungTest(unittest.TestCase):
         luecken = [x for x in b if x.art == "luecke"]
         self.assertTrue(any("K15" in x.text for x in luecken))
 
+    def test_ausnahmen(self):
+        # begründete Ausnahme: K15 ohne Lab-Aufgabe ist kein Fehler mehr, die übrige Lücke (Prüfung) bleibt
+        b = K.analysiere(self.wurzel, ausnahmen={("K15", "Lab-Aufgabe"): "Test"})
+        self.assertTrue(any(x.art == "ausnahme" and x.text.startswith("K15") for x in b))
+        luecke = [x.text for x in b if x.art == "luecke" and x.text.startswith("K15")]
+        self.assertEqual(len(luecke), 1)
+        self.assertNotIn("Lab-Aufgabe", luecke[0])
+        self.assertIn("Prüfungsaufgabe", luecke[0])
+        # Ausnahme ohne Lücke (K01 hat ein Arbeitsblatt) → veraltet; Kompetenzen außerhalb der Matrix werden ignoriert
+        b = K.analysiere(self.wurzel, ausnahmen={("K01", "Arbeitsblatt"): "Test", ("K99", "Arbeitsblatt"): "Test"})
+        veraltet = [x.text for x in b if x.art == "ausnahme_veraltet"]
+        self.assertEqual(len(veraltet), 1)
+        self.assertIn("K01", veraltet[0])
+
+    def test_echtes_repo_streng_ohne_fehler(self):
+        # Abnahme Phase 7: echte Matrix, Akten und Materialien – nur begründete Ausnahmen (K12, K22), keine Lücken
+        b = K.analysiere(REPO)
+        self.assertEqual([x.text for x in b if x.art not in ("offen", "ausnahme")], [])
+        self.assertEqual(sorted(k for k, _ in K.AUSNAHMEN), ["K12", "K22"])
+
     def test_echtes_repo_laeuft(self):
         b = K.analysiere(REPO)
         self.assertIsInstance(b, list)

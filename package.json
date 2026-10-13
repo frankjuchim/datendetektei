@@ -30,7 +30,7 @@
     "material:vollstaendig": "python3 werkzeuge/arbeitsblaetter_pdf.py --pruefen && python3 werkzeuge/loesungen_pdf.py --pruefen && python3 werkzeuge/praesentationen_pdf.py --pruefen && python3 werkzeuge/lehrkraft_pdf.py --pruefen && python3 werkzeuge/originale_verzeichnis.py --pruefen && python3 werkzeuge/video_folien.py --pruefen",
     "material:sql": "python3 werkzeuge/material_sql_pruefen.py",
     "material:pruefen": "python3 werkzeuge/materialien_pruefen.py",
-    "material:kompetenzen": "python3 werkzeuge/kompetenz_abdeckung.py",
+    "material:kompetenzen": "python3 werkzeuge/kompetenz_abdeckung.py --streng",
     "videos": "python3 werkzeuge/video_folien.py",
     "videos:bilder": "python3 werkzeuge/video_folien.py --bilder",
     "videos:pruefen": "python3 werkzeuge/video_folien.py --pruefen",

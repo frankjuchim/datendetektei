@@ -36,7 +36,7 @@ jobs:
         run: npm run material:sql
       - name: Begriffe, Klarnamen, PDF-Namen, Schülerfassungen ohne Lösungen
         run: npm run material:pruefen
-      - name: Kompetenzabdeckung (Hinweise)
+      - name: Kompetenzabdeckung (streng; begründete Ausnahmen im Werkzeug)
         run: npm run material:kompetenzen
       - name: Chromium für die E2E-Tests
         run: npx playwright-core install --with-deps chromium
