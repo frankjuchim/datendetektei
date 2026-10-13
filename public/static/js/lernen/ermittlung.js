@@ -672,7 +672,8 @@ function zeigeLoesung(lo, { neu }) {
   const kopf = el('div', 'feedback-kopf');
   const t = el('div', 'feedback-inhalt');
   t.appendChild(el('h3', 'feedback-titel', istNurKernpunkte(a) ? 'Kernpunkte' : 'Lösung und Erklärung'));
-  if (z.status === 'angesehen') t.appendChild(el('p', 'leise', 'Du hast dir die Lösung angesehen – die Aufgabe bringt keine Punkte mehr, du kannst sie aber weiter üben.'));
+  // „weiter üben“ nur, wo nach dem Aufdecken noch geprüft werden kann (SQL-Konsole); sonst ist Prüfen gesperrt.
+  if (z.status === 'angesehen') t.appendChild(el('p', 'leise', aktuell.konsole ? 'Du hast dir die Lösung angesehen – die Aufgabe bringt keine Punkte mehr, du kannst sie aber weiter üben.' : 'Du hast dir die Lösung angesehen – die Aufgabe bringt keine Punkte mehr.'));
   kopf.appendChild(t);
   if (z.status === 'angesehen' && neu) kopf.appendChild(R.stempel('Angesehen', 'angesehen', { groesse: 'gross', auftritt: true }));
   box.appendChild(kopf);

@@ -175,7 +175,7 @@ export function teilZellen(ia, kontext, nr, aufgabe) {
       if (nrEl) nrEl.textContent = folge && i >= 0 ? String(i + 1) : '';
     }
     const n = gewaehlt.length;
-    const auftrag = mehrfach ? (folge ? 'Tippe die Zellen in der richtigen Reihenfolge an.' : 'Tippe alle passenden Zellen an.') : 'Tippe die passende Zelle an.';
+    const auftrag = mehrfach ? (folge ? 'Zellen in der richtigen Reihenfolge antippen.' : 'Alle passenden Zellen antippen.') : 'Die passende Zelle antippen.';
     info.textContent = `${auftrag} Gewählt: ${n === 0 ? 'keine' : n === 1 ? 'eine Zelle' : n + ' Zellen'}.`;
   }
   function klick(r, c) {
@@ -264,7 +264,7 @@ export function befundAendern(kopf, original, kopie, spalte) {
   const saetze = [];
   const zellen = new Set();
   const name = (c) => (kopf[c] && kopf[c].name) || `Spalte ${c + 1}`;
-  if (!geaendert.length) return { saetze: ['Du hast noch keine Zelle geändert.'], zellen, geaendert: 0 };
+  if (!geaendert.length) return { saetze: ['Noch keine Zelle geändert.'], zellen, geaendert: 0 };
   const gesehen = new Set();
   for (let c = 0; c < kopf.length; c++) {
     if (c === spalte) continue;
@@ -300,7 +300,7 @@ export function befundAendern(kopf, original, kopie, spalte) {
   if (!zellen.size) {
     saetze.push(
       geaendert.length > 1
-        ? `Kein Widerspruch – aber für diese eine Änderung musstest du ${geaendert.length} Zellen ändern.`
+        ? `Kein Widerspruch – aber für diese eine Änderung waren ${geaendert.length} Zellen zu ändern.`
         : 'Eine Zelle geändert, kein Widerspruch in der Tabelle.'
     );
   }
@@ -311,7 +311,7 @@ export function befundAendern(kopf, original, kopie, spalte) {
 export function befundLoeschen(kopf, original, geloescht) {
   const zellen = new Set();
   const saetze = [];
-  if (!geloescht.size) return { saetze: ['Du hast noch keine Zeile gelöscht.'], zellen };
+  if (!geloescht.size) return { saetze: ['Noch keine Zeile gelöscht.'], zellen };
   const rest = original.filter((z, r) => !geloescht.has(r));
   const verloren = [];
   for (let c = 0; c < kopf.length; c++) {
@@ -388,7 +388,7 @@ export function teilAnomalie(ia, kontext, nr, aufgabe) {
   function befund() {
     if (op === 'aendern') return befundAendern(kopf, original, kopie(), spalte);
     if (op === 'loeschen') return befundLoeschen(kopf, original, geloescht);
-    return eingefuegt ? befundEinfuegen(kopf, neueWerte, neuIndex) : { saetze: ['Du hast die neue Zeile noch nicht angelegt.'], zellen: new Set() };
+    return eingefuegt ? befundEinfuegen(kopf, neueWerte, neuIndex) : { saetze: ['Die neue Zeile ist noch nicht angelegt.'], zellen: new Set() };
   }
 
   function laden() {
@@ -419,11 +419,11 @@ export function teilAnomalie(ia, kontext, nr, aufgabe) {
   const anleitung = el('p', 'teil-hinweis');
   const name = (c) => (kopf[c] && kopf[c].name) || `Spalte ${c + 1}`;
   if (op === 'aendern') {
-    anleitung.textContent = `Führe den Auftrag so aus, wie die Tabelle es erlaubt: Tippe in der Spalte ${name(spalte)} jede Zelle an, die du von ${zellText(sim.alt)} auf ${zellText(sim.neu)} ändern willst. Du entscheidest, welche.`;
+    anleitung.textContent = `Auftrag so ausführen, wie die Tabelle es erlaubt: In der Spalte ${name(spalte)} jede Zelle antippen, die von ${zellText(sim.alt)} auf ${zellText(sim.neu)} geändert werden soll – welche, ist frei wählbar.`;
   } else if (op === 'loeschen') {
-    anleitung.textContent = 'Führe den Auftrag so aus, wie die Tabelle es erlaubt: Lösche die betroffene Zeile mit dem Knopf „Zeile löschen“.';
+    anleitung.textContent = 'Auftrag so ausführen, wie die Tabelle es erlaubt: die betroffene Zeile mit dem Knopf „Zeile löschen“ entfernen.';
   } else {
-    anleitung.textContent = 'Führe den Auftrag so aus, wie die Tabelle es erlaubt: Lege die neue Zeile an. Bekannt sind nur einige Werte.';
+    anleitung.textContent = 'Auftrag so ausführen, wie die Tabelle es erlaubt: die neue Zeile anlegen. Bekannt sind nur einige Werte.';
   }
   karte.appendChild(anleitung);
 
@@ -454,7 +454,7 @@ export function teilAnomalie(ia, kontext, nr, aufgabe) {
   fertig.addEventListener('click', () => {
     if (gesperrt) return;
     if (!ausgefuehrt()) {
-      hinweisAuftrag.textContent = 'Führe zuerst den Auftrag in der Tabelle aus.';
+      hinweisAuftrag.textContent = 'Zuerst den Auftrag in der Tabelle ausführen.';
       return;
     }
     phase = 'bestimmen';
@@ -517,7 +517,7 @@ export function teilAnomalie(ia, kontext, nr, aufgabe) {
     'sim-bestimmen',
     el('p', 'etikett', 'Welche Anomalie ist das?'),
     artBox,
-    el('p', 'teil-hinweis', 'Markiere dann in der Tabelle die betroffenen Zellen (antippen; Tastatur: Pfeiltasten und Leertaste).'),
+    el('p', 'teil-hinweis', 'Danach in der Tabelle die betroffenen Zellen markieren (antippen; Tastatur: Pfeiltasten und Leertaste).'),
     markInfo,
     h('div', 'knopf-reihe', zurueck, neuKnopf())
   );
@@ -791,7 +791,7 @@ export function teilZerlegen(ia, kontext, nr) {
   /* ---------- Oberfläche ---------- */
   const pool = el('ul', 'spalten-pool');
   pool.setAttribute('aria-label', 'Spalten der Rohtabelle');
-  const poolHinweis = el('p', 'teil-hinweis', 'Ziehe eine Spalte auf eine Tabelle – oder tippe sie an, dann landet sie in der gewählten Tabelle. Eine Spalte darf in mehreren Tabellen stehen (Fremdschlüssel).');
+  const poolHinweis = el('p', 'teil-hinweis', 'Spalten auf eine Tabelle ziehen – oder antippen, dann landen sie in der gewählten Tabelle. Eine Spalte darf in mehreren Tabellen stehen (Fremdschlüssel).');
   const tabBox = el('div', 'zerlegen-tabellen');
   const plus = knopf('Tabelle hinzufügen', 'knopf', 'i-plus');
   plus.addEventListener('click', () => {

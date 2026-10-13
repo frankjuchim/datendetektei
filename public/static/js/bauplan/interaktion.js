@@ -45,10 +45,10 @@ function teilErLesen(ia, kontext) {
       api.sperren(gesperrt);
     }
     if (kategorien) {
-      info.textContent = `Tippe ein Element an und ordne es einer Kategorie zu. Zugeordnet: ${zuordnung.size}`;
+      info.textContent = `Element antippen und einer Kategorie zuordnen. Zugeordnet: ${zuordnung.size}`;
       zeichneWahl();
     } else {
-      info.textContent = `Tippe alle passenden Elemente im Diagramm an. Gewählt: ${gewaehlt.size}`;
+      info.textContent = `Alle passenden Elemente im Diagramm antippen. Gewählt: ${gewaehlt.size}`;
     }
   }
 

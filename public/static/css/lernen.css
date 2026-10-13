@@ -647,3 +647,8 @@ button.puzzle-teil:hover { background: var(--flaeche); }
 /* ---------- Kür auf dem Stadtplan (Plan Phase 6 Task 7) ---------- */
 .kuer-karte .kuer-kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2) var(--a-3); }
 .kuer-karte .kuer-kopf h2 { margin: 0; }
+
+/* Probelauf 8 (2b): In der schmalen Rückmeldungsspalte rutscht der Stempel unter den Text, statt ihn auf ~100 px
+   zusammenzudrücken. */
+.feedback-kopf { flex-wrap: wrap; }
+.feedback-kopf > .feedback-inhalt { flex: 1 1 14rem; min-width: 0; }

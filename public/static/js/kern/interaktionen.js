@@ -582,7 +582,7 @@ function teilErgebnis(ia, kontext) {
   const ui = h(
     'div',
     'teil-ergebnis',
-    el('p', 'teil-hinweis', frei ? 'Trage die Ergebniszeilen ein – Zeilen fügst du selbst hinzu. NULL schreibst du als NULL.' : `Trage die ${zeilen.length} Ergebniszeilen ein. NULL schreibst du als NULL.`),
+    el('p', 'teil-hinweis', frei ? 'Ergebniszeilen eintragen – weitere Zeilen über „Zeile hinzufügen“. NULL als NULL eintragen.' : `Die ${zeilen.length} Ergebniszeilen eintragen. NULL als NULL eintragen.`),
     h('div', 'tabelle-rahmen', tabelle),
     plus,
     meld

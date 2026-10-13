@@ -218,7 +218,7 @@ export function erzeugeTisch(opt = {}) {
   kZeichnen.dataset.ansicht = 'zeichnen';
   kListe.dataset.ansicht = 'liste';
   segment.append(kZeichnen, kListe);
-  const kopfText = el('p', 'bp-kopf-text', modus === 'ergaenzen' ? 'Ergänze das vorgegebene Diagramm. Vorgegebene Elemente bleiben stehen.' : 'Zeichne den Bauplan in Chen-Notation.');
+  const kopfText = el('p', 'bp-kopf-text', modus === 'ergaenzen' ? 'Das vorgegebene Diagramm ergänzen. Vorgegebene Elemente bleiben stehen.' : 'Bauplan in Chen-Notation zeichnen.');
   kopf.append(kopfText, segment);
 
   const handyHinweis = h('p', 'bp-handy-hinweis', 'Auf dem Handy geht es im Listenmodus leichter. ');
@@ -347,7 +347,7 @@ export function erzeugeTisch(opt = {}) {
     kBez.disabled = gesperrt || voll(graph.beziehungen);
     const b = auswahl ? besitzerVon(auswahl) : null;
     kAttr.disabled = gesperrt || !b || b.el.attribute.length >= GRENZEN.attribute;
-    kAttr.title = b ? `Attribut an „${C.nameVon(b.el)}“ anhängen` : 'Wähle zuerst einen Entitäts- oder Beziehungstyp.';
+    kAttr.title = b ? `Attribut an „${C.nameVon(b.el)}“ anhängen` : 'Zuerst einen Entitäts- oder Beziehungstyp auswählen.';
     kVerb.disabled = gesperrt;
     kVerb.setAttribute('aria-pressed', verbinden ? 'true' : 'false');
     kZeichnen.setAttribute('aria-pressed', ansicht === 'zeichnen' ? 'true' : 'false');
@@ -396,7 +396,7 @@ export function erzeugeTisch(opt = {}) {
     graph.entitaeten.push({ id, name: '', attribute: [] });
     layout[id] = freiePosition(80, 30);
     auswahl = id;
-    melde('Neuer Entitätstyp angelegt. Gib ihm einen Namen.');
+    melde('Neuer Entitätstyp angelegt – jetzt den Namen eintragen.');
     sichtbarMachen(id);
     geaendert({ struktur: true });
     fokussiereName(id);
@@ -423,7 +423,7 @@ export function erzeugeTisch(opt = {}) {
     }
     auswahl = id;
     sichtbarMachen(id);
-    melde(enden.length ? 'Neuer Beziehungstyp angelegt. Gib ihm einen Namen und setze die Kardinalitäten.' : 'Neuer Beziehungstyp angelegt. Verbinde ihn mit Entitätstypen.');
+    melde(enden.length ? 'Neuer Beziehungstyp angelegt – jetzt Namen und Kardinalitäten eintragen.' : 'Neuer Beziehungstyp angelegt – jetzt mit Entitätstypen verbinden.');
     geaendert({ struktur: true });
     fokussiereName(id);
     return id;
@@ -507,7 +507,7 @@ export function erzeugeTisch(opt = {}) {
     if (!f) return;
     if (!verbinden.erstes) {
       verbinden.erstes = f.id;
-      melde(`Verbinden: „${C.nameVon(f.el)}“ gewählt. Tippe jetzt das zweite Element an.`);
+      melde(`Verbinden: „${C.nameVon(f.el)}“ gewählt. Jetzt das zweite Element antippen.`);
       zeichneSvg();
       return;
     }
@@ -521,11 +521,11 @@ export function erzeugeTisch(opt = {}) {
         return beendeVerbinden();
       }
       neueBeziehung([a.id, b.id]);
-      melde(a.id === b.id ? `Rekursiver Beziehungstyp an „${C.nameVon(a.el)}“ angelegt. Gib ihm einen Namen, Rollen und Kardinalitäten.` : `Beziehungstyp zwischen „${C.nameVon(a.el)}“ und „${C.nameVon(b.el)}“ angelegt. Gib ihm einen Namen und setze die Kardinalitäten.`);
+      melde(a.id === b.id ? `Rekursiver Beziehungstyp an „${C.nameVon(a.el)}“ angelegt – jetzt Namen, Rollen und Kardinalitäten eintragen.` : `Beziehungstyp zwischen „${C.nameVon(a.el)}“ und „${C.nameVon(b.el)}“ angelegt – jetzt Namen und Kardinalitäten eintragen.`);
       return beendeVerbinden(false);
     }
     if (a.art === 'beziehung' && b.art === 'beziehung') {
-      melde('Verbinde einen Entitätstyp mit einem Beziehungstyp oder zwei Entitätstypen miteinander.');
+      melde('Verbunden werden ein Entitätstyp mit einem Beziehungstyp oder zwei Entitätstypen miteinander.');
       return beendeVerbinden();
     }
     const bez = a.art === 'beziehung' ? a : b;
@@ -536,7 +536,7 @@ export function erzeugeTisch(opt = {}) {
     }
     bez.el.enden.push({ entitaet: ent.id, kard: '', rolle: '' });
     auswahl = bez.id;
-    melde(`„${C.nameVon(ent.el)}“ mit „${C.nameVon(bez.el)}“ verbunden. Setze die Kardinalität.`);
+    melde(`„${C.nameVon(ent.el)}“ mit „${C.nameVon(bez.el)}“ verbunden – jetzt die Kardinalität eintragen.`);
     geaendert({ struktur: true });
     return beendeVerbinden(false);
   }
@@ -767,7 +767,7 @@ export function erzeugeTisch(opt = {}) {
     const f = auswahl ? finde(auswahl) : null;
     if (!f) {
       auswahl = null;
-      panel.appendChild(el('p', 'bp-leer', 'Tippe ein Element an, um es zu bearbeiten. Neue Elemente legst du mit den Knöpfen über der Zeichenfläche an.'));
+      panel.appendChild(el('p', 'bp-leer', 'Element antippen, um es zu bearbeiten. Neue Elemente: Knöpfe über der Zeichenfläche.'));
     } else if (f.art === 'attribut') {
       panel.appendChild(formular(f.besitzer, f.besitzer.enden ? 'beziehung' : 'entitaet', f.index));
     } else {
@@ -836,7 +836,7 @@ export function erzeugeTisch(opt = {}) {
       melde('Verbinden beendet.');
     } else {
       verbinden = { erstes: null };
-      melde('Verbinden: Tippe das erste Element an – zwei Entitätstypen ergeben einen neuen Beziehungstyp, Entitätstyp und Beziehungstyp ein neues Ende.');
+      melde('Verbinden: das erste Element antippen – zwei Entitätstypen ergeben einen neuen Beziehungstyp, Entitätstyp und Beziehungstyp ein neues Ende.');
     }
     aktualisiereLeiste();
     zeichneSvg();

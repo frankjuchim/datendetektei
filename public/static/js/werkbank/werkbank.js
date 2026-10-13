@@ -107,8 +107,8 @@ export function erzeugeWerkbank(opt = {}) {
     'p',
     'wk-hinweis',
     modus === 'schluessel'
-      ? 'Tippe ein Attribut an, um es als Primärschlüssel zu markieren. Mit „↑FK“ wird es Fremdschlüssel – wähle dann die Zielrelation.'
-      : 'Lege Relationen und Attribute an. Tippe „PK“ für den Primärschlüssel und „↑FK“ für einen Fremdschlüssel mit Zielrelation.'
+      ? 'Attribut antippen, um es als Primärschlüssel zu markieren. Mit „↑FK“ wird es Fremdschlüssel – dann die Zielrelation auswählen.'
+      : 'Relationen und Attribute anlegen. „PK“ markiert den Primärschlüssel, „↑FK“ einen Fremdschlüssel mit Zielrelation.'
   );
   const leiste = el('div', 'knopf-reihe wk-leiste');
   const plusRel = knopf('Relation', 'knopf', 'i-plus');
@@ -331,7 +331,7 @@ export function erzeugeWerkbank(opt = {}) {
   function zeichne() {
     karten.replaceChildren();
     relationen.forEach((r, ri) => karten.appendChild(karte(r, ri)));
-    if (!relationen.length) karten.appendChild(el('p', 'wk-leer', modus === 'frei' ? 'Noch keine Relation. Lege mit „Relation“ die erste an.' : 'Keine Relationen vorgegeben.'));
+    if (!relationen.length) karten.appendChild(el('p', 'wk-leer', modus === 'frei' ? 'Noch keine Relation – die erste entsteht mit „Relation“.' : 'Keine Relationen vorgegeben.'));
     plusRel.disabled = gesperrt || relationen.length >= GRENZEN.relationen;
     zeichneVorschau();
     markiereErgebnis();

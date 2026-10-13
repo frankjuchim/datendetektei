@@ -69,7 +69,9 @@ test('Bauplan-Tisch per Finger (iPad hoch): Element über die ganze Strecke zieh
     await tisch.locator('[data-werkzeug="entitaet"]').tap();
     await page.keyboard.type('Kletterer');
     const e1 = tisch.locator('.bp-svg .chen-entitaet[data-id="e1"]');
-    await e1.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(250); // die Zeichenfläche wird nach der Eingabe im nächsten Frame neu gezeichnet
+    await e1.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(100);
     const scrollVorher = await page.evaluate(() => window.scrollY);
     const vorher = await mitte(e1);
     await fingerZiehe(page, cdp, vorher, { x: vorher.x + 90, y: vorher.y + 60 });
@@ -144,6 +146,23 @@ test('Handy (390 px): Vorschau und Musterlösung in Kurzschreibweise brechen um 
           .map((b) => b.textContent.slice(0, 40)));
       assert.deepEqual(abgeschnitten, [], `${id}: Schema-Blöcke ohne seitliches Scrollen`);
     }
+    assert.deepEqual(meldungen, []);
+  } finally {
+    await context.close();
+  }
+});
+
+test('Lösung angesehen (Bauplan-Tisch A5-E2-07): kein Versprechen „weiter üben“, wenn Prüfen gesperrt ist', { timeout: 120000 }, async () => {
+  const { context, page, meldungen } = await lenaSeite({ viewport: { width: 1366, height: 768 } });
+  try {
+    await oeffneAufgabe(page, 'A5-E2-07');
+    await page.click('#k-loesung');
+    await page.click('#k-loesung-ja');
+    await page.waitForSelector('#loesung-karte');
+    assert.equal(await page.locator('#k-pruefen').isDisabled(), true, 'Prüfen ist nach dem Aufdecken gesperrt');
+    const text = await page.locator('#loesung-karte').textContent();
+    assert.match(text, /keine Punkte mehr/);
+    assert.doesNotMatch(text, /weiter üben/);
     assert.deepEqual(meldungen, []);
   } finally {
     await context.close();
