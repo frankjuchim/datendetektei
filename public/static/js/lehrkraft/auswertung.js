@@ -24,7 +24,21 @@ export async function zeige(panel, ctx, { neu = false } = {}) {
   csv.prepend(R.icon('i-liste'));
   const neuLaden = knopf('Neu laden', 'knopf leise', 'i-uhr');
   neuLaden.id = 'au-neu';
-  neuLaden.addEventListener('click', () => zeige(panel, ctx, { neu: true }));
+  neuLaden.addEventListener('click', async () => {
+    // Fehler (Netz weg, Sitzung abgelaufen) als Notiz über der bisherigen Auswertung, statt still zu scheitern
+    neuLaden.disabled = true;
+    try {
+      await zeige(panel, ctx, { neu: true });
+    } catch (f) {
+      neuLaden.disabled = false;
+      const alt = panel.querySelector(':scope > .notiz.au-fehler');
+      if (alt) alt.remove();
+      const n = G.fehlerNotiz(f, 'Neu laden hat nicht geklappt');
+      n.classList.add('au-fehler');
+      n.setAttribute('role', 'alert');
+      panel.prepend(n);
+    }
+  });
   kopf.append(kz, h('div', 'knopf-reihe', neuLaden, csv));
   teile.push(kopf);
 

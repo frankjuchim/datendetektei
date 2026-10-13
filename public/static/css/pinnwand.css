@@ -59,7 +59,7 @@
 
 /* ---------- Steckbrief ---------- */
 .pw-steckbrief { position: relative; }
-.pw-steckbrief > .stempel { position: absolute; right: var(--a-4); top: 64px; z-index: 2; background: color-mix(in srgb, var(--karte) 70%, transparent); }
+.pw-steckbrief > .stempel { align-self: center; margin-top: var(--a-1); background: var(--karte); }
 .pw-steckbrief dd.bekannt { color: var(--tinte); letter-spacing: 0; font-weight: 500; }
 .pw-eintraege { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: var(--t-s); }
 .pw-eintraege li { display: flex; gap: var(--a-2); align-items: baseline; min-width: 0; overflow-wrap: anywhere; }
@@ -68,7 +68,7 @@
 .pw-feld.verbunden { background: var(--rot-flaeche); box-shadow: -4px 0 0 var(--siegelrot); padding-left: 4px; }
 .pw-steckbrief.kompakt { padding: var(--a-4); gap: var(--a-3); }
 .pw-steckbrief.kompakt .steckbrief-titel { font-size: 1.5rem; }
-.pw-steckbrief.kompakt > .stempel { font-size: 1.125rem; top: 48px; }
+.pw-steckbrief.kompakt > .stempel { font-size: 1.125rem; }
 
 /* ---------- Indizienkette (Schlussplädoyer) ---------- */
 .pw-indizien {
@@ -84,7 +84,7 @@
 .pw-indiz:not(.bekannt) { opacity: 0.8; border: 2px dashed var(--tinte-3); box-shadow: none; }
 .pw-stift { position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--nadel-licht), var(--nadel) 60%, var(--nadel-schatten)); }
 .pw-indiz-kopf { font-family: var(--schrift-mono); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tinte-3); padding-bottom: 4px; margin-bottom: 6px; border-bottom: 2px solid var(--siegelrot); }
-.pw-indiz-titel { display: inline-block; font-weight: 600; margin-bottom: var(--a-1); color: var(--tinte); min-height: 24px; }
+.pw-indiz-titel { display: inline-flex; align-items: center; font-weight: 600; margin-bottom: var(--a-1); color: var(--tinte); min-height: 44px; }
 .pw-indiz-offen { color: var(--tinte-2); }
 
 .pw-aufloesung { padding: var(--a-5); display: flex; flex-direction: column; gap: var(--a-3); border-top: 4px solid var(--siegelrot); }

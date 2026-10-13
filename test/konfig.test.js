@@ -103,3 +103,19 @@ test('ERLAUBE_HTTP=1 und ungültiger PORT', () => {
   assert.equal(ladeKonfig(umgebung({ ERLAUBE_HTTP: '1' })).erlaubeHttp, true);
   assert.throws(() => ladeKonfig(umgebung({ PORT: 'achtzig' })), /PORT/);
 });
+
+test('Sicherheits-Review Phase 8: Entwicklungsschlüssel und -geheimnis werden im Betrieb (NODE_ENV=production) abgelehnt', () => {
+  // test/fixtures/dev_portal_*.pem ist öffentlich: mit diesem öffentlichen Schlüssel könnte jede:r Tokens fälschen.
+  assert.throws(() => ladeKonfig(umgebung({ NODE_ENV: 'production' })), /Entwicklungsschlüssel/);
+  const einzeilig = PEM.trim().replace(/\n/g, '\\n');
+  assert.throws(() => ladeKonfig(umgebung({ NODE_ENV: 'production', PORTAL_PUBLIC_KEY: einzeilig })), /Entwicklungsschlüssel/);
+  const crypto = require('node:crypto');
+  const anderer = crypto.generateKeyPairSync('ed25519').publicKey.export({ type: 'spki', format: 'pem' });
+  assert.doesNotThrow(() => ladeKonfig(umgebung({ NODE_ENV: 'production', PORTAL_PUBLIC_KEY: anderer })));
+  assert.throws(
+    () => ladeKonfig(umgebung({ NODE_ENV: 'production', PORTAL_PUBLIC_KEY: anderer, SESSION_SECRET: 'entwicklung-unsicher-nicht-im-betrieb-verwenden' })),
+    /SESSION_SECRET/
+  );
+  // in der Entwicklung bleibt alles erlaubt
+  assert.doesNotThrow(() => ladeKonfig(umgebung()));
+});

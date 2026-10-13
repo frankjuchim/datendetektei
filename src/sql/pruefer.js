@@ -12,8 +12,9 @@
  *   1. Parsen (Parsefehler → nicht ok, keine Ausführung) und Regeln im Abimodus der Aufgabe. Regel-Fehler im
  *      Abimodus `streng` und NICHT_SELECT → nicht ok, keine Ausführung. In `hinweis`/`aus` läuft die Abfrage trotzdem
  *      (damit die Ergebnis-Diagnosen helfen), ok ist bei einem Regel-Fehler (z. B. GB_REGEL, NULL_VERGLEICH) aber nie wahr.
- *   2. Schüler- und Musterabfrage auf Haupt-DB + allen aufgabe.varianten ausführen; das Musterergebnis je Variante
- *      wird einmal berechnet und gecacht (Schlüssel: Aufgaben-id + SHA-256 von Datenbank und Muster-SQL).
+ *   2. Schüler- und Musterabfrage auf Haupt-DB + allen aufgabe.varianten ausführen (die Schülerabfrage auf den
+ *      Varianten nur, wenn sie auf der Haupt-DB stimmt); das Musterergebnis je Variante wird einmal berechnet und
+ *      gecacht (Schlüssel: Aufgaben-id + SHA-256 von Datenbank und Muster-SQL).
  *   3. Vergleich je Variante (src/sql/diagnose.js): Spaltenanzahl, Spaltennamen nur bei aliasPflicht, Zeilen als
  *      Multimenge, Reihenfolge nur bei sortierung. Die Spaltenreihenfolge zählt immer.
  *   4. ok ⇔ kein Regel-Fehler und alle Varianten stimmen. Sonst Diagnosen aus der Haupt-DB; stimmt die Haupt-DB,
@@ -128,10 +129,9 @@ function erzeugePruefer({ sandbox, schemata = {} } = {}) {
 
     // 2. Ausführen (Muster zuerst: ein Inhaltsfehler soll nicht als Schülerfehler erscheinen)
     const muster = await musterErgebnisse(aufgabe);
-    const schueler = await Promise.all(
-      [null, ...typen].map((variante) => sandbox.fuehreAus({ db: aufgabe.datenbank, variante, sql }))
-    );
-    const [sHaupt, ...sVarianten] = schueler;
+    // Erst die Haupt-DB; die Varianten nur, wenn sie dort stimmt (sonst entscheiden sie nichts) – so vervielfacht eine
+    // langsame oder falsche Abfrage die Last der Sandbox nicht (Sicherheits-Review Phase 8).
+    const sHaupt = await sandbox.fuehreAus({ db: aufgabe.datenbank, variante: null, sql });
 
     const ergebnisDiagnosen = [];
     const fuegeHinzu = (d) => {
@@ -165,6 +165,7 @@ function erzeugePruefer({ sandbox, schemata = {} } = {}) {
     }
 
     // Varianten: Haupt-DB stimmt – stimmt es auch auf den Prüf-Datenbanken?
+    const sVarianten = await Promise.all(typen.map((variante) => sandbox.fuehreAus({ db: aufgabe.datenbank, variante, sql })));
     const daneben = [];
     typen.forEach((typ, i) => {
       const s = sVarianten[i];

@@ -23,7 +23,7 @@ export async function zeige(panel, ctx) {
         ? R.ring(a.anteil, { groesse: 48, label: `${G.akteKurz(a.nr)}: ${G.prozent(a.anteil)}` })
         : R.icon('i-schloss')
     );
-    const text = h('span', 'lk-akte-text', el('strong', null, G.akteKurz(a.nr)), el('span', null, a.titel));
+    const text = h('span', 'lk-akte-text', el('strong', null, G.akteKurz(a.nr)), el('span', null, G.akteKurz(a.nr) === 'Kür' ? String(a.titel || '').replace(/^Kür:\s*/, '') : a.titel));
     if (!a.freigeschaltet) text.appendChild(el('span', null, 'gesperrt'));
     else if (a.verhoer) text.appendChild(el('span', null, `Verhör: ${a.verhoer.besiegt} von ${d.anzahlSchueler} besiegt`));
     li.appendChild(text);

@@ -93,7 +93,7 @@ test('Themen: Seite aus dem Seed (themen.js), Niveau-Übersicht #niveaus über /
 test('Datenschutz verweist auf das Portal und enthält Platzhalter der Schule', async () => {
   const { app } = testApp();
   const res = await request(app).get('/datenschutz');
-  assert.match(res.text, /\[Angaben der Schule\]/);
+  assert.match(res.text, /<span class="platzhalter">\[[^\]]+\]<\/span>/);
   assert.match(res.text, /data-portal-pfad="\/datenschutz"/);
   assert.match(res.text, /Freitexte/);
 });
