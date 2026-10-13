@@ -271,7 +271,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Für eine Auswertung wurden alle Bestellungen vom 2027-03-16 in einer zusammengelegten Tabelle `BestellUebersicht` gespeichert:"
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Für eine Auswertung wurden alle Bestellungen vom 16.03.2027 in einer zusammengelegten Tabelle `BestellUebersicht` gespeichert:"
         },
         {
           "t": "dbtabelle",
@@ -620,7 +620,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die Bezeichnung und Preis aller vegetarischen Gerichte ausgibt, die weniger als 4,00 € kosten. [2 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Bezeichnung und Preis aller vegetarischen Gerichte ausgibt, die weniger als 4,00 € kosten. [2 BE]"
         }
       ],
       "interaktion": {
@@ -755,7 +755,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die Bezeichnungen aller Gerichte ausgibt, die am 15. März 2027 angeboten werden. [2 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die die Bezeichnungen aller Gerichte ausgibt, die am 15. März 2027 angeboten werden. [2 BE]"
         }
       ],
       "interaktion": {
@@ -1215,7 +1215,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die für alle nicht abgeholten Bestellungen den Vor- und Nachnamen der bestellenden Person, das Datum des Angebots und die Bezeichnung des Gerichts ausgibt. [3 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für alle nicht abgeholten Bestellungen den Vor- und Nachnamen der bestellenden Person, das Datum des Angebots und die Bezeichnung des Gerichts ausgibt. [3 BE]"
         }
       ],
       "interaktion": {
@@ -1352,7 +1352,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die für jedes Gericht die Gerichtnummer, die Bezeichnung und die Summe der bestellten Portionen ausgibt. Gerichte ohne Bestellung müssen nicht erscheinen. [3 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für jedes Gericht die Gerichtnummer, die Bezeichnung und die Summe der bestellten Portionen ausgibt. Gerichte ohne Bestellung müssen nicht erscheinen. [3 BE]"
         }
       ],
       "interaktion": {
@@ -1490,7 +1490,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die alle Personen mit mehr als 10 Bestellungen ausgibt – jeweils mit Personennummer, Vor- und Nachname sowie der Anzahl ihrer Bestellungen. [3 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Personen mit mehr als 10 Bestellungen ausgibt – jeweils mit Personennummer, Vor- und Nachname sowie der Anzahl ihrer Bestellungen. [3 BE]"
         }
       ],
       "interaktion": {
@@ -1667,7 +1667,7 @@
       "erklaerung": [
         {
           "t": "text",
-          "md": "a) beschreibt die Information im Sachzusammenhang (Ergebnis: 6 Tage, Spitze 2027-03-12 mit 7 Portionen). b) verwechselt Portionen mit Bestellungen (SUM ↔ COUNT) – mit `COUNT(*)` wären es 5 Tage. c) übersieht die Bedingung „nicht abgeholt“. d) beschreibt nur die Technik der Abfrage, nicht die Information im Sachzusammenhang – der Operator „analysieren“ verlangt aber den Sachzusammenhang (P10)."
+          "md": "a) beschreibt die Information im Sachzusammenhang (Ergebnis: 6 Tage, Spitze am 12.03.2027 mit 7 Portionen). b) verwechselt Portionen mit Bestellungen (SUM ↔ COUNT) – mit `COUNT(*)` wären es 5 Tage. c) übersieht die Bedingung „nicht abgeholt“. d) beschreibt nur die Technik der Abfrage, nicht die Information im Sachzusammenhang – der Operator „analysieren“ verlangt aber den Sachzusammenhang (P10)."
         }
       ]
     },
@@ -1687,7 +1687,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Für eine Auswertung wurden alle Bestellungen vom 2027-03-16 in einer zusammengelegten Tabelle `BestellUebersicht` gespeichert; Änderungen werden dort von Hand nachgetragen:"
+          "md": "Die Mensa einer Gesamtschule lässt Schülerinnen, Schüler und Beschäftigte das Mittagessen online vorbestellen. Jedes Gericht kann an mehreren Tagen angeboten werden; eine Bestellung bezieht sich auf ein Tagesangebot. Für eine Auswertung wurden alle Bestellungen vom 16.03.2027 in einer zusammengelegten Tabelle `BestellUebersicht` gespeichert; Änderungen werden dort von Hand nachgetragen:"
         },
         {
           "t": "dbtabelle",
@@ -2228,7 +2228,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die drei Gerichte mit dem höchsten Umsatz in der Woche vom 15. bis 19. März 2027 ausgibt – mit Gerichtnummer, Bezeichnung und Umsatz, absteigend nach Umsatz. Der Umsatz einer Bestellung ist Menge × Preis des Gerichts. [4 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die die drei Gerichte mit dem höchsten Umsatz in der Woche vom 15. bis 19. März 2027 ausgibt – mit Gerichtnummer, Bezeichnung und Umsatz, absteigend nach Umsatz. Der Umsatz einer Bestellung ist Menge × Preis des Gerichts. [4 BE]"
         }
       ],
       "interaktion": {
@@ -2288,7 +2288,7 @@
         },
         {
           "t": "text",
-          "md": "**Erweitern** Sie das ER-Modell entsprechend. Schlüsselattribute und Kardinalitäten sind vollständig anzugeben. [5 BE]"
+          "md": "**Erweitern Sie** das ER-Modell entsprechend. Schlüsselattribute und Kardinalitäten sind vollständig anzugeben. [5 BE]"
         }
       ],
       "interaktion": {

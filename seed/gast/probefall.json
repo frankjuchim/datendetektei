@@ -8,7 +8,7 @@
       { "name": "Sorte", "attribute": [ { "name": "SorteNr", "pk": true }, { "name": "Name" }, { "name": "Preis" }, { "name": "Vegan" } ] },
       { "name": "Verkauf", "attribute": [ { "name": "VerkaufNr", "pk": true }, { "name": "SorteNr", "fk": "Sorte" }, { "name": "Datum" }, { "name": "Kugeln" } ] }
     ] },
-    { "t": "hinweis", "md": "**So funktioniert der Probefall:** `Preis` ist der Preis **je Kugel**, `Vegan` ist `'ja'` oder `'nein'`, die Verkäufe stammen aus der Woche vom 2026-07-06 bis 2026-07-12. Antworte und tippe auf **Prüfen** – ein **Tipp** hilft weiter, **Lösung zeigen** deckt alles auf. Im Gastmodus wird nichts gespeichert." }
+    { "t": "hinweis", "md": "**So funktioniert der Probefall:** `Preis` ist der Preis **je Kugel**, `Vegan` ist `'ja'` oder `'nein'`, die Verkäufe stammen aus der Woche vom 06.07. bis 12.07.2026. Antworte und tippe auf **Prüfen** – ein **Tipp** hilft weiter, **Lösung zeigen** deckt alles auf. Im Gastmodus wird nichts gespeichert." }
   ],
   "aufgaben": [
     {
@@ -96,7 +96,7 @@
       "kompetenzen": ["DB-K23", "DB-K32"],
       "fallen": ["P2", "P5"],
       "inhalt": [
-        { "t": "text", "md": "Am Sonntag, dem 2026-07-12, war die Eisdiele voll. Gib zu **jedem Verkauf an diesem Tag** den **Namen der Sorte** und die **Anzahl der Kugeln** aus." }
+        { "t": "text", "md": "Am Sonntag, dem 12.07.2026, war die Eisdiele voll. Gib zu **jedem Verkauf an diesem Tag** den **Namen der Sorte** und die **Anzahl der Kugeln** aus." }
       ],
       "interaktion": { "kind": "sql", "datenbank": "eisdiele" },
       "loesung": { "sql": "SELECT Sorte.Name, Verkauf.Kugeln\nFROM Sorte, Verkauf\nWHERE Sorte.SorteNr = Verkauf.SorteNr\n  AND Verkauf.Datum = '2026-07-12'" },

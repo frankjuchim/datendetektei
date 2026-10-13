@@ -476,7 +476,7 @@
         },
         {
           "t": "text",
-          "md": "**Ermittler-Notiz:** Jede Gruppe in diesem Ergebnis ist ein Risiko: Wer Jahrgang und Stadtteil kennt, kann die Person fast eindeutig bestimmen."
+          "md": "**Ermittler-Notiz:** Jede Gruppe in diesem Ergebnis ist ein Risiko: Wer Jahrgang und Stadtteil kennt, kann die Person eindeutig bestimmen."
         }
       ]
     },
@@ -999,11 +999,11 @@
         },
         {
           "t": "text",
-          "md": "Ergebnis: 19 Check-ins. Das Gerät war am Stadtfest-Samstag (2026-08-29) um 21:52 und 23:06 am **Festplatz**, am 2026-09-14 um 10:17 im **Fundbüro**, an drei Dienstagabenden im **Vereinsheim TuS**, in den fünf Tatnächten an der **Hafenkante** – und nachts immer wieder an der Adresse **Kranstraße 7**."
+          "md": "Ergebnis: 19 Check-ins. Das Gerät war am Stadtfest-Samstag (29.08.2026) um 21:52 und 23:06 am **Festplatz**, am 14.09.2026 um 10:17 im **Fundbüro**, an drei Dienstagabenden im **Vereinsheim TuS**, in den fünf Tatnächten an der **Hafenkante** – und nachts immer wieder an der Adresse **Kranstraße 7**."
         },
         {
           "t": "text",
-          "md": "Gegenprobe in `FestZahlung`: Am Kaffeemobil (StandNr 4) gibt es am 2026-08-29 zwischen 22:00 und 22:59 **keine einzige** Kartenzahlung – in der Stunde davor 5, danach 4. Genau in der Lücke zwischen den beiden Festplatz-Check-ins."
+          "md": "Gegenprobe in `FestZahlung`: Am Kaffeemobil (StandNr 4) gibt es am 29.08.2026 zwischen 22:00 und 22:59 **keine einzige** Kartenzahlung – in der Stunde davor 5, danach 4. Genau in der Lücke zwischen den beiden Festplatz-Check-ins."
         },
         {
           "t": "sql",
@@ -1533,7 +1533,7 @@
         },
         {
           "t": "text",
-          "md": "Die Tabelle `Export` enthält genau einen Datensatz je NutzerToken (Stichtag 2026-10-05). Ist kein Messgerät verbunden, ist `Ruhepuls` NULL.\n\n**Entwerfen Sie** eine SQL-Abfrage, die alle Kombinationen aus Geburtsjahr und PLZBereich ausgibt, zu denen nur **ein** NutzerToken gehört. [3 BE]"
+          "md": "Die Tabelle `Export` enthält genau einen Datensatz je NutzerToken (Stichtag 05.10.2026). Ist kein Messgerät verbunden, ist `Ruhepuls` NULL.\n\n**Entwerfen Sie** eine SQL-Abfrage, die alle Kombinationen aus Geburtsjahr und PLZBereich ausgibt, zu denen nur **ein** NutzerToken gehört. [3 BE]"
         }
       ],
       "interaktion": {
