@@ -167,6 +167,10 @@ th[aria-sort="descending"] .sortier-knopf::after { content: "↓"; color: var(--
 /* ---------- Board-Reiter (Vorschau in hell) ---------- */
 .board-mini { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
 .board-mini li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; gap: var(--a-3); align-items: center; min-height: 44px; padding: 0 var(--a-2); border-top: 1px solid var(--rand); }
+/* Erfolge: Stempelspalte so breit wie der längste Stempel („Abzeichen“), damit er den Text nicht überdeckt */
+.board-mini.erfolge li { grid-template-columns: 6.5rem minmax(0, 1fr); }
+.board-mini.erfolge li > span:empty { display: none; }
+.board-mini.erfolge .stempel { justify-self: start; }
 .board-mini li:nth-child(odd) { background: var(--flaeche); }
 .board-mini .platz { font-family: var(--schrift-titel); font-weight: 700; font-size: 1.25rem; }
 .board-mini .platz.top { color: var(--messing-text); }

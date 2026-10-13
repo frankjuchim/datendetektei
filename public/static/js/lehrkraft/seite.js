@@ -154,12 +154,16 @@ function zeichneKopf() {
     kopf.appendChild(document.createTextNode(` · ${k.einstellungen.niveau}`));
   }
   const kz = $('lk-kennzahlen');
+  // Die Kür (welt 8) zählt nicht als Akte (Manifest-umfang: Akten 1–7)
+  const kuerNr = new Set(ctx.akten.filter((a) => a.kuer).map((a) => a.nr));
+  const akten = k.einstellungen.akten.filter((nr) => !kuerNr.has(nr)).length;
+  const kuer = k.einstellungen.akten.some((nr) => kuerNr.has(nr));
   const z = k.kennzahlen || { schueler: 0, anteil: 0 };
   kz.replaceChildren(
     G.kennzahl(G.zahl(z.schueler), z.schueler === 1 ? 'Schüler:in' : 'Schüler:innen'),
     G.kennzahl(G.prozent(z.anteil), 'Ø der freigeschalteten Punkte'),
     G.kennzahl(k.einstellungen.niveau, k.einstellungen.niveau === 'eA' ? 'erhöhtes Niveau' : 'grundlegendes Niveau'),
-    G.kennzahl(G.zahl(k.einstellungen.akten.length), k.einstellungen.akten.length === 1 ? 'Akte frei' : 'Akten frei')
+    G.kennzahl(G.zahl(akten), (akten === 1 ? 'Akte frei' : 'Akten frei') + (kuer ? ' + Kür' : ''))
   );
   if (!k.aktiv) kz.appendChild(el('span', 'status inaktiv', 'Kurs gesperrt – nur lesend'));
   kz.hidden = false;

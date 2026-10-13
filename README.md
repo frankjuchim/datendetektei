@@ -7,8 +7,9 @@ Der Kurs arbeitet als Ermittlerteam der *Datendetektei Weserstedt*: Mit SQL werd
 Vereinsarchiv zeigt, warum Datenbanken gut modelliert sein müssen, die Detektei entwirft ihre eigene Fall-Datenbank –
 und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, was Datenschutz eigentlich schützt.
 
-> **Status:** Phasen 1–5 umgesetzt (Kern, SQL-Engine, Lernkern mit Akten 1–3, Visualisierungen, Akten 4–5 mit
-> Modellierung; Version 0.5.0). Weitere Phasen nach `docs/superpowers/plans/`.
+> **Status:** Phasen 1–6 umgesetzt (Kern, SQL-Engine, Lernkern mit Akten 1–3, Visualisierungen, Akten 4–5 mit
+> Modellierung, Akten 6–7 mit Schlussplädoyer und Pinnwand, Kür K1, Live-Modus, Lehrkraft-Bereich mit Beamer-Board und
+> Urkunden; Version 0.6.0). Weitere Phasen nach `docs/superpowers/plans/`.
 
 ## Überblick
 
@@ -63,10 +64,29 @@ Verstehens- und Modellierungswerkzeuge: `/werkzeug/zeitlupe`, `/werkzeug/spurenb
 (angemeldet bzw. mit `?db=eisdiele`), `/werkzeug/bauplan` (Bauplan-Tisch, ER in Chen-Notation) und `/werkzeug/werkbank`
 (Schema-Werkbank) ohne Anmeldung; geprüft wird nur in den Aufgaben, serverseitig (`src/er`, `src/content/modellierung.js`).
 
+## Seiten für Schüler:innen und Lehrkräfte
+
+| Seite | Inhalt |
+|---|---|
+| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt |
+| `/akte/<n>`, `/ermittlung/<id>` | Akte und Ermittlung (Lab-Aufgaben, Konsole, Schlussplädoyer in Akte 6) |
+| `/verhoer/<n>`, `/warmup`, `/training` | Verhöre, Warm-up (Leitner), Trainingsplatz |
+| `/pinnwand` | Beweisstücke der gewonnenen Verhöre, Indizienkette des Plädoyers, Steckbrief des Phantoms |
+| `/live` | Live-Runde beitreten (Duell, Escape Room) |
+| `/lehrkraft` | Lehrkraft-Bereich: Übersicht, Einstellungen, Auswertung (Matrix, Fallen-Profil, CSV), Vorschau mit Lösungen, Live, Board, Urkunden, Materialien; Superadmin zusätzlich System |
+| `/lehrkraft/live`, `/live/<runde>/beamer` | Live-Steuerung und Beamer-Ansicht (nur Lehrkraft) |
+| `/lehrkraft/urkunden` | Druckseite „Detektei-Lizenz“ (eine A4-Seite je Schüler:in) |
+| `/board/<schlüssel>` | Beamer-Board ohne Anmeldung (Rangliste, Akten-Fortschritt, letzte Erfolge; nur Anzeigenamen) |
+
+Die Kür K1 („Eigene Datenbank bauen“, nur eA, nicht im Abitur) nutzt eine **Schreib-Sandbox**: je Anfrage eine frische
+In-Memory-Datenbank im Kindprozess (CREATE/INSERT erlaubt, Fremdschlüssel an, 1,5 s, Größen- und Zeilengrenzen), nichts
+wird gespeichert. Alle übrigen Aufgaben bleiben nur lesend.
+
 ## Inhalte
 
-Lab-Aufgaben, Verhöre und Warm-up-Karten liegen als JSON in `seed/akten/akte<n>.json` und `seed/warmup/warmup_a<n>.json`
-(Format: [`docs/AUFGABENFORMAT.md`](docs/AUFGABENFORMAT.md)), der Gastmodus in `seed/gast/probefall.json`. Der Server
+Lab-Aufgaben, Verhöre und Warm-up-Karten liegen als JSON in `seed/akten/akte<n>.json` (Kür: `seed/akten/kuer.json`) und `seed/warmup/warmup_a<n>.json`
+(Format: [`docs/AUFGABENFORMAT.md`](docs/AUFGABENFORMAT.md)), der Gastmodus in `seed/gast/probefall.json`, Beweisstücke und Steckbrief in
+`seed/fallebene.json`, Live-Pool und Escape Room in `seed/live/`. Der Server
 spielt sie beim Start per Upsert ein; `npm run validate` prüft Format, Verweise und jede SQL-Musterlösung in der Sandbox
 auf Haupt-DB und allen Varianten (EH-§8-konform). Verhör-Kontexte (eigene, nicht öffentliche DBs) liegen unter
 `seed/datenbanken/verhoer/`.
