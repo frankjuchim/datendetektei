@@ -474,3 +474,14 @@ test('Seiten: /live (alle Rollen, sonst Anmeldung), /lehrkraft/live und /live/:r
   assert.match(b.text, /\/static\/js\/live\/beamer\.js\?v=/);
   assert.equal((await e.l.get('/live/zu-kurz/beamer')).status, 404);
 });
+
+test('Niveau der Runde folgt immer dem Kurs: gA-Kurs mit niveau eA im Body → S5g, keine Akte-5-Aufgaben', async () => {
+  const e = await start({ niveau: 'gA' });
+  const r = await runde(e, { modus: 'escape', niveau: 'eA' });
+  assert.equal(r.optionen.niveau, 'gA');
+  const st = await e.l.get(R(r.id));
+  assert.ok(!JSON.stringify(st.body).includes('"S5"'), 'keine eA-Station S5');
+  await e.l.post(R(r.id, '/steuerung'), { aktion: 'ende' });
+  const duell = await e.l.post(`${K17}/live`, { modus: 'duell', niveau: 'eA', aufgaben: ['K2-L-15'] });
+  assert.equal(duell.status, 400, 'Akte-5-Aufgabe im gA-Kurs nicht startbar');
+});

@@ -27,6 +27,32 @@ let datenbanken = Object.create(null);
 let maxZeilen = 5000;
 let grenzen = { tabellen: 20, zeilen: 500, bytes: 1024 * 1024 };
 const MAX_PRUEF_ZEILEN = 1000;
+// Speicher (Review PR #6): SQLite darf im Kindprozess höchstens 64 MB Heap belegen (gilt prozessweit, auch für
+// zeroblob/randomblob und Zeichenketten aus rekursiven CTEs); ein Ergebnis höchstens 4 MB (grob geschätzt).
+const HEAP_LIMIT_BYTES = 64 * 1024 * 1024;
+const MAX_ERGEBNIS_BYTES = 4 * 1024 * 1024;
+const ZU_GROSS_TEXT = 'Ergebnis zu groß';
+{
+  const d = new Database(':memory:');
+  d.pragma(`hard_heap_limit = ${HEAP_LIMIT_BYTES}`);
+  d.close();
+}
+
+/** Grobe Größe einer Ergebniszeile in Bytes (Text als UTF-16, Blobs, Zahlen 8). */
+function zeilenBytes(zeile) {
+  let n = 16;
+  for (const w of zeile) {
+    if (typeof w === 'string') n += w.length * 2;
+    else if (w && typeof w.length === 'number') n += w.length;
+    else n += 8;
+  }
+  return n;
+}
+
+/** SQLite-Fehler, die auf zu viel Speicher hinweisen (hard_heap_limit, SQLITE_MAX_LENGTH). */
+function istSpeicherFehler(e) {
+  return !!e && (e.code === 'SQLITE_NOMEM' || e.code === 'SQLITE_TOOBIG' || /out of memory|string or blob too big/i.test(String(e.message || '')));
+}
 
 /** Über IPC (serialization: 'advanced') kommen Buffer ggf. als Uint8Array an; better-sqlite3 braucht Buffer. */
 function alsBuffer(b) {
@@ -68,16 +94,20 @@ function fuehreAus({ db: name, variante, sql }) {
     const spalten = stmt.columns().map((s) => s.name);
     const zeilen = [];
     let abgeschnitten = false;
+    let bytes = 0;
     for (const zeile of stmt.iterate()) {
       if (zeilen.length >= maxZeilen) {
         abgeschnitten = true;
         break; // beendet den Iterator (stmt wird zurückgesetzt)
       }
+      bytes += zeilenBytes(zeile);
+      if (bytes > MAX_ERGEBNIS_BYTES) return fehler('ergebnis_zu_gross', ZU_GROSS_TEXT);
       zeilen.push(zeile);
     }
     const ms = Number(process.hrtime.bigint() - start) / 1e6;
     return { ok: true, spalten, zeilen, anzahl: zeilen.length, abgeschnitten, ms: Math.round(ms * 10) / 10 };
   } catch (e) {
+    if (istSpeicherFehler(e)) return fehler('ergebnis_zu_gross', ZU_GROSS_TEXT);
     return fehler('sql_fehler', e && e.message);
   } finally {
     db.close();
@@ -112,10 +142,17 @@ function leseZeilen(stmt, max) {
   const spalten = stmt.columns().map((x) => x.name);
   const zeilen = [];
   let abgeschnitten = false;
+  let bytes = 0;
   for (const zeile of stmt.iterate()) {
     if (zeilen.length >= max) {
       abgeschnitten = true;
       break;
+    }
+    bytes += zeilenBytes(zeile);
+    if (bytes > MAX_ERGEBNIS_BYTES) {
+      const e = new Error(ZU_GROSS_TEXT);
+      e.code = 'SQLITE_TOOBIG';
+      throw e;
     }
     zeilen.push(zeile);
   }
@@ -173,6 +210,7 @@ function fuehreSkriptAus({ start, anweisungen, pruefungen }) {
           if (v) return { ok: false, ...v, ...ort, protokoll: protokoll.slice(0, -1) };
         }
       } catch (e) {
+        if (istSpeicherFehler(e)) return { ...fehler('ergebnis_zu_gross', ZU_GROSS_TEXT), ...ort };
         if (e && e.code === 'SQLITE_FULL') return { ok: false, code: 'zu_gross', text: 'Datenbank zu groß', max: grenzen.bytes, ...ort };
         return { ...fehler('sql_fehler', e && e.message), sqliteCode: (e && e.code) || null, ...ort };
       }
@@ -198,6 +236,7 @@ function fuehreSkriptAus({ start, anweisungen, pruefungen }) {
     const ms = Number(process.hrtime.bigint() - anfang) / 1e6;
     return { ok: true, protokoll, ergebnis, tabellen, pruefungen: ergebnisse, ms: Math.round(ms * 10) / 10 };
   } catch (e) {
+    if (istSpeicherFehler(e)) return fehler('ergebnis_zu_gross', ZU_GROSS_TEXT);
     if (e && e.code === 'SQLITE_FULL') return { ok: false, code: 'zu_gross', text: 'Datenbank zu groß', max: grenzen.bytes };
     return fehler('sql_fehler', e && e.message);
   } finally {
