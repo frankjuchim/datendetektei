@@ -203,6 +203,7 @@ function sqlTeilFabrik(antwort) {
       dbTitel: R.DATENBANK_TITEL[ia.datenbank] || ia.datenbank,
       entwurf: `dd-entwurf:aufgabe:${antwort.aufgabe.id}:${nr}`,
       abimodus: ia.abimodus || 'hinweis',
+      ruecksprung: `/ermittlung/${ermittlungId}?aufgabe=${encodeURIComponent(antwort.aufgabe.id)}`,
       aktionen: { pruefen: () => pruefen(), tipp: () => tipp(), loesung: () => loesungFragen() },
       beiAenderung: () => kontextTeil.geaendert()
     });
@@ -280,7 +281,7 @@ function baueAufgabe(antwort) {
     sqlTeil: sqlTeilFabrik(antwort),
     teilPruefen: (teil, teilAntwort) => teilPruefen(teil, teilAntwort),
     speicher: `dd-freitext:${kurs.id}:${a.id}`,
-    onChange: () => leereMeldung()
+    onChange: () => beiAenderung()
   });
   aktuell.aufgabe = aufgabe;
   const sqlTeil = aufgabe.teile.find((t) => t.kind === 'sql');
@@ -397,8 +398,36 @@ function leereMeldung() {
   if (aktuell && aktuell.meldung) aktuell.meldung.textContent = '';
 }
 
+/** Antwort als Vergleichswert (für Meldungen, die bis zur nächsten echten Änderung stehen bleiben). */
+function antwortStand() {
+  try {
+    return aktuell && aktuell.aufgabe ? JSON.stringify(aktuell.aufgabe.antwort()) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Änderung an der Antwort: Meldung leeren – aber nicht, wenn sich die Antwort seit der Meldung nicht geändert hat
+ * (der Editor meldet Änderungen verzögert; sonst verschwände z. B. „nicht mehr angemeldet“ gleich wieder).
+ */
+function beiAenderung() {
+  if (!aktuell || !aktuell.meldung || !aktuell.meldung.textContent) return;
+  if (aktuell.meldungStand !== undefined && aktuell.meldungStand === antwortStand()) return;
+  leereMeldung();
+}
+
+/** Element in den sichtbaren Bereich holen (Smartphone: Rückmeldungen stehen unter der Konsole). */
+function insBild(e) {
+  if (!e || typeof e.scrollIntoView !== 'function') return;
+  const ruhig = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  e.scrollIntoView({ block: 'nearest', behavior: ruhig ? 'auto' : 'smooth' });
+}
+
 function zeigeMeldung(text) {
   aktuell.meldung.textContent = text;
+  aktuell.meldungStand = antwortStand();
+  if (text) insBild(aktuell.meldung);
 }
 
 /** Stand der Ermittlung (Kacheln, Zähler) nach einer Wertung neu laden. */
@@ -471,6 +500,7 @@ async function pruefen() {
     aktualisiereKnoepfe();
     zeigeRichtig(r);
     if (r.loesung) zeigeLoesung(r.loesung, { neu: true });
+    insBild(document.getElementById('feedback-richtig'));
   } else {
     zeichneMeta();
     zeichneTipps();
@@ -478,6 +508,9 @@ async function pruefen() {
   }
   aktualisiereErmittlung();
 }
+
+/** „1 von 4 Zuordnungen stimmt.“ bzw. „2 von 4 Zuordnungen stimmen.“ */
+const stimmenSatz = (n, gesamt, was) => `${n} von ${gesamt} ${was} ${n === 1 ? 'stimmt' : 'stimmen'}.`;
 
 function teilErgebnisText(r) {
   const rm = r.rueckmeldung || {};
@@ -487,11 +520,11 @@ function teilErgebnisText(r) {
     if (!t) continue;
     if (t.felder) {
       const werte = Object.values(t.felder);
-      saetze.push(`${werte.filter(Boolean).length} von ${werte.length} Lücken stimmen.`);
+      saetze.push(stimmenSatz(werte.filter(Boolean).length, werte.length, 'Lücken'));
     }
     if (t.elemente) {
       const werte = Object.values(t.elemente);
-      saetze.push(`${werte.filter(Boolean).length} von ${werte.length} Zuordnungen stimmen.`);
+      saetze.push(stimmenSatz(werte.filter(Boolean).length, werte.length, 'Zuordnungen'));
     }
     if (Number.isInteger(t.ersteFalschePosition)) saetze.push(`Ab Baustein ${t.ersteFalschePosition + 1} stimmt die Reihenfolge nicht.`);
     if (t.zeilenzahl === 'zu_viele') saetze.push('Deine Ergebnistabelle hat zu viele Zeilen.');
@@ -534,6 +567,7 @@ function zeigeFalsch(r) {
   const diag = diagnoseVon(r);
   if (diag.length) karte.appendChild(R.diagnoseListe(diag));
   aktuell.feedback.replaceChildren(karte);
+  insBild(karte);
 }
 
 function zeigeRichtig(r) {
@@ -595,18 +629,24 @@ function weiterKnoepfe() {
 }
 
 async function tipp() {
-  if (!aktuell) return;
+  if (!aktuell || aktuell.tippLaeuft) return; // Doppelklick: nur ein Tipp je Klickfolge (jeder Tipp kostet Punkte)
+  const eintrag = aktuell;
+  eintrag.tippLaeuft = true;
+  if (eintrag.knoepfe && eintrag.knoepfe.tipp) eintrag.knoepfe.tipp.disabled = true;
   leereMeldung();
   try {
-    const r = await A.senden(A.kursApi(kurs.id, `/aufgaben/${encodeURIComponent(aktuell.id)}/tipp`));
+    const r = await A.senden(A.kursApi(kurs.id, `/aufgaben/${encodeURIComponent(eintrag.id)}/tipp`));
+    if (eintrag !== aktuell) return;
     aktuell.antwort.zustand = r.zustand;
     zeichneMeta();
     zeichneTipps();
-    aktualisiereKnoepfe();
     const letzter = aktuell.tippsBox.lastElementChild;
     if (letzter) letzter.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   } catch (f) {
-    zeigeMeldung(f.message);
+    if (eintrag === aktuell) zeigeMeldung(f.message);
+  } finally {
+    eintrag.tippLaeuft = false;
+    if (eintrag === aktuell) aktualisiereKnoepfe();
   }
 }
 

@@ -366,6 +366,16 @@ test('sql: Standardwerte, Abimodus-Vorgabe (Verhör), Diagnose ohne Zusatzfelder
   assert.deepEqual(aufrufe[0].aufgabe.varianten, ['null']);
 });
 
+test('sql: nicht ausführbare Abfrage meldet keine Zeilenzahl (null statt 0, Probelauf Phase 8)', async () => {
+  const a = aufgabe('A9-E1-02');
+  const fehler = async () => ({ ok: false, diagnose: [{ code: 'TABELLE_UNBEKANNT', falle: null, text: 'Die Tabelle X gibt es nicht.' }], zeilen: null });
+  const r = await P.pruefeAntwort(a, 'SELECT *\nFROM X', { sqlPruefer: fehler });
+  assert.equal(r.ok, false);
+  assert.equal(r.rueckmeldung.zeilen, null);
+  const leer = await P.pruefeAntwort(a, ' ', { sqlPruefer: fehler });
+  assert.equal(leer.rueckmeldung.zeilen, null);
+});
+
 test('sql: leer ruft den Prüfer nicht auf, ungültig, fehlender Prüfer', async () => {
   const a = aufgabe('A9-E1-02');
   const aufrufe = [];

@@ -136,11 +136,14 @@ function zeigeKarte(r) {
   const anders = knopf('Andere Karte', 'knopf leise');
   anders.addEventListener('click', () => ziehen(k.id));
   auf.addEventListener('click', async () => {
+    if (auf.disabled) return; // Doppelklick: Lösung nur einmal
+    auf.disabled = true;
     try {
       const l = await A.senden(A.kursApi(kurs.id, `/warmup/karten/${encodeURIComponent(k.id)}/aufdecken`));
       zeigeLoesung(loesung, l, k);
       reihe.remove();
     } catch (f) {
+      auf.disabled = false;
       A.toast(f.message);
     }
   });
@@ -163,10 +166,15 @@ function zeigeLoesung(box, l, k) {
   const reihe = el('div', 'knopf-reihe einschaetzung');
   reihe.setAttribute('role', 'group');
   reihe.setAttribute('aria-label', 'Selbsteinschätzung');
+  let sendet = false;
   for (const [wert, text, klasse] of [['gewusst', 'Gewusst', 'knopf gruen'], ['teilweise', 'Teilweise', 'knopf'], ['nicht', 'Nicht gewusst', 'knopf']]) {
     const b = knopf(text, klasse);
     b.dataset.ergebnis = wert;
     b.addEventListener('click', async () => {
+      // Doppelklick: nur eine Bewertung (sonst rückt die Karte zwei Fächer weiter)
+      if (sendet) return;
+      sendet = true;
+      for (const x of reihe.querySelectorAll('button')) x.disabled = true;
       try {
         const r = await A.senden(A.kursApi(kurs.id, `/warmup/karten/${encodeURIComponent(k.id)}/bewerten`), { ergebnis: wert });
         A.toast(r.fach > r.vorher ? `Karte rückt in Fach ${r.fach}.` : r.fach === 1 ? 'Karte zurück in Fach 1 – sie kommt bald wieder.' : `Karte bleibt in Fach ${r.fach}.`);
@@ -175,6 +183,8 @@ function zeigeLoesung(box, l, k) {
         const t = document.getElementById('karte-titel');
         if (t) t.focus();
       } catch (f) {
+        sendet = false;
+        for (const x of reihe.querySelectorAll('button')) x.disabled = false;
         A.toast(f.message);
       }
     });
