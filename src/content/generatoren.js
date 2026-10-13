@@ -10,6 +10,7 @@
 //   T5  Schlüsselkandidat: richtig + Ausschnitt-Falle, NULL, nicht minimal, nicht eindeutig   (Interaktion choice)
 //   T6  Mini-ER (1:n / n:m, ggf. Beziehungsattribut) → Kurzschreibweise, 4 Vorschläge     (Interaktion choice, nur eA)
 //   T7  Anomalieart zu einem Vorgang in Rohliste bzw. anomaliefreier Tabelle            (Interaktion choice)
+//   T8  Fehlerhafte Abfrage mit genau einer Falle P1–P7 → Falle zuordnen (4 P-Optionen)   (Interaktion choice)
 //
 // T4–T7 sind Phase 5 (Plan Task 5): eigene Fantasiekontexte (Hafen, Chor, Sternwarte …), nie aus Lab/AB/Verhör.
 // choice-Optionen bekommen ihre Ids erst nach dem Mischen (a, b, c …) – die Id verrät nichts. `niveau: 'eA'` an einem
@@ -23,6 +24,7 @@
 
 const Database = require('better-sqlite3');
 const { erzeugeZufall } = require('./zufall');
+const { FALLEN } = require('../domain');
 const namenDatei = require('../../seed/datenbanken/namen.json');
 
 /** Vornamen von Story-Figuren (Spoiler-Schutz) – nie in Trainingstabellen. */
@@ -43,7 +45,8 @@ const GENERATOREN = Object.freeze([
   Object.freeze({ typ: 'T4', titel: 'Kardinalität aus Daten', beschreibung: 'Welche Kardinalität (1:1, 1:n, n:m) stützen die Beispieldaten?', niveau: 'eA' }),
   Object.freeze({ typ: 'T5', titel: 'Schlüssel finden', beschreibung: 'Welche Spalte(n) eignen sich als Primärschlüssel – Vorsicht, Ausschnitt-Falle!', niveau: 'alle' }),
   Object.freeze({ typ: 'T6', titel: 'Bauplan überführen', beschreibung: 'Welches Relationenschema setzt ein kleines ER-Modell richtig um?', niveau: 'eA' }),
-  Object.freeze({ typ: 'T7', titel: 'Anomalie erkennen', beschreibung: 'Welche Anomalie löst ein Vorgang in einer Tabelle aus?', niveau: 'alle' })
+  Object.freeze({ typ: 'T7', titel: 'Anomalie erkennen', beschreibung: 'Welche Anomalie löst ein Vorgang in einer Tabelle aus?', niveau: 'alle' }),
+  Object.freeze({ typ: 'T8', titel: 'Falle erkennen', beschreibung: 'Eine Abfrage mit genau einem typischen Fehler: Welche Falle (P1–P7) steckt darin?', niveau: 'alle' })
 ]);
 
 const txt = (md) => ({ t: 'text', md });
@@ -891,9 +894,372 @@ function t7Kandidat(z) {
   };
 }
 
+/* ---------- T8: Fehlerhafte Abfrage – Falle zuordnen ---------- */
+
+// Eigene Fantasiekontexte (nie aus Lab, Verhör oder Übungs-DBs): je ein Entitätstyp E (1-Seite, sächlich) und ein
+// Vorgang V (n-Seite, weiblich) mit Fremdschlüssel auf E. Alle Textwerte einwortig (für das Literal ohne Hochkommata).
+// P8–P10 kommen nicht vor: Schlüsselbeurteilung (P8), ER/Überführung (P9) und verfehlte Operatoren (P10) sind keine
+// Eigenschaften einer einzelnen SELECT-Abfrage, sondern von Schemata, Modellen bzw. Textantworten (T5, T6, Verhöre).
+const T8_THEMEN = [
+  {
+    intro: 'Der Segelclub am Weserufer erfasst seine Boote und Ausfahrten in einer Datenbank.',
+    E: { tab: 'Boot', key: 'BootID', name: 'Name', ort: 'Heimathafen', al: 'b', sg: 'Boot', gen: 'Boots', pl: 'Boote', plDat: 'Booten', werte: BOOTE },
+    V: {
+      tab: 'Fahrt', key: 'FahrtID', text: 'Ziel', menge: 'Personen', opt: 'Skipper', al: 'f', sg: 'Fahrt', pl: 'Fahrten',
+      textWort: 'Ziel', mengeWort: 'Personen an Bord', mengeDat: 'Personen an Bord', optWort: 'Skipper', fkAnders: 'Schiff', bereich: [2, 9], werte: LEUCHTTUERME
+    }
+  },
+  {
+    intro: 'Der Imkerverein Weserstedt erfasst seine Bienenvölker und Honigernten in einer Datenbank.',
+    E: { tab: 'Volk', key: 'VolkID', name: 'Name', ort: 'Standort', al: 'v', sg: 'Volk', gen: 'Volks', pl: 'Völker', plDat: 'Völkern', werte: ['Lindenhof', 'Kleewiese', 'Heidekamp', 'Obstgarten', 'Rapsfeld', 'Waldrand', 'Moorblick', 'Deichrose'] },
+    V: {
+      tab: 'Ernte', key: 'ErnteID', text: 'Sorte', menge: 'Glaeser', opt: 'Pruefer', al: 'e', sg: 'Ernte', pl: 'Ernten',
+      textWort: 'Sorte', mengeWort: 'Gläser', mengeDat: 'Gläsern', optWort: 'Prüfer', fkAnders: 'Bienenvolk', bereich: [10, 60], werte: ['Raps', 'Linde', 'Akazie', 'Heide', 'Klee', 'Wildblume', 'Kastanie']
+    }
+  },
+  {
+    intro: 'Die Volkssternwarte erfasst ihre Teleskope und öffentlichen Beobachtungsabende in einer Datenbank.',
+    E: { tab: 'Teleskop', key: 'TeleskopID', name: 'Bezeichnung', ort: 'Standort', al: 't', sg: 'Teleskop', gen: 'Teleskops', pl: 'Teleskope', plDat: 'Teleskopen', werte: ['Kuppelauge', 'Sonnenrohr', 'Weitblick', 'Sternfaenger', 'Nachtfalke', 'Polarstern', 'Lichtsammler'] },
+    V: {
+      tab: 'Beobachtung', key: 'BeobachtungID', text: 'Objekt', menge: 'Gaeste', opt: 'Leitung', al: 'o', sg: 'Beobachtung', pl: 'Beobachtungen',
+      textWort: 'Objekt', mengeWort: 'Gäste', mengeDat: 'Gästen', optWort: 'Leitung', fkAnders: 'Geraet', bereich: [3, 25], werte: HIMMELSOBJEKTE
+    }
+  },
+  {
+    intro: 'Die Theater-AG der Gesamtschule Weserstedt erfasst ihre Stücke und Aufführungen in einer Datenbank.',
+    E: { tab: 'Stueck', key: 'StueckID', name: 'Titel', ort: 'Buehne', al: 's', sg: 'Stück', gen: 'Stücks', pl: 'Stücke', plDat: 'Stücken', werte: ['Sturmnacht', 'Nebelhorn', 'Wellengang', 'Moewenruf', 'Ebbe', 'Leuchtfeuer', 'Deichgraf'] },
+    V: {
+      tab: 'Auffuehrung', key: 'AuffuehrungID', text: 'Ort', menge: 'Zuschauer', opt: 'Technik', al: 'a', sg: 'Aufführung', pl: 'Aufführungen',
+      textWort: 'Ort', mengeWort: 'Zuschauer', mengeDat: 'Zuschauern', optWort: 'Technik', fkAnders: 'Inszenierung', bereich: [20, 120], werte: ['Aula', 'Stadtpark', 'Bootshalle', 'Musiksaal', 'Foyer', 'Kirchsaal']
+    }
+  }
+];
+
+const MONATE = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+const T8_FALLEN = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'];
+const FALLEN_TITEL = new Map(FALLEN.map((f) => [f.nr, f.titel]));
+const zeilenSql = (...zeilen) => zeilen.filter(Boolean).join('\n');
+
+/** Datum im Jahr 2026 (Frühling bis Herbst): { iso 'JJJJ-MM-TT', text '3. Juni 2026', zahl (2026 − MM − TT) }. */
+function t8Datum(z) {
+  const m = z.ganz(4, 9);
+  const t = z.ganz(1, 28);
+  return { iso: `2026-${String(m).padStart(2, '0')}-${String(t).padStart(2, '0')}`, text: `${t}. ${MONATE[m - 1]} 2026`, zahl: 2026 - m - t };
+}
+
+/**
+ * Varianten je Falle: (c, z) → { variante, frage, fehlerhaft, korrektur, erkl, erkennbar, ohne? }.
+ * ohne: Fallen, die als Ablenker nicht vorkommen dürfen, weil sie fachlich mit der richtigen verwechselbar sind.
+ * c = { E, V, e, v, fk, join, von, gb } (Aliasse, Verbundbedingung, FROM- und GROUP-BY-Zeile).
+ * erkennbar: Die Regelprüfung (src/sql/regeln.js) meldet die Falle selbst; sonst ist es ein inhaltlicher Fehler.
+ */
+const T8_VARIANTEN = {
+  P1: [
+    function whereAnzahl(c, z) {
+      const n = z.ganz(2, 4);
+      const sel = `SELECT ${c.e}.${c.E.name}, COUNT(*) AS Anzahl`;
+      return {
+        variante: 'P1-where-count',
+        frage: `Welche ${c.E.pl} haben mindestens ${n} ${c.V.pl}? Gesucht sind ${c.E.name} und Anzahl der ${c.V.pl}.`,
+        fehlerhaft: zeilenSql(sel, c.von, `WHERE ${c.join} AND COUNT(*) >= ${n}`, c.gb),
+        korrektur: zeilenSql(sel, c.von, `WHERE ${c.join}`, c.gb, `HAVING COUNT(*) >= ${n}`),
+        erkl: `Die Bedingung \`COUNT(*) >= ${n}\` betrifft **Gruppen**. WHERE filtert einzelne Zeilen vor dem Gruppieren und kennt noch keine Aggregate – die Bedingung gehört in HAVING.`,
+        erkennbar: true
+      };
+    },
+    function whereSumme(c, z) {
+      const m = z.ganz(c.V.bereich[1], c.V.bereich[1] * 3);
+      const sel = `SELECT ${c.e}.${c.E.name}, SUM(${c.v}.${c.V.menge}) AS Summe`;
+      return {
+        variante: 'P1-where-sum',
+        frage: `Bei welchen ${c.E.plDat} kamen insgesamt mehr als ${m} ${c.V.mengeWort} zusammen? Gesucht sind ${c.E.name} und die Summe.`,
+        fehlerhaft: zeilenSql(sel, c.von, `WHERE ${c.join} AND SUM(${c.v}.${c.V.menge}) > ${m}`, c.gb),
+        korrektur: zeilenSql(sel, c.von, `WHERE ${c.join}`, c.gb, `HAVING SUM(${c.v}.${c.V.menge}) > ${m}`),
+        erkl: `Die Summe gibt es erst **nach** dem Gruppieren. Eine Bedingung an SUM(…) gehört in HAVING, nicht in WHERE (WHERE filtert einzelne Zeilen vorher).`,
+        erkennbar: true
+      };
+    },
+    function havingZeile(c, z) {
+      const d = t8Datum(z);
+      const sel = `SELECT ${c.e}.${c.E.name}, COUNT(*) AS Anzahl`;
+      return {
+        variante: 'P1-having-zeile',
+        ohne: ['P3'], // HAVING mit nicht gruppierter Spalte – P3 wäre als Ablenker missverständlich
+        frage: `Wie viele ${c.V.pl} gab es seit dem ${d.text} je ${c.E.sg}? Gesucht sind ${c.E.name} und Anzahl.`,
+        fehlerhaft: zeilenSql(sel, c.von, `WHERE ${c.join}`, c.gb, `HAVING ${c.v}.Datum >= '${d.iso}'`),
+        korrektur: zeilenSql(sel, c.von, `WHERE ${c.join} AND ${c.v}.Datum >= '${d.iso}'`, c.gb),
+        erkl: `Die Bedingung an das Datum betrifft einzelne ${c.V.pl} (Zeilen) und gehört deshalb in WHERE – vor das Gruppieren. HAVING ist für Bedingungen an Gruppen da (mit Aggregat).`,
+        erkennbar: true
+      };
+    }
+  ],
+  P2: [
+    function ohneVerbundGruppe(c) {
+      const sel = `SELECT ${c.e}.${c.E.name}, COUNT(*) AS Anzahl`;
+      return {
+        variante: 'P2-gruppe',
+        frage: `Wie viele ${c.V.pl} gab es je ${c.E.sg}? Gesucht sind ${c.E.name} und Anzahl.`,
+        fehlerhaft: zeilenSql(sel, c.von, c.gb),
+        korrektur: zeilenSql(sel, c.von, `WHERE ${c.join}`, c.gb),
+        erkl: `Die Verbundbedingung ${c.join} fehlt. Ohne sie bildet SQL das Kreuzprodukt: Jede ${c.V.sg} wird mit jedem ${c.E.sg} kombiniert – jedes ${c.E.sg} bekommt alle ${c.V.pl} zugezählt.`,
+        erkennbar: true
+      };
+    },
+    function ohneVerbundFilter(c, z) {
+      const x = z.waehle(c.V.werte);
+      return {
+        variante: 'P2-filter',
+        frage: `Für alle ${c.V.pl} mit ${c.V.textWort} „${x}“: Datum und ${c.E.name} des zugehörigen ${c.E.gen}.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.v}.Datum, ${c.e}.${c.E.name}`, c.von, `WHERE ${c.v}.${c.V.text} = '${x}'`),
+        korrektur: zeilenSql(`SELECT ${c.v}.Datum, ${c.e}.${c.E.name}`, c.von, `WHERE ${c.join} AND ${c.v}.${c.V.text} = '${x}'`),
+        erkl: `Die Verbundbedingung ${c.join} fehlt. Ohne sie wird jede passende ${c.V.sg} mit **jedem** ${c.E.sg} kombiniert (Kreuzprodukt) – die Liste nennt zu jeder ${c.V.sg} alle ${c.E.pl}.`,
+        erkennbar: true
+      };
+    }
+  ],
+  P3: [
+    function spalteNichtGruppiert(c) {
+      return {
+        variante: 'P3-spalte',
+        frage: `Wie viele ${c.V.pl} gab es je ${c.E.sg}? Gesucht sind ${c.E.name} und Anzahl.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.e}.${c.E.name}, ${c.v}.${c.V.text}, COUNT(*) AS Anzahl`, c.von, `WHERE ${c.join}`, c.gb),
+        korrektur: zeilenSql(`SELECT ${c.e}.${c.E.name}, COUNT(*) AS Anzahl`, c.von, `WHERE ${c.join}`, c.gb),
+        erkl: `${c.v}.${c.V.text} steht im SELECT, ist aber weder aggregiert noch gruppiert – je ${c.E.sg} gibt es mehrere Werte. GROUP-BY-Regel: Jede Spalte im SELECT ist aggregiert oder steht im GROUP BY. Die Spalte gehört nicht in diese Abfrage.`,
+        erkennbar: true
+      };
+    },
+    function nameNichtGruppiert(c) {
+      const sel = `SELECT ${c.e}.${c.E.key}, ${c.e}.${c.E.name}, SUM(${c.v}.${c.V.menge}) AS Summe`;
+      return {
+        variante: 'P3-gruppe',
+        frage: `Für jedes ${c.E.sg}: ${c.E.key}, ${c.E.name} und die Summe der ${c.V.mengeWort}.`,
+        fehlerhaft: zeilenSql(sel, c.von, `WHERE ${c.join}`, `GROUP BY ${c.e}.${c.E.key}`),
+        korrektur: zeilenSql(sel, c.von, `WHERE ${c.join}`, c.gb),
+        erkl: `${c.e}.${c.E.name} steht im SELECT, aber nicht im GROUP BY. Nach der GROUP-BY-Regel (EH, Abi-Stil) muss jede nicht aggregierte Spalte im GROUP BY stehen – auch wenn ${c.E.name} vom Schlüssel ${c.E.key} abhängt.`,
+        erkennbar: true
+      };
+    }
+  ],
+  P4: [
+    function countStattSum(c) {
+      return {
+        variante: 'P4-count-statt-sum',
+        frage: `Wie viele ${c.V.mengeWort} gab es insgesamt je ${c.E.sg}? Gesucht sind ${c.E.name} und Gesamtzahl.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.e}.${c.E.name}, COUNT(*) AS Gesamt`, c.von, `WHERE ${c.join}`, c.gb),
+        korrektur: zeilenSql(`SELECT ${c.e}.${c.E.name}, SUM(${c.v}.${c.V.menge}) AS Gesamt`, c.von, `WHERE ${c.join}`, c.gb),
+        erkl: `\`COUNT(*)\` zählt die ${c.V.pl} (Zeilen). Gefragt ist aber die Gesamtzahl der ${c.V.mengeWort} – sie steht in der Spalte ${c.V.menge} und wird mit SUM addiert.`,
+        erkennbar: false
+      };
+    },
+    function sumStattCount(c) {
+      return {
+        variante: 'P4-sum-statt-count',
+        frage: `Wie viele ${c.V.pl} gab es je ${c.E.sg}? Gesucht sind ${c.E.name} und Anzahl.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.e}.${c.E.name}, SUM(${c.v}.${c.V.menge}) AS Anzahl`, c.von, `WHERE ${c.join}`, c.gb),
+        korrektur: zeilenSql(`SELECT ${c.e}.${c.E.name}, COUNT(*) AS Anzahl`, c.von, `WHERE ${c.join}`, c.gb),
+        erkl: `SUM addiert die ${c.V.mengeWort}. Gefragt ist die Anzahl der ${c.V.pl}, also die Zahl der Zeilen je Gruppe: \`COUNT(*)\`.`,
+        erkennbar: false
+      };
+    },
+    function countSpalte(c) {
+      return {
+        variante: 'P4-count-spalte',
+        ohne: ['P5'], // COUNT(spalte) bei NULL gehört zu P4 (Spec §5), P5 wäre missverständlich
+        frage: `Wie viele ${c.V.pl} sind insgesamt erfasst?`,
+        fehlerhaft: zeilenSql(`SELECT COUNT(${c.V.opt}) AS Anzahl`, `FROM ${c.V.tab}`),
+        korrektur: zeilenSql('SELECT COUNT(*) AS Anzahl', `FROM ${c.V.tab}`),
+        erkl: `COUNT(${c.V.opt}) zählt nur die Zeilen, in denen ${c.V.opt} nicht NULL ist – ${c.V.pl} ohne Angabe zu ${c.V.optWort} fehlen. Alle Zeilen zählt \`COUNT(*)\`.`,
+        erkennbar: false
+      };
+    }
+  ],
+  P5: [
+    function gleichNull(c) {
+      return {
+        variante: 'P5-gleich-null',
+        frage: `Bei welchen ${c.V.pl} ist die Spalte ${c.V.opt} nicht ausgefüllt (NULL)? Gesucht sind ${c.V.key} und Datum.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.V.key}, Datum`, `FROM ${c.V.tab}`, `WHERE ${c.V.opt} = NULL`),
+        korrektur: zeilenSql(`SELECT ${c.V.key}, Datum`, `FROM ${c.V.tab}`, `WHERE ${c.V.opt} IS NULL`),
+        erkl: `Ein Vergleich mit = NULL ist nie wahr – das Ergebnis bleibt leer. Auf fehlende Werte prüft man mit IS NULL.`,
+        erkennbar: true
+      };
+    },
+    function ungleichNull(c) {
+      return {
+        variante: 'P5-ungleich-null',
+        frage: `Bei welchen ${c.V.pl} ist die Spalte ${c.V.opt} ausgefüllt (nicht NULL)? Gesucht sind ${c.V.key} und ${c.V.opt}.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.V.key}, ${c.V.opt}`, `FROM ${c.V.tab}`, `WHERE ${c.V.opt} != NULL`),
+        korrektur: zeilenSql(`SELECT ${c.V.key}, ${c.V.opt}`, `FROM ${c.V.tab}`, `WHERE ${c.V.opt} IS NOT NULL`),
+        erkl: `Ein Vergleich mit != NULL ist nie wahr – das Ergebnis bleibt leer. Vorhandene Werte findet man mit IS NOT NULL.`,
+        erkennbar: true
+      };
+    },
+    function textOhneHochkomma(c, z) {
+      const x = z.waehle(c.V.werte);
+      return {
+        variante: 'P5-text',
+        frage: `Alle ${c.V.pl} mit ${c.V.textWort} „${x}“: Gesucht sind ${c.V.key} und Datum.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.V.key}, Datum`, `FROM ${c.V.tab}`, `WHERE ${c.V.text} = ${x}`),
+        korrektur: zeilenSql(`SELECT ${c.V.key}, Datum`, `FROM ${c.V.tab}`, `WHERE ${c.V.text} = '${x}'`),
+        erkl: `Text-Literale stehen in Hochkommata: '${x}'. Ohne sie hält SQL ${x} für einen Spaltennamen – die Abfrage bricht mit einem Fehler ab.`,
+        erkennbar: false
+      };
+    },
+    function datumOhneHochkomma(c, z) {
+      const d = t8Datum(z);
+      return {
+        variante: 'P5-datum',
+        frage: `Alle ${c.V.pl} ab dem ${d.text}: Gesucht sind ${c.V.key} und ${c.V.textWort}.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.V.key}, ${c.V.text}`, `FROM ${c.V.tab}`, `WHERE Datum >= ${d.iso}`),
+        korrektur: zeilenSql(`SELECT ${c.V.key}, ${c.V.text}`, `FROM ${c.V.tab}`, `WHERE Datum >= '${d.iso}'`),
+        erkl: `Ohne Hochkommata rechnet SQL ${d.iso.replace(/-/g, ' − ')} = ${d.zahl} und vergleicht das Datum mit dieser Zahl. Ein Datum steht als Text im Format 'JJJJ-MM-TT' in Hochkommata.`,
+        erkennbar: false
+      };
+    }
+  ],
+  P6: [
+    function klammern(c, z) {
+      const [x, y] = z.stichprobe(c.V.werte, 2);
+      const n = z.ganz(c.V.bereich[0] + 1, c.V.bereich[1]);
+      const sel = zeilenSql(`SELECT ${c.V.key}, Datum`, `FROM ${c.V.tab}`);
+      return {
+        variante: 'P6-klammern',
+        frage: `Alle ${c.V.pl} mit ${c.V.textWort} „${x}“ oder „${y}“, jeweils mit mindestens ${n} ${c.V.mengeDat}: Gesucht sind ${c.V.key} und Datum.`,
+        fehlerhaft: zeilenSql(sel, `WHERE ${c.V.text} = '${x}' OR ${c.V.text} = '${y}' AND ${c.V.menge} >= ${n}`),
+        korrektur: zeilenSql(sel, `WHERE (${c.V.text} = '${x}' OR ${c.V.text} = '${y}') AND ${c.V.menge} >= ${n}`),
+        erkl: `AND bindet stärker als OR: Die Abfrage liefert alle ${c.V.pl} mit „${x}“ – egal wie viele ${c.V.mengeWort} – und nur bei „${y}“ die mit mindestens ${n}. Die Oder-Bedingung gehört in Klammern.`,
+        erkennbar: true
+      };
+    },
+    function grenze(c, z) {
+      const n = z.ganz(c.V.bereich[0] + 1, c.V.bereich[1]);
+      const mind = z.ja();
+      const sel = zeilenSql(`SELECT ${c.V.key}, Datum`, `FROM ${c.V.tab}`);
+      const [wort, falsch, richtig] = mind ? ['mindestens', '>', '>='] : ['höchstens', '<', '<='];
+      return {
+        variante: 'P6-grenze',
+        frage: `Alle ${c.V.pl} mit ${wort} ${n} ${c.V.mengeDat}: Gesucht sind ${c.V.key} und Datum.`,
+        fehlerhaft: zeilenSql(sel, `WHERE ${c.V.menge} ${falsch} ${n}`),
+        korrektur: zeilenSql(sel, `WHERE ${c.V.menge} ${richtig} ${n}`),
+        erkl: `„${wort} ${n}“ schließt ${n} ein, also ${richtig}. Mit ${falsch} fehlen die ${c.V.pl} mit genau ${n} ${c.V.mengeDat}.`,
+        erkennbar: false
+      };
+    },
+    function likeMuster(c, z) {
+      const b = z.waehle(c.E.werte).charAt(0);
+      const sel = zeilenSql(`SELECT ${c.E.key}, ${c.E.name}`, `FROM ${c.E.tab}`);
+      return {
+        variante: 'P6-like',
+        ohne: ['P5'], // LIKE-Platzhalter gehören zu P6 (Spec §5), nicht zu den Literalen
+        frage: `Alle ${c.E.pl}, deren ${c.E.name} mit „${b}“ beginnt: Gesucht sind ${c.E.key} und ${c.E.name}.`,
+        fehlerhaft: zeilenSql(sel, `WHERE ${c.E.name} LIKE '%${b}'`),
+        korrektur: zeilenSql(sel, `WHERE ${c.E.name} LIKE '${b}%'`),
+        erkl: `Das Muster '%${b}' passt auf Werte, die mit ${b} **enden**. Für „beginnt mit“ steht der Platzhalter % hinten: '${b}%'.`,
+        erkennbar: false
+      };
+    },
+    function zwischen(c, z) {
+      const a = z.ganz(c.V.bereich[0], c.V.bereich[1] - 2);
+      const b = z.ganz(a + 2, c.V.bereich[1]);
+      const sel = zeilenSql(`SELECT ${c.V.key}, Datum`, `FROM ${c.V.tab}`);
+      return {
+        variante: 'P6-between',
+        frage: `Alle ${c.V.pl} mit ${a} bis ${b} ${c.V.mengeDat} (beide Grenzen eingeschlossen): Gesucht sind ${c.V.key} und Datum.`,
+        fehlerhaft: zeilenSql(sel, `WHERE ${c.V.menge} > ${a} AND ${c.V.menge} < ${b}`),
+        korrektur: zeilenSql(sel, `WHERE ${c.V.menge} BETWEEN ${a} AND ${b}`),
+        erkl: `Mit > und < sind beide Grenzen ausgeschlossen – ${c.V.pl} mit genau ${a} oder ${b} ${c.V.mengeDat} fehlen. BETWEEN ${a} AND ${b} schließt beide Grenzen ein (ebenso >= und <=).`,
+        erkennbar: false
+      };
+    }
+  ],
+  P7: [
+    function mehrdeutig(c) {
+      return {
+        variante: 'P7-mehrdeutig',
+        frage: `Für jede ${c.V.sg}: ${c.E.key} und ${c.E.name} des zugehörigen ${c.E.gen} sowie das Datum.`,
+        fehlerhaft: zeilenSql(`SELECT ${c.E.key}, ${c.e}.${c.E.name}, ${c.v}.Datum`, c.von, `WHERE ${c.join}`),
+        korrektur: zeilenSql(`SELECT ${c.e}.${c.E.key}, ${c.e}.${c.E.name}, ${c.v}.Datum`, c.von, `WHERE ${c.join}`),
+        erkl: `${c.E.key} gibt es in beiden Tabellen (Primärschlüssel in ${c.E.tab}, Fremdschlüssel in ${c.V.tab}). Ohne Tabellenpräfix ist die Spalte mehrdeutig – richtig ist ${c.e}.${c.E.key}.`,
+        erkennbar: true
+      };
+    },
+    function aliasFalsch(c) {
+      const sel = `SELECT ${c.v}.Datum, ${c.e}.${c.E.name}`;
+      return {
+        variante: 'P7-alias',
+        ohne: ['P2'], // Verbundbedingung vorhanden, nur falsch benannt
+        frage: `Für jede ${c.V.sg}: Datum und ${c.E.name} des zugehörigen ${c.E.gen}.`,
+        fehlerhaft: zeilenSql(sel, c.von, `WHERE ${c.E.tab}.${c.E.key} = ${c.v}.${c.fk}`),
+        korrektur: zeilenSql(sel, c.von, `WHERE ${c.join}`),
+        erkl: `Nach FROM ${c.E.tab} ${c.e} heißt die Tabelle in dieser Abfrage nur noch ${c.e} – ${c.E.tab}.${c.E.key} ist dann unbekannt. Richtig ist ${c.e}.${c.E.key}.`,
+        erkennbar: false
+      };
+    },
+    function fremdschluesselName(c) {
+      const sel = `SELECT ${c.v}.Datum, ${c.e}.${c.E.name}`;
+      return {
+        variante: 'P7-fk-name',
+        ohne: ['P2'], // „FK heißt anders als der PK“ ist P7 (Spec §5), P2 wäre missverständlich
+        frage: `Für jede ${c.V.sg}: Datum und ${c.E.name} des zugehörigen ${c.E.gen}.`,
+        fehlerhaft: zeilenSql(sel, c.von, `WHERE ${c.e}.${c.E.key} = ${c.v}.${c.E.key}`),
+        korrektur: zeilenSql(sel, c.von, `WHERE ${c.join}`),
+        erkl: `Der Fremdschlüssel in ${c.V.tab} heißt ${c.fk}, nicht ${c.E.key} – er verweist trotzdem auf ${c.E.tab}.${c.E.key}. Die Spalte ${c.v}.${c.E.key} gibt es nicht; die Verbundbedingung lautet ${c.join}.`,
+        erkennbar: false
+      };
+    }
+  ]
+};
+
+function t8Kandidat(z) {
+  const th = z.waehle(T8_THEMEN);
+  const falle = z.waehle(T8_FALLEN);
+  const bau = z.waehle(T8_VARIANTEN[falle]);
+  const { E, V } = th;
+  // Der Fremdschlüssel heißt wie der Primärschlüssel – außer in der Variante „FK heißt anders“ (P7).
+  const fkAnders = bau.name === 'fremdschluesselName';
+  const fk = fkAnders ? V.fkAnders : E.key;
+  const e = E.al;
+  const v = V.al;
+  const c = {
+    E, V, e, v, fk,
+    join: `${e}.${E.key} = ${v}.${fk}`,
+    von: `FROM ${E.tab} ${e}, ${V.tab} ${v}`,
+    gb: `GROUP BY ${e}.${E.key}, ${e}.${E.name}`
+  };
+  const f = bau(c, z);
+  const schema = [
+    { tabelle: E.tab, spalten: [{ name: E.key, pk: true }, { name: E.name }, { name: E.ort }] },
+    { tabelle: V.tab, spalten: [{ name: V.key, pk: true }, { name: fk, fk: E.tab }, { name: V.text }, { name: 'Datum' }, { name: V.menge }, { name: V.opt }] }
+  ];
+  const relationen = schema.map((t) => relation(t.tabelle, t.spalten.map((s) => ({ name: s.name, ...(s.pk ? { pk: true } : {}), ...(s.fk ? { fk: s.fk } : {}) }))));
+  const ablenker = z.stichprobe(T8_FALLEN.filter((p) => p !== falle && !(f.ohne || []).includes(p)), 3);
+  const { interaktion, loesung } = auswahl(
+    z,
+    'Welche Falle steckt in der Abfrage?',
+    [falle, ...ablenker].map((p) => ({ md: `${p} · ${FALLEN_TITEL.get(p)}`, richtig: p === falle }))
+  );
+  return {
+    titel: 'Welche Falle?',
+    kategorie: 'Abfrage analysieren',
+    kompetenz: ['DB-K31', 'DB-K28'],
+    falle: [falle],
+    inhalt: [
+      txt(`${th.intro} Datum im Format 'JJJJ-MM-TT'; die Spalte ${V.opt} ist nicht immer ausgefüllt (NULL).`),
+      { t: 'schema', relationen },
+      txt(`**Frage:** ${f.frage}`),
+      txt('Diese Abfrage soll die Frage beantworten, enthält aber genau einen typischen Fehler:'),
+      sqlBlock(f.fehlerhaft)
+    ],
+    interaktion,
+    loesung,
+    erklaerung: [txt(`**${falle} · ${FALLEN_TITEL.get(falle)}.** ${f.erkl}\n\n**Korrektur:**`), sqlBlock(f.korrektur)],
+    pruefung: { variante: f.variante, erkennbar: f.erkennbar, ohne: f.ohne || [], schema, fehlerhaft: f.fehlerhaft, korrektur: f.korrektur }
+  };
+}
+
 /* ---------- Schnittstelle ---------- */
 
-const KANDIDATEN = { T1: t1Kandidat, T2: t2Kandidat, T3: t3Kandidat, T4: t4Kandidat, T5: t5Kandidat, T6: t6Kandidat, T7: t7Kandidat };
+const KANDIDATEN = { T1: t1Kandidat, T2: t2Kandidat, T3: t3Kandidat, T4: t4Kandidat, T5: t5Kandidat, T6: t6Kandidat, T7: t7Kandidat, T8: t8Kandidat };
 
 const istTyp = (typ) => Object.prototype.hasOwnProperty.call(KANDIDATEN, typ);
 

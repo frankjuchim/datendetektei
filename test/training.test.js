@@ -52,10 +52,10 @@ function dbAusInhalt(inhalt) {
 
 const sqlBloecke = (inhalt) => inhalt.filter((b) => b.t === 'sql').map((b) => b.sql);
 
-test('Generatoren: Liste T1–T7 mit Titel und Beschreibung', () => {
+test('Generatoren: Liste T1–T8 mit Titel und Beschreibung', () => {
   assert.deepEqual(
     G.GENERATOREN.map((g) => g.typ),
-    ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+    ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8']
   );
   for (const g of G.GENERATOREN) assert.ok(g.titel && g.beschreibung);
   assert.throws(() => G.erzeuge('T9', 1), /Unbekannt/);
@@ -183,7 +183,7 @@ test('GET training: Generatoren, heute, maxProTag', async () => {
   assert.equal(r.status, 200);
   assert.deepEqual(
     r.body.generatoren.map((g) => g.typ),
-    ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+    ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8']
   );
   assert.deepEqual(r.body.heute, { punkte: 0, aufgaben: 0 });
   assert.equal(r.body.maxProTag, 30);

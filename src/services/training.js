@@ -1,5 +1,5 @@
 'use strict';
-// Trainingsplatz (Spec §7.8, Plan Phase 3 Task 8 + Phase 5 Task 5; Muster Algo Quest src/services/training.js): Zufallsaufgaben T1–T7
+// Trainingsplatz (Spec §7.8, Plan Phase 3 Task 8 + Phase 5 Task 5 + Phase 6 Task 10; Muster Algo Quest src/services/training.js): Zufallsaufgaben T1–T8
 // aus src/content/generatoren.js, 1 Punkt je richtig gelöster Aufgabe, max. 30 Punkte je Tag (deutsche Zeit).
 //
 // Die Aufgabe wird NICHT gespeichert. Der Server leitet den Seed aus (sub, Kurs, Typ, Tag, Nummer) per HMAC ab und
