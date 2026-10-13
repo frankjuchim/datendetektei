@@ -2,6 +2,32 @@
  "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Lehrkraft-Materialien – nur Lehrkraft.",
  "dateien": [
   {
+   "datei": "DD_A1-Praesentation_Fundbuero.pdf",
+   "titel": "Präsentation Das Fundbüro (mit Notizen)",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 1",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
    "datei": "DD_A2-Praesentation_Raeder.pdf",
    "titel": "Spur der Räder (mit Notizen)",
    "akte": 2,

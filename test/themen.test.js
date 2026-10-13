@@ -120,7 +120,8 @@ test('GET /api/themen: Materialliste je Akte nur als Titel „nach Anmeldung“'
   for (const a of d.akten) {
     assert.ok(a.materialien.length >= (a.nr === 7 ? 2 : 3), `Akte ${a.nr}`);
     for (const m of a.materialien) {
-      assert.equal(m.zugang, 'nach Anmeldung');
+      // mit Whitelist-Einträgen (Phase 7) erscheinen Lehrkraft-PDFs als „nach Anmeldung (Lehrkraft)“ (MATERIALIEN.md §7)
+      assert.ok(['nach Anmeldung', 'nach Anmeldung (Lehrkraft)'].includes(m.zugang), m.zugang);
       assert.equal(m.url, undefined);
     }
     const arten = a.materialien.map((m) => m.art);

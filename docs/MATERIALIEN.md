@@ -127,7 +127,7 @@ SQL-Textfelder heißen **„SQL“** (Steuerangaben im Namen: „SQL [db=kiosk, 
   "gruppen": [
     { "gruppe": "A1", "akte": 1, "ordner": "Akte1_Fundbuero", "titel": "Akte 1 · Das Fundbüro",
       "materialien": [
-        { "art": "ab", "nr": "1.1", "ermittlung": "A1-E1", "ds": [1], "niveau": "gA/eA", "titel": "Der erste Auftrag",
+        { "art": "ab", "nr": "1.1", "ermittlung": "A1-E1", "ds": [1], "niveau": "beide", "titel": "Der erste Auftrag",
           "quelle": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB1_Der_erste_Auftrag.docx",
           "loesung": "Akte1_Fundbuero/5_Loesungen/DD_A1_AB1_Der_erste_Auftrag_LSG.docx",
           "datei": "DD_A1-AB1_Der_erste_Auftrag.pdf" },
@@ -160,7 +160,7 @@ Erzeugt aus der Zuordnung (nie von Hand ändern) für `Arbeitsblaetter_PDF`, `Lo
 ```json
 { "_hinweis": "ERZEUGT …",
   "dateien": [ { "datei": "DD_A1-AB1_Der_erste_Auftrag.pdf", "titel": "AB 1.1 · Der erste Auftrag", "akte": 1,
-                 "gruppe": "A1", "art": "ab", "fassung": "schueler", "niveau": "gA/eA", "ermittlung": "A1-E1", "ds": [1] } ] }
+                 "gruppe": "A1", "art": "ab", "fassung": "schueler", "niveau": "beide", "ermittlung": "A1-E1", "ds": [1] } ] }
 ```
 - `datei`: PDF-Name im selben Ordner (flach); bei **Originale** der Pfad der docx/pptx relativ zu `materialien/`
   (mit Unterordnern, z. B. `Akte1_Fundbuero/2_Arbeitsblaetter/…docx`).

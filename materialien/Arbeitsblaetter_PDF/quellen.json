@@ -1,6 +1,41 @@
 {
  "_hinweis": "ERZEUGT von werkzeuge/*_pdf.py – SHA-256 der Quelle je PDF; die CI prüft damit, ob die PDFs aktuell sind.",
  "dateien": {
+  "DD_A1-AB1_Der_erste_Auftrag.pdf": {
+   "quelle": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB1_Der_erste_Auftrag.docx",
+   "sha256": "f9f10bb103842c7d781664f11f8248d8241ba658228cb2934d4be67f20924677",
+   "verfahren": "pdf"
+  },
+  "DD_A1-AB2_Das_verschwundene_Fundstueck.pdf": {
+   "quelle": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB2_Das_verschwundene_Fundstueck.docx",
+   "sha256": "2fcb384a2aa2df897179e27b10a048bcbaf0b9e03dd8af7db87a9223b2713e72",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Praesentation_Fundbuero_Handout.pdf": {
+   "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
+   "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
+   "verfahren": "handout"
+  },
+  "DD_A1-Unplugged_Detektei-Ausweise.pdf": {
+   "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Detektei-Ausweise.docx",
+   "sha256": "9f6aa69c81f9b2f82e0b8a8b965a3c06d40944ecfadfdff0b9c0d0adb3699e7b",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Unplugged_Karteikarten.pdf": {
+   "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Karteikarten.docx",
+   "sha256": "fa9b9dfde77d02dcb2dd3bd6a46681b10a900311c3d211304fc5fdd2d56facae",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Unplugged_Platzhalter-Fahndung.pdf": {
+   "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Platzhalter-Fahndung.docx",
+   "sha256": "3e641de8fe030698c7ce33aa57ca72141fa466d429d5d6c3bca24d2cf5d0f17d",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A1.docx",
+   "sha256": "5c76d35060b26a39d27678fa3277d4d8109ed4f7d9510bb705f045297cc9cda1",
+   "verfahren": "ohne-loesungsteil"
+  },
   "DD_A2-AB1_Der_rote_Faden.pdf": {
    "quelle": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB1_Der_rote_Faden.docx",
    "sha256": "35eef16e56a2dbf9e98bb56782888ba9ca64fcbde6404b66d6c3495abad34e06",
