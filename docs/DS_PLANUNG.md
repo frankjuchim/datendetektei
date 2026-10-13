@@ -2166,10 +2166,10 @@ Die Schülerinnen und Schüler …
 |---|---|---|---|---|
 | S1 Das Fundbuch-Schloss | SQL in einer Tabelle (Fundbuero) | `sql`: eine Frage mit WHERE, LIKE, IS NULL, deren Antwort eine Anzahl von Datensätzen ist | K17, K18, K19, K29 | Anzahl der Ergebniszeilen, dreistellig mit führenden Nullen |
 | S2 Das Speichenschloss | Verbund über 2–3 Tabellen (StadtRad), Alias | `sql`: das Rad mit der teuersten Reparatur (ORDER BY … LIMIT 1, kein Gleichstand) | K23, K22, K16 | RadID, vierstellig aufgefüllt |
-| S3 Die Geldkassette | GROUP BY/HAVING (Stadtfest) | `sql`: Anzahl der Gruppen, die eine HAVING-Bedingung erfüllen, und Nummer der stärksten Gruppe | K26, K27, K22 | zwei Zahlen hintereinander (Anzahl + StandNr) |
+| S3 Die Geldkassette | GROUP BY/HAVING (Stadtfest) | `sql`: Anzahl der Gruppen, die eine HAVING-Bedingung erfüllen, und Nummer der stärksten Gruppe | K26, K27, K22 | drei Zahlen hintereinander (Anzahl + StandNr + Schichten des stärksten Stands) |
 | S4 Der Vereinsspind | Anomalien und Schlüssel (TuS-Rohliste) | `match`: drei Szenarien je einer Anomalieart zuordnen + `choice`: geeigneter Primärschlüssel | K08, K02 | Ziffernfolge der Zuordnung + Nummer der Schlüssel-Option |
-| S5 Die Planrolle (eA) | ER → Relationenschema (neuer Mini-Kontext) | `schema`: Überführung in der Schema-Werkbank | K41, K34 | Anzahl der Relationen + Anzahl der Fremdschlüssel |
-| S5g Der Schlüsselkasten (gA-Ersatz) | Schlüsselkandidaten, Ausschnitt-Falle | `choice` (umgesetzt statt `zellen`): die als Primärschlüssel tauglichen Attribute(-kombinationen) auswählen | K02 | Anzahl geeigneter Kandidaten + Attributzahl des minimalen Schlüssels |
+| S5 Die Planrolle (eA) | ER → Relationenschema (neuer Mini-Kontext) | `schema`: Überführung in der Schema-Werkbank | K41, K34 | Anzahl der Relationen + Anzahl der Fremdschlüssel + Anzahl aller Attribute |
+| S5g Der Schlüsselkasten (gA-Ersatz) | Schlüsselkandidaten, Ausschnitt-Falle | `choice` (umgesetzt statt `zellen`): die als Primärschlüssel tauglichen Attribute(-kombinationen) auswählen | K02 | Anzahl geeigneter Kandidaten + Attributzahl des minimalen Schlüssels + Attributzahl aller geeigneten Kandidaten |
 | S6 Der Tresor | Datenschutz (Datenspuren + Szenarien) | `match`: fünf Szenarien den Grundsätzen Zweckbindung, Datenminimierung, Transparenz, Rechtsgrundlage/Einwilligung, Speicherbegrenzung zuordnen | K44, K45 | fünfstellige Ziffernfolge der Zuordnung |
 
 **Live-Pool (20 Aufgaben, je Akte 3–4, Typ `ergebnis`/`choice`/`sql`, kurze Bearbeitungszeit ≤ 90 s):** A1 4 · A2 3 · A3 4 · A4 3 · A5 3 (eA) · A6 3. IDs `K2-L-01…20`; Inhalte nicht identisch mit Lab-, Verhör- oder Prüfungsaufgaben (Transfer). Keine Lab-Punkte, keine Speicherung nach Rundenende (Spec 7.10).

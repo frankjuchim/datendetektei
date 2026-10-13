@@ -44,7 +44,7 @@ test('Code: anzahlZeilen mit führenden Nullen, zelle, zusammengesetzt', () => {
   const z = [[4, 'Kaffeemobil'], [7, 'Losbude'], [5, 'Bierwagen']];
   assert.equal(L.berechneCode(sqlStation([{ quelle: 'anzahlZeilen', stellen: 3 }]), fuehreAusMit(z)), '003');
   assert.equal(L.berechneCode(sqlStation([{ quelle: 'zelle', zeile: 1, spalte: 1, stellen: 4 }]), fuehreAusMit(z)), '0004');
-  assert.equal(L.berechneCode(sqlStation([{ quelle: 'anzahlZeilen' }, { quelle: 'zelle', zeile: 2, spalte: 1 }]), fuehreAusMit(z)), '37');
+  assert.equal(L.berechneCode(sqlStation([{ quelle: 'anzahlZeilen' }, { quelle: 'zelle', zeile: 2, spalte: 1 }, { quelle: 'zelle', zeile: 1, spalte: 1 }]), fuehreAusMit(z)), '374');
 });
 
 test('Code: Fehler bei zu vielen Stellen, Text-Zellen, fehlender Interaktion und zu kurzem Code', () => {
@@ -53,10 +53,12 @@ test('Code: Fehler bei zu vielen Stellen, Text-Zellen, fehlender Interaktion und
   assert.throws(() => L.berechneCode(sqlStation([{ quelle: 'zelle', zeile: 1, spalte: 2 }, { quelle: 'anzahlZeilen' }]), fuehreAusMit(z)), /keine ganze Zahl/);
   assert.throws(() => L.berechneCode(sqlStation([{ quelle: 'zuordnung' }]), fuehreAusMit(z)), /match/);
   assert.throws(() => L.berechneCode(sqlStation([{ quelle: 'anzahlZeilen' }]), fuehreAusMit([[1]])), /Ziffern/);
+  // Sicherheitsprüfung F4: mindestens drei Ziffern (zwei Ziffern sind trotz Code-Bremse in ≈ 20 min erratbar)
+  assert.throws(() => L.berechneCode(sqlStation([{ quelle: 'anzahlZeilen' }, { quelle: 'zelle', zeile: 2, spalte: 1 }]), fuehreAusMit([[4, 'a'], [7, 'b']])), /3–8 Ziffern/);
   assert.throws(() => L.berechneCode({ code: {}, aufgabe: {} }, null), /code\.teile/);
 });
 
-test('Code: zuordnung, auswahl, anzahlRichtig, minimalerSchluessel, relationen/fremdschluessel', () => {
+test('Code: zuordnung, auswahl, anzahlRichtig, minimalerSchluessel, attributeRichtig, relationen/fremdschluessel/attribute', () => {
   const s4 = {
     code: { teile: [{ quelle: 'zuordnung', teil: 1 }, { quelle: 'auswahl', teil: 2 }] },
     aufgabe: {
@@ -69,13 +71,13 @@ test('Code: zuordnung, auswahl, anzahlRichtig, minimalerSchluessel, relationen/f
   };
   assert.equal(L.berechneCode(s4), '312');
   const s5g = {
-    code: { teile: [{ quelle: 'anzahlRichtig' }, { quelle: 'minimalerSchluessel' }] },
+    code: { teile: [{ quelle: 'anzahlRichtig' }, { quelle: 'minimalerSchluessel' }, { quelle: 'attributeRichtig' }] },
     aufgabe: { interaktion: { kind: 'choice', mehrfach: true, optionen: [{ id: 'a', code: '(A, B)' }, { id: 'b', code: '(C, D, E)' }, { id: 'c', code: '(F)' }] }, loesung: { richtig: ['a', 'b'] } }
   };
-  assert.equal(L.berechneCode(s5g), '22');
+  assert.equal(L.berechneCode(s5g), '225');
   const rel = (fk) => [{ name: 'A', attribute: [{ name: 'x', pk: true }] }, { name: 'B', attribute: [{ name: 'y', pk: true }, { name: 'x', fk: fk ? 'A' : undefined }] }];
-  const s5 = (muster) => ({ code: { teile: [{ quelle: 'relationen' }, { quelle: 'fremdschluessel' }] }, aufgabe: { interaktion: { kind: 'schema', modus: 'frei' }, loesung: { muster } } });
-  assert.equal(L.berechneCode(s5([rel(true)])), '21');
+  const s5 = (muster) => ({ code: { teile: [{ quelle: 'relationen' }, { quelle: 'fremdschluessel' }, { quelle: 'attribute' }] }, aufgabe: { interaktion: { kind: 'schema', modus: 'frei' }, loesung: { muster } } });
+  assert.equal(L.berechneCode(s5([rel(true)])), '213');
   assert.throws(() => L.berechneCode(s5([rel(true), rel(false)])), /nicht eindeutig/);
 });
 
@@ -107,7 +109,8 @@ test('seed/live: Escape Room mit S1–S6 und S5g, Codes aus den Lösungen, alle 
   assert.equal(l.escape.startbar, true);
   const codes = Object.fromEntries(l.escape.stationen.map((s) => [s.id, s.code]));
   assert.deepEqual(Object.keys(codes), ['S1', 'S2', 'S3', 'S4', 'S5', 'S5g', 'S6']);
-  for (const c of Object.values(codes)) assert.match(c, /^\d{2,8}$/);
+  // Sicherheitsprüfung F4: jede Station (eA und gA) hat einen Code mit mindestens drei Ziffern
+  for (const [id, c] of Object.entries(codes)) assert.match(c, /^\d{3,8}$/, `${id}: ${c}`);
   assert.equal(new Set(Object.values(codes)).size, 7);
   assert.deepEqual(L.stationenFuer(l.escape, 'eA').map((s) => s.id), ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']);
   assert.deepEqual(L.stationenFuer(l.escape, 'gA').map((s) => s.id), ['S1', 'S2', 'S3', 'S4', 'S5g', 'S6']);
