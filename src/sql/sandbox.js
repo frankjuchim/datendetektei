@@ -19,15 +19,37 @@
  *   Bei abgeschnitten = true ist anzahl = maxZeilen (die exakte Gesamtzahl wäre nicht billig: Weiterzählen kann
  *   bei Kreuzprodukten beliebig lange dauern).
  *
+ * Kür K1 (Plan Phase 6 Task 7) – Schreibmodus:
+ *   fuehreSkriptAus({ start?, skript, pruefungen? }) → Promise (wird nie verworfen):
+ *   Je Anfrage eine FRISCHE In-Memory-DB im Kindprozess: leer, eine Kopie einer geladenen Haupt-DB
+ *   (start = { datenbank }) oder aus einem Startskript der Aufgabe (start = { skript }, vertrauenswürdiger Inhalt).
+ *   Danach das Schüler-Skript (mehrere Anweisungen, src/sql/skript.js) mit PRAGMA foreign_keys = ON und den Grenzen
+ *   grenzen = { tabellen: 20 eigene Tabellen, zeilen: 500 je Tabelle (Starttabellen: mindestens ihr Startbestand),
+ *   bytes: 1 MB über dem Startbestand (max_page_count) }, Skript ≤ 10 000 Zeichen, ≤ 200 Anweisungen, Ergebnis ≤
+ *   maxZeilen, Zeitlimit wie oben für Startskript + Skript + Prüfabfragen zusammen. Die DB wird danach geschlossen –
+ *   nichts bleibt erhalten (E7, Spec §7.14); Dateien gibt es nicht (nur :memory: bzw. deserialisierte Buffer).
+ *   pruefungen: [{ art: 'abfrage' | 'gleich', sql } | { art: 'daten', min }] – Prüfabfragen des Inhalts (nicht vom
+ *   Schüler), nur lesend (query_only) auf der DB nach dem Skript.
+ *   → { ok: true, protokoll: [{ nr, zeile, art, aenderungen }], ergebnis: { spalten, zeilen, anzahl, abgeschnitten, nr }
+ *       | null (letztes SELECT), tabellen: schemaVonDb, pruefungen: [{ spalten, zeilen } | { fehler } | { ok }], ms }
+ *     { ok: false, code, text, anweisung?, zeile?, art?, protokoll?, … }  code zusätzlich zu oben: zu_viele_anweisungen,
+ *       zu_viele_tabellen (max), zu_viele_zeilen (tabelle, max), zu_gross (max), start_fehler (Inhaltsfehler);
+ *       sql_fehler mit sqliteCode. Deutsche Texte: src/sql/fehlertexte_schreiben.js.
+ *
  * Keine Abhängigkeit von src/kern.
  */
 
 const path = require('node:path');
 const childProcess = require('node:child_process');
+const { vorpruefenSkript } = require('./skript');
 
 const PROZESS_DATEI = path.join(__dirname, 'sandbox-prozess.js');
 const MAX_LAENGE = 4000;
 const MAX_STARTFEHLER = 3;
+const MAX_STARTSKRIPT = 20000;
+const MAX_PRUEFUNGEN = 30;
+/** Grenzen der Kür-Sandbox (Spec §3.3; Plan Phase 6 Task 7). */
+const GRENZEN_SCHREIBEN = Object.freeze({ tabellen: 20, zeilen: 500, bytes: 1024 * 1024 });
 
 // Verbotene Wörter (ganze Wörter, ohne Groß/Klein); PRAGMA auch als Präfix (pragma_table_info(…) usw.).
 const VERBOTEN = [
@@ -106,8 +128,9 @@ function bereinigeDatenbanken(datenbanken) {
   return aus;
 }
 
-function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, maxWartend = 50, datenbanken } = {}) {
+function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, maxWartend = 50, datenbanken, grenzen = {} } = {}) {
   const dbs = bereinigeDatenbanken(datenbanken);
+  const schreibGrenzen = { ...GRENZEN_SCHREIBEN, ...grenzen };
   const pool = [];
   const warteschlange = [];
   let naechsteId = 1;
@@ -148,7 +171,7 @@ function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, ma
       try { kind.kill('SIGKILL'); } catch { /* schon beendet */ }
       weg(p, { ok: false, code: 'absturz', text: 'Sandbox-Prozess nicht erreichbar' });
     });
-    kind.send({ typ: 'start', datenbanken: dbs, maxZeilen });
+    kind.send({ typ: 'start', datenbanken: dbs, maxZeilen, grenzen: schreibGrenzen });
   }
 
   /** Prozess aus dem Pool nehmen, laufenden Auftrag beantworten, Ersatz starten. */
@@ -203,15 +226,42 @@ function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, ma
     const vor = vorpruefen(sql);
     if (!vor.ok) return Promise.resolve(vor);
     if (!vorhanden(db, variante)) return Promise.resolve({ ok: false, code: 'unbekannte_db', text: 'Unbekannte Datenbank' });
+    return einreihen({ typ: 'abfrage', db, variante: variante || null, sql });
+  }
+
+  /** Auftrag in die Warteschlange (Überlast, kein Prozess → sofortige Antwort). */
+  function einreihen(nachricht) {
     if (warteschlange.length >= maxWartend) {
       return Promise.resolve({ ok: false, code: 'ueberlastet', text: 'Sandbox überlastet' });
     }
     if (pool.length === 0) return Promise.resolve({ ok: false, code: 'absturz', text: 'Sandbox nicht verfügbar' });
     return new Promise((erledige) => {
       const id = naechsteId++;
-      warteschlange.push({ id, erledige, nachricht: { typ: 'abfrage', id, db, variante: variante || null, sql } });
+      warteschlange.push({ id, erledige, nachricht: { ...nachricht, id } });
       verteile();
     });
+  }
+
+  /** Kür K1: Schreib-Skript in einer frischen In-Memory-DB (siehe Kopf). Start und Prüfungen nur aus dem Inhalt. */
+  function fuehreSkriptAus({ start = null, skript, pruefungen = [] } = {}) {
+    if (beendet) return Promise.resolve({ ok: false, code: 'beendet', text: 'Sandbox beendet' });
+    const vor = vorpruefenSkript(skript);
+    if (!vor.ok) return Promise.resolve(vor);
+    let s = null;
+    if (start && typeof start === 'object') {
+      if (typeof start.datenbank === 'string') {
+        if (!vorhanden(start.datenbank, null)) return Promise.resolve({ ok: false, code: 'unbekannte_db', text: 'Unbekannte Datenbank' });
+        s = { datenbank: start.datenbank };
+      } else if (typeof start.skript === 'string') {
+        if (start.skript.length > MAX_STARTSKRIPT) return Promise.resolve({ ok: false, code: 'start_fehler', text: 'Startskript zu lang' });
+        s = { skript: start.skript };
+      }
+    }
+    const liste = (Array.isArray(pruefungen) ? pruefungen : []).slice(0, MAX_PRUEFUNGEN).map((p) => {
+      if (p && p.art === 'daten') return { art: 'daten', min: Number.isInteger(p.min) && p.min > 0 ? p.min : 1 };
+      return { art: p && p.art === 'gleich' ? 'gleich' : 'abfrage', sql: p && typeof p.sql === 'string' ? p.sql : '' };
+    });
+    return einreihen({ typ: 'skript', start: s, anweisungen: vor.anweisungen, pruefungen: liste });
   }
 
   function status() {
@@ -233,7 +283,7 @@ function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, ma
   }
 
   for (let i = 0; i < Math.max(1, prozesse); i++) starte();
-  return { fuehreAus, status, beende };
+  return { fuehreAus, fuehreSkriptAus, status, beende };
 }
 
-module.exports = { erzeugeSandbox, vorpruefen, ohneStringsUndKommentare, MAX_LAENGE };
+module.exports = { erzeugeSandbox, vorpruefen, ohneStringsUndKommentare, MAX_LAENGE, GRENZEN_SCHREIBEN };

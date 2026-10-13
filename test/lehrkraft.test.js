@@ -54,9 +54,10 @@ test('GET kurse: Lehrkraft sieht nur ihre Kurse mit Einstellungen und Kennzahlen
   assert.deepEqual(k.board, { aktiv: false, schluessel: null });
   assert.equal(k.kennzahlen.schueler, 2);
   assert.equal(k.kennzahlen.anteil, 0);
-  // Auswahl für die Oberfläche: Akten 1–7 mit Niveaus
-  assert.deepEqual(r.body.akten.map((a) => a.nr), [1, 2, 3, 4, 5, 6, 7]);
+  // Auswahl für die Oberfläche: Akten 1–7 mit Niveaus und die Kür (8, nur eA)
+  assert.deepEqual(r.body.akten.map((a) => a.nr), [1, 2, 3, 4, 5, 6, 7, 8]);
   assert.deepEqual(r.body.akten.find((a) => a.nr === 5).niveaus, ['eA']);
+  assert.deepEqual(r.body.akten.find((a) => a.nr === 8), { nr: 8, titel: 'Kür: Eigene Datenbank bauen', niveaus: ['eA'], kuer: true });
 });
 
 test('GET kurse: Kennzahlen = Anzahl Schüler und Durchschnitts-Anteil (ohne Namen)', async () => {
@@ -159,7 +160,7 @@ test('PUT einstellungen: Validierung (400 mit deutschem Text, nichts gespeichert
     {},
     [],
     { akten: [0] },
-    { akten: [8] },
+    { akten: [10] },
     { akten: [9] },
     { akten: [1.5] },
     { akten: ['1'] },
@@ -172,7 +173,8 @@ test('PUT einstellungen: Validierung (400 mit deutschem Text, nichts gespeichert
     { akten: [1], scoreboard: 'an' },
     { akten: [1], beamer: 1 },
     { akten: [1], unbekannt: 1 },
-    { akten: [1, 5], niveau: 'gA' }
+    { akten: [1, 5], niveau: 'gA' },
+    { akten: [1, 8], niveau: 'gA' }
   ];
   for (const body of falsch) {
     const r = await put(l, 'k:17', body);

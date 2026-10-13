@@ -3,7 +3,7 @@
 // in Phase 6).
 //
 //   GET /api/lehrkraft/kurse                          Kurse mit Einstellungen und Kennzahlen (ohne Namen)
-//   PUT /api/lehrkraft/kurse/:kurs/einstellungen      { akten?: [1..7], niveau?: 'eA'|'gA', verhoer?: 'auto'|'offen'|'gesperrt',
+//   PUT /api/lehrkraft/kurse/:kurs/einstellungen      { akten?: [1..7, 8 = Kür], niveau?: 'eA'|'gA', verhoer?: 'auto'|'offen'|'gesperrt',
 //                                                       verhoerAkten?: { "<1..7>": 'auto'|'offen'|'gesperrt'|null },
 //                                                       scoreboard?: boolean, beamer?: boolean }
 //   POST /api/lehrkraft/kurse/:kurs/board-schluessel  neuen Board-Schlüssel erzeugen (alter wird ungültig)
@@ -18,7 +18,7 @@
 const express = require('express');
 const { nurAngemeldet } = require('../kern/sitzung');
 const { istKursId } = require('../kern/verbund');
-const { AKTEN } = require('../domain');
+const { AKTEN, KUER } = require('../domain');
 const { leseEinstellungen } = require('../services/stand');
 const { neuerBoardSchluessel } = require('../services/board');
 
@@ -26,6 +26,9 @@ const FELDER = new Set(['akten', 'niveau', 'verhoer', 'verhoerAkten', 'scoreboar
 const NIVEAUS = ['eA', 'gA'];
 const VERHOER_MODI = ['auto', 'offen', 'gesperrt'];
 const AKTEN_NR = new Set(AKTEN.map((a) => a.nr));
+/** Freischaltbar: die sieben Akten und die Kür K1 (Welt 8, nur eA; Plan Phase 6 Task 7). Verhöre gibt es nur zu 1–7. */
+const FREISCHALTBAR = new Set([...AKTEN_NR, KUER.nr]);
+const PLAN = [...AKTEN, KUER];
 
 class Fehler extends Error {
   constructor(status, message) {
@@ -54,8 +57,8 @@ function pruefeAenderung(body) {
   const neu = {};
   if ('akten' in body) {
     const a = body.akten;
-    if (!Array.isArray(a) || a.length > 50 || !a.every((n) => Number.isInteger(n) && AKTEN_NR.has(n))) {
-      throw new Fehler(400, 'Akten: nur die Nummern 1 bis 7.');
+    if (!Array.isArray(a) || a.length > 50 || !a.every((n) => Number.isInteger(n) && FREISCHALTBAR.has(n))) {
+      throw new Fehler(400, 'Akten: nur die Nummern 1 bis 7 und 8 (Kür).');
     }
     neu.akten = [...new Set(a)].sort((x, y) => x - y);
   }
@@ -87,7 +90,7 @@ function pruefeAenderung(body) {
 /** Akten, die es im Niveau nicht gibt (Akte 5 nur eA). */
 function aktenOhneNiveau(akten, niveau) {
   return akten.filter((nr) => {
-    const plan = AKTEN.find((a) => a.nr === nr);
+    const plan = PLAN.find((a) => a.nr === nr);
     return plan && !plan.niveaus.includes(niveau);
   });
 }
@@ -143,7 +146,10 @@ function lehrkraftRouten({ db, stand = null }) {
     return z;
   }
 
-  const aktenAuswahl = AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, niveaus: [...a.niveaus] }));
+  const aktenAuswahl = [
+    ...AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, niveaus: [...a.niveaus] })),
+    { nr: KUER.nr, titel: KUER.titel, niveaus: [...KUER.niveaus], kuer: true }
+  ];
 
   router.get('/api/lehrkraft/kurse', angemeldet, (req, res) => {
     const zeilen =
@@ -177,8 +183,10 @@ function lehrkraftRouten({ db, stand = null }) {
       const gemischt = { ...bisher.verhoerAkten, ...aenderung.verhoerAkten };
       neu.verhoerAkten = Object.fromEntries(Object.entries(gemischt).filter(([, m]) => m !== null));
     }
-    if (aktenOhneNiveau(neu.akten, neu.niveau).length) {
-      throw new Fehler(400, 'Akte 5 gibt es nur auf erhöhtem Niveau (eA). Schalten Sie sie vor dem Wechsel zu gA ab.');
+    const ohne = aktenOhneNiveau(neu.akten, neu.niveau);
+    if (ohne.length) {
+      const was = ohne.includes(5) ? 'Akte 5' : 'Die Kür K1';
+      throw new Fehler(400, `${was} gibt es nur auf erhöhtem Niveau (eA). Schalten Sie sie vor dem Wechsel zu gA ab.`);
     }
     db.transaction(() => {
       db.prepare('UPDATE kurse SET einstellungen = ? WHERE kurs_id = ?').run(JSON.stringify(neu), kursId);
