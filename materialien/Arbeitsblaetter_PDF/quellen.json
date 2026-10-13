@@ -191,6 +191,21 @@
    "sha256": "717c7e99287e7977d1d8c57b78d6c00298bf2529cfd1b59126d5c6e3c52220a9",
    "verfahren": "ohne-loesungsteil"
   },
+  "DD_A7-Fallen-Checkliste.pdf": {
+   "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Fallen-Checkliste.docx",
+   "sha256": "db812fe1d58bafda71d7f56f54e4af379c6ba6f30c9cb1a43610755fdca3cf07",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Praesentation_Generalprobe_Handout.pdf": {
+   "quelle": "Akte7_Generalprobe/1_Praesentation/DD_A7_Generalprobe.pptx",
+   "sha256": "ce4a000efe341fe552380e613899b1079dd6848a613594349560d962bf2afde3",
+   "verfahren": "handout"
+  },
+  "DD_A7-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A7.docx",
+   "sha256": "5036ab8c863d43525e7e0f65dbdf4fc43af73cc65c86cae3ebe73beb1922cfa7",
+   "verfahren": "ohne-loesungsteil"
+  },
   "DD_Ermittler-Handbuch.pdf": {
    "quelle": "00_Gesamt/DD_Ermittler-Handbuch.docx",
    "sha256": "0e179d8272182297421bdbb24b4d23a585f8d36ce4cf931d77d4e253ef82f839",

@@ -490,7 +490,12 @@ def er_png(graph, layout, pfad, massstab=3.0, markiert=(), hintergrund="FFFFFF")
             a1 = (k["mitte"][0] + n[0] * ab, k["mitte"][1] + n[1] * ab)
             a2 = (k["mitte"][0] - n[0] * ab, k["mitte"][1] - n[1] * ab)
             q = a1 if math.hypot(a1[0] - p["x"], a1[1] - p["y"]) >= math.hypot(a2[0] - p["x"], a2[1] - p["y"]) else a2
-            text_mitte(*P(*q), rolle, _font("kursiv", 14 * s), farbe="#" + TINTE_2, art="kursiv")
+            # Textanker wie chen.js: links/rechts der Kante bündig (end/start), sonst mittig – sonst überdeckt die
+            # Rolle bei steilen Kanten das Kardinalitätsplättchen
+            font = _font("kursiv", 14 * s)
+            b = font.getlength(rolle) / s
+            versatz = -b / 2 if q[0] < k["mitte"][0] - 4 else b / 2 if q[0] > k["mitte"][0] + 4 else 0
+            text_mitte(*P(q[0] + versatz, q[1]), rolle, font, farbe="#" + TINTE_2, art="kursiv")
     bild.save(pfad, dpi=(int(96 * s), int(96 * s)))
     return pfad, w, h
 

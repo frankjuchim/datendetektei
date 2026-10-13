@@ -286,6 +286,77 @@
    "niveau": "beide"
   },
   {
+   "datei": "DD_A7-Generalprobe_eA_Erwartungshorizont.pdf",
+   "titel": "Generalprobe Datenbanken (eA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Generalprobe_gA_Erwartungshorizont.pdf",
+   "titel": "Generalprobe Datenbanken (gA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "loesung",
+   "niveau": "gA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Klausur_eA_Erwartungshorizont.pdf",
+   "titel": "Klausur Datenbanken (eA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Klausur_gA_Erwartungshorizont.pdf",
+   "titel": "Klausur Datenbanken (gA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_eA_Erwartungshorizont.pdf",
+   "titel": "Nachschreibklausur Datenbanken (eA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_gA_Erwartungshorizont.pdf",
+   "titel": "Nachschreibklausur Datenbanken (gA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 7 – mit Lösungen",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
+  },
+  {
    "datei": "DD_K1-Eigene_Datenbank_Loesung.pdf",
    "titel": "K1 · Eigene Datenbank bauen – Lösung",
    "akte": "kuer",

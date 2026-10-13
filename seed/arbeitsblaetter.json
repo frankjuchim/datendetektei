@@ -554,7 +554,104 @@
    "akte": 7,
    "ordner": "Akte7_Generalprobe",
    "titel": "Akte 7 · Die Ermittlerprüfung",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "generalprobe",
+     "ermittlung": "A7-E1",
+     "ds": [
+      13
+     ],
+     "niveau": "eA",
+     "freigabe": "lehrkraft",
+     "titel": "Generalprobe Datenbanken (eA)",
+     "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_eA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_eA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Generalprobe_eA.pdf"
+    },
+    {
+     "art": "generalprobe",
+     "ermittlung": "A7-E1",
+     "ds": [
+      13
+     ],
+     "niveau": "gA",
+     "freigabe": "lehrkraft",
+     "titel": "Generalprobe Datenbanken (gA)",
+     "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_gA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_gA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Generalprobe_gA.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A7-E1",
+     "ds": [
+      13
+     ],
+     "niveau": "beide",
+     "titel": "Kopiervorlage: Fallen-Checkliste P1–P10",
+     "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Fallen-Checkliste.docx",
+     "datei": "DD_A7-Fallen-Checkliste.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      13
+     ],
+     "niveau": "beide",
+     "titel": "Präsentation Die Ermittlerprüfung",
+     "quelle": "Akte7_Generalprobe/1_Praesentation/DD_A7_Generalprobe.pptx",
+     "datei": "DD_A7-Praesentation_Generalprobe.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "eA",
+     "titel": "Klausur Datenbanken (eA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_eA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_eA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Klausur_eA.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "gA",
+     "titel": "Klausur Datenbanken (gA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_gA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_gA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Klausur_gA.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "eA",
+     "titel": "Nachschreibklausur Datenbanken (eA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_eA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_eA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Nachschreibklausur_eA.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "gA",
+     "titel": "Nachschreibklausur Datenbanken (gA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_gA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_gA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Nachschreibklausur_gA.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      13
+     ],
+     "niveau": "beide",
+     "titel": "Lehrerhinweise Akte 7",
+     "quelle": "Akte7_Generalprobe/4_Lehrerhinweise/DD_A7_Lehrerhinweise.docx",
+     "datei": "DD_A7-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "beide",
+     "titel": "Warm-up-Karten Akte 7",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A7.docx",
+     "datei": "DD_A7-Warm-up-Karten.pdf"
+    }
+   ]
   },
   {
    "gruppe": "Kuer",
