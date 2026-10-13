@@ -279,3 +279,12 @@ test('Lesemodus bleibt unverändert: fuehreAus mit modus schreiben wird abgewies
   assert.equal(r.ok, false);
   assert.equal(r.code, 'nicht_lesend');
 });
+
+test('Speicher: riesige Werte im Schreibmodus → ergebnis_zu_gross mit deutschem Text', async () => {
+  const r = await sandbox.fuehreSkriptAus({ skript: 'SELECT zeroblob(900000000);' });
+  assert.equal(r.ok, false, JSON.stringify(r).slice(0, 200));
+  assert.equal(r.code, 'ergebnis_zu_gross');
+  assert.match(FS.ordneZu(r).text, /zu groß/);
+  const ok = await sandbox.fuehreSkriptAus({ skript: 'SELECT 1;' });
+  assert.equal(ok.ok, true);
+});

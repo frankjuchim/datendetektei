@@ -62,6 +62,7 @@ const INTERN = {
   zu_viele_tabellen: (f) => ({ code: 'ZU_VIELE_TABELLEN', text: `Deine Datenbank hat zu viele Tabellen – in der Kür-Sandbox sind höchstens ${f.max || 20} Tabellen erlaubt.` }),
   zu_viele_zeilen: (f) => ({ code: 'ZU_VIELE_ZEILEN', text: `Die Tabelle ${name(f.tabelle)} hat zu viele Datensätze – in der Kür-Sandbox sind höchstens ${f.max || 500} je Tabelle erlaubt.` }),
   zu_gross: (f) => ({ code: 'ZU_GROSS', text: `Deine Datenbank ist zu groß geworden – in der Kür-Sandbox sind höchstens ${MB(f.max)} erlaubt.` }),
+  ergebnis_zu_gross: () => ({ code: 'ERGEBNIS_ZU_GROSS', text: 'Ein Ergebnis ist zu groß geworden (riesige Werte oder sehr viele lange Texte) und wurde abgebrochen. Prüfe zeroblob, sehr lange Zeichenketten oder rekursive Abfragen.' }),
   zu_viele_anweisungen: (f) => ({ code: 'ZU_VIELE_ANWEISUNGEN', text: `Dein Skript hat zu viele Anweisungen (höchstens ${f.max || MAX_ANWEISUNGEN}).` }),
   zu_lang: (f) => ({ code: 'ZU_LANG', text: `Dein Skript ist zu lang (höchstens ${String(f.max || MAX_SKRIPT).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} Zeichen).` }),
   leer: () => ({ code: 'LEER', text: 'Dein Skript ist leer. Schreib zum Beispiel ein CREATE TABLE.' }),

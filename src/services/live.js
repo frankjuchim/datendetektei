@@ -480,7 +480,8 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
     if ([...runden.values()].filter((r) => r.status !== 'beendet').length >= GRENZEN.runden) {
       throw new HttpFehler(503, 'Gerade laufen zu viele Live-Runden. Bitte später noch einmal versuchen.');
     }
-    const niveau = b.niveau === 'gA' || b.niveau === 'eA' ? b.niveau : z.einst.niveau === 'gA' ? 'gA' : 'eA';
+    // Niveau immer aus den Kurs-Einstellungen (nie aus der Anfrage): ein gA-Kurs bekommt nie eA-Inhalte (Review PR #6).
+    const niveau = z.einst.niveau === 'gA' ? 'gA' : 'eA';
     const t = jetzt();
     const r = {
       id: neueId(),
