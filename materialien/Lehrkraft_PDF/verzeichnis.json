@@ -42,6 +42,32 @@
    "gruppe": "A3",
    "art": "lehrerhinweise",
    "fassung": "lehrkraft"
+  },
+  {
+   "datei": "DD_A4-Praesentation_Vereinsarchiv.pdf",
+   "titel": "Präsentation Chaos im Vereinsarchiv (mit Notizen)",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 4",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
   }
  ]
 }

@@ -93,6 +93,67 @@
    "gruppe": "A3",
    "art": "warmup",
    "fassung": "loesung"
+  },
+  {
+   "datei": "DD_A4-AB1_Die_Excel-Liste_Loesung.pdf",
+   "titel": "AB 4.1 · Die Excel-Liste – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-AB2_Ordnung_ins_Archiv_Loesung.pdf",
+   "titel": "AB 4.2 · Ordnung ins Archiv – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Anomalie-Rennen_Loesung.pdf",
+   "titel": "Unplugged: Anomalie-Rennen – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Schluessel-Detektiv_Loesung.pdf",
+   "titel": "Unplugged: Schlüssel-Detektiv – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 4 – mit Lösungen",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
   }
  ]
 }

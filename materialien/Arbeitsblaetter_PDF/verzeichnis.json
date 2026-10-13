@@ -153,6 +153,80 @@
    "gruppe": "A3",
    "art": "warmup",
    "fassung": "schueler"
+  },
+  {
+   "datei": "DD_A4-AB1_Die_Excel-Liste.pdf",
+   "titel": "AB 4.1 · Die Excel-Liste",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-AB2_Ordnung_ins_Archiv.pdf",
+   "titel": "AB 4.2 · Ordnung ins Archiv",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Praesentation_Vereinsarchiv_Handout.pdf",
+   "titel": "Präsentation Chaos im Vereinsarchiv (Handout)",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Anomalie-Rennen.pdf",
+   "titel": "Unplugged: Anomalie-Rennen",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Schluessel-Detektiv.pdf",
+   "titel": "Unplugged: Schlüssel-Detektiv",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 4",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
   }
  ]
 }

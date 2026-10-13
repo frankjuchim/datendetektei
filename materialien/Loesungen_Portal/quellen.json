@@ -40,6 +40,31 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
    "sha256": "498e6c384d532b7c9c46e0fefc84940f88af31777df7e7aae432e13704a6e191",
    "verfahren": "pdf"
+  },
+  "DD_A4-AB1_Die_Excel-Liste_Loesung.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB1_Die_Excel-Liste_LSG.docx",
+   "sha256": "8fe2c003562c5c027ae4fd6bf9afd0ffda42a1067bfbfb41334c09f0c32ff506",
+   "verfahren": "pdf"
+  },
+  "DD_A4-AB2_Ordnung_ins_Archiv_Loesung.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB2_Ordnung_ins_Archiv_LSG.docx",
+   "sha256": "26d2620ae74bf41ac167c3078197755630d35c3efc8612ede9785c9db5d106d4",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Unplugged_Anomalie-Rennen_Loesung.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Anomalie-Rennen_LSG.docx",
+   "sha256": "aafd88a6137f574a18c84e32dc19d44657ac5e7dc22160a0566fe4433e99e75b",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Unplugged_Schluessel-Detektiv_Loesung.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Schluessel-Detektiv_LSG.docx",
+   "sha256": "20ade5433541efedf6eff072fdcb02983ed201567c129c55f24842955ed4f2a2",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Warm-up-Karten_Loesungen.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
+   "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
+   "verfahren": "pdf"
   }
  }
 }

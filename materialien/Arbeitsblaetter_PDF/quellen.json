@@ -65,6 +65,36 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
    "sha256": "498e6c384d532b7c9c46e0fefc84940f88af31777df7e7aae432e13704a6e191",
    "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A4-AB1_Die_Excel-Liste.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB1_Die_Excel-Liste.docx",
+   "sha256": "8c8ad7de502e106ca2e65e956a109b79d8c0ccae30de82d00a05af04a4e3c5ee",
+   "verfahren": "pdf"
+  },
+  "DD_A4-AB2_Ordnung_ins_Archiv.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB2_Ordnung_ins_Archiv.docx",
+   "sha256": "319b14cffd59bb7598a7aca4b2801f7c07e0c99e1910daf1ae14ab460628cb66",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Praesentation_Vereinsarchiv_Handout.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+   "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
+   "verfahren": "handout"
+  },
+  "DD_A4-Unplugged_Anomalie-Rennen.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Anomalie-Rennen.docx",
+   "sha256": "a2cad8fd49c2b33ab71948d8a773ce3c35a1d5cb2c1da166fde4951c410601b4",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Unplugged_Schluessel-Detektiv.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Schluessel-Detektiv.docx",
+   "sha256": "b31a6da8b8cd628f21753c4b42f74d5eba789b055ff6aa87b7057907548d3ee5",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
+   "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
+   "verfahren": "ohne-loesungsteil"
   }
  }
 }

@@ -20,6 +20,16 @@
    "quelle": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
    "sha256": "dbd824b248f6793d49bfe5020dd44f43c44865d4908fa8792b85f0c83d15b2f2",
    "verfahren": "notizen"
+  },
+  "DD_A4-Lehrerhinweise.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/4_Lehrerhinweise/DD_A4_Lehrerhinweise.docx",
+   "sha256": "e17118004bdf31e19c547c1656f9410ac7bd5304b027e89e35dc23b74b08ad39",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Praesentation_Vereinsarchiv.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+   "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
+   "verfahren": "notizen"
   }
  }
 }
