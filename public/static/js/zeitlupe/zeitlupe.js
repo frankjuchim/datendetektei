@@ -88,7 +88,8 @@ function schreibeUebergabe(o) {
 function sichererRuecksprung(pfad) {
   if (typeof pfad !== 'string' || pfad.length > 200) return null;
   if (/^\/konsole\/[a-z]+$/.test(pfad)) return { href: pfad, text: 'Zurück zur Konsole' };
-  if (/^\/ermittlung\/A[1-9]\d?-E[1-9]\d?$/.test(pfad)) return { href: pfad, text: 'Zurück zur Ermittlung' };
+  // Ermittlung, optional mit der bearbeiteten Aufgabe (?aufgabe=A3-E1-03 bzw. …-CC)
+  if (/^\/ermittlung\/(A[1-9]\d?-E[1-9]\d?)(?:\?aufgabe=\1-(?:\d{2}|CC))?$/.test(pfad)) return { href: pfad, text: 'Zurück zur Ermittlung' };
   return null;
 }
 
