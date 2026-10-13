@@ -148,5 +148,10 @@ erst nach grüner Prüfung und Freigabe nach `main` übernehmen.
 
 ## Lizenz
 
-Noch festzulegen (Vorschlag: Materialien CC BY-NC-SA 4.0). Abituraufgaben des Landes Niedersachsen sind nicht
-enthalten; es wird nur auf sie verwiesen.
+**Vorläufig (Default bis zu Franks Entscheidung, Spec §17):** Unterrichtsmaterialien und Inhalte (`materialien/`,
+Aufgaben, Story und Datenbanken in `seed/`, Unterrichtsplanung in `docs/`) unter
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de), Namensnennung „Frank Juchim,
+Datendetektei Weserstedt“; Programmcode alle Rechte vorbehalten; Schriften (SIL OFL 1.1) und sql.js (MIT) mit eigenen
+Lizenzen. Einzelheiten in [`LIZENZ.md`](LIZENZ.md); auf der Plattform kurz unter `/datenschutz#lizenz` (Link in der
+Fußzeile von Themen- und Datenschutzseite). Abituraufgaben des Landes Niedersachsen sind nicht enthalten; es wird nur
+auf sie verwiesen.
