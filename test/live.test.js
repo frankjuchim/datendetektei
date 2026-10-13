@@ -485,3 +485,22 @@ test('Niveau der Runde folgt immer dem Kurs: gA-Kurs mit niveau eA im Body → S
   const duell = await e.l.post(`${K17}/live`, { modus: 'duell', niveau: 'eA', aufgaben: ['K2-L-15'] });
   assert.equal(duell.status, 400, 'Akte-5-Aufgabe im gA-Kurs nicht startbar');
 });
+
+test('Probelauf 8: Doppelklick auf „Nächste Aufgabe“ überspringt keine Aufgabe (nach = gesehene Nummer, sonst 409)', async () => {
+  const e = await start();
+  const r = await runde(e, { modus: 'duell', aufgaben: ['K2-L-01', 'K2-L-04', 'K2-L-09'] });
+  // Doppelklick auf „Erste Aufgabe freischalten“: beide Anfragen tragen nach = 0
+  assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 0 })).status, 200);
+  const doppelt = await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 0 });
+  assert.equal(doppelt.status, 409);
+  assert.match(doppelt.body.error, /schon/);
+  let z = (await e.l.get(R(r.id))).body;
+  assert.equal(z.duell.frage.nr, 1);
+  assert.equal(z.duell.frage.offen, true, 'Aufgabe 1 bleibt offen');
+  // regulär weiter mit der gesehenen Nummer
+  assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 1 })).status, 200);
+  assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 1 })).status, 409);
+  z = (await e.l.get(R(r.id))).body;
+  assert.equal(z.duell.frage.nr, 2);
+  for (const nach of ['x', -1, 1.5]) assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach })).status, 400, String(nach));
+});

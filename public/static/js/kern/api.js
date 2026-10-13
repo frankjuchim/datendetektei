@@ -9,6 +9,21 @@ const TEXTE = {
   500: 'Da ist etwas schiefgegangen. Versuch es gleich noch einmal.',
   503: 'Die Prüfung ist gerade nicht verfügbar. Versuch es gleich noch einmal.'
 };
+// Lehrkraft-Seiten (<html data-anrede="sie">): Lehrkräfte werden gesiezt.
+const TEXTE_SIE = {
+  0: 'Keine Verbindung zum Server. Bitte prüfen Sie das Netz und versuchen Sie es erneut.',
+  401: 'Sie sind nicht mehr angemeldet. Bitte melden Sie sich über das Portal neu an.',
+  429: 'Zu viele Anfragen in kurzer Zeit. Bitte warten Sie einen Moment und versuchen Sie es dann erneut.',
+  500: 'Da ist etwas schiefgegangen. Bitte versuchen Sie es gleich noch einmal.',
+  503: 'Der Dienst ist gerade nicht verfügbar. Bitte versuchen Sie es gleich noch einmal.'
+};
+
+/** Standardtext zu einem HTTP-Status (0 = keine Verbindung) in der Anrede der Seite. */
+export function standardText(status) {
+  const sie = typeof document !== 'undefined' && document.documentElement.dataset.anrede === 'sie';
+  const t = sie ? TEXTE_SIE : TEXTE;
+  return t[status] || t[500];
+}
 
 /** Fehler einer API-Anfrage: status (0 = keine Verbindung), deutscher Text, zusätzliche Daten der Antwort. */
 export class ApiFehler extends Error {
@@ -25,7 +40,7 @@ async function anfrage(pfad, optionen) {
   try {
     antwort = await fetch(pfad, { credentials: 'same-origin', ...optionen });
   } catch {
-    throw new ApiFehler(0, TEXTE[0]);
+    throw new ApiFehler(0, standardText(0));
   }
   let daten = null;
   try {
@@ -34,9 +49,9 @@ async function anfrage(pfad, optionen) {
     daten = null;
   }
   if (!antwort.ok) {
-    const text = antwort.status === 401 || antwort.status === 429 ? TEXTE[antwort.status]
+    const text = antwort.status === 401 || antwort.status === 429 ? standardText(antwort.status)
       : daten && typeof daten.error === 'string' ? daten.error
-        : TEXTE[antwort.status] || TEXTE[500];
+        : standardText(antwort.status);
     throw new ApiFehler(antwort.status, text, daten || {});
   }
   return daten;
@@ -243,7 +258,7 @@ export function kursWechselLink(kontext) {
 
 /** Fehlerkarte für eine gescheiterte Anfrage (403 Kurs gesperrt, 404 …). */
 export function fehlerKarte(fehler, zurueck = { text: 'Zum Stadtplan', href: '/' }) {
-  const text = fehler instanceof ApiFehler ? fehler.message : TEXTE[500];
+  const text = fehler instanceof ApiFehler ? fehler.message : standardText(500);
   const titel = fehler && fehler.status === 404 ? 'Nicht gefunden' : fehler && fehler.status === 403 ? 'Kein Zugriff' : 'Das hat nicht geklappt';
   return leerKarte(titel, text, [linkKnopf(zurueck.text, zurueck.href, 'knopf')]);
 }

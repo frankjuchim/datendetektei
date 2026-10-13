@@ -15,7 +15,7 @@
 //   POST /api/live/:runde/antwort             Duell { aufgabe, antwort } · Escape { antwort }
 //   POST /api/live/:runde/code                { code }
 //   POST /api/live/:runde/tipp                {}
-//   POST /api/live/:runde/steuerung           { aktion: naechste|schliessen|los|tippsFrei|verlaengern|ende, an?, min? }
+//   POST /api/live/:runde/steuerung           { aktion: naechste|schliessen|los|tippsFrei|verlaengern|ende, an?, min?, nach? }
 // Rate-Limits je Konto: alle POSTs 120/min (konfig.rateLimits.lernen), Antworten 30/min (konfig.rateLimits.pruefenSql);
 // falsche Codes begrenzt der Dienst je Team. Körper über 20 000 Zeichen → 413.
 
