@@ -96,12 +96,11 @@
 .schema-tabelle .anz { margin-left: auto; color: var(--konsole-leise); font-weight: 400; font-size: 0.75rem; }
 .schema-tabelle ul { list-style: none; margin: 0 0 var(--a-1) 14px; padding: 0; }
 .schema-spalte {
-  display: flex; align-items: center; gap: 6px; width: 100%; min-height: 36px; padding: 4px 6px;
+  display: flex; align-items: center; gap: 6px; width: 100%; min-height: 44px; padding: 4px 6px;
   border: 0; border-radius: var(--radius-klein); background: transparent; color: var(--konsole-text);
   font: inherit; text-align: left; cursor: pointer; position: relative;
 }
-/* 44-px-Trefferfläche über den Zeilenabstand (DESIGN.md §6) */
-.schema-spalte::after { content: ""; position: absolute; left: 0; right: 0; top: -4px; bottom: -4px; }
+/* 44-px-Touch-Ziel je Spalte (Probelauf Phase 8: Trefferflächen dürfen sich nicht überlappen) */
 .schema-spalte:hover { background: var(--konsole-hover); }
 .schema-spalte:focus-visible { outline: 2px solid var(--konsole-leise); outline-offset: -2px; }
 .schema-spalte .spalte { min-width: 0; overflow: hidden; text-overflow: ellipsis; }

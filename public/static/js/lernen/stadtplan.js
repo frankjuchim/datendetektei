@@ -453,7 +453,11 @@ async function start() {
   document.getElementById('start-lehrkraft').hidden = !lehrkraft;
   const gruss = document.getElementById('begruessung');
   gruss.textContent = '';
-  gruss.append(el('strong', null, A.satzEnde(`Willkommen zurück, ${ich.name}`)), ' Jede Akte ist ein Ort in der Stadt. Tippe einen Ort an, um die Akte zu öffnen. Was im Nebel liegt, schaltet deine Lehrkraft später frei.');
+  // Lehrkräfte (Vorschau) werden gesiezt, Schüler:innen geduzt
+  const hinweis = lehrkraft
+    ? ' Jede Akte ist ein Ort in der Stadt. Tippen Sie einen Ort an, um die Akte zu öffnen. Was im Nebel liegt, schalten Sie im Lehrkraft-Bereich für Ihren Kurs frei.'
+    : ' Jede Akte ist ein Ort in der Stadt. Tippe einen Ort an, um die Akte zu öffnen. Was im Nebel liegt, schaltet deine Lehrkraft später frei.';
+  gruss.append(el('strong', null, A.satzEnde(`Willkommen zurück, ${ich.name}`)), hinweis);
 
   const kontext = await A.kursKontext(seite);
   if (!kontext) return;

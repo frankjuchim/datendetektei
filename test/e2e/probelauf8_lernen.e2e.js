@@ -273,3 +273,34 @@ test('Smartphone: Rückmeldung und Fehlermeldung nach „Prüfen“ sind im Bild
     await kontext.close();
   }
 });
+
+test('Stadtplan: Lehrkraft wird gesiezt, Schüler:in geduzt; Schema-Spalten ≥ 44 px', { timeout: 60000 }, async () => {
+  const cookie = await server.anmelden({ sub: 'l:7', rolle: 'lehrkraft', name: 'Frau M.', kurse: [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'lehrkraft' }] });
+  const kontext = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const [name, wert] = cookie.split(/=(.*)/s);
+  await kontext.addCookies([{ name, value: wert, url: server.url }]);
+  const page = await kontext.newPage();
+  try {
+    await page.goto(server.url + '/');
+    await page.waitForSelector('html[data-seite="bereit"]');
+    const gruss = await page.locator('#begruessung').textContent();
+    assert.match(gruss, /Willkommen zurück, Frau M\./);
+    assert.doesNotMatch(gruss, /\b(Tippe|deine|du|dich)\b/, gruss);
+    assert.match(gruss, /Tippen Sie einen Ort an/);
+    // Schema-Browser der Freien Ermittlung: jede Spalte ist ein eigenes Touch-Ziel ≥ 44 px
+    await page.goto(server.url + '/konsole/fundbuero');
+    await page.waitForSelector('.schema-spalte');
+    const hoehen = await page.$$eval('.schema-spalte', (l) => l.filter((e) => e.offsetParent).map((e) => e.getBoundingClientRect().height));
+    assert.ok(hoehen.length > 0 && hoehen.every((h) => h >= 44), `Schema-Spalten: ${hoehen.join(', ')}`);
+  } finally {
+    await kontext.close();
+  }
+  const s = await seite();
+  try {
+    await s.page.goto(server.url + '/');
+    await s.page.waitForSelector('html[data-seite="bereit"]');
+    assert.match(await s.page.locator('#begruessung').textContent(), /Tippe einen Ort an.*deine Lehrkraft/);
+  } finally {
+    await s.kontext.close();
+  }
+});
