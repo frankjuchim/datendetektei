@@ -353,14 +353,14 @@ test('kernpunkte in mehrteiligen Aufgaben (Cold Case A3-E1-CC): gelöst über di
 
 /* ---------------------------------------------------------------- Ränge */
 
-test('Rang: Anteil der Level-Punkte der freigeschalteten Akten nach Niveau (eA 230, gA 190)', async () => {
+test('Rang: Anteil der Level-Punkte der freigeschalteten Akten nach Niveau (eA 340, gA 190)', async () => {
   const { u, s } = await start();
-  // 23 Punkte: eA 23/230 = 10 % → Spürnase
+  // 34 Punkte: eA 34/340 = 10 % → Spürnase
   u.db.prepare("INSERT INTO fortschritt (sub, kurs_id, aufgabe, status, punkte, zeit) VALUES ('s:1042', 'k:17', 'A9-E1-02', 'geloest', 20, 'x')").run();
-  u.db.prepare("INSERT INTO fortschritt (sub, kurs_id, aufgabe, status, punkte, zeit) VALUES ('s:1042', 'k:17', 'A9-E2-02', 'geloest', 3, 'x')").run();
+  u.db.prepare("INSERT INTO fortschritt (sub, kurs_id, aufgabe, status, punkte, zeit) VALUES ('s:1042', 'k:17', 'A9-E2-02', 'geloest', 14, 'x')").run();
   let st = (await s.get(K17 + '/stand')).body;
-  assert.equal(st.rang.maxPunkte, 230);
-  assert.equal(st.rang.punkte, 23);
+  assert.equal(st.rang.maxPunkte, 340);
+  assert.equal(st.rang.punkte, 34);
   assert.equal(st.rang.name, 'Spürnase');
   // gA: eA-Ermittlung ausgeblendet → 20/190 → Spürnase; Punkte der eA-Aufgabe zählen nicht
   H.einstellen(u.db, 'k:17', { niveau: 'gA' });
@@ -408,7 +408,7 @@ test('Abzeichen: Erste Spur, Zehnerserie, Akte geschlossen; Erfolge-Feed', async
   const st = (await s.get(K17 + '/stand')).body;
   const erhalten = st.abzeichen.filter((a) => a.erhalten).map((a) => a.id);
   assert.deepEqual(erhalten.sort(), ['akte-geschlossen-9', 'erste-spur', 'zehnerserie']);
-  assert.equal(st.punkte.gesamt, 230);
+  assert.equal(st.punkte.gesamt, 340);
   assert.equal(st.rang.name, 'Meisterdetektiv:in');
   const feed = u.db.prepare("SELECT art FROM erfolge WHERE sub = 's:1042'").all().map((z) => z.art);
   assert.ok(feed.includes('geloest:A9-E1-01'));
@@ -417,7 +417,7 @@ test('Abzeichen: Erste Spur, Zehnerserie, Akte geschlossen; Erfolge-Feed', async
 
 test('Zehnerserie: ein Fehlversuch unterbricht die Serie', async () => {
   const { u, s } = await start();
-  const ids = [...u.inhalte.ermittlung('A9-E1').aufgaben.filter((id) => id !== 'A9-E1-11'), ...u.inhalte.ermittlung('A9-E2').aufgaben];
+  const ids = [...u.inhalte.ermittlung('A9-E1').aufgaben.filter((id) => id !== 'A9-E1-11'), ...u.inhalte.ermittlung('A9-E2').aufgaben].slice(0, 13);
   assert.equal(ids.length, 13);
   await loeseAlle(s, u.inhalte, ids.slice(0, 6)); // 6 ohne Fehlversuch
   const r = await s.post(A(ids[6]) + '/pruefen', { antwort: { g1: 'falsch' } });
@@ -499,10 +499,10 @@ test('Verbund-Kursübersicht: echte Werte (punkte, geloest, anteil, welten[].ant
   const lena = r.body.schueler[0];
   assert.equal(lena.punkte, 30);
   assert.equal(lena.geloest, 2);
-  assert.ok(Math.abs(lena.anteil - 30 / 230) < 1e-9);
+  assert.ok(Math.abs(lena.anteil - 30 / 340) < 1e-9);
   assert.deepEqual([r.body.schueler[1].punkte, r.body.schueler[1].geloest, r.body.schueler[1].anteil], [0, 0, 0]);
   const w9 = r.body.welten.find((w) => w.nr === 9);
-  assert.ok(Math.abs(w9.anteil - (30 / 230 + 0) / 2) < 1e-9, 'Durchschnitt der Schüler');
+  assert.ok(Math.abs(w9.anteil - (30 / 340 + 0) / 2) < 1e-9, 'Durchschnitt der Schüler');
   assert.ok(r.body.welten.some((w) => w.nr === 1 && w.anteil === 0), 'alle Akten des Plans');
   const json = JSON.stringify(r.body);
   for (const name of ['Lena', 'Mika', 'Frau M.']) assert.ok(!json.includes(name), name);

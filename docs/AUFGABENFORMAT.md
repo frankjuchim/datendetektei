@@ -12,8 +12,9 @@ Prüfen: `npm run validate` (alle Dateien in `seed/akten` und `seed/warmup`) ode
 (Optionen `--json`, `--ohne-hinweise`).
 Exit-Code 1 bei Fehlern. Prüfer: `src/content/pruefer.js`, Hilfsfunktionen: `src/content/format.js`.
 
-Elemente, die erst in **Phase 5** gebaut werden, sind mit *„folgt in Phase 5“* markiert. Der Validator lehnt sie bis
-dahin ab (unbekannter Block bzw. unbekannte Interaktion).
+Seit Phase 5 sind alle Blöcke und Interaktionen aus Spec §7.5 verfügbar (Modellierung: Blöcke `er`, `mengen` in §5.7,
+Interaktionen `zellen`, `anomalie`, `zerlegen`, `schema`, `er` in §6.11; Prüfung in `src/content/modellierung.js` auf
+dem Modellierungs-Kern `src/er`).
 
 ---
 
@@ -101,7 +102,9 @@ Ziel je Ermittlung (DS_PLANUNG): rund 8 Aufgaben, Stufenmix etwa 40/40/20 % (3/3
   Rest aufgefüllt (der Validator meldet einen nicht erfüllbaren Mix als Fehler). Reihenfolge im Verhör: Stufe 1 → 3.
 - Kein Feedback im Verhör; Punkte = Summe der Punkte richtiger Aufgaben (mehrteilig: alle Teile richtig).
   „Besiegt“ ab 50 %, neuer Versuch nach 12 h, bester Versuch zählt.
-- Verhör-Aufgaben sind **gesiezt** und im Abitur-Stil (Operator fett); `kernpunkte` kommt im Verhör nicht vor.
+- Verhör-Aufgaben sind **gesiezt** und im Abitur-Stil (Operator fett); `kernpunkte` kommt im Verhör nicht vor. Die
+  Modellierungs-Interaktionen (`zellen`, `anomalie`, `zerlegen`, `schema`, `er`) und die Blöcke `er`/`mengen` sind im
+  Verhör erlaubt (wie alle Verhör-Aufgaben ohne Rückmeldung).
 - `sql`-, `ergebnis`- und `zeilen`-Aufgaben des Pools verwenden ausschließlich die `kontextDb` des Verhörs.
 
 ## 4. Aufgabe
@@ -197,7 +200,8 @@ Zeilenumbruch (einfaches `\n`). Nicht erlaubt: HTML-Tags (z. B. `<u>`); Unterstr
 | `markiert` | nein | Liste `{ zeile, spalte?, marke?, farbe? }`: `zeile`/`spalte` **0-basiert** (`spalte` fehlt → ganze Zeile), `marke` kurzes Etikett (≤ 3 Zeichen, z. B. „A“), `farbe` `gold` (Standard), `rot`, `gruen`, `blau`, `grau` |
 | `quelle` | nein | `{ datenbank, sql }`: der Ausschnitt stammt aus einer Datenbank; der Validator führt `sql` aus und vergleicht mit `zeilen` (Zellen normalisiert wie bei `ergebnis`, Reihenfolge zählt). Für Blöcke mit Lücken nicht verwenden |
 
-Die Zeilen einer `dbtabelle` sind das Ziel der Interaktion `zeilen` (6.7) und – *folgt in Phase 5* – `zellen`.
+Die Zeilen einer `dbtabelle` sind das Ziel der Interaktion `zeilen` (6.7), ihre Zellen das Ziel von `zellen` und
+`anomalie` (6.11).
 
 ### 5.3 `schema` – Relationenschema in Kurzschreibweise
 
@@ -266,12 +270,52 @@ Regeln (Validator):
   sichtbar sein soll (z. B. das Brett *mit* Bedingung zu einer `zeilen`-Aufgabe, die Sortierfächer zu einer
   `ergebnis`-Aufgabe), gehört in die `erklaerung`.
 
-### 5.7 Folgt in Phase 5
+### 5.7 Modellierung: `er` und `mengen` (Phase 5)
 
-| Block | Zweck |
-|---|---|
-| `er` | ER-Diagramm (Chen) aus JSON-Graph + Layout, als SVG — *folgt in Phase 5* |
-| `mengen` | Mengendiagramm zweier Mengen mit Verbindungslinien (Kardinalitäten) — *folgt in Phase 5* |
+**`er` – ER-Diagramm (Chen) als SVG**
+
+```json
+{ "t": "er",
+  "graph": {
+    "entitaeten": [ { "id": "e1", "name": "Sorte",   "attribute": [ { "name": "SorteNr", "schluessel": true }, { "name": "Name" } ] },
+                    { "id": "e2", "name": "Verkauf", "attribute": [ { "name": "VerkaufNr", "schluessel": true }, { "name": "Kugeln" } ] } ],
+    "beziehungen": [ { "id": "b1", "name": "wirdVerkauft",
+                       "enden": [ { "entitaet": "e1", "kard": "1" }, { "entitaet": "e2", "kard": "n" } ], "attribute": [] } ] },
+  "layout": { "e1": { "x": 80, "y": 140 }, "e1.0": { "x": 30, "y": 50 }, "e1.1": { "x": 150, "y": 50 },
+              "b1": { "x": 300, "y": 140 },
+              "e2": { "x": 520, "y": 140 }, "e2.0": { "x": 470, "y": 50 }, "e2.1": { "x": 590, "y": 50 } },
+  "markiert": ["b1"] }
+```
+
+| Feld | Pflicht | Bedeutung |
+|---|---|---|
+| `graph` | ja | Graph-Format des Bauplan-Tischs (Spec §7.6.4): `entitaeten: [{ id, name, attribute: [{ name, schluessel? }] }]`, `beziehungen: [{ id, name, enden: [{ entitaet, kard, rolle? }], attribute: [{ name }] }]`. Kardinalität `1`, `n`, `m`, `p` (`p` nur ternär); 2 Enden (binär; rekursiv = zweimal derselbe Entitätstyp, dann mit `rolle`) oder 3 (ternär). Grenzen: ≤ 30 Entitäts-/Beziehungstypen, ≤ 30 Attribute je Element, Namen ≤ 40 Zeichen. Im Block dürfen Beziehungsname und Kardinalitäten fehlen (z. B. „Was fehlt?“) |
+| `layout` | ja | Position `{ x, y }` (Mittelpunkt, SVG-Einheiten 0–5000) für **jedes** Element: Entitätstypen, Beziehungstypen und Attribute – kein Element ohne Position, keine unbekannte Id |
+| `markiert` | nein | Liste von Element-Ids, die hervorgehoben werden |
+
+**Element-Ids:** Entitäts- und Beziehungstypen tragen ihre `id` (1–40 Zeichen aus A–Z, a–z, 0–9, `_`, `-`; **kein
+Punkt**). Ein Attribut hat die Id **`<id des Elements>.<Index>`** (Index 0-basiert in dessen `attribute`): `e1.0` ist
+`SorteNr`, `b1.0` wäre das erste Attribut der Beziehung `b1`. Dieselben Ids gelten für `layout`, `markiert`, den
+Lesen-Modus der Interaktion `er` und das Startdiagramm von `ergaenzen`. Darstellung nach DESIGN §4.14 (Rechteck,
+Raute, Ellipse, Schlüsselattribute unterstrichen, Kardinalität an der Kante), Textknoten, Tabellenalternative für
+Screenreader.
+
+**`mengen` – Mengendiagramm zweier Mengen mit Verbindungslinien (Kardinalitäten)**
+
+```json
+{ "t": "mengen",
+  "links":  { "name": "Ermittler", "elemente": ["E-01", "E-02"] },
+  "rechts": { "name": "Fall",      "elemente": ["F-07", "F-08", "F-09"] },
+  "linien": [[0, 0], [0, 1], [1, 2]] }
+```
+
+| Feld | Pflicht | Bedeutung |
+|---|---|---|
+| `links`, `rechts` | ja | `{ name, elemente }`: Name der Menge (≤ 40 Zeichen) und 1–30 Elemente (Text ≤ 40 Zeichen oder Zahl) |
+| `linien` | ja | Paare `[i, j]`: Element `i` links ist mit Element `j` rechts verbunden (0-basiert, jedes Paar höchstens einmal; leere Liste erlaubt) |
+
+Beide Blöcke: keine Lücken; erlaubt in `inhalt`, Teil-`inhalt`, `intro`, `erklaerung` und im Verhör. Namen und
+Elemente sind Bezeichner bzw. kurze Beispielwerte, keine Freitexte.
 
 ## 6. Interaktionen und Prüfregeln (Prüfung nur auf dem Server)
 
@@ -437,15 +481,140 @@ ausgeliefert (sie sind die Lösung).
   Teil a) richtig ist; dafür ist `teilweise: true, teil: 0` auch für diesen `lines`-Teil erlaubt (`{ ok }`, falsch =
   Fehlversuch). Im Verhör wird Teil a) ohne Rückmeldung „festgelegt“. Teil b) beginnt mit „b)“.
 
-### 6.11 Folgt in Phase 5
+### 6.11 Modellierung: `zellen`, `anomalie`, `zerlegen`, `schema`, `er` (Phase 5)
 
-| `kind` | Zweck |
+Gemeinsam: Prüfung in `src/content/modellierung.js` (auf `src/er`). Was der Browser zum Bedienen braucht, steht in
+`interaktion` und wird **genau mit diesen Feldern** ausgeliefert (dazu `kind`, `frage`, `inhalt`); alles andere –
+Muster, Synonyme, FAs, Zellen, Anomalieart – steht in `loesung` und verlässt den Server erst nach dem Lösen. Ein
+anderes Feld in `interaktion` ist ein Validator-Fehler. Namen in Antworten sind Bezeichner (≤ 40 Zeichen, ≤ 30 Elemente
+je Art), keine Freitexte (E7) – gespeichert wird nur richtig/falsch und Punkte. Grenzen überschritten, falscher Typ
+oder unbekannte Zelle/Spalte/Id → `AntwortFehler` (400, kein Fehlversuch). Alle fünf sind im Verhör erlaubt.
+
+**`zellen` – Zellen einer `dbtabelle` antippen** (Redundanz, Anomalie-Stelle, Schlüsselkandidat)
+
+```json
+"interaktion": { "kind": "zellen", "block": 1, "mehrfach": true, "reihenfolge": false },
+"loesung": { "zellen": [[1, 4], [3, 4]] }
+```
+
+| Feld | Bedeutung |
 |---|---|
-| `zellen` | Zellen einer `dbtabelle` antippen (Redundanz, Anomalie-Stelle, Schlüsselkandidat) — *folgt in Phase 5* |
-| `anomalie` | Anomalie-Simulator: Szenario wählen, Anomalieart zuordnen, betroffene Zellen — *folgt in Phase 5* |
-| `zerlegen` | Zerlegungs-Puzzle (Verlust- und Redundanzfreiheit) — *folgt in Phase 5* |
-| `schema` | Schema-Werkbank (Relationen, PK, ↑FK gegen Musterschemata) — *folgt in Phase 5* |
-| `er` | Bauplan-Tisch, Modi `lesen`/`ergaenzen`/`entwickeln` (Graph-Abgleich) — *folgt in Phase 5* |
+| `block` | Index eines `dbtabelle`-Blocks in `inhalt` (Pflicht) |
+| `mehrfach` | Standard `true`; `false` → genau eine Zelle |
+| `reihenfolge` | Standard `false` (Menge); `true` → die Reihenfolge des Antippens zählt (Liste) |
+| `loesung.zellen` | `[zeile, spalte]`, **0-basiert**, ohne Doppelte; leere Menge erlaubt |
+
+Leer: nichts angetippt (außer die Lösung ist leer). Rückmeldung `{}`.
+
+**`anomalie` – Anomalie-Simulator** (Spec §7.6.6)
+
+```json
+"interaktion": { "kind": "anomalie", "block": 1, "auftrag": "Trainer **Hollmann** hat eine neue Telefonnummer: 0421-99.",
+                 "operation": "aendern", "simulation": { "spalte": 4, "alt": "0421-11", "neu": "0421-99" } },
+"loesung": { "art": "aenderung", "zellen": [[0, 4], [1, 4], [3, 4]] }
+```
+
+| Feld | Bedeutung |
+|---|---|
+| `block` | Index der `dbtabelle` (die Rohtabelle; der Simulator arbeitet auf einer **Kopie** im Browser) |
+| `auftrag` | Text der Auftragskarte (Mini-Markdown) |
+| `operation` | `aendern` · `loeschen` · `einfuegen` |
+| `simulation` | Angaben für den Simulator: `aendern` `{ spalte, alt, neu }` (Zellen der Spalte mit Wert `alt` sollen `neu` werden; `alt` kommt in der Spalte vor) · `loeschen` `{ zeilen: [i, …] }` (zu löschende Zeilen) · `einfuegen` `{ werte: [Zelle je Spalte] }` (bekannte Werte der neuen Zeile, `null` = müsste leer bleiben) |
+| `loesung.art` | `einfuegung` · `aenderung` · `loeschung` · `keine` |
+| `loesung.zellen` | betroffene Zellen `[zeile, spalte]` (0-basiert); bei `einfuegen` hat die neue Zeile den Index `zeilen.length` |
+
+Den Widerspruch bzw. Informationsverlust berechnet der Browser aus den sichtbaren Daten (z. B. Spaltenpaare, deren
+Gleichheit vorher galt und nach der Änderung verletzt ist; Werte, die nach dem Löschen nirgends mehr stehen). Antwort
+`{ art, zellen }`. Leer: keine Art und keine Zelle. Richtig ⇔ Art und Zellenmenge stimmen. Rückmeldung
+`{ art: "ok"|"falsch", zellen: "ok"|"falsch" }` – ohne Lösungswerte.
+
+**`zerlegen` – Zerlegungs-Puzzle** (Verlust- und Redundanzfreiheit)
+
+```json
+"interaktion": { "kind": "zerlegen", "attribute": ["Abteilung", "Trainer", "TrainerTelefon", "Halle"], "tabellenMax": 4 },
+"loesung": { "fa": [ { "links": ["Abteilung"], "rechts": ["Trainer", "Halle"] }, { "links": ["Trainer"], "rechts": ["TrainerTelefon"] } ],
+             "schluessel": ["Abteilung"],
+             "muster": [ { "tabellen": [ { "attribute": ["Abteilung", "Trainer", "Halle"], "schluessel": ["Abteilung"] },
+                                         { "attribute": ["Trainer", "TrainerTelefon"], "schluessel": ["Trainer"] } ] } ] }
+```
+
+| Feld | Bedeutung |
+|---|---|
+| `attribute` | Spaltenchips der Rohtabelle (2–30, eindeutig) – die Namen, die die Schüler sehen |
+| `tabellenMax` | höchstens so viele Tabellen (1–30, Standard 30) |
+| `loesung.fa` | funktionale Abhängigkeiten `{ links, rechts }`, alle Spalten aus `attribute` (Format wie `seed/datenbanken/tus/LIESMICH.md`) |
+| `loesung.schluessel` | optional: Schlüssel der Rohtabelle (muss Schlüsselkandidat sein) |
+| `loesung.muster` | optional: Musterzerlegungen `[{ tabellen }]` (nur Anzeige nach dem Lösen und Musterantwort); fehlt es, ist eine berechnete BCNF-Zerlegung die Musterantwort |
+
+Prüfung `pruefeZerlegung` (Spec §7.6.6): gelöst ⇔ alle Spalten verteilt, verlustfrei (Chase), jede Tabelle mit
+richtigem, minimalem Schlüssel und ohne Redundanz (jede projizierte FA hat links einen Schlüssel). Jede Zerlegung, die
+das erfüllt, ist richtig – nicht nur die Muster. Antwort `{ tabellen: [{ attribute, schluessel }] }` (nur Spalten aus
+`attribute`, Schlüssel ⊆ Tabelle); leere Tabellen werden ignoriert. Leer: keine Tabelle mit Spalten. Rückmeldung
+`{ vollstaendig, verlustfrei, redundanzfrei, tabellen: [{ ok, hinweise: [{ code, text }] }], hinweise }` – Hinweise je
+Tabelle (Index wie in der Antwort) mit den Codes aus `src/er/zerlegung.js` (`SCHLUESSEL_FEHLT`, `REDUNDANZ` „TrainerTelefon
+hängt von Trainer ab, nicht vom Schlüssel (Abteilung) – Redundanz bleibt.“ …); Texte nennen nur Spalten der Aufgabe.
+
+**`schema` – Schema-Werkbank** (Relationen, PK, ↑FK gegen Musterschemata)
+
+```json
+"interaktion": { "kind": "schema", "modus": "schluessel",
+                 "start": [ { "name": "Sorte", "attribute": [ { "name": "SorteNr" }, { "name": "Name" } ] },
+                            { "name": "Verkauf", "attribute": [ { "name": "VerkaufNr" }, { "name": "Kugeln" }, { "name": "SorteNr" } ] } ] },
+"loesung": { "muster": [ [ { "name": "Sorte", "attribute": [ { "name": "SorteNr", "pk": true }, { "name": "Name" } ] },
+                           { "name": "Verkauf", "attribute": [ { "name": "VerkaufNr", "pk": true }, { "name": "Kugeln" }, { "name": "SorteNr", "fk": "Sorte" } ] } ] ],
+             "synonyme": { "Verkauf": ["Bestellung"] } }
+```
+
+| Feld | Bedeutung |
+|---|---|
+| `modus` | `schluessel`: Relationen und Attribute stehen fest (aus `start`), nur PK (`pk`) und FK (`fk` + Zielrelation) werden gesetzt · `frei`: Relationen und Attribute selbst anlegen |
+| `start` | Startzustand: Relationen im Format des Blocks `schema` (§5.3); Pflicht bei `schluessel`, bei `frei` optional |
+| `loesung.muster` | Liste zulässiger Schemata (je eine Liste von Relationen oder `{ relationen }`) |
+| `loesung.synonyme` | optional `{ "Name": ["Synonym", …] }` für Relationen und Attribute |
+
+Antwort `{ relationen }` (ganz leere Karten – ohne Name und Attribute – entfallen). Formfehler (`pruefeSchemaForm`:
+Name fehlt, doppelt, FK auf eine nicht vorhandene Relation, Grenzen) und im Modus `schluessel` jede andere Relationen-
+oder Attributmenge als im Start → `AntwortFehler`. Leer: keine Relation oder unverändert wie `start`. Prüfung
+`gleicheSchemaAb` (Name/Attributmenge zuordnen, PK, FK samt Ziel, abweichende FK-Namen nach Rolle zulässig).
+Rückmeldung `{ relationen: [{ name, ok, hinweise: [{ code, text, falle }] }], fehlend, ueberzaehlig, hinweise }` –
+`name` und Texte nennen nur Relationen und Attribute des Schülers; Fehlendes nur als Anzahl bzw. Code (`RELATION_FEHLT`,
+`NM_OHNE_TABELLE`).
+
+**`er` – Bauplan-Tisch** (Modi `lesen`, `ergaenzen`, `entwickeln`; Spec §7.6.4)
+
+```json
+"interaktion": { "kind": "er", "modus": "ergaenzen",
+                 "start": { "graph": { "entitaeten": [ … ], "beziehungen": [] }, "layout": { "e1": { "x": 80, "y": 120 }, "e1.0": { … }, … } } },
+"loesung": { "muster": [ { "entitaeten": [ … ], "beziehungen": [ { "id": "mb1", "name": "leitet", "enden": [ { "entitaet": "m1", "kard": "1" }, { "entitaet": "m2", "kard": "n" } ], "attribute": [] } ] } ],
+             "synonyme": { "Ermittler": ["Detektiv"] }, "aequivalenzen": ["nm_aufgeloest"], "kriterien": ["beziehungen", "kardinalitaeten"] }
+
+"interaktion": { "kind": "er", "modus": "lesen", "block": 1 },
+"loesung": { "elemente": ["e1", "e2", "b1", "e1.0", "e2.0"] }
+
+"interaktion": { "kind": "er", "modus": "lesen", "block": 1, "kategorien": [ { "id": "ent", "md": "Entitätstyp" }, { "id": "rolle", "md": "Rolle" } ] },
+"loesung": { "zuordnung": { "e1": "ent", "e2": "ent" } }
+```
+
+| Feld | Bedeutung |
+|---|---|
+| `modus` | `lesen` (Elemente eines gegebenen Diagramms antippen bzw. Kategorien zuordnen) · `ergaenzen` (Startdiagramm vervollständigen) · `entwickeln` (leere Zeichenfläche) |
+| `block` | nur `lesen`: Index eines `er`-Blocks in `inhalt` |
+| `kategorien` | nur `lesen`: `[{ id, md }]` (≥ 2) → Zuordnungs-Modus; ohne → Antipp-Modus |
+| `start` | nur `ergaenzen` (Pflicht): `{ graph, layout }` wie Block `er`; Kardinalitäten und Beziehungsnamen dürfen fehlen (sie sind zu ergänzen) |
+| `loesung.muster` | `ergaenzen`/`entwickeln`: Liste zulässiger Graphen (vollständig, Chen-konform); die beste zählt |
+| `loesung.synonyme`, `aequivalenzen`, `kriterien` | optional: Synonymgruppen; `nm_aufgeloest` (n:m ↔ Zwischenentität mit zwei 1:n), `attribut_an_n_seite`; Teilmenge der Kriterien `entitaeten`, `schluessel`, `attribute`, `beziehungen`, `kardinalitaeten`, `beziehungsattribute` (Standard: alle) |
+| `loesung.elemente` / `loesung.zuordnung` | `lesen`: Menge der richtigen Element-Ids bzw. `{ Element-Id: Kategorie-id }` (Ids siehe §5.7, Attribute `<id>.<i>`) |
+
+- **Lesen:** Antwort `{ elemente }` bzw. `{ zuordnung }` (leere Kategorie = nicht zugeordnet), nur Ids des Blocks.
+  Richtig ⇔ Menge bzw. Zuordnung exakt (`pruefeLesen`). Leer: nichts gewählt. Rückmeldung `{}`.
+- **Ergänzen/Entwickeln:** Antwort = Graph (Ids frei, Layout bleibt im Browser). Prüfung `gleicheAb` gegen alle
+  Muster (Namen mit Synonymen, Groß/Klein, Singular/Plural; Beziehungsnamen frei; Kardinalitäten strukturell 1 vs.
+  viele, Richtung zählt; Äquivalenzen). Gelöst ⇔ alle Kriterien erfüllt – bei `ergaenzen` zusätzlich müssen alle
+  Elemente des Startdiagramms (Entitätstypen, Beziehungstypen, Attribute – über ihre Namen) noch vorhanden sein, sonst
+  falsch mit Hinweis `START_FEHLT`. Leer: kein Element bzw. unverändertes Startdiagramm. Rückmeldung
+  `{ kriterien: [{ id, text, ok, falle?, teile: [{ text, ok }] }], richtig, gesamt, hinweise: [{ code, text, falle }] }`
+  („2 von 4 Entitätstypen gefunden“, „Kardinalität zwischen „Ermittler“ und „Fall“ falsch“) – Texte nennen nur Namen,
+  die der Schüler selbst verwendet hat, nie Namen der Musterlösung.
 
 ## 7. Antwortformate (API)
 
@@ -460,6 +629,12 @@ ausgeliefert (sie sind die Lösung).
 | zeilen | `[6,7]` (oder `{ "zeilen": [6,7] }`) – 0-basiert |
 | ergebnis | `[["Kamera","390"], …]` (oder `{ "zeilen": [...] }`); Zellen Text, Zahl oder `null` |
 | kernpunkte | `2` (oder `{ "haken": 2 }`) – nur die Anzahl |
+| zellen | `[[1,4],[3,4]]` (oder `{ "zellen": [...] }`, Zelle auch `{ "zeile", "spalte" }`) – 0-basiert |
+| anomalie | `{ "art": "aenderung", "zellen": [[0,4]] }` – `art` leer `""` = noch nicht gewählt |
+| zerlegen | `{ "tabellen": [ { "attribute": ["Trainer","TrainerTelefon"], "schluessel": ["Trainer"] } ] }` (oder die Liste) |
+| schema | `{ "relationen": [ { "name": "Sorte", "attribute": [ { "name": "SorteNr", "pk": true }, … ] } ] }` (oder die Liste) |
+| er (`ergaenzen`, `entwickeln`) | Graph `{ "entitaeten": [...], "beziehungen": [...] }` (oder `{ "graph": …, "layout": … }` – das Layout bleibt im Browser) |
+| er (`lesen`) | `{ "elemente": ["e1","e1.0"] }` (oder die Liste) bzw. mit `kategorien` `{ "zuordnung": { "e1": "ent" } }` |
 | mehrteilig | Array der Teilantworten |
 
 ## 8. Was der Validator prüft (`src/content/validator.js`)
@@ -486,7 +661,32 @@ erfüllbar und Summe = `anzahl`, Musterantwort wird vom Prüfer als richtig erka
 - `lines.block` zeigt auf `sql`/`code`, `zeilen.block` auf `dbtabelle`; Indizes im Bereich.
 - Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block und keine Verstehenshilfen;
   Mix je Stufe samt `maxJeKind` erfüllbar (maximaler Fluss Stufe → Art), sonst Fehler; für gA-Kurse (nur `alle`) Hinweis.
-- Cold Cases und `kernpunkte`: `punkte` 0. Niveau-Regeln (Akte 5 ganz `eA`).
+- Cold Cases und `kernpunkte`: `punkte` 0. Niveau-Regeln (Akte 5 ganz `eA`: Ermittlungen und Verhör mit
+  `niveau: "eA"`, keine Aufgabe mit `niveau: "alle"`).
+- Modellierung (§5.7, §6.11; `src/content/modellierung.js`):
+  - Block `er`: Graph wohlgeformt (`pruefeGraphForm`), Ids im Block-Format, `layout` für jedes Element (Attribute
+    `<id>.<i>`), keine unbekannten Ids in `layout`/`markiert`, keine weiteren Felder. Block `mengen`: Seiten mit Namen
+    und 1–30 Elementen, Linien-Indizes gültig, keine doppelte Linie.
+  - Neue Interaktionen enthalten nur ihre öffentlichen Felder (§6.11) – ein anderes Feld (z. B. `fa` oder `muster` in
+    `interaktion`) ist ein Fehler, denn `interaktion` geht an den Browser.
+  - `zellen`/`anomalie`: `block` zeigt auf eine `dbtabelle`, Lösungszellen existieren (bei `einfuegen` auch die neue
+    Zeile), keine doppelten Zellen; `mehrfach: false` = genau eine Zelle. `anomalie`: `art` ∈ einfuegung, aenderung,
+    loeschung, keine; `operation` ∈ aendern, loeschen, einfuegen; `simulation` passt zur Tabelle (`alt` kommt in der
+    Spalte vor, Zeilen existieren, `werte` so lang wie `kopf`); Hinweis, wenn `art` nicht zur Operation passt.
+  - `zerlegen`: 2–30 eindeutige Spalten, FA-Spalten ⊆ `attribute`, `schluessel` ist Schlüsselkandidat, jede
+    Musterzerlegung ist laut `pruefeZerlegung` gelöst (und hält `tabellenMax` ein); ohne `muster` muss die berechnete
+    BCNF-Zerlegung gelöst sein (sie ist dann die Musterantwort).
+  - `schema`: `modus`; `start` wohlgeformt (`pruefeSchemaForm`; Pflicht bei `schluessel`); jedes Muster wohlgeformt,
+    ohne Umlaute, mit Primärschlüssel je Relation und vom Schema-Abgleich als gelöst erkannt; bei `schluessel`
+    dieselben Relationen und Attribute wie `start`.
+  - `er`: `modus`; `lesen` mit `block` auf einen `er`-Block und `elemente` bzw. (mit `kategorien`) `zuordnung` nur mit
+    vorhandenen Ids und Kategorien; `ergaenzen` mit `start { graph, layout }` (Kardinalitäten dürfen fehlen);
+    `entwickeln` ohne `start`. Jedes Muster vollständig (`pruefeGraphForm` mit `vollstaendig`) und Chen-konform:
+    Entitätstypen beginnen groß (Singular, ohne Umlaute/Leerzeichen), Beziehungstypen lowerCamelCase, jeder
+    Entitätstyp hat ein Schlüsselattribut, `p` nur ternär, Attribute und Rollen ohne Umlaute; das Muster erfüllt sich
+    selbst (`gleicheAb` → gelöst); das Startdiagramm ist Teil **jedes** Musters (Namen samt Synonymen, Attribute,
+    Schlüssel, gesetzte Kardinalitäten). `synonyme`, `aequivalenzen`, `kriterien` mit gültigen Werten.
+  - Die Musterantwort (Muster, Musterzerlegung bzw. berechnete Zerlegung, Lösungszellen) erkennt der Prüfer als richtig.
 
 - ids: `A<n>-E<k>-<nn>` (steht in der Ermittlung `A<n>-E<k>`), `A<n>-E<k>-CC` (nur als `coldCase` von `A<n>-E<k>`),
   `A<n>-V-<nn>` (nur im Verhör-Pool); `n` = `welt`; eindeutig über alle Dateien, jede `welt` nur einmal.

@@ -5,7 +5,9 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { huelle, schluesselKandidaten, projiziere, verlustfrei, pruefeZerlegung } = require('../src/er/zerlegung');
+const fs = require('node:fs');
+const path = require('node:path');
+const { huelle, schluesselKandidaten, projiziere, verlustfrei, pruefeZerlegung, bcnfZerlegung } = require('../src/er/zerlegung');
 const { TUS } = require('./hilfen_er');
 
 const menge = (liste) => [...liste].sort();
@@ -265,4 +267,51 @@ test('pruefeZerlegung: Texte nennen nur Spalten der Aufgabe', () => {
       assert.ok(erlaubt.has(wort), `„${h.text}“ nennt „${wort}“`);
     }
   }
+});
+
+/* ---------- BCNF-Zerlegung (Musterantwort von `zerlegen` ohne Musterzerlegung, Phase 5 Task 2) ---------- */
+
+test('bcnfZerlegung: TuS, Musikschule, Teilzerlegung A4-E2-06 und Lehrbuchfall sind gelöst', () => {
+  for (const [name, aufgabe] of [['TuS', TUS], ['Musikschule', MUSIKSCHULE], ['A4-E2-06', A4_E2_06]]) {
+    const tabellen = bcnfZerlegung(aufgabe.attribute, aufgabe.fa);
+    const erg = pruefeZerlegung({ tabellen }, aufgabe);
+    assert.equal(erg.geloest, true, `${name}: ${JSON.stringify(erg)}`);
+    for (const t of tabellen) for (const a of t.attribute) assert.ok(aufgabe.attribute.includes(a), name);
+  }
+  // Schlüssel der Musikschule-Verbindungstabelle ist dreiteilig
+  const ms = bcnfZerlegung(MUSIKSCHULE.attribute, MUSIKSCHULE.fa);
+  assert.ok(ms.some((t) => menge(t.schluessel).join() === menge(['SchuelerNr', 'Instrument', 'LehrkraftNr']).join()));
+  // ohne FAs: eine Tabelle, Schlüssel = alle Spalten
+  assert.deepEqual(bcnfZerlegung(['A', 'B'], []), [{ attribute: ['A', 'B'], schluessel: ['A', 'B'] }]);
+  assert.deepEqual(bcnfZerlegung([], TUS.fa), []);
+  // schon in BCNF: unverändert
+  assert.deepEqual(bcnfZerlegung(['Trainer', 'TrainerTelefon'], TUS.fa), [{ attribute: ['Trainer', 'TrainerTelefon'], schluessel: ['Trainer'] }]);
+});
+
+test('Musikschule: FA-JSON aus seed/datenbanken/verhoer/musikschule/LIESMICH.md und dortige Musterzerlegung sind gelöst', () => {
+  const text = fs.readFileSync(path.join(__dirname, '..', 'seed', 'datenbanken', 'verhoer', 'musikschule', 'LIESMICH.md'), 'utf8');
+  const block = /Maschinenlesbar für `zerlegen`[\s\S]*?```json\n([\s\S]*?)```/.exec(text);
+  assert.ok(block, 'FA-JSON in der LIESMICH gefunden');
+  const loesung = JSON.parse(block[1]);
+  assert.deepEqual(schluesselKandidaten(loesung.attribute, loesung.fa), [loesung.schluessel]);
+  // Musterzerlegung laut LIESMICH (Schueler, Tarif, Lehrkraft, Raum, belegt)
+  const muster = {
+    tabellen: [
+      T(['SchuelerNr'], ['Vorname', 'Nachname', 'Geburtsjahr', 'Tarif']),
+      T(['Tarif'], ['Monatsgebuehr']),
+      T(['LehrkraftNr'], ['Lehrkraft', 'LehrkraftTelefon', 'Raum']),
+      T(['Raum'], ['Etage']),
+      T(['SchuelerNr', 'Instrument', 'LehrkraftNr'])
+    ]
+  };
+  const erg = pruefeZerlegung(muster, loesung);
+  assert.equal(erg.geloest, true, JSON.stringify(erg));
+  // typische Zwischenlösung LehrkraftRaum: F4 verletzt, Hinweis nennt Raum und Etage
+  const zwischen = structuredClone(muster);
+  zwischen.tabellen.splice(2, 2, T(['LehrkraftNr'], ['Lehrkraft', 'LehrkraftTelefon', 'Raum', 'Etage']));
+  const z = pruefeZerlegung(zwischen, loesung);
+  assert.equal(z.geloest, false);
+  assert.equal(z.redundanzfrei, false);
+  assert.ok(z.tabellen[2].hinweise.some((h) => h.code === 'REDUNDANZ' && /Etage/.test(h.text) && /Raum/.test(h.text)));
+  assert.equal(pruefeZerlegung({ tabellen: bcnfZerlegung(loesung.attribute, loesung.fa) }, loesung).geloest, true);
 });

@@ -50,8 +50,8 @@ test('Beispielakte wird geladen: Bericht, Tabellen, Zugriffsfunktionen', (t) => 
   assert.deepEqual(inhalte.bericht(), bericht, 'Seed-Bericht im Speicher');
 
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM akten WHERE nr = 9 AND aktiv = 1'), 1);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 19);
-  assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'lab'"), 14);
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
+  assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'lab'"), 20);
   assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'cc'"), 1);
   assert.equal(zahl(db, "SELECT COUNT(*) AS n FROM aufgaben WHERE art = 'verhoer'"), 4);
   assert.match(db.prepare("SELECT fingerabdruck FROM aufgaben WHERE id = 'A9-E1-02'").get().fingerabdruck, /^[0-9a-f]{64}$/);
@@ -88,7 +88,7 @@ test('Beispielakte wird geladen: Bericht, Tabellen, Zugriffsfunktionen', (t) => 
 
   assert.deepEqual(inhalte.verhoerPool(9), ['A9-V-01', 'A9-V-02', 'A9-V-03', 'A9-V-04']);
   assert.deepEqual(inhalte.verhoerPool(3), []);
-  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 14, bosse: 1 });
+  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 });
 
 test('ladeInhalte(db, { dateien }) als Funktion; erzeugeInhalte liest den letzten Stand aus der DB', (t) => {
@@ -98,7 +98,7 @@ test('ladeInhalte(db, { dateien }) als Funktion; erzeugeInhalte liest den letzte
   assert.equal(bericht.dateien[0].status, 'geladen');
   const inhalte = erzeugeInhalte(db); // z. B. nach Neustart, bevor geladen wird
   assert.equal(inhalte.aufgabe('A9-E1-01').titel.length > 0, true);
-  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 14, bosse: 1 });
+  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 });
 
 test('Fingerabdruck: unveränderte Datei wird übersprungen (auch bei anderer Schlüsselreihenfolge)', (t) => {
@@ -112,7 +112,7 @@ test('Fingerabdruck: unveränderte Datei wird übersprungen (auch bei anderer Sc
   schreibe(dir, 'akte9.json', JSON.stringify(umgestellt));
   const b = inhalte.laden({ verzeichnis: dir });
   assert.equal(b.dateien[0].status, 'unveraendert');
-  assert.equal(b.dateien[0].aufgaben, 19);
+  assert.equal(b.dateien[0].aufgaben, 25);
   assert.deepEqual(db.prepare('SELECT id, geaendert FROM aufgaben ORDER BY id').all(), vorher);
 });
 
@@ -132,7 +132,7 @@ test('Upsert nach id: geänderte Aufgabe wird aktualisiert, Lernstand bleibt', (
   assert.equal(inhalte.aufgabe('A9-E1-01').titel, 'Neuer Titel');
   assert.notEqual(db.prepare("SELECT fingerabdruck FROM aufgaben WHERE id = 'A9-E1-01'").get().fingerabdruck, fpVorher);
   assert.equal(db.prepare("SELECT fingerabdruck FROM aufgaben WHERE id = 'A9-E1-02'").get().fingerabdruck, fp2Vorher);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 19, 'keine Dubletten');
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 25, 'keine Dubletten');
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM fortschritt'), 1, 'Lernstand bleibt');
 });
 
@@ -151,11 +151,11 @@ test('fehlende Aufgaben werden deaktiviert, nicht gelöscht – und bei Rückkeh
   assert.equal(inhalte.aufgabeOeffentlich('A9-E1-12'), null);
   assert.ok(!inhalte.ermittlung('A9-E1').aufgaben.includes('A9-E1-12'));
   assert.deepEqual(inhalte.verhoerPool(9), ['A9-V-01', 'A9-V-02', 'A9-V-03']);
-  assert.equal(inhalte.umfang().aufgaben, 13);
+  assert.equal(inhalte.umfang().aufgaben, 19);
 
   schreibe(dir, 'akte9.json', beispiel());
   inhalte.laden({ verzeichnis: dir });
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 19);
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
   assert.ok(inhalte.aufgabe('A9-E1-12'));
 });
 
@@ -174,9 +174,9 @@ test('kaputte Datei (kein JSON) wird übersprungen; zuletzt geladene Fassung ble
   const b = inhalte.laden({ verzeichnis: dir });
   assert.equal(b.dateien[0].status, 'uebersprungen');
   assert.ok(b.dateien[0].fehler.length > 0);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 19);
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
   assert.ok(inhalte.akte(9));
-  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 14, bosse: 1 });
+  assert.deepEqual(inhalte.umfang(), { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 });
 
 test('Datei mit Fehler auf Dateiebene wird übersprungen (levels fehlt, falsche version, welt ungültig)', (t) => {
@@ -195,7 +195,7 @@ test('Datei mit Fehler auf Dateiebene wird übersprungen (levels fehlt, falsche 
     const b = inhalte.laden({ verzeichnis: dir });
     assert.equal(b.dateien[0].status, 'uebersprungen', kaputt.toString());
     assert.equal(inhalte.akte(9).titel, 'Probeakte (nur Tests)');
-    assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 19);
+    assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 25);
   }
   // Wurzel ist kein Objekt
   schreibe(dir, 'akte9.json', '[1, 2]');
@@ -223,7 +223,7 @@ test('einzelne fehlerhafte Aufgaben werden ausgelassen (inkl. Verweisen), der Re
   assert.ok(!inhalte.ermittlung('A9-E1').aufgaben.includes('A9-E1-01'));
   assert.ok(!inhalte.verhoerPool(9).includes('A9-V-02'));
   assert.ok(inhalte.aufgabe('A9-E1-02'));
-  assert.equal(inhalte.umfang().aufgaben, 14 - 4);
+  assert.equal(inhalte.umfang().aufgaben, 20 - 4);
 });
 
 test('id, die schon in einer anderen Akte vergeben ist, wird ausgelassen', (t) => {
@@ -259,7 +259,7 @@ test('Akte, deren Datei nicht mehr geladen wird, wird mit ihren Aufgaben deaktiv
   assert.deepEqual(b.entfernt, [9]);
   assert.equal(inhalte.akte(9), null);
   assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben WHERE aktiv = 1'), 0);
-  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 19, 'nicht gelöscht');
+  assert.equal(zahl(db, 'SELECT COUNT(*) AS n FROM aufgaben'), 25, 'nicht gelöscht');
   assert.deepEqual(inhalte.umfang(), { ...STANDARD_UMFANG });
 });
 
@@ -315,7 +315,10 @@ test('aufgabeOeffentlich: keine Lösungsdaten (Suche nach Schlüsseln und Lösun
     const json = JSON.stringify(o);
     const schluessel = schluesselIn(o);
     for (const k of VERBOTENE_SCHLUESSEL) assert.ok(!schluessel.has(k), `${roh.id}: Schlüssel ${k}`);
-    for (const geheim of geheimeTexte(roh)) assert.ok(!json.includes(JSON.stringify(geheim).slice(1, -1)), `${roh.id}: ${geheim}`);
+    // Modellierung (Phase 5): Lösungen nennen auch sichtbare Namen (Spaltenchips, Startdiagramm) – die zählen nicht
+    const modell = [].concat(roh.interaktion).some((ia) => ['zellen', 'anomalie', 'zerlegen', 'schema', 'er'].includes(ia.kind));
+    const sichtbar = modell ? JSON.stringify([roh.inhalt, roh.interaktion]) : '';
+    for (const geheim of geheimeTexte(roh).filter((g) => !modell || !sichtbar.includes(g))) assert.ok(!json.includes(JSON.stringify(geheim).slice(1, -1)), `${roh.id}: ${geheim}`);
     assert.equal(o.tippsAnzahl, Array.isArray(roh.tipps) ? roh.tipps.length : 0);
   }
 });
@@ -358,6 +361,43 @@ test('aufgabeOeffentlich: Blöcke der Verstehenshilfen nur mit ihrer eigenen Abf
   assert.ok(!JSON.stringify(mitFaechern).includes('Hoechstpreis'));
 });
 
+test('aufgabeOeffentlich: zellen, anomalie, zerlegen, schema, er liefern keine Lösungsdaten (Muster, Synonyme, FA, Zellen, Art)', (t) => {
+  const { inhalte } = geladen(t);
+  const ids = { zellen: 'A9-E2-03', anomalie: 'A9-E2-04', zerlegen: 'A9-E2-05', schema: 'A9-E2-06', er: 'A9-E2-07', lesen: 'A9-E2-08' };
+  const erwarteteFelder = {
+    zellen: ['block', 'kind', 'mehrfach'],
+    anomalie: ['auftrag', 'block', 'kind', 'operation', 'simulation'],
+    zerlegen: ['attribute', 'kind', 'tabellenMax'],
+    schema: ['kind', 'modus', 'start'],
+    er: ['kind', 'modus', 'start'],
+    lesen: ['block', 'kind', 'modus']
+  };
+  for (const [art, id] of Object.entries(ids)) {
+    const roh = inhalte.aufgabe(id);
+    const o = inhalte.aufgabeOeffentlich(id);
+    assert.deepEqual(Object.keys(o.interaktion).sort(), erwarteteFelder[art], id);
+    const schluessel = schluesselIn(o.interaktion);
+    for (const k of VERBOTENE_SCHLUESSEL) assert.ok(!schluesselIn(o).has(k), `${id}: Schlüssel ${k}`);
+    for (const k of ['muster', 'fa', 'synonyme', 'aequivalenzen', 'kriterien', 'elemente', 'zuordnung', 'art']) {
+      assert.ok(!schluessel.has(k), `${id}: Schlüssel ${k}`);
+    }
+    // Lösungswerte, die nicht ohnehin sichtbar sind (Startdiagramm, Spaltenchips, Tabelle), stehen nicht in der Sicht
+    const sichtbar = JSON.stringify([roh.inhalt, roh.interaktion]);
+    const json = JSON.stringify(o);
+    for (const geheim of geheimeTexte(roh).filter((g) => !sichtbar.includes(g))) assert.ok(!json.includes(geheim), `${id}: ${geheim}`);
+    assert.ok(!json.includes(JSON.stringify(roh.loesung)), id);
+  }
+  // Startdiagramm (mit Layout) und Simulationsangaben gehen an den Client – sie werden zum Bedienen gebraucht
+  assert.deepEqual(inhalte.aufgabeOeffentlich('A9-E2-07').interaktion.start, inhalte.aufgabe('A9-E2-07').interaktion.start);
+  assert.deepEqual(inhalte.aufgabeOeffentlich('A9-E2-04').interaktion.simulation, inhalte.aufgabe('A9-E2-04').interaktion.simulation);
+  // Musternamen, die nicht im Startdiagramm stehen, fehlen in der Sicht (z. B. der Beziehungstyp leitet)
+  assert.ok(!JSON.stringify(inhalte.aufgabeOeffentlich('A9-E2-07')).includes('"leitet"'));
+  // Felder, die nicht zur Sicht gehören, werden nicht ausgeliefert (auch wenn sie versehentlich in interaktion stehen)
+  const { oeffentlicheInteraktion } = require('../src/services/inhalte');
+  const ia = oeffentlicheInteraktion({ kind: 'zerlegen', attribute: ['A', 'B'], fa: [{ links: ['A'], rechts: ['B'] }], muster: [] }, 'lab');
+  assert.deepEqual(ia, { kind: 'zerlegen', attribute: ['A', 'B'] });
+});
+
 test('Zugriffsfunktionen liefern unveränderliche Objekte (Katalog nicht von außen manipulierbar)', (t) => {
   const { inhalte } = geladen(t);
   const a = inhalte.aufgabe('A9-E1-02');
@@ -376,7 +416,7 @@ test('Manifest: umfang aus dem Seed (Beispielakte), ohne Akten Spec-Standardwert
   const { db, inhalte } = geladen(t);
   const app = erzeugeApp(testKonfig(), db, { inhalte });
   const res = await request(app).get('/api/plattform');
-  assert.deepEqual(res.body.umfang, { welten: 1, level: 2, aufgaben: 14, bosse: 1 });
+  assert.deepEqual(res.body.umfang, { welten: 1, level: 2, aufgaben: 20, bosse: 1 });
 
   const leerDb = oeffneDb(':memory:');
   const leer = erzeugeInhalte(leerDb);
@@ -404,5 +444,5 @@ test('umfang: level zählt Akte 7 (Generalprobe ohne Ermittlungen) mit, Cold Cas
   const db = oeffneDb(':memory:');
   const inhalte = erzeugeInhalte(db);
   inhalte.laden({ verzeichnis: dir });
-  assert.deepEqual(inhalte.umfang(), { welten: 2, level: 3, aufgaben: 14, bosse: 2 });
+  assert.deepEqual(inhalte.umfang(), { welten: 2, level: 3, aufgaben: 20, bosse: 2 });
 });

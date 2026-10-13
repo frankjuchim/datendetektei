@@ -1,10 +1,12 @@
 'use strict';
 // Prüfer je Interaktion (docs/AUFGABENFORMAT.md §6). Prüfung NUR serverseitig.
 // Basis-Interaktionen nach dem Muster von Algo Quest src/content/checker.js; neu: sql (delegiert an einen
-// injizierten SQL-Prüfer, Phase 2 src/sql/pruefer.js), zeilen, ergebnis, kernpunkte.
+// injizierten SQL-Prüfer, Phase 2 src/sql/pruefer.js), zeilen, ergebnis, kernpunkte; Phase 5: zellen, anomalie,
+// zerlegen, schema, er (src/content/modellierung.js auf dem Modellierungs-Kern src/er).
 // Rückmeldungen enthalten nie Lösungsdaten (Vertrag §9).
 
 const F = require('./format');
+const M = require('./modellierung');
 
 class AntwortFehler extends Error {
   constructor(message) {
@@ -128,6 +130,7 @@ function bereinige(ia, antwort, aufgabe) {
       return n;
     }
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.bereinige(ia, antwort, aufgabe);
       throw new AntwortFehler('Unbekannte Interaktion.');
   }
 }
@@ -150,6 +153,7 @@ function istLeer(ia, a, lo) {
     case 'ergebnis':
       return a.every((z) => z.every(zellLeer));
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.istLeer(ia, a, lo);
       return false;
   }
 }
@@ -301,6 +305,7 @@ async function pruefeTeil(ia, lo, a, opt = {}) {
     case 'sql':
       return pruefeSql(ia, lo, a, opt);
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.pruefeTeil(ia, lo, a);
       throw new AntwortFehler('Unbekannte Interaktion.');
   }
 }
@@ -381,6 +386,7 @@ function musterantwortTeil(ia, lo) {
     case 'kernpunkte':
       return (ia.kernpunkte || []).length;
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.musterantwortTeil(ia, lo);
       return null;
   }
 }

@@ -38,6 +38,12 @@
  *   geloest = mindestens eine Tabelle, vollständig, verlustfrei, alle Tabellen ok.
  *   redundanzfrei = keine REDUNDANZ- und keine TABELLE_DOPPELT-Hinweise.
  *   Texte nennen nur Spaltennamen der Aufgabe (sie sind für Schüler sichtbar).
+ *
+ * bcnfZerlegung(attribute, fa) → [{ attribute: [spalte], schluessel: [spalte] }]
+ *   eine verlustfreie, redundanzfreie Zerlegung (BCNF-Zerlegungsalgorithmus: Tabelle an einer projizierten FA X → Y
+ *   mit X kein Superschlüssel in X⁺ ∩ T und X ∪ (T − X⁺) teilen, bis keine Verletzung bleibt; Tabellen, deren Spalten
+ *   ganz in einer anderen stehen, entfallen). Schlüssel = kleinster Schlüsselkandidat je Tabelle. Spaltenreihenfolge wie
+ *   in attribute. Grundlage der Musterantwort von `zerlegen`, wenn die Aufgabe keine Musterzerlegung nennt.
  */
 
 const MAX_VOLL = 16;
@@ -350,4 +356,27 @@ function pruefeZerlegung(antwort, loesung) {
   };
 }
 
-module.exports = { huelle, schluesselKandidaten, projiziere, verlustfrei, pruefeZerlegung };
+function bcnfZerlegung(attribute, fa) {
+  const attr = eindeutig(Array.isArray(attribute) ? attribute.filter(istText) : []);
+  const f = bereinigeFa(fa);
+  if (!attr.length) return [];
+  let tabellen = [attr];
+  for (let runde = 0; runde < 200; runde++) {
+    let geteilt = false;
+    for (let i = 0; i < tabellen.length && !geteilt; i++) {
+      const t = tabellen[i];
+      const verletzung = projiziereIntern(f, t).find((x) => !umfasst(huelleMenge(x.links, f), t));
+      if (!verletzung) continue;
+      const h = huelleMenge(verletzung.links, f);
+      const t1 = t.filter((a) => h.has(a));
+      const t2 = t.filter((a) => verletzung.links.includes(a) || !h.has(a));
+      tabellen.splice(i, 1, t1, t2);
+      geteilt = true;
+    }
+    if (!geteilt) break;
+  }
+  tabellen = tabellen.filter((t, i) => !tabellen.some((u, j) => j !== i && t.every((a) => u.includes(a)) && (u.length > t.length || j < i)));
+  return tabellen.map((t) => ({ attribute: t, schluessel: kandidaten(t, f).sort((a, b) => a.length - b.length)[0] || t }));
+}
+
+module.exports = { huelle, schluesselKandidaten, projiziere, verlustfrei, pruefeZerlegung, bcnfZerlegung };

@@ -33,7 +33,7 @@
         { "t": "datenbank", "name": "eisdiele" },
         { "t": "zeitlupe", "datenbank": "eisdiele", "sql": "SELECT Vegan, COUNT(*) AS Sorten\nFROM Sorte\nWHERE Preis >= 1.5\nGROUP BY Vegan", "start": "WHERE" }
       ],
-      "aufgaben": ["A9-E2-01", "A9-E2-02"]
+      "aufgaben": ["A9-E2-01", "A9-E2-02", "A9-E2-03", "A9-E2-04", "A9-E2-05", "A9-E2-06", "A9-E2-07", "A9-E2-08"]
     }
   ],
   "boss": {
@@ -537,6 +537,135 @@
         "quelleSql": "SELECT ProduktNr, Bezeichnung, Kategorie, Preis FROM Produkt WHERE Preis >= 1.5 AND Kategorie = 'Snack' OR Bezeichnung LIKE 'A%'"
       },
       "erklaerung": [ { "t": "text", "md": "AND bindet stärker: `(Preis >= 1.5 AND Kategorie = 'Snack') OR Bezeichnung LIKE 'A%'` – der Apfel ist dabei, obwohl er billig und kein Snack ist." } ]
+    },
+    {
+      "id": "A9-E2-03",
+      "titel": "Doppelte Spuren",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "fallen": [],
+      "inhalt": [
+        {"t": "text", "md": "Tippe in der Spalte **TrainerTelefon** alle Zellen an, die eine Information wiederholen, die schon weiter oben in der Liste steht."},
+        {"t": "dbtabelle", "tabelle": "Abteilungsliste", "kopf": [{"name": "MitgliedNr", "pk": true}, {"name": "Name"}, {"name": "Abteilung"}, {"name": "Trainer"}, {"name": "TrainerTelefon"}], "zeilen": [[1, "Mika R.", "Judo", "Hollmann", "0421-11"], [2, "Lena K.", "Judo", "Hollmann", "0421-11"], [3, "Tom B.", "Tennis", "Brede", "0421-22"], [4, "Ida M.", "Judo", "Hollmann", "0421-11"]]}
+      ],
+      "interaktion": {"kind": "zellen", "block": 1, "mehrfach": true},
+      "loesung": {"zellen": [[1, 4], [3, 4]]},
+      "tipps": ["Die erste Nennung einer Telefonnummer ist nötig – jede weitere ist redundant."],
+      "erklaerung": [
+        {"t": "text", "md": "Hollmanns Telefonnummer steht in drei Zeilen; nötig ist sie nur einmal. Die zweite und dritte Nennung (Zeilen von Lena K. und Ida M.) sind **redundant**."}
+      ]
+    },
+    {
+      "id": "A9-E2-04",
+      "titel": "Neue Nummer für Hollmann",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "fallen": ["P10"],
+      "inhalt": [
+        {"t": "text", "md": "Führe den Auftrag im Simulator so aus, wie die Tabelle es erlaubt. Welche Anomalie droht, und welche Zellen sind betroffen?"},
+        {"t": "dbtabelle", "tabelle": "Abteilungsliste", "kopf": [{"name": "MitgliedNr", "pk": true}, {"name": "Name"}, {"name": "Abteilung"}, {"name": "Trainer"}, {"name": "TrainerTelefon"}], "zeilen": [[1, "Mika R.", "Judo", "Hollmann", "0421-11"], [2, "Lena K.", "Judo", "Hollmann", "0421-11"], [3, "Tom B.", "Tennis", "Brede", "0421-22"], [4, "Ida M.", "Judo", "Hollmann", "0421-11"]]}
+      ],
+      "interaktion": {
+        "kind": "anomalie",
+        "block": 1,
+        "auftrag": "Trainer **Hollmann** hat eine neue Telefonnummer: 0421-99.",
+        "operation": "aendern",
+        "simulation": {"spalte": 4, "alt": "0421-11", "neu": "0421-99"}
+      },
+      "loesung": {"art": "aenderung", "zellen": [[0, 4], [1, 4], [3, 4]]},
+      "tipps": ["Wie oft steht Hollmanns Nummer in der Liste?"],
+      "erklaerung": [
+        {"t": "text", "md": "Die Nummer steht dreimal. Wird eine Zeile vergessen, widerspricht sich die Liste: **Änderungsanomalie**."}
+      ]
+    },
+    {
+      "id": "A9-E2-05",
+      "titel": "Zerlegungs-Puzzle: Abteilungen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "fallen": ["P8"],
+      "inhalt": [
+        {"t": "text", "md": "Verteile die Spalten so auf neue Tabellen, dass nichts verloren geht und nichts doppelt gespeichert wird. Jede Abteilung hat genau einen Trainer und eine Halle, jeder Trainer genau ein Telefon."}
+      ],
+      "interaktion": {"kind": "zerlegen", "attribute": ["Abteilung", "Trainer", "TrainerTelefon", "Halle"], "tabellenMax": 4},
+      "loesung": {
+        "fa": [{"links": ["Abteilung"], "rechts": ["Trainer", "Halle"]}, {"links": ["Trainer"], "rechts": ["TrainerTelefon"]}],
+        "schluessel": ["Abteilung"],
+        "muster": [{"tabellen": [{"attribute": ["Abteilung", "Trainer", "Halle"], "schluessel": ["Abteilung"]}, {"attribute": ["Trainer", "TrainerTelefon"], "schluessel": ["Trainer"]}]}]
+      },
+      "tipps": ["Wovon hängt das Telefon ab – von der Abteilung oder vom Trainer?"],
+      "erklaerung": [
+        {"t": "text", "md": "`TrainerTelefon` hängt vom Trainer ab, nicht von der Abteilung. Darum bekommt der Trainer eine eigene Tabelle: Abteilung(**Abteilung**, Trainer, Halle) und Trainer(**Trainer**, TrainerTelefon)."}
+      ]
+    },
+    {
+      "id": "A9-E2-06",
+      "titel": "Nur noch Schlüssel setzen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Überführung",
+      "fallen": ["P9"],
+      "inhalt": [
+        {"t": "text", "md": "Überführe den Bauplan: Setze in der Werkbank Primärschlüssel und Fremdschlüssel (mit Zielrelation)."},
+        {"t": "er", "graph": {"entitaeten": [{"id": "e1", "name": "Sorte", "attribute": [{"name": "SorteNr", "schluessel": true}, {"name": "Name", "schluessel": false}]}, {"id": "e2", "name": "Verkauf", "attribute": [{"name": "VerkaufNr", "schluessel": true}, {"name": "Kugeln", "schluessel": false}]}], "beziehungen": [{"id": "b1", "name": "wirdVerkauft", "enden": [{"entitaet": "e1", "kard": "1"}, {"entitaet": "e2", "kard": "n"}], "attribute": []}]}, "layout": {"e1": {"x": 80, "y": 140}, "e1.0": {"x": 30, "y": 50}, "e1.1": {"x": 150, "y": 50}, "b1": {"x": 300, "y": 140}, "e2": {"x": 520, "y": 140}, "e2.0": {"x": 470, "y": 50}, "e2.1": {"x": 590, "y": 50}}}
+      ],
+      "interaktion": {
+        "kind": "schema",
+        "modus": "schluessel",
+        "start": [{"name": "Sorte", "attribute": [{"name": "SorteNr"}, {"name": "Name"}]}, {"name": "Verkauf", "attribute": [{"name": "VerkaufNr"}, {"name": "Kugeln"}, {"name": "SorteNr"}]}]
+      },
+      "loesung": {
+        "muster": [[{"name": "Sorte", "attribute": [{"name": "SorteNr", "pk": true}, {"name": "Name"}]}, {"name": "Verkauf", "attribute": [{"name": "VerkaufNr", "pk": true}, {"name": "Kugeln"}, {"name": "SorteNr", "fk": "Sorte"}]}]]
+      },
+      "tipps": ["Bei 1:n bekommt die n-Seite den Fremdschlüssel."],
+      "erklaerung": [
+        {"t": "schema", "relationen": [{"name": "Sorte", "attribute": [{"name": "SorteNr", "pk": true}, {"name": "Name"}]}, {"name": "Verkauf", "attribute": [{"name": "VerkaufNr", "pk": true}, {"name": "Kugeln"}, {"name": "SorteNr", "fk": "Sorte"}]}]}
+      ]
+    },
+    {
+      "id": "A9-E2-07",
+      "titel": "Wer leitet welchen Fall?",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "ER-Modell",
+      "fallen": ["P9"],
+      "inhalt": [
+        {"t": "text", "md": "Jeder Fall wird von genau einem Ermittler geleitet; ein Ermittler kann mehrere Fälle leiten. Das Mengendiagramm zeigt einen Ausschnitt. Ergänze den Bauplan."},
+        {"t": "mengen", "links": {"name": "Ermittler", "elemente": ["E-01", "E-02"]}, "rechts": {"name": "Fall", "elemente": ["F-07", "F-08", "F-09"]}, "linien": [[0, 0], [0, 1], [1, 2]]}
+      ],
+      "interaktion": {
+        "kind": "er",
+        "modus": "ergaenzen",
+        "start": {"graph": {"entitaeten": [{"id": "e1", "name": "Ermittler", "attribute": [{"name": "ErmittlerNr", "schluessel": true}, {"name": "Name", "schluessel": false}]}, {"id": "e2", "name": "Fall", "attribute": [{"name": "FallNr", "schluessel": true}, {"name": "Titel", "schluessel": false}]}], "beziehungen": []}, "layout": {"e1": {"x": 80, "y": 120}, "e1.0": {"x": 40, "y": 40}, "e1.1": {"x": 140, "y": 40}, "e2": {"x": 480, "y": 120}, "e2.0": {"x": 440, "y": 40}, "e2.1": {"x": 540, "y": 40}}}
+      },
+      "loesung": {
+        "muster": [{"entitaeten": [{"id": "m1", "name": "Ermittler", "attribute": [{"name": "ErmittlerNr", "schluessel": true}, {"name": "Name", "schluessel": false}]}, {"id": "m2", "name": "Fall", "attribute": [{"name": "FallNr", "schluessel": true}, {"name": "Titel", "schluessel": false}]}], "beziehungen": [{"id": "mb1", "name": "leitet", "enden": [{"entitaet": "m1", "kard": "1"}, {"entitaet": "m2", "kard": "n"}], "attribute": []}]}],
+        "synonyme": {"Ermittler": ["Detektiv"]}
+      },
+      "tipps": ["Lies das Mengendiagramm von beiden Seiten: Wie viele Fälle hat ein Ermittler, wie viele Ermittler ein Fall?"],
+      "erklaerung": [
+        {"t": "text", "md": "Ein Ermittler leitet **n** Fälle, jeder Fall hat **1** leitenden Ermittler: Beziehungstyp `leitet` mit 1 am Ermittler und n am Fall."}
+      ]
+    },
+    {
+      "id": "A9-E2-08",
+      "titel": "Bauplan lesen",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "ER-Modell",
+      "fallen": ["P9"],
+      "inhalt": [
+        {"t": "text", "md": "Tippe im Bauplan alle Entitätstypen, Beziehungstypen und Schlüsselattribute an."},
+        {"t": "er", "graph": {"entitaeten": [{"id": "e1", "name": "Sorte", "attribute": [{"name": "SorteNr", "schluessel": true}, {"name": "Name", "schluessel": false}]}, {"id": "e2", "name": "Verkauf", "attribute": [{"name": "VerkaufNr", "schluessel": true}, {"name": "Kugeln", "schluessel": false}]}], "beziehungen": [{"id": "b1", "name": "wirdVerkauft", "enden": [{"entitaet": "e1", "kard": "1"}, {"entitaet": "e2", "kard": "n"}], "attribute": []}]}, "layout": {"e1": {"x": 80, "y": 140}, "e1.0": {"x": 30, "y": 50}, "e1.1": {"x": 150, "y": 50}, "b1": {"x": 300, "y": 140}, "e2": {"x": 520, "y": 140}, "e2.0": {"x": 470, "y": 50}, "e2.1": {"x": 590, "y": 50}}}
+      ],
+      "interaktion": {"kind": "er", "modus": "lesen", "block": 1},
+      "loesung": {"elemente": ["e1", "e2", "b1", "e1.0", "e2.0"]},
+      "erklaerung": [
+        {"t": "text", "md": "Entitätstypen sind Rechtecke (Sorte, Verkauf), der Beziehungstyp ist die Raute (wirdVerkauft), Schlüsselattribute sind unterstrichen (SorteNr, VerkaufNr)."}
+      ]
     }
   ]
 }

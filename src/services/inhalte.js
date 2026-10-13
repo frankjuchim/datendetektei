@@ -10,12 +10,14 @@
 //
 // Sicherheit (Vertrag §9, AUFGABENFORMAT 4.2): aufgabe(id) ist die interne Sicht mit Lösung; an den Browser geht nur
 // aufgabeOeffentlich(id) – ohne loesung, erklaerung, tipps, varianten, sortierung, aliasPflicht, Kernpunkte und
-// Herkunftsabfragen (dbtabelle.quelle). Zugriffsrechte (Kurs, Freischaltung, laufendes Verhör) prüfen die Routen.
+// Herkunftsabfragen (dbtabelle.quelle); bei zellen/anomalie/zerlegen/schema/er nur die Felder aus
+// modellierung.OEFFENTLICHE_FELDER. Zugriffsrechte (Kurs, Freischaltung, laufendes Verhör) prüfen die Routen.
 
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const F = require('../content/format');
+const M = require('../content/modellierung');
 const { STANDARD_UMFANG } = require('../kern/manifest');
 
 const STANDARD_VERZEICHNIS = path.join(__dirname, '..', '..', 'seed', 'akten');
@@ -419,6 +421,10 @@ function oeffentlicheInteraktion(ia, art) {
     basis.abimodus = art === 'verhoer' ? 'streng' : F.ABIMODI.includes(ia.abimodus) ? ia.abimodus : 'hinweis';
   } else if (ia.kind === 'kernpunkte') {
     basis.anzahl = Array.isArray(ia.kernpunkte) ? ia.kernpunkte.length : 0;
+  } else if (M.NEUE_INTERAKTIONEN.includes(ia.kind)) {
+    // Phase 5: nur die Felder zum Bedienen (Startdiagramm, Spaltenchips, Auftragskarte, Simulation) – Liste in
+    // modellierung.OEFFENTLICHE_FELDER; Muster, Synonyme, FA, Zellen und Anomalieart stehen in loesung.
+    Object.assign(basis, M.oeffentlich(ia));
   } else {
     for (const [k, v] of Object.entries(ia)) {
       if (k === 'inhalt' || GEHEIME_INTERAKTIONSFELDER.includes(k)) continue;

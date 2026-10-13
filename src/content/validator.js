@@ -17,6 +17,7 @@
 
 const F = require('./format');
 const P = require('./pruefer');
+const M = require('./modellierung');
 const parser = require('../sql/parser');
 const regeln = require('../sql/regeln');
 const { OEFFENTLICHE_DATENBANKEN } = require('../sql/datenbanken');
@@ -600,6 +601,8 @@ function pruefeInteraktion(ia, lo, aufgabe, ort, k) {
       pruefeSqlInteraktion(ia, lo, ort, lort, k);
       break;
     default:
+      // Phase 5: zellen, anomalie, zerlegen, schema, er (src/content/modellierung.js; im Verhör alle erlaubt)
+      if (M.NEUE_INTERAKTIONEN.includes(art)) M.pruefeInteraktion(ia, lo, aufgabe, ort, lort, { fa, ha });
       break;
   }
 }
@@ -835,6 +838,12 @@ function pruefeBloecke(bloecke, k) {
       case 'spurenbrett':
       case 'sortierfaecher':
         pruefeWerkzeugBlock(b, fb, k);
+        break;
+      case 'er':
+        M.pruefeErBlock(b).forEach(fb);
+        break;
+      case 'mengen':
+        M.pruefeMengenBlock(b).forEach(fb);
         break;
       default:
         break;

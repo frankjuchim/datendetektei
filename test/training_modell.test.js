@@ -212,8 +212,10 @@ test('T6: genau ein Vorschlag entspricht der Überführung des ER-Graphen; Graph
       assert.ok(graph.entitaeten.some((x) => x.id === e.entitaet), wo);
       assert.ok(['1', 'n', 'm'].includes(e.kard), wo);
     }
-    // Der er-Block erscheint erst, wenn der Browser ihn zeichnen kann (Task 3)
-    assert.ok(!a.inhalt.some((x) => x.t === 'er'), wo);
+    // Der er-Block steht im Inhalt (seit Phase 5 Task 2) und ist ein gültiger Block (Layout auch für Attribute <id>.<i>)
+    const block = a.inhalt.find((x) => x.t === 'er');
+    assert.deepEqual(block, a.er, wo);
+    assert.deepEqual(require('../src/content/modellierung').pruefeErBlock(block), [], wo);
     // Skizze nennt Entitätstypen, Beziehungstyp und Kardinalitäten in Zeichenreihenfolge
     const skizze = a.inhalt.find((x) => x.t === 'code').code;
     const [l, r] = b.enden.map((e) => graph.entitaeten.find((x) => x.id === e.entitaet).name);

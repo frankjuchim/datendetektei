@@ -663,8 +663,8 @@ function t5Kandidat(z) {
 
 /* ---------- T6: Mini-ER → Kurzschreibweise ---------- */
 
-/** Graph und Layout des Mini-ER für den Block `er` (Spec §7.6.4). Erscheint erst im Inhalt, wenn der Browser ihn zeichnet. */
-const MIT_ER_BLOCK = false;
+/** Graph und Layout des Mini-ER für den Block `er` (Spec §7.6.4; Format seit Phase 5 Task 2 im Validator bekannt). */
+const MIT_ER_BLOCK = true;
 
 const T6_THEMEN = [
   {
@@ -719,7 +719,12 @@ function erBlock(links, rechts, bez, kl, kr, rel) {
       entitaeten: [ent('e1', links), ent('e2', rechts)],
       beziehungen: [{ id: 'b1', name: bez, enden: [{ entitaet: 'e1', kard: kl }, { entitaet: 'e2', kard: kr }], attribute: rel ? [{ name: rel, schluessel: false }] : [] }]
     },
-    layout: { e1: { x: 100, y: 120 }, b1: { x: 320, y: 120 }, e2: { x: 540, y: 120 } }
+    // Layout für jedes Element, Attribute als <id>.<Index> (AUFGABENFORMAT §5.7): über dem Entitätstyp, unter der Raute
+    layout: {
+      e1: { x: 100, y: 120 }, 'e1.0': { x: 50, y: 40 }, 'e1.1': { x: 150, y: 40 },
+      b1: { x: 320, y: 120 }, ...(rel ? { 'b1.0': { x: 320, y: 200 } } : {}),
+      e2: { x: 540, y: 120 }, 'e2.0': { x: 490, y: 40 }, 'e2.1': { x: 590, y: 40 }
+    }
   };
 }
 
