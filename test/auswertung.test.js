@@ -516,3 +516,14 @@ test('Superadmin: Sicherung als Download einer gültigen SQLite-Datei; temporär
   db.close();
   fs.rmSync(path.dirname(ziel), { recursive: true, force: true });
 });
+
+test('Sicherheits-Review Phase 8: anonyme Anfragen an /api/admin/sicherung verbrauchen das Limit des Superadmins nicht', async () => {
+  const { u, admin, s } = await start();
+  for (let i = 0; i < 8; i++) assert.equal((await request(u.app).get('/api/admin/sicherung')).status, 401);
+  for (let i = 0; i < 3; i++) assert.equal((await s.get('/api/admin/sicherung')).status, 403);
+  const r = await admin.get('/api/admin/sicherung').buffer(true).parse((res, cb) => {
+    res.on('data', () => {});
+    res.on('end', () => cb(null, null));
+  });
+  assert.equal(r.status, 200, 'Superadmin bekommt die Sicherung trotz fremder Anfragen');
+});
