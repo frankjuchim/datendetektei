@@ -110,6 +110,46 @@
    "quelle": "00_Gesamt/DD_Gesamtuebersicht.docx",
    "sha256": "250546cbbe3288c64d3c0762811a8fa064b98fc5ee416f854a801bcd8113edaf",
    "verfahren": "pdf"
+  },
+  "DD_Video00-So_ermittelst_du_Folien.pdf": {
+   "quelle": "Videos/00_So_ermittelst_du/DD_Video00_So_ermittelst_du_Folien.pptx",
+   "sha256": "1c455bdc09f6203afced91d0540e39eac5c1ebb046b1f2f3d59298e8c1b2f731",
+   "verfahren": "pdf"
+  },
+  "DD_Video01-SQL-Grundlagen_Folien.pdf": {
+   "quelle": "Videos/01_SQL-Grundlagen/DD_Video01_SQL-Grundlagen_Folien.pptx",
+   "sha256": "969ecdb96b759a01dd2a20f1204272e73aa135e86d3f541af82ee6a462e18978",
+   "verfahren": "pdf"
+  },
+  "DD_Video02-Verbund_ohne_JOIN_Folien.pdf": {
+   "quelle": "Videos/02_Verbund_ohne_JOIN/DD_Video02_Verbund_ohne_JOIN_Folien.pptx",
+   "sha256": "243eb0fa4b9aa05ad41663a464a5b14f64157013fb35136aa2e8e7a7f4f9401e",
+   "verfahren": "pdf"
+  },
+  "DD_Video03-GROUP_BY_und_HAVING_Folien.pdf": {
+   "quelle": "Videos/03_GROUP_BY_und_HAVING/DD_Video03_GROUP_BY_und_HAVING_Folien.pptx",
+   "sha256": "40ef4906eaa2369ae8502f13d60863b61d898e83b4a053aba13a0278f39e41c0",
+   "verfahren": "pdf"
+  },
+  "DD_Video04-Redundanz_und_Schluessel_Folien.pdf": {
+   "quelle": "Videos/04_Redundanz_und_Schluessel/DD_Video04_Redundanz_und_Schluessel_Folien.pptx",
+   "sha256": "ed2614d27ef4cf70a16169831a93c694e39bdeffa34cdc9fc5a865f5b9cfa011",
+   "verfahren": "pdf"
+  },
+  "DD_Video05-ER-Modelle_Folien.pdf": {
+   "quelle": "Videos/05_ER-Modelle/DD_Video05_ER-Modelle_Folien.pptx",
+   "sha256": "e0bb20301afa36d309f8dbaa8da965227482c9c03accb47d035de9c40a9667c3",
+   "verfahren": "pdf"
+  },
+  "DD_Video06-ER_zu_Relationenschema_Folien.pdf": {
+   "quelle": "Videos/06_ER_zu_Relationenschema/DD_Video06_ER_zu_Relationenschema_Folien.pptx",
+   "sha256": "feb740130d382bbccf708057b2e6653a4f4e5749d5f0f0e1d66698adf772caf4",
+   "verfahren": "pdf"
+  },
+  "DD_Video07-Abi-Check_Folien.pdf": {
+   "quelle": "Videos/07_Abi-Check/DD_Video07_Abi-Check_Folien.pptx",
+   "sha256": "b8b7b5f9d257e72acb7b8cec8ed655ea1814c296c0dcc5b267ac2f72ce2475e4",
+   "verfahren": "pdf"
   }
  }
 }

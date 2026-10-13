@@ -995,6 +995,107 @@
    "art": "kuer",
    "fassung": "loesung",
    "niveau": "beide"
+  },
+  {
+   "datei": "Videos/00_So_ermittelst_du/DD_Video00_So_ermittelst_du_Folien.pptx",
+   "titel": "Video 0 · So ermittelst du in der Datendetektei (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "Videos/01_SQL-Grundlagen/DD_Video01_SQL-Grundlagen_Folien.pptx",
+   "titel": "Video 1 · SQL-Grundlagen: SELECT, WHERE und die Bedingungsfallen (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "Videos/02_Verbund_ohne_JOIN/DD_Video02_Verbund_ohne_JOIN_Folien.pptx",
+   "titel": "Video 2 · Verbund ohne JOIN: Wie FROM a, b WHERE funktioniert (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "Videos/03_GROUP_BY_und_HAVING/DD_Video03_GROUP_BY_und_HAVING_Folien.pptx",
+   "titel": "Video 3 · GROUP BY und HAVING – so wie im Abitur (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    5,
+    6
+   ]
+  },
+  {
+   "datei": "Videos/04_Redundanz_und_Schluessel/DD_Video04_Redundanz_und_Schluessel_Folien.pptx",
+   "titel": "Video 4 · Redundanz, Anomalien und gute Schlüssel (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "Videos/05_ER-Modelle/DD_Video05_ER-Modelle_Folien.pptx",
+   "titel": "Video 5 · ER-Modelle nach den Ergänzenden Hinweisen (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10
+   ]
+  },
+  {
+   "datei": "Videos/06_ER_zu_Relationenschema/DD_Video06_ER_zu_Relationenschema_Folien.pptx",
+   "titel": "Video 6 · Vom ER-Modell zum Relationenschema in 5 Regeln (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "Videos/07_Abi-Check/DD_Video07_Abi-Check_Folien.pptx",
+   "titel": "Video 7 · Abi-Check Datenbanken: 10 Fallen und die Operatoren (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
   }
  ]
 }
