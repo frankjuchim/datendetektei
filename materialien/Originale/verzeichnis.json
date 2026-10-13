@@ -497,6 +497,176 @@
    "art": "warmup",
    "fassung": "schueler",
    "niveau": "beide"
+  },
+  {
+   "datei": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_eA.docx",
+   "titel": "Generalprobe Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_eA_Erwartungshorizont.docx",
+   "titel": "Generalprobe Datenbanken (eA) – Lösung",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_gA.docx",
+   "titel": "Generalprobe Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "lehrkraft",
+   "niveau": "gA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_gA_Erwartungshorizont.docx",
+   "titel": "Generalprobe Datenbanken (gA) – Lösung",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "loesung",
+   "niveau": "gA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Fallen-Checkliste.docx",
+   "titel": "Kopiervorlage: Fallen-Checkliste P1–P10",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "Akte7_Generalprobe/1_Praesentation/DD_A7_Generalprobe.pptx",
+   "titel": "Präsentation Die Ermittlerprüfung",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "praesentation",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_eA.docx",
+   "titel": "Klausur Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "eA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_eA_Erwartungshorizont.docx",
+   "titel": "Klausur Datenbanken (eA) – Lösung",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "eA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_gA.docx",
+   "titel": "Klausur Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "gA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_gA_Erwartungshorizont.docx",
+   "titel": "Klausur Datenbanken (gA) – Lösung",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "gA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_eA.docx",
+   "titel": "Nachschreibklausur Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "eA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_eA_Erwartungshorizont.docx",
+   "titel": "Nachschreibklausur Datenbanken (eA) – Lösung",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "eA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_gA.docx",
+   "titel": "Nachschreibklausur Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "gA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_gA_Erwartungshorizont.docx",
+   "titel": "Nachschreibklausur Datenbanken (gA) – Lösung",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "gA"
+  },
+  {
+   "datei": "Akte7_Generalprobe/4_Lehrerhinweise/DD_A7_Lehrerhinweise.docx",
+   "titel": "Lehrerhinweise Akte 7",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "Warm-up/DD_Warm-up-Karten_A7.docx",
+   "titel": "Warm-up-Karten Akte 7",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
   }
  ]
 }

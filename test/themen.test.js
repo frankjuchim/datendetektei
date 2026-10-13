@@ -127,6 +127,11 @@ test('GET /api/themen: Materialliste je Akte nur als Titel „nach Anmeldung“'
     const arten = a.materialien.map((m) => m.art);
     for (const art of ['Arbeitsblatt', 'Präsentations-Handout', 'Warm-up-Karten']) {
       if (a.nr === 7 && art === 'Warm-up-Karten') continue;
+      // Akte 7 hat statt Arbeitsblättern die Generalprobe (mit Whitelist-Einträgen als Art „Generalprobe“)
+      if (a.nr === 7 && art === 'Arbeitsblatt') {
+        assert.ok(arten.includes('Arbeitsblatt') || arten.includes('Generalprobe'), `Akte 7: ${arten.join(', ')}`);
+        continue;
+      }
       assert.ok(arten.includes(art), `Akte ${a.nr}: ${art}`);
     }
   }

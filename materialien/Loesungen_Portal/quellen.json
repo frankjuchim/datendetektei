@@ -80,6 +80,41 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
    "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
    "verfahren": "pdf"
+  },
+  "DD_A7-Generalprobe_eA_Erwartungshorizont.pdf": {
+   "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_eA_Erwartungshorizont.docx",
+   "sha256": "e4ff44bfa71f2205588780e2ba60f3c2e65ce709ef8d4d5a41b6139b7894681e",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Generalprobe_gA_Erwartungshorizont.pdf": {
+   "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_gA_Erwartungshorizont.docx",
+   "sha256": "400cd7c53e2707d3a128714de093cd64688bbf2cfe2fde1bc290b2e7885a47d9",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Klausur_eA_Erwartungshorizont.pdf": {
+   "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_eA_Erwartungshorizont.docx",
+   "sha256": "09c4642dab47d364fd4e3a6ec6ac4425c8ef926a799829eac48452d0f2fa09b1",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Klausur_gA_Erwartungshorizont.pdf": {
+   "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_gA_Erwartungshorizont.docx",
+   "sha256": "6cc0e8c5b1b04ed6ccce631ec4136cd42103efd9f593caf0e2e2bf3146fc2917",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Nachschreibklausur_eA_Erwartungshorizont.pdf": {
+   "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_eA_Erwartungshorizont.docx",
+   "sha256": "848011ea0c1c7d6a0ba03e57277a707de6d0cbe0dde71c58a613eb0dc71332b3",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Nachschreibklausur_gA_Erwartungshorizont.pdf": {
+   "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_gA_Erwartungshorizont.docx",
+   "sha256": "7227aa8a86366987bed6f3984c646b05e358a23176701713debd0b93b927523d",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Warm-up-Karten_Loesungen.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A7.docx",
+   "sha256": "5036ab8c863d43525e7e0f65dbdf4fc43af73cc65c86cae3ebe73beb1922cfa7",
+   "verfahren": "pdf"
   }
  }
 }

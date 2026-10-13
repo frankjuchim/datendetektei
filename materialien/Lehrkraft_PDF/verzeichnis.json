@@ -92,6 +92,92 @@
     7,
     8
    ]
+  },
+  {
+   "datei": "DD_A7-Generalprobe_eA.pdf",
+   "titel": "Generalprobe Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Generalprobe_gA.pdf",
+   "titel": "Generalprobe Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "lehrkraft",
+   "niveau": "gA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Praesentation_Generalprobe.pdf",
+   "titel": "Präsentation Die Ermittlerprüfung (mit Notizen)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Klausur_eA.pdf",
+   "titel": "Klausur Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Klausur_gA.pdf",
+   "titel": "Klausur Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_eA.pdf",
+   "titel": "Nachschreibklausur Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_gA.pdf",
+   "titel": "Nachschreibklausur Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 7",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
   }
  ]
 }
