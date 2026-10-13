@@ -545,7 +545,7 @@ WHERE a.KundenID = k.KundenID
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
-| A2-E2-01 | Welche Verbindung gehört wohin? | ★ | `match` | K24, K03 | P7 | gA/eA | Tabellenpaaren (Ausleihe–Rad, Ausleihe–Kunde, Ausleihe–Station über Start, Rad–Station) die passende Verbundbedingung zuordnen. |
+| A2-E2-01 | Welche Verbundbedingung gehört wohin? | ★ | `match` | K24, K03 | P7 | gA/eA | Tabellenpaaren (Ausleihe–Rad, Ausleihe–Kunde, Ausleihe–Station über Start, Rad–Station) die passende Verbundbedingung zuordnen. |
 | A2-E2-02 | Ausleihen am Stadtfest-Samstag | ★ | `sql` | K23, K16, K19 | P7 | gA/eA | Vor- und Nachname der Kunden und Startzeit aller Ausleihen am 2026-08-29 (`a.Start LIKE '2026-08-29%'`), mit Tabellenalias. |
 | A2-E2-03 | Der gerissene Faden | ★ | `lines` | K24 | P2, P7 | gA/eA | In einer Verbundabfrage über drei Tabellen (Lastenrad-Ausleihen) die Zeile mit der falschen Verbundbedingung antippen (`a.RadID = r.StationID` statt `a.RadID = r.RadID`). |
 | A2-E2-04 | Vier Tabellen, eine Spur | ★★ | `sql` | K24 | P2 | gA/eA | Kundenname, Radtyp und Name der Startstation aller Ausleihen mit einem Preis über 10 €. |

@@ -1065,7 +1065,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Wer hat am Festsamstag (2026-08-29) am Stand 'Kaffeemobil' Positionen mit der Menge 0 gebucht? Gib je Person HelferNr, Vorname, Nachname und die Anzahl solcher Positionen aus – aber nur Personen mit **mehr als 3** solchen Positionen."
+          "md": "Wer hat am Festsamstag (29.08.2026) am Stand 'Kaffeemobil' Positionen mit der Menge 0 gebucht? Gib je Person HelferNr, Vorname, Nachname und die Anzahl solcher Positionen aus – aber nur Personen mit **mehr als 3** solchen Positionen."
         }
       ],
       "interaktion": {
@@ -1270,7 +1270,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Edda will wissen: **Wer hatte am 2026-08-29 von 22 bis 23 Uhr die Schicht am Kaffeemobil – und fallen die Positionen mit Menge 0 in genau diese Schicht?**\n\nBeschreibe in Worten, wie du vorgehst – noch ohne fertige Abfrage. Deine Antwort bleibt auf deinem Gerät."
+          "md": "Edda will wissen: **Wer hatte am 29.08.2026 von 22 bis 23 Uhr die Schicht am Kaffeemobil – und fallen die Positionen mit Menge 0 in genau diese Schicht?**\n\nBeschreibe in Worten, wie du vorgehst – noch ohne fertige Abfrage. Deine Antwort bleibt auf deinem Gerät."
         },
         {
           "t": "schema",
@@ -1570,7 +1570,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die Anzahl aller Verkäufe und den Zeitpunkt des ersten Verkaufs ausgibt. [2 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die die Anzahl aller Verkäufe und den Zeitpunkt des ersten Verkaufs ausgibt. [2 BE]"
         }
       ],
       "interaktion": {
@@ -1595,7 +1595,7 @@
         },
         {
           "t": "text",
-          "md": "Ergebnis: 120 Verkäufe, erster Verkauf am 2026-09-21 um 09:31."
+          "md": "Ergebnis: 120 Verkäufe, erster Verkauf am 21.09.2026 um 09:31."
         }
       ]
     },
@@ -2097,7 +2097,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die je Kategorie die Kategorie und die Anzahl der Produkte ausgibt. [2 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die je Kategorie die Kategorie und die Anzahl der Produkte ausgibt. [2 BE]"
         }
       ],
       "interaktion": {
@@ -2242,7 +2242,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die je Produkt die Produktnummer, die Bezeichnung und die verkaufte Stückzahl ausgibt. [3 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die je Produkt die Produktnummer, die Bezeichnung und die verkaufte Stückzahl ausgibt. [3 BE]"
         }
       ],
       "interaktion": {
@@ -2384,7 +2384,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die alle Kategorien mit einem durchschnittlichen Preis über 1,50 € ausgibt, jeweils mit dem Durchschnittspreis. [3 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Kategorien mit einem durchschnittlichen Preis über 1,50 € ausgibt, jeweils mit dem Durchschnittspreis. [3 BE]"
         }
       ],
       "interaktion": {
@@ -2527,7 +2527,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die die drei Produkte mit dem höchsten Umsatz (Anzahl × Preis) mit Produktnummer, Bezeichnung und Umsatz ausgibt, absteigend nach Umsatz. [3 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die die drei Produkte mit dem höchsten Umsatz (Anzahl × Preis) mit Produktnummer, Bezeichnung und Umsatz ausgibt, absteigend nach Umsatz. [3 BE]"
         }
       ],
       "interaktion": {
@@ -2834,7 +2834,7 @@
         },
         {
           "t": "text",
-          "md": "Die folgende Abfrage soll den Umsatz mit Obstbechern ermitteln, die am 2026-09-25 in der 2. großen Pause mit der Schülerkarte bezahlt wurden. Sie liefert 14,00 €, obwohl in dieser Pause nur ein Obstbecher (1,75 €) mit Karte bezahlt wurde."
+          "md": "Die folgende Abfrage soll den Umsatz mit Obstbechern ermitteln, die am 25.09.2026 in der 2. großen Pause mit der Schülerkarte bezahlt wurden. Sie liefert 14,00 €, obwohl in dieser Pause nur ein Obstbecher (1,75 €) mit Karte bezahlt wurde."
         },
         {
           "t": "sql",
@@ -2842,7 +2842,7 @@
         },
         {
           "t": "text",
-          "md": "**Beurteilen** Sie, welche Aussage den Fehler zutreffend erklärt. [3 BE]"
+          "md": "**Beurteilen Sie**, welche Aussage den Fehler zutreffend erklärt. [3 BE]"
         }
       ],
       "interaktion": {
@@ -2996,7 +2996,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen** Sie eine SQL-Abfrage, die je Helferin bzw. Helfer die Helfernummer, den Vor- und den Nachnamen sowie den Gesamtumsatz (Anzahl × Preis) ausgibt – nur für Personen mit einem Umsatz von mehr als 50 €. [5 BE]"
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die je Helferin bzw. Helfer die Helfernummer, den Vor- und den Nachnamen sowie den Gesamtumsatz (Anzahl × Preis) ausgibt – nur für Personen mit einem Umsatz von mehr als 50 €. [5 BE]"
         }
       ],
       "interaktion": {
@@ -3139,7 +3139,7 @@
         },
         {
           "t": "text",
-          "md": "Frage der Kiosk-AG: „Welche Kategorien brachten bei Kartenzahlungen mehr als 30 € Umsatz ein? Die umsatzstärkste Kategorie zuerst.“\n\n**Bringen Sie** die Schritte zur Beantwortung der Frage **in** eine sinnvolle Reihenfolge. Ein Schritt gehört nicht dazu. [4 BE]"
+          "md": "Frage der Kiosk-AG: „Welche Kategorien brachten bei Kartenzahlungen mehr als 30 € Umsatz ein? Die umsatzstärkste Kategorie zuerst.“\n\n**Bringen Sie** die Schritte zur Beantwortung der Frage in eine sinnvolle Reihenfolge. Ein Schritt gehört nicht dazu. [4 BE]"
         }
       ],
       "interaktion": {
