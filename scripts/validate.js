@@ -2,8 +2,10 @@
 'use strict';
 // Inhalts-Validator (docs/AUFGABENFORMAT.md §8, Plan Phase 3 Task 3).
 //   npm run validate                    → prüft seed/akten/*.json, seed/warmup/*.json, den Probefall
-//                                         seed/gast/probefall.json (eigene Aufgaben, keine Texte aus seed/akten) und
+//                                         seed/gast/probefall.json (eigene Aufgaben, keine Texte aus seed/akten),
 //                                         die Fallebene seed/fallebene.json (Beweisstücke, Steckbrief; AUFGABENFORMAT §11)
+//                                         und die Material-Whitelists materialien/*/verzeichnis.json (Format =
+//                                         Fehler; fehlende Dateien und Lösungen in der Gast-Auswahl = Hinweis)
 //   node scripts/validate.js <datei> …  → prüft einzelne Dateien
 //   Optionen: --json (maschinenlesbar), --ohne-hinweise (nur Fehler)
 // Baut dazu die Übungs- und Verhör-DBs (ladeDatenbanken), eine Sandbox mit zwei Prozessen und den SQL-Prüfer.
@@ -16,6 +18,7 @@ const { erzeugeSandbox } = require('../src/sql/sandbox');
 const { erzeugePruefer } = require('../src/sql/pruefer');
 const { validiereAkten, validiereProbefall, formatiere } = require('../src/content/validator');
 const { pruefeFallebene } = require('../src/services/fallebene');
+const { pruefeVerzeichnisse } = require('../src/services/material');
 
 const SEED = path.join(__dirname, '..', 'seed');
 const PROBEFALL = path.join(SEED, 'gast', 'probefall.json');
@@ -110,6 +113,12 @@ async function main() {
   }
   ergebnis.fehler.unshift(...lesefehler);
   if (ohneArgumente && fs.existsSync(FALLEBENE)) pruefeFallebeneDatei(ergebnis, dateien);
+  if (ohneArgumente) {
+    // Material-Whitelists (Phase 6 Task 5, docs/MATERIALIEN.md „Whitelists“)
+    const m = pruefeVerzeichnisse();
+    ergebnis.fehler.push(...m.fehler);
+    ergebnis.hinweise.push(...m.hinweise);
+  }
   if (ohneArgumente && !pfade.length) ergebnis.hinweise.push({ datei: 'seed', text: 'keine Akten in seed/akten und keine Warm-up-Karten in seed/warmup gefunden.' });
 
   if (json) {

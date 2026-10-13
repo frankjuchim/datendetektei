@@ -39,10 +39,11 @@ function baueTestDb(name) {
  * mitInhalten: zusätzlich die echten Akten (seed/akten), der SQL-Prüfer und die Warm-up-Karten wie in src/server.js
  *   (Lern-API, Verhöre, Warm-up, Trainingsplatz); schließt mitDatenbanken ein. rateLimits: Überschreibungen für Tests.
  * aktenDateien: weitere Akten-Dateien (z. B. test/fixtures/akte_beispiel.json) zusätzlich zu seed/akten (wie AKTEN_DATEIEN).
+ * materialVerzeichnis: Wurzel der Materialien (z. B. test/fixtures/materialien).
  * Die Plattform-URL ist die tatsächliche Adresse (mit Port), damit die Origin-Prüfung für POSTs greift.
  * → { url, t (testApp-Ergebnis), anmelden(nutzer) → Cookie „dd_s=…“, schliessen() }
  */
-async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mitInhalten = false, rateLimits = null, aktenDateien = null } = {}) {
+async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mitInhalten = false, rateLimits = null, aktenDateien = null, materialVerzeichnis = null } = {}) {
   if (mitInhalten) mitDatenbanken = true;
   let weiter = (req, res) => {
     res.statusCode = 503;
@@ -53,7 +54,7 @@ async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mi
   const url = `http://127.0.0.1:${server.address().port}`;
 
   let sandbox = null;
-  const appOptionen = {};
+  const appOptionen = materialVerzeichnis ? { materialVerzeichnis } : {};
   if (mitDatenbanken) {
     const datenbanken = ladeDatenbanken(undefined, { log: () => {} });
     sandbox = erzeugeSandbox({

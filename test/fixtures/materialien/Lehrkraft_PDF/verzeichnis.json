@@ -1,0 +1,6 @@
+{
+  "dateien": [
+    { "datei": "Akte1/DD_A1_Lehrerhinweise.pdf", "titel": "Lehrerhinweise Akte 1", "akte": 1, "niveau": "beide", "art": "lehrerhinweise" },
+    { "datei": "Akte7/DD_A7_Klausur_eA.pdf", "titel": "Klausur eA mit Erwartungshorizont", "akte": 7, "niveau": "eA", "art": "pruefung" }
+  ]
+}

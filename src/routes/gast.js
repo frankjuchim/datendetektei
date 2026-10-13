@@ -7,13 +7,14 @@
 //   POST /api/gast/aufgaben/:id/loesung        {} → { loesung, erklaerung } (nur auf ausdrücklichen Wunsch)
 //   GET  /api/gast/lehrkraft                   erfundener Demo-Kurs (nur lesend)
 //   GET  /api/gast/material                    Gast-PDF-Whitelist (Titel + Link)
-//   GET  /gast/material/:datei                 PDF nur aus der Whitelist, sonst 404
+//   GET  /gast/material/<datei>                PDF nur aus der Whitelist (auch Akte1/…), sonst 404
 //
 // Rate-Limits je IP (nur im RAM): Prüfen 30/min (konfig.rateLimits.gastPruefen), alle Gast-POSTs 120/min
 // (konfig.rateLimits.gast). Origin-Prüfung und JSON-Pflicht übernimmt pruefeHerkunft in app.js.
 
 const express = require('express');
 const { rateLimit } = require('../kern/sicherheit');
+const { sendeMaterial, schluesselAus, CACHE } = require('./material');
 
 function gastRouten({ gast, pruefer = null, konfig }) {
   const router = express.Router({ caseSensitive: true, strict: true });
@@ -40,14 +41,11 @@ function gastRouten({ gast, pruefer = null, konfig }) {
   router.get('/api/gast/lehrkraft', json(() => gast.lehrkraft()));
   router.get('/api/gast/material', json(() => gast.materialListe()));
 
-  router.get('/gast/material/:datei', (req, res, next) => {
-    const ziel = gast.materialPfad(req.params.datei);
+  router.get('/gast/material/*datei', (req, res, next) => {
+    const schluessel = schluesselAus(req.params.datei);
+    const ziel = schluessel && gast.materialPfad(schluessel);
     if (!ziel) return next();
-    res.set('Cache-Control', 'no-cache');
-    res.type('application/pdf');
-    res.sendFile(ziel.datei, { root: ziel.root, dotfiles: 'deny' }, (err) => {
-      if (err && !res.headersSent) next();
-    });
+    return sendeMaterial(res, next, ziel, CACHE.gast);
   });
 
   // Fachliche Fehler (HttpFehler) mit ihrem deutschen Text; alles andere an den allgemeinen Fehler-Handler.
