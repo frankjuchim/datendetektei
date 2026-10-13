@@ -760,3 +760,53 @@ wird vom Prüfer erkannt; `ergebnis`/`zeilen` mit `quelleSql` werden gegen die D
 `POST /api/gast/aufgaben/:id/pruefen` `{ antwort }` → `{ ok, rueckmeldung, geloest, loesung? }` (Lösung und Erklärung
 nur nach dem Lösen), `POST …/tipp` `{ nr }` → `{ nr, tipp, anzahl }`, `POST …/loesung` → `{ loesung, erklaerung }`
 (nur auf ausdrücklichen Wunsch – im Gastmodus erlaubt, weil es reine Demo-Aufgaben sind).
+
+## 11. Live-Modus: Live-Pool und Escape Room (`seed/live/`)
+
+Inhalte der Kür K2 (Spec §7.10, DS_PLANUNG K2, STORY §9). Sie werden **nicht** in die Plattform-DB eingespielt
+(`src/content/live.js` lädt sie beim Start in den Speicher); Live-Runden bringen keine Lab-Punkte. Die Aufgaben haben
+das Format aus §4–§7 (inkl. `loesung`, `erklaerung`) und werden mit `pruefeAntwort` geprüft.
+
+**`pool.json`** – Duell-Aufgaben `K2-L-01…20`:
+
+```json
+{ "version": 1, "titel": "Live-Pool …", "aufgaben": [
+  { "id": "K2-L-03", "akte": 1, "zeitSek": 90, "titel": "…", "stufe": 2, "kategorie": "SQL eine Tabelle",
+    "inhalt": [ … ], "interaktion": { "kind": "sql", "datenbank": "fundbuero" }, "loesung": { "sql": "…" }, "erklaerung": [ … ] } ] }
+```
+
+| Feld | Regel |
+|---|---|
+| `akte` | 1–6: die Akte, die die Aufgabe wiederholt (Soll A1 4 · A2 3 · A3 4 · A4 3 · A5 3 · A6 3, sonst Hinweis) |
+| `zeitSek` | 10–90 Sekunden Bearbeitungszeit |
+| `interaktion` | nur `ergebnis`, `choice`, `sql` (öffentliche Akten-DBs) |
+| `niveau` | Akte 5 immer `eA` (in gA-Kursen nicht auswählbar) |
+
+**`escape.json`** – Szenario mit Stationen:
+
+```json
+{ "version": 1, "titel": "Escape Room Weserstedt", "briefing": "…", "abschluss": "…",
+  "dauerMin": 55, "tippNachMin": 10, "tippStrafeMin": 2,
+  "stationen": [ { "id": "S1", "nr": 1, "titel": "Das Fundbuch-Schloss", "niveau": "alle", "story": "…",
+                   "code": { "teile": [ { "quelle": "anzahlZeilen", "stellen": 3 } ] },
+                   "aufgabe": { "id": "K2-S1", …, "tipps": ["… (genau einer: der Tipp-Umschlag)"] } } ] }
+```
+
+| Feld | Regel |
+|---|---|
+| `id`, `nr` | `S1`…`S6` mit `nr` 1–6; gA-Ersatzstation `S5g` (nr 5, `niveau: "gA"`); `S5` hat `niveau: "eA"` |
+| `niveau` | `alle` · `eA` · `gA`; eA-Weg und gA-Weg haben je genau die Stationen 1–6 in Reihenfolge |
+| `aufgabe.id` | `K2-<Station>`; genau ein Tipp (Tipp-Umschlag, kostet `tippStrafeMin` Minuten) |
+| `code.teile` | Regel, wie der Server den Code **aus der Lösung** berechnet (Ziffern aneinander, `stellen` = mit Nullen auffüllen) |
+
+Code-Quellen: `anzahlZeilen` (Zeilenzahl des Ergebnisses der Musterlösung) · `zelle` `{ zeile, spalte }` (1-basiert,
+ganze Zahl) · `zuordnung` (match: je Element in Dateireihenfolge die Nummer der Kategorie) · `auswahl` (choice: Nummer
+der einzigen richtigen Option in Dateireihenfolge) · `anzahlRichtig` · `minimalerSchluessel` (kleinste Attributzahl
+der richtigen Optionen „(A, B)“) · `relationen` · `fremdschluessel` (schema: aus allen Musterlösungen gleich). `teil`
+(1-basiert) wählt bei mehrteiligen Aufgaben den Teil. Der Code steht **nie** im JSON und verlässt den Server erst, wenn
+ein Team die Station gelöst hat.
+
+Der Validator (`validiereLive`, in `npm run validate`) prüft das Format, die Aufgaben intern als Test-Akte (welt 9:
+A9-E1 = Pool, A9-E2 = Stationen) mit allen Regeln aus §8 (SQL in der Sandbox), dass kein Text (ab 20 Zeichen) aus
+`seed/akten` stammt (Transfer), und die Codes: berechenbar, 2–8 Ziffern, je Station verschieden, nicht in der
+öffentlichen Sicht; ein Zellen-Code eines mehrzeiligen Ergebnisses braucht `sortierung` und keinen Gleichstand.

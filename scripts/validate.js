@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 // Inhalts-Validator (docs/AUFGABENFORMAT.md §8, Plan Phase 3 Task 3).
-//   npm run validate                    → prüft seed/akten/*.json, seed/warmup/*.json und den Probefall
-//                                         seed/gast/probefall.json (eigene Aufgaben, keine Texte aus seed/akten)
+//   npm run validate                    → prüft seed/akten/*.json, seed/warmup/*.json, den Probefall
+//                                         seed/gast/probefall.json (eigene Aufgaben, keine Texte aus seed/akten) und
+//                                         den Live-Modus seed/live/{pool,escape}.json (Transfer, Codes ableitbar)
 //   node scripts/validate.js <datei> …  → prüft einzelne Dateien
 //   Optionen: --json (maschinenlesbar), --ohne-hinweise (nur Fehler)
 // Baut dazu die Übungs- und Verhör-DBs (ladeDatenbanken), eine Sandbox mit zwei Prozessen und den SQL-Prüfer.
@@ -14,9 +15,11 @@ const { ladeDatenbanken } = require('../src/sql/datenbanken');
 const { erzeugeSandbox } = require('../src/sql/sandbox');
 const { erzeugePruefer } = require('../src/sql/pruefer');
 const { validiereAkten, validiereProbefall, formatiere } = require('../src/content/validator');
+const { validiereLive } = require('../src/content/live');
 
 const SEED = path.join(__dirname, '..', 'seed');
 const PROBEFALL = path.join(SEED, 'gast', 'probefall.json');
+const LIVE = { pool: path.join(SEED, 'live', 'pool.json'), escape: path.join(SEED, 'live', 'escape.json') };
 
 function jsonDateien(ordner) {
   if (!fs.existsSync(ordner)) return [];
@@ -52,7 +55,10 @@ async function main() {
 
   let ergebnis = { fehler: [], hinweise: [], aufgaben: 0, karten: 0 };
   const mitProbefall = ohneArgumente && fs.existsSync(PROBEFALL);
-  if (dateien.length || mitProbefall) {
+  const live = {};
+  if (ohneArgumente) for (const [k, p] of Object.entries(LIVE)) if (fs.existsSync(p)) live[k] = fs.readFileSync(p, 'utf8');
+  const mitLive = Object.keys(live).length > 0;
+  if (dateien.length || mitProbefall || mitLive) {
     const datenbanken = ladeDatenbanken(undefined, { log: () => {} });
     const roh = {};
     const schemata = {};
@@ -67,6 +73,13 @@ async function main() {
       if (mitProbefall) {
         const akten = dateien.filter((d) => !/^warmup/i.test(d.name));
         const r = await validiereProbefall(fs.readFileSync(PROBEFALL, 'utf8'), { datenbanken, sandbox, sqlPruefer }, { akten, datei: 'gast/probefall.json' });
+        ergebnis.fehler.push(...r.fehler);
+        ergebnis.hinweise.push(...r.hinweise);
+        ergebnis.aufgaben += r.aufgaben;
+      }
+      if (mitLive) {
+        const akten = dateien.filter((d) => !/^warmup/i.test(d.name));
+        const r = await validiereLive(live, { datenbanken, sandbox, sqlPruefer }, { akten });
         ergebnis.fehler.push(...r.fehler);
         ergebnis.hinweise.push(...r.hinweise);
         ergebnis.aufgaben += r.aufgaben;
