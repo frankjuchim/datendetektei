@@ -469,3 +469,19 @@ test('GET /static/js/sql/ liefert nur die Whitelist', async () => {
     assert.equal(res.status, 404, p);
   }
 });
+
+test('Sicherheits-Review Phase 8: tief verschachtelte Klammern → Parsefehler ZU_TIEF statt Stapelüberlauf', () => {
+  for (const tiefe of [60, 2000]) {
+    const sql = 'SELECT ' + '('.repeat(tiefe) + '1' + ')'.repeat(tiefe);
+    let r;
+    assert.doesNotThrow(() => {
+      r = parse(sql);
+    });
+    assert.equal(r.ast, null);
+    assert.equal(r.fehler[0].code, 'ZU_TIEF');
+    assert.match(r.fehler[0].text, /verschachtelt/);
+  }
+  assert.doesNotThrow(() => parse('SELECT ' + '('.repeat(3990)));
+  const flach = parse('SELECT ' + '('.repeat(30) + '1' + ')'.repeat(30));
+  assert.ok(flach.ast, 'übliche Verschachtelung bleibt erlaubt');
+});
