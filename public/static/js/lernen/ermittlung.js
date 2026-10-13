@@ -414,6 +414,12 @@ function teilErgebnisText(r) {
     if (t.zeilenzahl === 'zu_wenige') saetze.push('Deine Ergebnistabelle hat zu wenige Zeilen.');
     if (t.nurReihenfolge) saetze.push('Alle Zeilen stimmen, nur die Reihenfolge nicht. Prüf das ORDER BY.');
     if (Number.isInteger(t.zeilen) && Array.isArray(t.diagnose)) saetze.push(`Deine Abfrage liefert ${A.mehrzahl(t.zeilen, 'Zeile', 'Zeilen')}.`);
+    // Modellierung (Phase 5): Bauplan-Tisch (Kriterienliste) und Schema-Werkbank (Teilfeedback je Relation)
+    if (Array.isArray(t.kriterien) && Number.isInteger(t.gesamt)) saetze.push(`${t.richtig} von ${t.gesamt} Kriterien erfüllt – die Liste am Bauplan zeigt, was noch fehlt.`);
+    if (Array.isArray(t.relationen)) {
+      const ok = t.relationen.filter((x) => x && x.ok).length;
+      saetze.push(`${ok} von ${t.relationen.length} ${t.relationen.length === 1 ? 'Relation passt' : 'Relationen passen'} – die Hinweise stehen an den Karten.`);
+    }
   }
   return saetze;
 }

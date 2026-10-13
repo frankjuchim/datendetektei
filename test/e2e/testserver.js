@@ -38,10 +38,11 @@ function baueTestDb(name) {
  * mitDatenbanken: echte Übungs-DBs (basis.sql) und Sandbox wie im Betrieb (/db/, /api/db/, /api/sql/ausfuehren).
  * mitInhalten: zusätzlich die echten Akten (seed/akten), der SQL-Prüfer und die Warm-up-Karten wie in src/server.js
  *   (Lern-API, Verhöre, Warm-up, Trainingsplatz); schließt mitDatenbanken ein. rateLimits: Überschreibungen für Tests.
+ * aktenDateien: zusätzliche Akten-Dateien (z. B. test/fixtures/akte_beispiel.json, wie AKTEN_DATEIEN in src/server.js).
  * Die Plattform-URL ist die tatsächliche Adresse (mit Port), damit die Origin-Prüfung für POSTs greift.
  * → { url, t (testApp-Ergebnis), anmelden(nutzer) → Cookie „dd_s=…“, schliessen() }
  */
-async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mitInhalten = false, rateLimits = null } = {}) {
+async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mitInhalten = false, rateLimits = null, aktenDateien = [] } = {}) {
   if (mitInhalten) mitDatenbanken = true;
   let weiter = (req, res) => {
     res.statusCode = 503;
@@ -74,7 +75,7 @@ async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mi
   const t = testApp(konfigTest, (db) => {
     if (!mitInhalten) return appOptionen;
     const inhalte = erzeugeInhalte(db);
-    inhalte.laden();
+    inhalte.laden(aktenDateien.length ? { dateien: aktenDateien } : undefined);
     return { ...appOptionen, inhalte };
   });
   const { app } = t;
