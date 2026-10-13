@@ -130,6 +130,11 @@ strikt, kein Alias in HAVING). Erwartete Ergebnisse gelten für die Pflicht-Date
 (Abnahme-Prüfungen unten). Spätere Stufen dürfen die Ergebnisse früherer Stufen als Literal verwenden (`'R-7F3A'`,
 `'WA-3917'`) – das ist der Ermittlungsweg und ersetzt Unterabfragen.
 
+> **Phase 6:** Die Stufen unten sind die Abnahme-Abfragen der DB. Die Lab-Aufgaben A6-E1-09…14 folgen der Abfolge in
+> `docs/DS_PLANUNG.md` (DS 12) bzw. `docs/STORY.md` §7: Spur 1 ohne GROUP BY (ein BETWEEN über den Zeitraum, 9 Zeilen),
+> Spur 4 nur `AppCheckin` (Gegenprobe Kaffeemobil in der Erklärung), Spur 6 als ein Verbund `Einwohner × AppCheckin ×
+> RadExport` ohne Zeitfilter (Stufen 6a/6b zusammengefasst).
+
 **Stufe 1 · Welches Kundentoken steckt hinter den fünf Nachtfahrten?** (★, K17, K18, K26 · P6) – Je Nacht ein
 BETWEEN, die OR-Gruppe steht in Klammern. Ergebnis: genau eine Zeile `R-7F3A | 1988 | Hafenviertel | Plus | 5`.
 → Indiz: „Das Konto ist pseudonym – aber nicht stumm.“

@@ -23,9 +23,8 @@ Abitur-Mix: Schlüssel, Anomalien an der zusammengelegten Tabelle `BestellUebers
 1. Fr **2027-03-26 ist Karfreitag** – an diesem Tag gibt es keine Angebote; der März endet mit Do 2027-03-25.
 2. Zusätzlich eine **Februarwoche** (Mo 2027-02-22 … Fr 2027-02-26, je zwei Angebote), damit „im März 2027“ in GP-eA-f
    bzw. GP-gA-d ein echter Zeilenfilter ist (ohne WHERE kommt die Gemüselasagne mit 56 Portionen dazu, P1).
-3. ER-Material: DS_PLANUNG nennt den Beziehungstyp zwischen Gericht und Angebot einmal *wirdAngeboten*
-   (VERHOER_KONTEXTE) und einmal *bietetAn* (Generalprobe-Material) – für die Daten ohne Bedeutung, in den Aufgaben
-   einheitlich zu wählen.
+3. ER-Material: Der Beziehungstyp zwischen Gericht und Angebot heißt einheitlich *bietetAn* (früher in
+   VERHOER_KONTEXTE *wirdAngeboten*; Phase 6 angeglichen, Spec §18) – für die Daten ohne Bedeutung.
 
 ## Relationenschema (Kurzschreibweise)
 
@@ -45,11 +44,11 @@ Abgeholt `'hh:mm'` (11:40 … 13:39) oder NULL. Person 40 hat nie bestellt, Geri
 
 ## ER-Modell (Chen, Material der Generalprobe eA)
 
-Person (n) — *bestellt* (Menge, Abgeholt) — (m) Angebot · Gericht (1) — *wirdAngeboten* — (n) Angebot · Küchenkraft (n)
+Person (n) — *bestellt* (Menge, Abgeholt) — (m) Angebot · Gericht (1) — *bietetAn* — (n) Angebot · Küchenkraft (n)
 — *bereitetZu* — (m) Angebot. *bestellt* wird zur Tabelle `Bestellung` mit eigenem Schlüssel `BestellNr`, weil dieselbe
 Person dasselbe Angebot mehrfach bestellen darf (A7-V-01, GP-a). Erweiterungen (A7-V-14/-15, GP-eA-c/d): Gericht (n) —
-*enthaelt* (Hinweis bzw. Mengenangabe) — (m) Allergen; Küchenkraft *vertritt* Küchenkraft (rekursiv) – nicht in den
-Daten.
+*enthaelt* (Hinweis bzw. Mengenangabe) — (m) Allergen (Schlüssel `Kuerzel`); Küchenkraft *vertritt* Küchenkraft
+(rekursiv, 1:n – jede Küchenkraft hat höchstens eine feste Vertretung) – nicht in den Daten.
 
 ## Daten im Überblick
 

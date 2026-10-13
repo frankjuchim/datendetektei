@@ -303,8 +303,9 @@ die Tagesangebote zu.
 **Rahmensatz:** „Letzte Probe vor der Lizenz: ein ganzer Fall, ohne mich.“
 
 **ER-Material (Generalprobe eA):** Person (n) — *bestellt* (Menge, Abgeholt) — (m) Angebot · Gericht (1) —
-*wirdAngeboten* — (n) Angebot · Küchenkraft (n) — *bereitetZu* — (m) Angebot. Erweiterungen (Aufgaben): Gericht (n) —
-*enthaelt* (Hinweis bzw. Mengenangabe) — (m) Allergen; Küchenkraft *vertritt* Küchenkraft (rekursiv).
+*bietetAn* — (n) Angebot · Küchenkraft (n) — *bereitetZu* — (m) Angebot. Erweiterungen (Aufgaben): Gericht (n) —
+*enthaelt* (Hinweis bzw. Mengenangabe) — (m) Allergen (Schlüssel Kuerzel); Küchenkraft *vertritt* Küchenkraft (rekursiv, 1:n:
+höchstens eine feste Vertretung je Küchenkraft).
 
 **Wertebereiche:** Rolle `Schüler`, `Lehrkraft`, `Personal` (Klasse nur bei Schülern, sonst NULL) · Kategorie `Hauptgericht`,
 `Suppe`, `Salat`, `Dessert` · Vegetarisch `'ja'`/`'nein'` · Zeitraum 2027-03-01 bis 2027-03-26 (Mo–Fr) · ≈ 40 Personen,

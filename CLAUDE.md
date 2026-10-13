@@ -56,7 +56,7 @@ scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 5; spätere Phasen ergänzen hier)
+## Befehle (Stand Phase 6; spätere Phasen ergänzen hier)
 
 ```
 npm install
@@ -72,9 +72,19 @@ npm run validate         # seed/akten, seed/warmup, seed/gast: Format + jede SQL
 AKTEN_DATEIEN=test/fixtures/akte_beispiel.json npm run dev   # zusätzlich die Beispielakte (welt 9) laden
 npm run e2e              # Playwright (test/e2e/*.e2e.js); Chromium aus /opt/pw-browsers bzw. CHROMIUM_PFAD; SCREENSHOTS=1 für Fotos
                          # (Phase 5: test/e2e/modellierung.e2e.js mit echten Akten 4/5 → docs/screenshots/phase5/)
+                         # (Phase 6: test/e2e/probelauf.e2e.js – Testkurs mit Lehrkraft + 3 Schüler:innen über alle
+                         #  Akten, Live-Duell, Board, Urkunden, Kür → docs/screenshots/phase6/probelauf_*)
 npm run pruefen          # alles: test, validate, Material-SQL, Materialien
 ```
 docx/pptx rendern: `soffice --headless --convert-to pdf --outdir <scratch> <datei>`.
+
+Seiten (Phase 6): `/pinnwand` (Beweisstücke, Indizienkette des Schlussplädoyers, Steckbrief nach Regel E10),
+`/live` (Live-Runde beitreten), `/lehrkraft` (Reiter Übersicht, Einstellungen, Auswertung, Vorschau, Live, Board,
+Urkunden, Materialien; Superadmin zusätzlich System), `/lehrkraft/live` + `/live/<runde>/beamer` (Steuerung, Beamer),
+`/lehrkraft/urkunden` (Druckseite), `/board/<schlüssel>` (Beamer-Board ohne Anmeldung, immer dunkel, nur Anzeigenamen).
+Fallebene in `seed/fallebene.json`, Live-Inhalte in `seed/live/`, Kür K1 in `seed/akten/kuer.json` (Welt 8, `kuer: true`,
+nur eA, keine Verbund-Welt). Neue Tabellen müssen vom Verbund-Löschauftrag erfasst werden
+(`test/verbund_loeschen_alles.test.js` durchsucht alle Tabellen).
 
 Werkzeugseiten (ohne Anmeldung, ohne Prüfung, Entwurf im `localStorage`): `/werkzeug/bauplan` (Bauplan-Tisch, ER in
 Chen-Notation, Zeichnen + Liste), `/werkzeug/werkbank` (Schema-Werkbank); angemeldet bzw. mit `?db=eisdiele`:
@@ -133,6 +143,11 @@ P10 Operator verfehlt.
 - Gespeichert nur: `sub`, Anzeigename, Rolle, Kurs-IDs, Lernstand. **Freitexte nie** (E7), SQL-Entwürfe nur im
   `localStorage` des Geräts, Live-Antworten nach Rundenende verwerfen, IPs nur im RAM.
 - Schüler-SQL nur in der Sandbox (eigener Kindprozess, Abbruch per SIGKILL, In-Memory-Kopie, nur lesend, 1,5 s, 5 000 Zeilen, verbotene Tokens).
+  **Einzige Ausnahme: Schreibmodus der Kür K1** (`fuehreSkriptAus`, `POST /api/kurse/:kurs/aufgaben/:id/skript`): je
+  Anfrage eine frische In-Memory-DB (leer oder Startschema), CREATE/INSERT erlaubt, FK an, 1,5 s, ≤ 200 Anweisungen,
+  ≤ 20 Tabellen, ≤ 500 Zeilen je Tabelle, ≤ 1 MB, Skript ≤ 10 000 Zeichen, TEMP/TRIGGER/VIEW/VIRTUAL verboten; nie
+  Akten-DBs oder die Plattform-DB, nichts wird gespeichert.
+- Live-Modus nur im RAM (Antworten, Teams, Statistik); Board und CSV ohne `sub`.
 - CSP: `default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self' data:;
   style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'` – keine Inline-
   Skripte/-Styles, keine CDNs, Ausgaben nur als Textknoten. `X-Robots-Tag: noindex`.
