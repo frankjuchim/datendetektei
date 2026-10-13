@@ -909,6 +909,17 @@ export function erzeugeTisch(opt = {}) {
       aktualisiereLeiste();
     }
   }
+  // touch-action wirkt in Chromium/Safari nicht an SVG-Kindelementen: Ohne diesen Riegel beginnt der Browser beim
+  // Ziehen eines Elements mit dem Finger zu scrollen und bricht den Zug ab (pointercancel). Startet die Berührung auf
+  // einem Element, wird das Scrollen hier unterbunden; Wischen auf dem leeren Papier scrollt weiter.
+  svg.addEventListener(
+    'touchstart',
+    (e) => {
+      const g = e.target.closest && e.target.closest('[data-id]');
+      if (g && inhalt.contains(g) && e.cancelable) e.preventDefault();
+    },
+    { passive: false }
+  );
   svg.addEventListener('pointerup', zugEnde);
   svg.addEventListener('pointercancel', (e) => {
     if (zug && e.pointerId === zug.pointerId) zug = null;

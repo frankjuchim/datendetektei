@@ -73,3 +73,5 @@
 @media (prefers-reduced-motion: reduce) {
   .wk-ergebnis .stempel.auftritt { animation: none; }
 }
+/* Probelauf 8: Vorschau und Musterschema auf schmalen Bildschirmen umbrechen statt abgeschnitten seitlich scrollen */
+.wk-vorschau .schema-block .relation, .wk-loesung .schema-block .relation { white-space: normal; overflow-wrap: break-word; }

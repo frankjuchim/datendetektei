@@ -315,6 +315,7 @@ export function befundLoeschen(kopf, original, geloescht) {
   const rest = original.filter((z, r) => !geloescht.has(r));
   const verloren = [];
   for (let c = 0; c < kopf.length; c++) {
+    if (kopf[c] && kopf[c].name === 'Zeile') continue; // technische Zeilennummer der Ausschnitte – keine Information
     const gemeldet = new Set();
     for (const r of [...geloescht].sort((x, y) => x - y)) {
       const v = original[r] ? original[r][c] : null;
