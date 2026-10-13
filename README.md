@@ -7,7 +7,8 @@ Der Kurs arbeitet als Ermittlerteam der *Datendetektei Weserstedt*: Mit SQL werd
 Vereinsarchiv zeigt, warum Datenbanken gut modelliert sein müssen, die Detektei entwirft ihre eigene Fall-Datenbank –
 und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, was Datenschutz eigentlich schützt.
 
-> **Status:** Planung abgeschlossen (Phase 0). Umsetzung in Claude Code nach `docs/superpowers/plans/`.
+> **Status:** Phasen 1–5 umgesetzt (Kern, SQL-Engine, Lernkern mit Akten 1–3, Visualisierungen, Akten 4–5 mit
+> Modellierung; Version 0.5.0). Weitere Phasen nach `docs/superpowers/plans/`.
 
 ## Überblick
 
@@ -58,6 +59,9 @@ in `varianten/` und sind nie öffentlich. Öffentlich ist nur die Haupt-DB unter
 Schüler-SQL läuft im Browser (sql.js im Web Worker, Abbruch nach 3 s) und zur Prüfung auf dem Server in einer
 Sandbox aus Kindprozessen (nur lesend, 1,5 s, 5 000 Zeilen). Ist WebAssembly gesperrt, führt der Server auch
 „Ausführen“ aus. Freie Ermittlung: `/konsole/<db>` (Eisdiele ohne Anmeldung).
+Verstehens- und Modellierungswerkzeuge: `/werkzeug/zeitlupe`, `/werkzeug/spurenbrett`, `/werkzeug/sortierfaecher`
+(angemeldet bzw. mit `?db=eisdiele`), `/werkzeug/bauplan` (Bauplan-Tisch, ER in Chen-Notation) und `/werkzeug/werkbank`
+(Schema-Werkbank) ohne Anmeldung; geprüft wird nur in den Aufgaben, serverseitig (`src/er`, `src/content/modellierung.js`).
 
 ## Inhalte
 

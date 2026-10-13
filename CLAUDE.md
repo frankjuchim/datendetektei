@@ -40,11 +40,13 @@ Widersprechen sich Dateien: Spec > DS_PLANUNG > STORY > übrige. Widerspruch mel
 src/kern/      gemeinsamer Kern (später lab-kern): jwt.js (UNVERÄNDERT aus frankjuchim/labs), konfig, sitzung,
                sicherheit, sso, verbund, manifest, punkte – keine Abhängigkeit von src/sql oder src/er
 src/sql/       EH-§8-Parser (isomorph), Regeln, Sandbox (Kindprozesse + better-sqlite3), Prüfer, Diagnose, Fehlertexte
-src/er/        ER-Graph-Abgleich, Schema-Prüfer, Zerlegung (funktionale Abhängigkeiten)
+src/er/        Modellierungs-Kern (reine Funktionen): namen (Normalisierung, Synonyme), abgleich (ER-Graph gegen
+               Musterlösungen), zuordnung, schema (Relationenschema-Abgleich), zerlegung (FA, Hülle, Chase)
 src/content/   Prüfer je Interaktion, Validator, Trainings-Generatoren
 src/services/  inhalte, lernen, verhoer, warmup, training, live, auswertung, material, gast, stand
 src/routes/    schueler, lehrkraft, admin, gast, live, sso, verbund
-public/        Seiten + static/{css,fonts,img,js,vendor}; sql.js vendort (sql-wasm.js/.wasm, sql-asm.js)
+public/        Seiten + static/{css,fonts,img,js,vendor}; sql.js vendort (sql-wasm.js/.wasm, sql-asm.js);
+               Werkzeuge static/js/{zeitlupe,spurenbrett,sortierfaecher,bauplan,werkbank}
 seed/          akten/*.json, datenbanken/<name>/{schema,pflicht}.sql + varianten/*.sql, warmup/, gast/, arbeitsblaetter.json
 materialien/   docx/pptx je Akte (maßgeblich) + erzeugte PDFs: Arbeitsblaetter_PDF = Schülerfassungen (nur angemeldet; öffentlich nur Gast-Auswahl Gast_PDF, E13; auch
                Präsentations-Handouts), Loesungen_Portal + Lehrkraft_PDF nur Lehrkraft, Originale (docx/pptx) nur
@@ -54,7 +56,7 @@ scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 4; spätere Phasen ergänzen hier)
+## Befehle (Stand Phase 5; spätere Phasen ergänzen hier)
 
 ```
 npm install
@@ -69,9 +71,14 @@ npm run sqljs            # sql.js-Vendor-Dateien nach public/static/vendor/sqljs
 npm run validate         # seed/akten, seed/warmup, seed/gast: Format + jede SQL-Lösung auf allen Varianten, EH-konform
 AKTEN_DATEIEN=test/fixtures/akte_beispiel.json npm run dev   # zusätzlich die Beispielakte (welt 9) laden
 npm run e2e              # Playwright (test/e2e/*.e2e.js); Chromium aus /opt/pw-browsers bzw. CHROMIUM_PFAD; SCREENSHOTS=1 für Fotos
+                         # (Phase 5: test/e2e/modellierung.e2e.js mit echten Akten 4/5 → docs/screenshots/phase5/)
 npm run pruefen          # alles: test, validate, Material-SQL, Materialien
 ```
 docx/pptx rendern: `soffice --headless --convert-to pdf --outdir <scratch> <datei>`.
+
+Werkzeugseiten (ohne Anmeldung, ohne Prüfung, Entwurf im `localStorage`): `/werkzeug/bauplan` (Bauplan-Tisch, ER in
+Chen-Notation, Zeichnen + Liste), `/werkzeug/werkbank` (Schema-Werkbank); angemeldet bzw. mit `?db=eisdiele`:
+`/werkzeug/zeitlupe`, `/werkzeug/spurenbrett`, `/werkzeug/sortierfaecher`. ER-Layouts in Akten: `test/chen_layout.test.js` prüft Überlappungen.
 
 ## Konventionen
 
