@@ -37,6 +37,20 @@ export async function zeige(panel, ctx) {
   if (!reihenfolge.length) {
     karte.appendChild(G.notiz('Noch keine Materialien', 'Für diesen Kurs sind noch keine Downloads hinterlegt. Sie entstehen in Phase 7 und erscheinen dann automatisch hier.'));
   }
+  // Erklärvideos (YouTube, Spec §13): nur Link-Knöpfe, nur Videos mit eingetragenem Link.
+  const videos = (Array.isArray(d.videos) ? d.videos : []).map((v) => {
+    const a = A.videoKnopf(v);
+    if (a) a.prepend(R.icon('i-play'));
+    return a;
+  }).filter(Boolean);
+  if (videos.length) {
+    const sektion = el('section', 'material-gruppe');
+    sektion.id = 'ma-videos';
+    sektion.appendChild(el('h3', null, 'Erklärvideos (YouTube)'));
+    sektion.appendChild(el('p', 'material-stufe', 'Öffnen sich in einem neuen Tab auf YouTube. Die Folien zu den Videos stehen bei „Gesamt“ unter Lehrkraft.'));
+    sektion.appendChild(h('div', 'knopf-reihe video-reihe', ...videos));
+    karte.appendChild(sektion);
+  }
   const zips = new Map((d.zips || []).map((z) => [z.akte, z]));
   for (const akte of reihenfolge) {
     const sektion = el('section', 'material-gruppe');

@@ -4,6 +4,7 @@
 //   GET /api/material[?kurs=k:<id>]       Liste je Rolle: { rolle, niveau, stufen: { gast, schueler?, lehrkraft?,
 //                                         original? }, zips? } – anonym nur die Gast-Auswahl. Schüler: eA-Material
 //                                         ausgeblendet, wenn der Kurs (bzw. ohne ?kurs alle eigenen Kurse) gA ist.
+//                                         Angemeldet zusätzlich videos: [{ nr, titel, akte, ds, niveau, url }] (YouTube).
 //   GET /material/schueler/<pfad>         Schülerfassungen (angemeldet: schueler, lehrkraft, superadmin)
 //   GET /material/lehrkraft/<pfad>        Lösungen und Lehrkraft-PDFs (lehrkraft, superadmin)
 //   GET /material/original/<pfad>         docx/pptx/md (nur superadmin)
@@ -43,7 +44,7 @@ function sendeMaterial(res, next, ziel, cache) {
   });
 }
 
-function materialRouten({ material }) {
+function materialRouten({ material, videos = null }) {
   const router = express.Router({ caseSensitive: true, strict: true });
 
   const sitzung = (req) => leseSitzung(req, req.app.locals.konfig, req.app.locals.db);
@@ -78,6 +79,8 @@ function materialRouten({ material }) {
     const stufen = {};
     for (const stufe of material.stufenFuer(s.rolle)) stufen[stufe] = material.liste(stufe, { niveau: stufe === 'gast' ? null : n.niveau });
     const antwort = { rolle: s.rolle, niveau: n.niveau, stufen };
+    // Erklärvideos (nur mit YouTube-Link, Spec §13) für den Reiter Materialien; gA-Kurs ohne eA-Videos.
+    antwort.videos = videos ? videos.alle({ niveau: n.niveau }) : [];
     if (s.rolle === 'superadmin') antwort.zips = material.zips();
     return res.json(antwort);
   });

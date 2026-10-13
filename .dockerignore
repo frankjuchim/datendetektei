@@ -1,12 +1,15 @@
-# Ins Image kommen nur src/, public/, seed/, scripts/, materialien/ (+ package*.json) – siehe Dockerfile.
-# materialien/: Originale (docx/pptx/md) nur mit ORIGINALE_IM_IMAGE=1 (Standard), sonst in der Stufe „material“ entfernt.
+# Ins Image kommen nur src/, public/, seed/, scripts/ (+ package*.json) und die ausgewählten materialien/ – siehe Dockerfile.
 .git
 .github
 node_modules
 data
 test
 docs
+materialien/_Muster
+materialien/**/quellen.json
 werkzeuge
 *.log
 .DS_Store
 .env
+quellen
+__pycache__

@@ -57,7 +57,7 @@ const menge = (db, sql) => alle(db, sql).map((z) => JSON.stringify(z.map((w) => 
 test('Verhör-DBs: Namen, kuratiert, eigene Module, Reihenfolge der Übungs-DBs unverändert', () => {
   assert.deepEqual(bau.VERHOER_DBS, KONTEXTE);
   assert.deepEqual(bau.REIHENFOLGE, ['fundbuero', 'stadtrad', 'stadtfest', 'tus', 'detektei', 'datenspuren', 'eisdiele']);
-  assert.deepEqual(bau.ALLE_DBS, [...bau.REIHENFOLGE, ...KONTEXTE]);
+  assert.deepEqual(bau.ALLE_DBS, [...bau.REIHENFOLGE, ...KONTEXTE, ...bau.PRUEFUNG_DBS]);
   for (const name of KONTEXTE) {
     assert.ok(bau.KURATIERT.includes(name), name);
     assert.equal(bau.modulName(name), name.replace('/', '_'));

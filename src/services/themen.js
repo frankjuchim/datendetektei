@@ -197,9 +197,10 @@ function materialAusWhitelist(material) {
 /**
  * @param {{ inhalte?: object, material?: object }} opt inhalte = erzeugeInhalte(db) (optional; ohne sie erscheinen
  *   alle Akten „folgt“); material = erzeugeMaterial() (optional; ohne Whitelist-Einträge einer Akte bleiben die
- *   geplanten Titel „nach Anmeldung“)
+ *   geplanten Titel „nach Anmeldung“); videos = erzeugeVideos() (optional; je Akte die Erklärvideos mit YouTube-Link
+ *   zu ihren Doppelstunden, Spec §13)
  */
-function erzeugeThemen({ inhalte = null, material = null } = {}) {
+function erzeugeThemen({ inhalte = null, material = null, videos = null } = {}) {
   function ermittlungAusSeed(akte, l) {
     const kompetenzen = new Set();
     const fallen = new Set();
@@ -260,7 +261,8 @@ function erzeugeThemen({ inhalte = null, material = null } = {}) {
         ds,
         ermittlungen,
         verhoer,
-        materialien: ausWhitelist.get(stamm.nr) || materialien(stamm.nr, ermittlungen)
+        materialien: ausWhitelist.get(stamm.nr) || materialien(stamm.nr, ermittlungen),
+        videos: videos ? videos.fuerDs(ds).map((v) => ({ nr: v.nr, titel: v.titel, niveau: v.niveau, url: v.url })) : []
       };
     });
     const niveaus = [

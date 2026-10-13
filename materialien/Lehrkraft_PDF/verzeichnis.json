@@ -1,0 +1,352 @@
+{
+ "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Lehrkraft-Materialien – nur Lehrkraft.",
+ "dateien": [
+  {
+   "datei": "DD_Gesamtuebersicht.pdf",
+   "titel": "Gesamtübersicht",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "gesamt",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "DD_Abi-Kompass.pdf",
+   "titel": "Abi-Kompass",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "gesamt",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "DD_A1-Praesentation_Fundbuero.pdf",
+   "titel": "Präsentation Das Fundbüro (mit Notizen)",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 1",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "DD_A2-Praesentation_Raeder.pdf",
+   "titel": "Spur der Räder (mit Notizen)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 2",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "DD_A3-Praesentation_Stadtfest.pdf",
+   "titel": "Die Stadtfest-Kasse (mit Notizen)",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "praesentation",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "DD_A3-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 3",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "DD_A4-Praesentation_Vereinsarchiv.pdf",
+   "titel": "Präsentation Chaos im Vereinsarchiv (mit Notizen)",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 4",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "DD_A5-Praesentation_Bauplan.pdf",
+   "titel": "Präsentation Der Bauplan (mit Notizen)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 5",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "datei": "DD_A6-Praesentation_Datenspuren.pdf",
+   "titel": "Präsentation Datenspuren (mit Notizen)",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 6",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A7-Generalprobe_eA.pdf",
+   "titel": "Generalprobe Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Generalprobe_gA.pdf",
+   "titel": "Generalprobe Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "lehrkraft",
+   "niveau": "gA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Praesentation_Generalprobe.pdf",
+   "titel": "Präsentation Die Ermittlerprüfung (mit Notizen)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Klausur_eA.pdf",
+   "titel": "Klausur Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Klausur_gA.pdf",
+   "titel": "Klausur Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_eA.pdf",
+   "titel": "Nachschreibklausur Datenbanken (eA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_gA.pdf",
+   "titel": "Nachschreibklausur Datenbanken (gA)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "lehrkraft",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 7",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_Video00-So_ermittelst_du_Folien.pdf",
+   "titel": "Video 0 · So ermittelst du in der Datendetektei (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_Video01-SQL-Grundlagen_Folien.pdf",
+   "titel": "Video 1 · SQL-Grundlagen: SELECT, WHERE und die Bedingungsfallen (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "DD_Video02-Verbund_ohne_JOIN_Folien.pdf",
+   "titel": "Video 2 · Verbund ohne JOIN: Wie FROM a, b WHERE funktioniert (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "DD_Video03-GROUP_BY_und_HAVING_Folien.pdf",
+   "titel": "Video 3 · GROUP BY und HAVING – so wie im Abitur (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    5,
+    6
+   ]
+  },
+  {
+   "datei": "DD_Video04-Redundanz_und_Schluessel_Folien.pdf",
+   "titel": "Video 4 · Redundanz, Anomalien und gute Schlüssel (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "DD_Video05-ER-Modelle_Folien.pdf",
+   "titel": "Video 5 · ER-Modelle nach den Ergänzenden Hinweisen (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10
+   ]
+  },
+  {
+   "datei": "DD_Video06-ER_zu_Relationenschema_Folien.pdf",
+   "titel": "Video 6 · Vom ER-Modell zum Relationenschema in 5 Regeln (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_Video07-Abi-Check_Folien.pdf",
+   "titel": "Video 7 · Abi-Check Datenbanken: 10 Fallen und die Operatoren (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
+  }
+ ]
+}

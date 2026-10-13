@@ -143,6 +143,26 @@
       .catch(() => {});
   }
 
+  // Erklärvideos (Spec §13): nur Link-Knöpfe zu YouTube (kein Embed), nur geprüfte Links aus GET /api/themen.
+  const YOUTUBE = /^https:\/\/www\.youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}(?:&t=\d+)?$/;
+  function videoReihe(videos) {
+    const liste = (Array.isArray(videos) ? videos : []).filter((v) => v && typeof v.url === 'string' && YOUTUBE.test(v.url));
+    if (!liste.length) return null;
+    const reihe = el('div', 'knopf-reihe video-reihe');
+    reihe.setAttribute('aria-label', 'Erklärvideos');
+    for (const v of liste) {
+      const a = el('a', 'knopf video-knopf');
+      a.appendChild(icon('i-play'));
+      a.appendChild(document.createTextNode(`Video ${v.nr}: ${v.titel} (YouTube)`));
+      a.href = v.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.dataset.video = String(v.nr);
+      reihe.appendChild(a);
+    }
+    return reihe;
+  }
+
   function akteArtikel(a) {
     const art = el('article', 'aktendeckel akte-thema');
     art.id = 'akte-' + a.nr;
@@ -162,6 +182,8 @@
     a.ermittlungen.forEach((e, i) => ol.appendChild(ermittlungZeile(a, e, i === a.ermittlungen.length - 1)));
     innen.appendChild(ol);
     innen.appendChild(materialListe(a.materialien, `Materialien zu Akte ${a.nr}`));
+    const videos = videoReihe(a.videos);
+    if (videos) innen.appendChild(videos);
     art.appendChild(innen);
     return art;
   }

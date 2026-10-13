@@ -29,7 +29,14 @@ const VERHOER_DATENBANKEN = Object.freeze([
   'verhoer/fitness', 'verhoer/mensa'
 ]);
 
-/** Alle beim Start geladenen DBs. */
+/**
+ * Prüfungs-Kontexte (seed/datenbanken/pruefung/<kontext>: Klausur, Nachschreibklausur) – nur für Material und
+ * Erwartungshorizonte (scripts/db_bauen.js baut und prüft sie, scripts/sql_pruefen_cli.js nutzt sie); zur Laufzeit
+ * NICHT geladen und nie öffentlich.
+ */
+const PRUEFUNG_DATENBANKEN = Object.freeze(['pruefung/sanitaetsdienst', 'pruefung/kostuemverleih']);
+
+/** Alle beim Start geladenen DBs (ohne Prüfungs-Kontexte). */
 const ALLE_DATENBANKEN = Object.freeze([...AKTEN_DATENBANKEN, ...VERHOER_DATENBANKEN]);
 
 /** Variantentypen in fester Reihenfolge (Spec 7.4); Datei je Typ: <quellen>/<name>/varianten/<typ>.sql. */
@@ -217,6 +224,7 @@ module.exports = {
   AKTEN_DATENBANKEN,
   OEFFENTLICHE_DATENBANKEN,
   VERHOER_DATENBANKEN,
+  PRUEFUNG_DATENBANKEN,
   ALLE_DATENBANKEN,
   VARIANTEN_TYPEN,
   DATEN_MARKE,

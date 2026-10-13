@@ -1,0 +1,155 @@
+{
+ "_hinweis": "ERZEUGT von werkzeuge/*_pdf.py – SHA-256 der Quelle je PDF; die CI prüft damit, ob die PDFs aktuell sind.",
+ "dateien": {
+  "DD_A1-Lehrerhinweise.pdf": {
+   "quelle": "Akte1_Fundbuero/4_Lehrerhinweise/DD_A1_Lehrerhinweise.docx",
+   "sha256": "478b127bcfa6c5cbdc6fb575eb552294c811422e07d388e0c570b38ff65cd0fd",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Praesentation_Fundbuero.pdf": {
+   "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
+   "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
+   "verfahren": "notizen"
+  },
+  "DD_A2-Lehrerhinweise.pdf": {
+   "quelle": "Akte2_Raeder/4_Lehrerhinweise/DD_A2_Lehrerhinweise.docx",
+   "sha256": "7e38a4e36cc430c11aafa3070d426dd3ae89888e1ed48ecc8f02371ee8089eac",
+   "verfahren": "pdf"
+  },
+  "DD_A2-Praesentation_Raeder.pdf": {
+   "quelle": "Akte2_Raeder/1_Praesentation/DD_A2_Raeder.pptx",
+   "sha256": "2121dbc6fbf1cae6d4f07f379d246de79ab1f49ef710178d504c411a73c14b32",
+   "verfahren": "notizen"
+  },
+  "DD_A3-Lehrerhinweise.pdf": {
+   "quelle": "Akte3_Stadtfest/4_Lehrerhinweise/DD_A3_Lehrerhinweise.docx",
+   "sha256": "3deaa0119f35a53f9843a349dd356f7f44561ad3c1d5b6d8c938b62ba043668e",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Praesentation_Stadtfest.pdf": {
+   "quelle": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
+   "sha256": "dbd824b248f6793d49bfe5020dd44f43c44865d4908fa8792b85f0c83d15b2f2",
+   "verfahren": "notizen"
+  },
+  "DD_A4-Lehrerhinweise.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/4_Lehrerhinweise/DD_A4_Lehrerhinweise.docx",
+   "sha256": "e17118004bdf31e19c547c1656f9410ac7bd5304b027e89e35dc23b74b08ad39",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Praesentation_Vereinsarchiv.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+   "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
+   "verfahren": "notizen"
+  },
+  "DD_A5-Lehrerhinweise.pdf": {
+   "quelle": "Akte5_Bauplan/4_Lehrerhinweise/DD_A5_Lehrerhinweise.docx",
+   "sha256": "987201f1556d4b2ea34ea141517dff8ad174f1969fcc0758e397744269c9a6de",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Praesentation_Bauplan.pdf": {
+   "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
+   "sha256": "1554fa23b8ae2fdd0d48eeb8744e030f61c810d2e5df875963b162ba8c072cfd",
+   "verfahren": "notizen"
+  },
+  "DD_A6-Lehrerhinweise.pdf": {
+   "quelle": "Akte6_Datenspuren/4_Lehrerhinweise/DD_A6_Lehrerhinweise.docx",
+   "sha256": "bcfa046b6a39ba722958281cf400f39dae0e9c21bbc34ea309231f8231c3949f",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Praesentation_Datenspuren.pdf": {
+   "quelle": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
+   "sha256": "d03c6b4c4b5497cdb0c1a1a8d1eac64cc36355b48856c3eae865cb5bff37b933",
+   "verfahren": "notizen"
+  },
+  "DD_A7-Generalprobe_eA.pdf": {
+   "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_eA.docx",
+   "sha256": "f0c06a67a56326721f5dd7567eae9f4aed4a79513cd2b05051599b100109bde5",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Generalprobe_gA.pdf": {
+   "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_gA.docx",
+   "sha256": "e6c8f050897fb87aa3a2cb37ad8d01da3ee5000b7928cf013126a6bafc592951",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Klausur_eA.pdf": {
+   "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_eA.docx",
+   "sha256": "2a5c32ae6ea71277741f826ff975fb4607ee4f8a83a7aed0eec2b3167252eaf7",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Klausur_gA.pdf": {
+   "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_gA.docx",
+   "sha256": "cb21c01be519e52d5ddeddf385d93dd94f111f041710f047dbdaf2d8c17d1c22",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Lehrerhinweise.pdf": {
+   "quelle": "Akte7_Generalprobe/4_Lehrerhinweise/DD_A7_Lehrerhinweise.docx",
+   "sha256": "f33da34c695ba527c22d314d05593cc1231f0e8e31ad81e03f78fd83efb9ed02",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Nachschreibklausur_eA.pdf": {
+   "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_eA.docx",
+   "sha256": "aeb1b884b89dabd56a064c0955291bc5afed31070c95eac924032e3e54db9342",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Nachschreibklausur_gA.pdf": {
+   "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_gA.docx",
+   "sha256": "a8e9364024feac7bde7dc40b7bc5b4d696115a4cac2f4c9ee2fd37b9d686c4f5",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Praesentation_Generalprobe.pdf": {
+   "quelle": "Akte7_Generalprobe/1_Praesentation/DD_A7_Generalprobe.pptx",
+   "sha256": "ce4a000efe341fe552380e613899b1079dd6848a613594349560d962bf2afde3",
+   "verfahren": "notizen"
+  },
+  "DD_Abi-Kompass.pdf": {
+   "quelle": "00_Gesamt/DD_Abi-Kompass.docx",
+   "sha256": "16043ebe0a0bed68c5250c4b1f523a5e28c0a502baf44061b20add988b08c71d",
+   "verfahren": "pdf"
+  },
+  "DD_Gesamtuebersicht.pdf": {
+   "quelle": "00_Gesamt/DD_Gesamtuebersicht.docx",
+   "sha256": "9aecbfb104ef70c4f4ffe0b7a6e1add01240355a95b405544ea87eb6e200c855",
+   "verfahren": "pdf"
+  },
+  "DD_Video00-So_ermittelst_du_Folien.pdf": {
+   "quelle": "Videos/00_So_ermittelst_du/DD_Video00_So_ermittelst_du_Folien.pptx",
+   "sha256": "1c455bdc09f6203afced91d0540e39eac5c1ebb046b1f2f3d59298e8c1b2f731",
+   "verfahren": "pdf"
+  },
+  "DD_Video01-SQL-Grundlagen_Folien.pdf": {
+   "quelle": "Videos/01_SQL-Grundlagen/DD_Video01_SQL-Grundlagen_Folien.pptx",
+   "sha256": "969ecdb96b759a01dd2a20f1204272e73aa135e86d3f541af82ee6a462e18978",
+   "verfahren": "pdf"
+  },
+  "DD_Video02-Verbund_ohne_JOIN_Folien.pdf": {
+   "quelle": "Videos/02_Verbund_ohne_JOIN/DD_Video02_Verbund_ohne_JOIN_Folien.pptx",
+   "sha256": "243eb0fa4b9aa05ad41663a464a5b14f64157013fb35136aa2e8e7a7f4f9401e",
+   "verfahren": "pdf"
+  },
+  "DD_Video03-GROUP_BY_und_HAVING_Folien.pdf": {
+   "quelle": "Videos/03_GROUP_BY_und_HAVING/DD_Video03_GROUP_BY_und_HAVING_Folien.pptx",
+   "sha256": "40ef4906eaa2369ae8502f13d60863b61d898e83b4a053aba13a0278f39e41c0",
+   "verfahren": "pdf"
+  },
+  "DD_Video04-Redundanz_und_Schluessel_Folien.pdf": {
+   "quelle": "Videos/04_Redundanz_und_Schluessel/DD_Video04_Redundanz_und_Schluessel_Folien.pptx",
+   "sha256": "ed2614d27ef4cf70a16169831a93c694e39bdeffa34cdc9fc5a865f5b9cfa011",
+   "verfahren": "pdf"
+  },
+  "DD_Video05-ER-Modelle_Folien.pdf": {
+   "quelle": "Videos/05_ER-Modelle/DD_Video05_ER-Modelle_Folien.pptx",
+   "sha256": "e0bb20301afa36d309f8dbaa8da965227482c9c03accb47d035de9c40a9667c3",
+   "verfahren": "pdf"
+  },
+  "DD_Video06-ER_zu_Relationenschema_Folien.pdf": {
+   "quelle": "Videos/06_ER_zu_Relationenschema/DD_Video06_ER_zu_Relationenschema_Folien.pptx",
+   "sha256": "feb740130d382bbccf708057b2e6653a4f4e5749d5f0f0e1d66698adf772caf4",
+   "verfahren": "pdf"
+  },
+  "DD_Video07-Abi-Check_Folien.pdf": {
+   "quelle": "Videos/07_Abi-Check/DD_Video07_Abi-Check_Folien.pptx",
+   "sha256": "b8b7b5f9d257e72acb7b8cec8ed655ea1814c296c0dcc5b267ac2f72ce2475e4",
+   "verfahren": "pdf"
+  }
+ }
+}
