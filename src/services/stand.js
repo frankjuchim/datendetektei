@@ -22,6 +22,10 @@ const { STANDARD_EINSTELLUNGEN, isoZeit } = require('../kern/konten');
 const ERLEDIGT = new Set(['geloest', 'nachgeloest']);
 const ABGESCHLOSSEN = new Set(['geloest', 'nachgeloest', 'bearbeitet']);
 const NIVEAU_GA = 'gA';
+const VERHOER_MODI = Object.freeze(['auto', 'offen', 'gesperrt']);
+
+/** Verhör-Modus einer Akte: eigener Modus der Akte (verhoerAkten) oder der Kurs-Modus. */
+const verhoerModus = (einst, nr) => (einst.verhoerAkten && einst.verhoerAkten[String(nr)]) || einst.verhoer;
 
 /** Kurs-Einstellungen aus dem JSON der Tabelle kurse, mit Standardwerten und bereinigt. */
 function leseEinstellungen(json) {
@@ -34,7 +38,12 @@ function leseEinstellungen(json) {
   const e = { ...STANDARD_EINSTELLUNGEN, ...roh };
   e.akten = Array.isArray(e.akten) ? e.akten.filter(Number.isInteger) : [...STANDARD_EINSTELLUNGEN.akten];
   e.niveau = e.niveau === NIVEAU_GA ? NIVEAU_GA : 'eA';
-  e.verhoer = ['auto', 'offen', 'gesperrt'].includes(e.verhoer) ? e.verhoer : 'auto';
+  e.verhoer = VERHOER_MODI.includes(e.verhoer) ? e.verhoer : 'auto';
+  // Verhör-Modus je Akte (Phase 6): { "<nr>": 'auto'|'offen'|'gesperrt' } überschreibt den Kurs-Modus für diese Akte.
+  const ja = e.verhoerAkten && typeof e.verhoerAkten === 'object' && !Array.isArray(e.verhoerAkten) ? e.verhoerAkten : {};
+  e.verhoerAkten = Object.fromEntries(Object.entries(ja).filter(([nr, m]) => /^\d{1,2}$/.test(nr) && VERHOER_MODI.includes(m)));
+  e.scoreboard = e.scoreboard === true;
+  e.beamer = e.beamer === true;
   return e;
 }
 
@@ -155,8 +164,9 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
   function verhoerZugang(einst, akte, ist, max) {
     if (!akte.boss || !akte.boss.pool.length) return { frei: false, grund: 'Für diese Akte gibt es kein Verhör.' };
     if (!istFreigeschaltet(einst, akte.nr)) return { frei: false, grund: 'Diese Akte ist noch nicht freigeschaltet.' };
-    if (einst.verhoer === 'offen') return { frei: true, grund: null };
-    if (einst.verhoer === 'gesperrt') return { frei: false, grund: 'Die Verhöre sind in deinem Kurs noch gesperrt.' };
+    const modus = verhoerModus(einst, akte.nr);
+    if (modus === 'offen') return { frei: true, grund: null };
+    if (modus === 'gesperrt') return { frei: false, grund: 'Die Verhöre sind in deinem Kurs noch gesperrt.' };
     const noetig = Math.ceil(VERHOER_AUTO_ANTEIL * max);
     if (ist >= noetig) return { frei: true, grund: null };
     return { frei: false, grund: `Sammle mindestens 60 % der Punkte der Ermittlungen dieser Akte (${ist} von ${noetig} nötigen Punkten).` };
@@ -400,4 +410,4 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
   };
 }
 
-module.exports = { erzeugeStand, leseEinstellungen, niveauSichtbar };
+module.exports = { erzeugeStand, leseEinstellungen, niveauSichtbar, verhoerModus, VERHOER_MODI };

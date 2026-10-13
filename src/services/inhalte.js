@@ -445,8 +445,11 @@ function oeffentlicheInteraktion(ia, art) {
 function erzeugeInhalte(db, { log = () => {} } = {}) {
   let katalog = baueKatalog(db);
   let bericht = null;
+  /** Optionen des letzten laden() – neuLaden() (Superadmin, Phase 6) lädt dieselben Dateien erneut. */
+  let letzteOptionen = {};
 
   function laden(opt = {}) {
+    letzteOptionen = { ...opt };
     bericht = tiefGefroren(ladeInhalte(db, { log, ...opt }));
     katalog = baueKatalog(db);
     return bericht;
@@ -486,6 +489,7 @@ function erzeugeInhalte(db, { log = () => {} } = {}) {
 
   return {
     laden,
+    neuLaden: () => laden(letzteOptionen),
     bericht: () => bericht,
     akte: (nr) => katalog.akten.get(Number(nr)) || null,
     akten: () => [...katalog.akten.values()],

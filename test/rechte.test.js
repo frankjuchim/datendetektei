@@ -204,3 +204,50 @@ test('Tipps: nur abgerufene; falsche Antwort (sql/Diagnose) ohne Musterlösung; 
   assert.ok(r.body.loesung.erklaerung.length > 0);
   assert.equal(r.body.zustand.tipps.length, 2, 'nach dem Lösen alle Tipps');
 });
+
+/* ---------------------------------------------------------------- Phase 6: Lehrkraft-Auswertung, Vorschau, Admin */
+
+test('Rechte-Matrix Phase 6: Auswertung, CSV, Vorschau, Einstellungen, Board-Schlüssel, Admin', async () => {
+  const { u, s, fremd, l, admin } = await start();
+  const l18 = await H.client(u, { sub: 'l:8', rolle: 'lehrkraft', name: 'Herr P.', kurse: [{ id: 'k:18', name: 'Inf-GK 12', rolle: 'lehrkraft' }] });
+  const KL = '/api/lehrkraft/kurse/' + encodeURIComponent('k:17');
+  const LESEN = [KL + '/auswertung', KL + '/auswertung.csv', KL + '/vorschau', KL + '/vorschau/aufgaben/A9-E1-02'];
+  const send = (c, methode, p, body = {}) => {
+    const r = request(u.app)[methode](p).set('Origin', u.konfig.plattformUrl);
+    if (c) r.set('Cookie', c.cookie);
+    return r.send(body);
+  };
+  const SCHREIBEN = [
+    ['put', KL + '/einstellungen', { scoreboard: true }],
+    ['post', KL + '/board-schluessel', {}]
+  ];
+  const ADMIN_LESEN = ['/api/admin/seed-bericht', '/api/admin/sicherung'];
+  const ADMIN_SCHREIBEN = [['post', '/api/admin/inhalte-neu-laden', {}]];
+
+  // anonym → 401
+  for (const p of [...LESEN, ...ADMIN_LESEN]) assert.equal((await request(u.app).get(p)).status, 401, p);
+  for (const [m, p, b] of [...SCHREIBEN, ...ADMIN_SCHREIBEN]) assert.equal((await send(null, m, p, b)).status, 401, p);
+  // Schüler (eigener und fremder Kurs) → 403
+  for (const c of [s, fremd]) {
+    for (const p of [...LESEN, ...ADMIN_LESEN]) assert.equal((await c.get(p)).status, 403, p);
+    for (const [m, p, b] of [...SCHREIBEN, ...ADMIN_SCHREIBEN]) assert.equal((await send(c, m, p, b)).status, 403, p);
+  }
+  // Lehrkraft eines fremden Kurses → 403 (auch unbekannter Kurs)
+  for (const p of LESEN) assert.equal((await l18.get(p)).status, 403, p);
+  for (const [m, p, b] of SCHREIBEN) assert.equal((await send(l18, m, p, b)).status, 403, p);
+  assert.equal((await l.get('/api/lehrkraft/kurse/' + encodeURIComponent('k:999') + '/auswertung')).status, 403);
+  assert.equal((await l.get('/api/lehrkraft/kurse/17/auswertung')).status, 400);
+  // Lehrkraft des Kurses → 200, aber keine Admin-Funktionen
+  for (const p of LESEN) assert.equal((await l.get(p)).status, 200, p);
+  for (const [m, p, b] of SCHREIBEN) assert.equal((await send(l, m, p, b)).status, 200, p);
+  for (const p of ADMIN_LESEN) assert.equal((await l.get(p)).status, 403, p);
+  for (const [m, p, b] of ADMIN_SCHREIBEN) assert.equal((await send(l, m, p, b)).status, 403, p);
+  // Superadmin → überall 200
+  for (const p of [...LESEN, ...ADMIN_LESEN]) assert.equal((await admin.get(p)).status, 200, p);
+  for (const [m, p, b] of [...SCHREIBEN, ...ADMIN_SCHREIBEN]) assert.equal((await send(admin, m, p, b)).status, 200, p);
+  // Board ist öffentlich, aber nur mit gültigem Schlüssel bei eingeschaltetem Board
+  const k = u.db.prepare("SELECT board_schluessel FROM kurse WHERE kurs_id = 'k:17'").get().board_schluessel;
+  assert.equal((await request(u.app).get('/api/board/' + k)).status, 404, 'Board aus');
+  H.einstellen(u.db, 'k:17', { beamer: true });
+  assert.equal((await request(u.app).get('/api/board/' + k)).status, 200);
+});

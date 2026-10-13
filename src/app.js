@@ -22,6 +22,7 @@ const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
 const { lehrkraftRouten } = require('./routes/lehrkraft');
+const { lehrkraftAuswertungRouten } = require('./routes/lehrkraft_auswertung');
 const { gastRouten } = require('./routes/gast');
 const { themenRouten } = require('./routes/themen');
 const { erzeugeGast } = require('./services/gast');
@@ -89,6 +90,8 @@ function erzeugeApp(
   if (lernen) app.use(schuelerRouten({ lernen, konfig }));
   // Kurs-Einstellungen für Lehrkräfte (Akten, Niveau, Verhör); Kennzahlen nur mit geladenen Inhalten.
   app.use(lehrkraftRouten({ db, stand }));
+  // Auswertung, CSV, Vorschau, Beamer-Board-API und Superadmin-Funktionen (Phase 6 Task 3).
+  app.use(lehrkraftAuswertungRouten({ db, inhalte, stand, konfig }));
   // Verhöre (Status, Start, Versuch, Antwort, Abgabe).
   if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
