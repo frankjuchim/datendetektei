@@ -1,7 +1,7 @@
 'use strict';
 // Themenseite /themen aus dem Seed (Spec §7.12, Plan Phase 3 Task 10): holt GET /api/themen und zeichnet Akten
 // (Ermittlungen mit DS, Kompetenzen, Fallen, Anzahl Aufgaben, Verhör), Kür, Fallen P1–P10, Materialliste „nach
-// Anmeldung“ und die Niveau-Tabelle #niveaus. Keine Lösungen (die API liefert keine). Ausgaben nur als Textknoten.
+// Anmeldung“ (angemeldet mit Links aus GET /api/material, Gast-Auswahl öffentlich) und die Niveau-Tabelle #niveaus. Keine Lösungen (die API liefert keine). Ausgaben nur als Textknoten.
 (function () {
   const SPRITE = '/static/img/icons.svg#';
   const ARTEN = {
@@ -97,6 +97,72 @@
 
   let FALLEN_TITEL = {};
 
+  // Materialliste (Phase 6 Task 5, E13): Titel, Niveau, Zugang. Gast-Auswahl mit öffentlichem Link; die übrigen
+  // Einträge verlinkt erst verlinkeMaterial() nach Anmeldung (GET /api/material, gleiche id).
+  function zugangLink(span, url) {
+    const a = el('a', null, 'PDF öffnen');
+    a.href = url;
+    span.replaceChildren(a);
+  }
+  function materialListe(liste, label) {
+    const mat = el('ul', 'material-themen');
+    mat.setAttribute('aria-label', label);
+    for (const m of liste) {
+      const li = el('li');
+      if (m.id) li.dataset.material = m.id;
+      const titel = el('span', null, m.titel);
+      if (m.niveau === 'eA' || m.niveau === 'gA') {
+        titel.appendChild(document.createTextNode(' '));
+        titel.appendChild(el('span', 'niveau ' + m.niveau.toLowerCase(), m.niveau));
+      }
+      li.appendChild(titel);
+      const zugang = el('span', 'zugang', m.zugang);
+      if (m.url) zugangLink(zugang, m.url);
+      li.appendChild(zugang);
+      mat.appendChild(li);
+    }
+    return mat;
+  }
+
+  /** Angemeldet: Material mit Download-Link versehen (nur, was die Rolle laut /api/material darf). */
+  function verlinkeMaterial() {
+    fetch('/api/material', { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d || !d.rolle || !d.stufen) return;
+        const urls = new Map();
+        for (const stufe of ['lehrkraft', 'schueler', 'gast']) {
+          for (const e of d.stufen[stufe] || []) if (!urls.has(e.id)) urls.set(e.id, e.url);
+        }
+        for (const li of document.querySelectorAll('.material-themen li[data-material]')) {
+          const url = urls.get(li.dataset.material);
+          const zugang = li.querySelector('.zugang');
+          if (url && zugang && !zugang.querySelector('a')) zugangLink(zugang, url);
+        }
+      })
+      .catch(() => {});
+  }
+
+  // Erklärvideos (Spec §13): nur Link-Knöpfe zu YouTube (kein Embed), nur geprüfte Links aus GET /api/themen.
+  const YOUTUBE = /^https:\/\/www\.youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}(?:&t=\d+)?$/;
+  function videoReihe(videos) {
+    const liste = (Array.isArray(videos) ? videos : []).filter((v) => v && typeof v.url === 'string' && YOUTUBE.test(v.url));
+    if (!liste.length) return null;
+    const reihe = el('div', 'knopf-reihe video-reihe');
+    reihe.setAttribute('aria-label', 'Erklärvideos');
+    for (const v of liste) {
+      const a = el('a', 'knopf video-knopf');
+      a.appendChild(icon('i-play'));
+      a.appendChild(document.createTextNode(`Video ${v.nr}: ${v.titel} (YouTube)`));
+      a.href = v.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.dataset.video = String(v.nr);
+      reihe.appendChild(a);
+    }
+    return reihe;
+  }
+
   function akteArtikel(a) {
     const art = el('article', 'aktendeckel akte-thema');
     art.id = 'akte-' + a.nr;
@@ -115,20 +181,14 @@
     const ol = el('ol', 'ds-liste');
     a.ermittlungen.forEach((e, i) => ol.appendChild(ermittlungZeile(a, e, i === a.ermittlungen.length - 1)));
     innen.appendChild(ol);
-    const mat = el('ul', 'material-themen');
-    mat.setAttribute('aria-label', `Materialien zu Akte ${a.nr}`);
-    for (const m of a.materialien) {
-      const li = el('li');
-      li.appendChild(el('span', null, m.titel));
-      li.appendChild(el('span', 'zugang', m.zugang));
-      mat.appendChild(li);
-    }
-    innen.appendChild(mat);
+    innen.appendChild(materialListe(a.materialien, `Materialien zu Akte ${a.nr}`));
+    const videos = videoReihe(a.videos);
+    if (videos) innen.appendChild(videos);
     art.appendChild(innen);
     return art;
   }
 
-  function kuerArtikel(kuer) {
+  function kuerArtikel(kuer, uebergreifend) {
     const art = el('article', 'aktendeckel akte-thema');
     art.id = 'kuer';
     art.setAttribute('aria-labelledby', 'kuer-titel');
@@ -150,6 +210,7 @@
       ol.appendChild(li);
     }
     innen.appendChild(ol);
+    if (uebergreifend.length) innen.appendChild(materialListe(uebergreifend, 'Material zu allen Akten und zur Kür'));
     art.appendChild(innen);
     return art;
   }
@@ -178,7 +239,7 @@
     const container = $('akten-themen');
     const frag = document.createDocumentFragment();
     for (const a of d.akten) frag.appendChild(akteArtikel(a));
-    frag.appendChild(kuerArtikel(d.kuer));
+    frag.appendChild(kuerArtikel(d.kuer, d.materialUebergreifend || []));
     container.replaceChildren(frag);
     container.removeAttribute('aria-busy');
 
@@ -194,6 +255,7 @@
     const tbody = $('niveaus-zeilen');
     tbody.replaceChildren(...d.niveaus.map(niveauZeile));
     document.documentElement.dataset.themen = 'bereit';
+    verlinkeMaterial();
 
     // Sprungziel (#akte-3) erst nach dem Zeichnen erreichbar
     if (window.location.hash) {

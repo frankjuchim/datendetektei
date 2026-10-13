@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de" data-theme="dark" class="board-html">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="dark">
+  <title>Beamer-Board – Datendetektei</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/lernen.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/board.css?v=0.7.0">
+  <script type="module" src="/static/js/board/board.js?v=0.7.0"></script>
+</head>
+<body class="board">
+  <main class="board-seite" id="inhalt">
+    <header class="board-kopf">
+      <svg class="board-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <h1 class="board-titel"><span class="board-marke">Datendetektei</span><span class="board-kurs" id="board-kurs"></span></h1>
+      <p class="board-uhr zahlen" id="board-uhr" aria-label="Uhrzeit"></p>
+    </header>
+    <p class="board-hinweis" id="board-hinweis" role="status">Board wird geladen …</p>
+    <div class="board-raster" id="board-raster" hidden>
+      <section class="board-spalte board-rangliste" aria-labelledby="board-rang-titel">
+        <h2 class="board-abschnitt" id="board-rang-titel">Rangliste <span class="leise">(Top 15)</span></h2>
+        <ol class="board-liste" id="board-rangliste"></ol>
+      </section>
+      <div class="board-spalte">
+        <section aria-labelledby="board-akten-titel">
+          <h2 class="board-abschnitt" id="board-akten-titel">Akten-Fortschritt des Kurses</h2>
+          <ul class="board-akten" id="board-akten"></ul>
+        </section>
+        <section class="board-erfolge-box" aria-labelledby="board-erfolge-titel">
+          <h2 class="board-abschnitt" id="board-erfolge-titel">Letzte Erfolge</h2>
+          <ul class="board-erfolge" id="board-erfolge" aria-live="polite"></ul>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

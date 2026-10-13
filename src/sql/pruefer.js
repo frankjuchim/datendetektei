@@ -27,6 +27,9 @@
  *   Eine fehlerhafte Musterlösung (SQL-Fehler, abgeschnitten, unbekannte Variante) ist ein Inhaltsfehler: Ablehnung
  *   mit Error („Musterlösung …“).
  *
+ * Kür K1 (Phase 6 Task 7): Aufgaben mit schreiben: true (Schreib-Skripte) prüft src/sql/schreibpruefer.js – pruefeSql
+ * und musterErgebnisse leiten dorthin weiter (Rückmeldung zusätzlich mit pruefpunkte, siehe dort).
+ *
  * Keine Abhängigkeit von src/kern.
  */
 
@@ -35,6 +38,7 @@ const parser = require('./parser');
 const regeln = require('./regeln');
 const diagnose = require('./diagnose');
 const { MAX_LAENGE } = require('./sandbox');
+const { erzeugeSchreibPruefer } = require('./schreibpruefer');
 
 const MAX_CACHE = 1000;
 
@@ -62,6 +66,12 @@ function fromTabellen(ast) {
 function erzeugePruefer({ sandbox, schemata = {} } = {}) {
   if (!sandbox || typeof sandbox.fuehreAus !== 'function') throw new TypeError('sandbox fehlt');
   const cache = new Map();
+  const schreib = typeof sandbox.fuehreSkriptAus === 'function' ? erzeugeSchreibPruefer({ sandbox }) : null;
+  const istSchreiben = (aufgabe) => !!(aufgabe && aufgabe.schreiben === true);
+  function schreibPruefer() {
+    if (!schreib) throw new Error('Die Sandbox hat keinen Schreibmodus.');
+    return schreib;
+  }
 
   function musterFuer(aufgabe, variante) {
     const schluessel = String(aufgabe.id || '') + '|' + fingerabdruck(aufgabe) + '|' + (variante || '');
@@ -81,6 +91,7 @@ function erzeugePruefer({ sandbox, schemata = {} } = {}) {
   }
 
   async function musterErgebnisse(aufgabe) {
+    if (istSchreiben(aufgabe)) return schreibPruefer().musterLauf(aufgabe);
     pruefeAufgabe(aufgabe);
     const typen = aufgabe.varianten || [];
     const [haupt, ...rest] = await Promise.all([musterFuer(aufgabe, null), ...typen.map((t) => musterFuer(aufgabe, t))]);
@@ -92,6 +103,7 @@ function erzeugePruefer({ sandbox, schemata = {} } = {}) {
   }
 
   async function pruefeSql({ sql, aufgabe } = {}) {
+    if (istSchreiben(aufgabe)) return schreibPruefer().pruefeSkript({ skript: sql, aufgabe });
     pruefeAufgabe(aufgabe);
     const abimodus = aufgabe.abimodus || 'hinweis';
     const schema = schemata[aufgabe.datenbank] || null;

@@ -18,14 +18,30 @@ const fs = require('node:fs');
 const path = require('node:path');
 const F = require('../content/format');
 const M = require('../content/modellierung');
+const PL = require('../content/plaedoyer');
 const { STANDARD_UMFANG } = require('../kern/manifest');
+const { AKTEN } = require('../domain');
+
+/**
+ * Reine Zählung über geladene Akten: welten, level (Ermittlungen; Akte 7 „Generalprobe“ ist ein Level ohne
+ * Ermittlungen, Spec §10), aufgaben (Lab-Aufgaben der Ermittlungen, ohne Cold Cases), bosse (Akten mit Verhör-Pool).
+ */
+function umfangVon(akten) {
+  return {
+    welten: akten.length,
+    level: akten.reduce((s, a) => s + (a.levels.length || (a.nr === 7 ? 1 : 0)), 0),
+    aufgaben: akten.reduce((s, a) => s + a.levels.reduce((t, l) => t + l.aufgaben.length, 0), 0),
+    bosse: akten.filter((a) => a.boss && a.boss.pool.length > 0).length
+  };
+}
 
 const STANDARD_VERZEICHNIS = path.join(__dirname, '..', '..', 'seed', 'akten');
 /** Teil des Fingerabdrucks: ändert sich die Lade-Logik, wird jede Datei einmal neu eingespielt. */
-const SEED_VERSION = 'akten-1';
+const SEED_VERSION = 'akten-2'; // akten-2: Ermittlungen behalten plaedoyer (Phase 6)
 const STUFEN_PUNKTE = Object.freeze({ 1: 10, 2: 20, 3: 30 });
-const ID_RE = /^A\d{1,2}-(?:E\d{1,2}-(?:\d{2,3}|CC)|V-\d{2,3})$/;
-const LEVEL_ID_RE = /^A\d{1,2}-E\d{1,2}$/;
+// Kür K1 (Phase 6 Task 7): ids K1-E<k>-<nn> bzw. Ermittlung K1-E<k> (DS_PLANUNG); Datei mit kuer: true, welt 8.
+const ID_RE = /^(?:A\d{1,2}-(?:E\d{1,2}-(?:\d{2,3}|CC)|V-\d{2,3})|K\d-E\d{1,2}-(?:\d{2,3}|CC))$/;
+const LEVEL_ID_RE = /^(?:A\d{1,2}|K\d)-E\d{1,2}$/;
 /** Felder einer Interaktion, die nie an den Browser gehen. */
 const GEHEIME_INTERAKTIONSFELDER = ['varianten', 'sortierung', 'aliasPflicht', 'kernpunkte', 'loesung', 'quelleSql', 'erklaerung', 'tipps'];
 
@@ -175,13 +191,15 @@ function aktenDaten(d, gut) {
     briefing: typeof l.briefing === 'string' ? l.briefing : '',
     intro: Array.isArray(l.intro) ? l.intro : [],
     coldCase: typeof l.coldCase === 'string' && gut.has(l.coldCase) ? l.coldCase : null,
-    aufgaben: (Array.isArray(l.aufgaben) ? l.aufgaben : []).filter((id) => gut.has(id))
+    aufgaben: (Array.isArray(l.aufgaben) ? l.aufgaben : []).filter((id) => gut.has(id)),
+    // Schlussplädoyer (AUFGABENFORMAT §2.1): Indizien und Auflösung sind Lösungsdaten – nur intern, nie roh an den Browser
+    plaedoyer: istObjekt(l.plaedoyer) ? l.plaedoyer : null
   }));
   let boss = null;
   if (istObjekt(d.boss)) {
     boss = { ...d.boss, niveau: F.NIVEAUS.includes(d.boss.niveau) ? d.boss.niveau : 'alle', pool: d.boss.pool.filter((id) => gut.has(id)) };
   }
-  return { version: 2, welt: d.welt, titel: d.titel, farbe: typeof d.farbe === 'string' ? d.farbe : null, levels, boss };
+  return { version: 2, welt: d.welt, titel: d.titel, farbe: typeof d.farbe === 'string' ? d.farbe : null, kuer: d.kuer === true, levels, boss };
 }
 
 /**
@@ -381,6 +399,7 @@ function baueKatalog(db) {
         akte: z.nr,
         coldCase: cc && cc.art === 'cc' ? cc.id : null,
         aufgaben: ids,
+        plaedoyer: PL.bereinige(l.plaedoyer, ids.filter((id) => F.artVon(aufgaben.get(id).interaktion) === 'sql')),
         maxPunkte: ids.reduce((s, id) => s + aufgaben.get(id).punkte, 0)
       };
       levels.push(level);
@@ -398,6 +417,8 @@ function baueKatalog(db) {
       nr: z.nr,
       titel: d.titel,
       farbe: d.farbe,
+      // Kür (Phase 6 Task 7): ohne Rangwirkung, nicht im Manifest-umfang und nicht in den Verbund-Welten
+      kuer: d.kuer === true,
       levels,
       boss,
       maxPunkte: levels.reduce((s, l) => s + l.maxPunkte, 0)
@@ -416,7 +437,12 @@ function oeffentlicherBlock(b) {
 
 function oeffentlicheInteraktion(ia, art) {
   const basis = { kind: ia.kind };
-  if (ia.kind === 'sql') {
+  if (ia.kind === 'sql' && ia.schreiben === true) {
+    // Kür K1: Schreib-Konsole; Startskript und Prüfpunkte bleiben auf dem Server (nur der Titel des Starts geht mit)
+    basis.schreiben = true;
+    basis.abimodus = 'aus';
+    basis.start = { titel: ia.start && typeof ia.start.titel === 'string' ? ia.start.titel : 'leere Datenbank' };
+  } else if (ia.kind === 'sql') {
     basis.datenbank = ia.datenbank;
     basis.abimodus = art === 'verhoer' ? 'streng' : F.ABIMODI.includes(ia.abimodus) ? ia.abimodus : 'hinweis';
   } else if (ia.kind === 'kernpunkte') {
@@ -445,8 +471,11 @@ function oeffentlicheInteraktion(ia, art) {
 function erzeugeInhalte(db, { log = () => {} } = {}) {
   let katalog = baueKatalog(db);
   let bericht = null;
+  /** Optionen des letzten laden() – neuLaden() (Superadmin, Phase 6) lädt dieselben Dateien erneut. */
+  let letzteOptionen = {};
 
   function laden(opt = {}) {
+    letzteOptionen = { ...opt };
     bericht = tiefGefroren(ladeInhalte(db, { log, ...opt }));
     katalog = baueKatalog(db);
     return bericht;
@@ -471,21 +500,21 @@ function erzeugeInhalte(db, { log = () => {} } = {}) {
     };
   }
 
-  /** Manifest-umfang (Vertrag §7): ohne geladene Akten die Spec-Standardwerte (aufgaben 0). */
+  /**
+   * Manifest-umfang (Vertrag §7, Spec §10): gezählt werden nur die Akten des Plans (1–7) – Kür, Beispielakte und
+   * andere Dateien nicht; welten = Akten des Plans (wie die welten-Liste des Manifests). Ohne Plan-Akten die
+   * Spec-Standardwerte (aufgaben 0). Cold Cases und Verhör-Pools sind keine Lab-Aufgaben; der Live-Pool liegt nicht in
+   * seed/akten.
+   */
   function umfang() {
-    const akten = [...katalog.akten.values()];
-    if (!akten.length) return { ...STANDARD_UMFANG };
-    return {
-      welten: akten.length,
-      // Ermittlungen; Akte 7 (Generalprobe) ist ein Level ohne Ermittlungen (Spec §10)
-      level: akten.reduce((s, a) => s + (a.levels.length || (a.nr === 7 ? 1 : 0)), 0),
-      aufgaben: akten.reduce((s, a) => s + a.levels.reduce((t, l) => t + l.aufgaben.length, 0), 0),
-      bosse: akten.filter((a) => a.boss && a.boss.pool.length > 0).length
-    };
+    const plan = [...katalog.akten.values()].filter((a) => AKTEN.some((p) => p.nr === a.nr));
+    if (!plan.length) return { ...STANDARD_UMFANG };
+    return { ...umfangVon(plan), welten: AKTEN.length };
   }
 
   return {
     laden,
+    neuLaden: () => laden(letzteOptionen),
     bericht: () => bericht,
     akte: (nr) => katalog.akten.get(Number(nr)) || null,
     akten: () => [...katalog.akten.values()],
@@ -508,5 +537,6 @@ module.exports = {
   oeffentlicherBlock,
   oeffentlicheInteraktion,
   STANDARD_VERZEICHNIS,
-  STUFEN_PUNKTE
+  STUFEN_PUNKTE,
+  umfangVon
 };

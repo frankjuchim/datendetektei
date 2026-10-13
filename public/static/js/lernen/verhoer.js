@@ -368,7 +368,7 @@ function zeigeErgebnis(e) {
     ul.appendChild(li);
   });
   innen.appendChild(ul);
-  if (Array.isArray(e.neueAbzeichen) && e.neueAbzeichen.length) innen.appendChild(el('p', 'abzeichen-neu', `Neues Abzeichen: ${e.neueAbzeichen.map((x) => x.name).join(', ')}`));
+  if (Array.isArray(e.neueAbzeichen) && e.neueAbzeichen.length) innen.appendChild(el('p', 'abzeichen-neu', `${e.neueAbzeichen.length > 1 ? 'Neue Abzeichen' : 'Neues Abzeichen'}: ${e.neueAbzeichen.map((x) => (x.akte ? `${x.name} (Akte ${x.akte})` : x.name)).join(', ')}`));
   if (e.besiegt) {
     const p = el('div', 'polaroid einzeln');
     p.append(el('span', 'nadel'), h('span', 'polaroid-bild', R.icon('i-notiz')), el('span', 'polaroid-text', BEWEISE[akteNr - 1] || 'Beweisstück'));

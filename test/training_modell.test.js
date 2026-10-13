@@ -322,7 +322,7 @@ test('API: gA-Kurs sieht die eA-Typen T4 und T6 nicht (Spec §3.4)', async () =>
   assert.equal(r.status, 200);
   assert.deepEqual(
     r.body.generatoren.map((g) => g.typ),
-    ['T1', 'T2', 'T3', 'T5', 'T7']
+    ['T1', 'T2', 'T3', 'T5', 'T7', 'T8']
   );
   for (const typ of ['T4', 'T6']) assert.equal((await s.post(T + '/neu', { typ })).status, 400, typ);
   for (const typ of ['T5', 'T7']) assert.equal((await s.post(T + '/neu', { typ })).status, 200, typ);

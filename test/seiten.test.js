@@ -121,8 +121,8 @@ test('/lehrkraft als Lehrkraft und als Superadmin liefert die Seite', async () =
     const cookie = await anmelden(t, nutzer);
     const res = await request(t.app).get('/lehrkraft').set('Cookie', cookie);
     assert.equal(res.status, 200, nutzer.rolle);
-    assert.match(res.text, /Auswertung folgt in Phase 6/);
-    assert.match(res.text, /\/static\/js\/lehrkraft\.js\?v=/);
+    assert.match(res.text, /role="tablist"/);
+    assert.match(res.text, /<script type="module" src="\/static\/js\/lehrkraft\/seite\.js\?v=/);
   }
 });
 
@@ -374,7 +374,9 @@ test('Konsolen-Module sind ES-Module ohne Inline-Styles', () => {
 const SCHUELER_SEITEN = [
   { pfad: '/akte/1', skript: 'akte' },
   { pfad: '/akte/7', skript: 'akte' },
+  { pfad: '/akte/8', skript: 'akte' },
   { pfad: '/ermittlung/A1-E1', skript: 'ermittlung' },
+  { pfad: '/ermittlung/K1-E1', skript: 'ermittlung' },
   { pfad: '/ermittlung/A12-E3', skript: 'ermittlung' },
   { pfad: '/verhoer/1', skript: 'verhoer' },
   { pfad: '/warmup', skript: 'warmup' },
@@ -410,7 +412,7 @@ test('Schülerseiten: 200 für Schüler, Lehrkraft und Admin, mit Seitenmodul un
 test('Schülerseiten mit ungültigem Parameter: 404 (auch angemeldet)', async () => {
   const t = testApp();
   const cookie = await anmelden(t);
-  for (const pfad of ['/akte/0', '/akte/8', '/akte/x', '/akte/01', '/akte/1/2', '/ermittlung/A1', '/ermittlung/a1-e1',
+  for (const pfad of ['/akte/0', '/akte/9', '/akte/x', '/ermittlung/K2-E1', '/ermittlung/k1-e1', '/ermittlung/K1-E1-01', '/akte/01', '/akte/1/2', '/ermittlung/A1', '/ermittlung/a1-e1',
     '/ermittlung/A1-E1-01', '/verhoer/0', '/verhoer/abc', '/akte.html', '/ermittlung.html', '/warmup.html']) {
     const res = await request(t.app).get(pfad).set('Cookie', cookie);
     assert.equal(res.status, 404, pfad);
@@ -563,7 +565,7 @@ test('Browser-Skripte schreiben nie HTML aus Zeichenketten (kein innerHTML)', ()
 });
 
 test('?v= in allen HTML-Seiten gleich der package.json-Version', () => {
-  assert.equal(VERSION, '0.5.0');
+  assert.equal(VERSION, '0.7.0');
   let anzahl = 0;
   for (const datei of htmlDateien()) {
     const html = fs.readFileSync(path.join(PUBLIC, datei), 'utf8');

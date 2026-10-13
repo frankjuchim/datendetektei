@@ -1,0 +1,379 @@
+{
+ "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Lösungen und Erwartungshorizonte – nur Lehrkraft.",
+ "dateien": [
+  {
+   "datei": "DD_A1-AB1_Der_erste_Auftrag_Loesung.pdf",
+   "titel": "AB 1.1 · Der erste Auftrag – Lösung",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-AB2_Das_verschwundene_Fundstueck_Loesung.pdf",
+   "titel": "AB 1.2 · Das verschwundene Fundstück – Lösung",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A1-E2",
+   "ds": [
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 1 – mit Lösungen",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_A2-AB1_Der_rote_Faden_Loesung.pdf",
+   "titel": "AB 2.1 · Der rote Faden – Lösung",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "DD_A2-AB2_Nachtfahrten_Loesung.pdf",
+   "titel": "AB 2.2 · Nachtfahrten – Lösung",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 2 – mit Lösungen",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "warmup",
+   "fassung": "loesung"
+  },
+  {
+   "datei": "DD_A3-AB1_Kassensturz_Loesung.pdf",
+   "titel": "AB 3.1 · Kassensturz – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "DD_A3-AB2_Die_Statistik_luegt_nicht_Loesung.pdf",
+   "titel": "AB 3.2 · Die Statistik lügt nicht – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "DD_A3-Unplugged_GROUP_BY_Karten_Loesung.pdf",
+   "titel": "Unplugged: Menschliches GROUP BY (Bon-Karten, Fächerschilder) – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "DD_A3-Unplugged_Zeitlupe_Karten_Loesung.pdf",
+   "titel": "Unplugged: Menschliche Zeitlupe (Klausel- und Bedingungskarten) – Lösung",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "DD_A3-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 3 – mit Lösungen",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "warmup",
+   "fassung": "loesung"
+  },
+  {
+   "datei": "DD_A4-AB1_Die_Excel-Liste_Loesung.pdf",
+   "titel": "AB 4.1 · Die Excel-Liste – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-AB2_Ordnung_ins_Archiv_Loesung.pdf",
+   "titel": "AB 4.2 · Ordnung ins Archiv – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Anomalie-Rennen_Loesung.pdf",
+   "titel": "Unplugged: Anomalie-Rennen – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Schluessel-Detektiv_Loesung.pdf",
+   "titel": "Unplugged: Schlüssel-Detektiv – Lösung",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 4 – mit Lösungen",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_A5-AB1_Bauplaene_lesen_Loesung.pdf",
+   "titel": "AB 5.1 · Baupläne lesen – Lösung",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A5-E1",
+   "ds": [
+    9
+   ]
+  },
+  {
+   "datei": "DD_A5-AB2_Der_Architekturwettbewerb_Loesung.pdf",
+   "titel": "AB 5.2 · Der Architekturwettbewerb – Lösung",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A5-E2",
+   "ds": [
+    10
+   ]
+  },
+  {
+   "datei": "DD_A5-AB3_Vom_Plan_zur_Datenbank_Loesung.pdf",
+   "titel": "AB 5.3 · Vom Plan zur Datenbank – Lösung",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A5-E3",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 5 – mit Lösungen",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A6-AB1_Das_Phantom_Loesung.pdf",
+   "titel": "AB 6.1 · Das Phantom – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Unplugged_Steh_auf_wenn_Loesung.pdf",
+   "titel": "Unplugged: Steh auf, wenn … – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Unplugged_Rollenkarten-Debatte_Loesung.pdf",
+   "titel": "Unplugged: Rollenkarten-Debatte „Durfte die Detektei das?“ – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 6 – mit Lösungen",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_A7-Generalprobe_eA_Erwartungshorizont.pdf",
+   "titel": "Generalprobe Datenbanken (eA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Generalprobe_gA_Erwartungshorizont.pdf",
+   "titel": "Generalprobe Datenbanken (gA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "generalprobe",
+   "fassung": "loesung",
+   "niveau": "gA",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Klausur_eA_Erwartungshorizont.pdf",
+   "titel": "Klausur Datenbanken (eA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Klausur_gA_Erwartungshorizont.pdf",
+   "titel": "Klausur Datenbanken (gA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_eA_Erwartungshorizont.pdf",
+   "titel": "Nachschreibklausur Datenbanken (eA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A7-Nachschreibklausur_gA_Erwartungshorizont.pdf",
+   "titel": "Nachschreibklausur Datenbanken (gA) – Erwartungshorizont",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "klausur",
+   "fassung": "loesung",
+   "niveau": "gA"
+  },
+  {
+   "datei": "DD_A7-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 7 – mit Lösungen",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_K1-Eigene_Datenbank_Loesung.pdf",
+   "titel": "K1 · Eigene Datenbank bauen – Lösung",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "K1-E1"
+  },
+  {
+   "datei": "DD_K2-Escape_Room_Stationen_Loesung.pdf",
+   "titel": "K2 · Escape Room Weserstedt (Stationsumschläge) – Lösung",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "loesung",
+   "niveau": "beide"
+  }
+ ]
+}

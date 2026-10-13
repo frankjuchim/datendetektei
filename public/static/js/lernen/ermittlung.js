@@ -1,19 +1,23 @@
 // Ermittlung (/ermittlung/:id, DESIGN.md §5.3, Spec §7.7): Briefing und Intro, Aufgabenliste mit Status, Aufgabenkarte
 // mit Konsole (sql) bzw. Interaktionskarte, Tipps, „Lösung zeigen“ mit Bestätigung in der Seite, Feedback-Karte mit
 // Diagnose und Fallen-Plakette, Weiter-Navigation, Cold Case. Geprüft wird nur auf dem Server; Lösung und Erklärung
-// kommen erst nach dem Lösen bzw. Aufdecken.
+// kommen erst nach dem Lösen bzw. Aufdecken. Schlussplädoyer (Phase 6): Schritte tragen „Spur n von m“; nach dem Lösen
+// erscheint das Indiz als Karteikarte, nach dem letzten Schritt Auflösung und Überleitung (Server liefert sie erst dann).
 
 const V = new URL(import.meta.url).search;
-const [A, R, I, K] = await Promise.all([
+const [A, R, I, K, T] = await Promise.all([
   import('../kern/api.js' + V),
   import('../kern/render.js' + V),
   import('../kern/interaktionen.js' + V),
-  import('./konsole_lern.js' + V)
+  import('./konsole_lern.js' + V),
+  import('./pinnwand_teile.js' + V)
 ]);
+/** Kür K1: Schreib-Konsole erst laden, wenn eine Aufgabe sie braucht. */
+let schreibModul = null;
 const { el, h, knopf } = R;
 
 const seite = document.getElementById('seite');
-const ermittlungId = (/^\/ermittlung\/(A\d{1,2}-E\d{1,2})$/.exec(window.location.pathname) || [])[1];
+const ermittlungId = (/^\/ermittlung\/((?:A\d{1,2}|K1)-E\d{1,2})$/.exec(window.location.pathname) || [])[1];
 const ERLEDIGT = new Set(['geloest', 'nachgeloest', 'bearbeitet']);
 const STATUS_TEXT = { offen: 'offen', geloest: 'gelöst', nachgeloest: 'nachgelöst', angesehen: 'Lösung angesehen', bearbeitet: 'bearbeitet' };
 
@@ -63,18 +67,56 @@ function zeichneKopf() {
   const e = daten.ermittlung;
   const kopf = el('header', 'ermittlung-kopf');
   const pfad = el('p', 'etikett pfad');
-  const akteLink = el('a', 'etikett-link', `Akte ${daten.akte.nr} · ${daten.akte.titel}`);
+  const akteLink = el('a', 'etikett-link', daten.akte.kuer ? daten.akte.titel : `Akte ${daten.akte.nr} · ${daten.akte.titel}`);
   akteLink.href = `/akte/${daten.akte.nr}`;
   pfad.append(akteLink, document.createTextNode(` › Ermittlung ${e.nr || ''}`));
   const titel = h('div', 'seiten-kopf', pfad, el('h1', null, e.titel));
-  const stand = el('p', 'ermittlung-stand zahlen', `${e.geloest} von ${e.anzahl} erledigt · ${e.punkte} von ${e.maxPunkte} Punkten`);
+  const stand = el('p', 'ermittlung-stand zahlen', e.anzahl || e.coldCase ? `${e.geloest} von ${e.anzahl} erledigt · ${e.punkte} von ${e.maxPunkte} Punkten` : 'ohne Lab-Aufgaben');
   stand.id = 'ermittlung-stand';
   titel.appendChild(stand);
+  const pz = plaedoyerZeile();
+  if (pz) titel.appendChild(pz);
   const liste = el('ol', 'kacheln');
   liste.id = 'aufgaben-kacheln';
   liste.setAttribute('aria-label', 'Aufgaben dieser Ermittlung');
   kopf.append(titel, liste);
   return kopf;
+}
+
+/** Zeile „Schlussplädoyer: x von n Indizien · Zur Pinnwand“ im Kopf (nur Ermittlungen mit Plädoyer). */
+function plaedoyerZeile() {
+  const p = daten.ermittlung.plaedoyer;
+  if (!p) return null;
+  const zeile = el('p', 'pw-schritt-marke');
+  zeile.id = 'plaedoyer-stand';
+  zeile.append(`${p.titel}: ${p.erledigt} von ${p.anzahl} Indizien · `);
+  const link = el('a', null, 'Zur Pinnwand');
+  link.href = '/pinnwand';
+  zeile.appendChild(link);
+  return zeile;
+}
+
+/** Indiz des gelösten Plädoyer-Schritts als Karteikarte; nach dem letzten Schritt Auflösung und Überleitung. */
+function zeigePlaedoyer({ neu = false } = {}) {
+  const alt = document.getElementById('plaedoyer-karte');
+  if (alt) alt.remove();
+  const p = aktuell && aktuell.antwort.plaedoyer;
+  if (!p || p.indiz === undefined) return;
+  const box = el('section', 'pw-plaedoyer');
+  box.id = 'plaedoyer-karte';
+  box.setAttribute('aria-label', `${p.titel}: Indiz ${p.nr}`);
+  const karte = el('div', 'pw-indiz-karte');
+  karte.appendChild(el('span', 'pw-stift'));
+  karte.appendChild(el('p', 'pw-indiz-kopf', `${p.titel} · Indiz ${p.nr} von ${p.anzahl}`));
+  karte.appendChild(R.md(p.indiz));
+  if (!p.abgeschlossen) karte.appendChild(el('p', 'hinweis-klein', `${p.erledigt} von ${p.anzahl} Indizien hängen an der Pinnwand. Löse alle Spuren – dann folgt die Auflösung.`));
+  const link = A.linkKnopf('Zur Pinnwand', '/pinnwand', 'knopf');
+  link.id = 'k-pinnwand';
+  karte.appendChild(h('div', 'knopf-reihe', link));
+  box.appendChild(karte);
+  if (p.abgeschlossen && p.aufloesung) box.appendChild(T.aufloesungKarte(p));
+  aktuell.feedback.after(box);
+  if (neu && p.abgeschlossen) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
 function zeichneBriefing() {
@@ -96,6 +138,14 @@ function zeichneBriefing() {
   if (e.ab) fuss.appendChild(document.createTextNode(`Arbeitsblatt: ${e.ab}`));
   if (Array.isArray(e.ds) && e.ds.length) fuss.appendChild(document.createTextNode(`${e.ab ? ' · ' : ''}Doppelstunde ${e.ds.join(', ')}`));
   if (fuss.childNodes.length) innen.appendChild(fuss);
+  // Erklärvideos zur Doppelstunde (YouTube, nur Link-Knopf; Spec §13)
+  const videos = (Array.isArray(e.videos) ? e.videos : []).map((v) => A.videoKnopf(v)).filter(Boolean);
+  for (const a of videos) a.prepend(R.icon('i-play'));
+  if (videos.length) {
+    const reihe = h('div', 'knopf-reihe video-reihe', ...videos);
+    reihe.id = 'ermittlung-videos';
+    innen.appendChild(reihe);
+  }
   box.appendChild(innen);
   return box;
 }
@@ -130,6 +180,8 @@ function zeichneMeta() {
   const meta = aktuell.meta;
   meta.replaceChildren(R.sterne(a.stufe), el('span', 'punkte zahlen', punkteText(z, a)));
   if (aktuell.antwort.coldCase) meta.appendChild(R.stempel('Cold Case', 'kuer', { groesse: 'klein' }));
+  const pl = aktuell.antwort.plaedoyer;
+  if (pl) meta.appendChild(el('span', 'pw-schritt-marke', `${pl.titel} · Spur ${pl.nr} von ${pl.anzahl}`));
   const st = statusStempel(z.status, aktuell.frischGeloest);
   if (st) meta.appendChild(st);
 }
@@ -145,6 +197,7 @@ function hatKernTeile(a) {
 
 function sqlTeilFabrik(antwort) {
   return (ia, kontextTeil, nr) => {
+    if (ia.schreiben === true && schreibModul) return schreibTeil(antwort, ia, kontextTeil, nr);
     const konsole = K.erzeugeLernKonsole({
       datenbank: ia.datenbank,
       dbTitel: R.DATENBANK_TITEL[ia.datenbank] || ia.datenbank,
@@ -170,6 +223,31 @@ function sqlTeilFabrik(antwort) {
   };
 }
 
+/** Kür K1: Teil mit Schreib-Konsole (Skript statt Abfrage, Prüfpunkte statt Zeilenzahl). */
+function schreibTeil(antwort, ia, kontextTeil, nr) {
+  const konsole = schreibModul.erzeugeSchreibKonsole({
+    kursId: kurs.id,
+    aufgabeId: antwort.aufgabe.id,
+    startTitel: ia.start && ia.start.titel ? ia.start.titel : 'leere Datenbank',
+    entwurf: `dd-entwurf:aufgabe:${antwort.aufgabe.id}:${nr}`,
+    aktionen: { pruefen: () => pruefen(), tipp: () => tipp(), loesung: () => loesungFragen() },
+    beiAenderung: () => kontextTeil.geaendert()
+  });
+  return {
+    kind: 'sql',
+    konsole,
+    ui: el('p', 'teil-hinweis', 'Schreib dein Skript in die Kür-Sandbox.'),
+    antwort: () => konsole.wert(),
+    leer: () => konsole.wert().trim() === '',
+    setze: (s) => typeof s === 'string' && konsole.setzeWert(s),
+    feedback(r) {
+      if (r && (Array.isArray(r.pruefpunkte) || Array.isArray(r.diagnose))) konsole.zeigePruefung(r);
+    },
+    loesung() {},
+    sperren() {}
+  };
+}
+
 async function oeffneAufgabe(id, verlauf = false) {
   if (verlauf) {
     const url = new URL(window.location.href);
@@ -186,6 +264,8 @@ async function oeffneAufgabe(id, verlauf = false) {
     ziel.removeAttribute('aria-busy');
     return;
   }
+  const braucht = [].concat(antwort.aufgabe.interaktion).some((ia) => ia && ia.kind === 'sql' && ia.schreiben === true);
+  if (braucht && !schreibModul) schreibModul = await import('./konsole_schreiben.js' + V);
   baueAufgabe(antwort);
   ziel.removeAttribute('aria-busy');
 }
@@ -332,6 +412,9 @@ async function aktualisiereErmittlung() {
   const e = daten.ermittlung;
   const stand = document.getElementById('ermittlung-stand');
   if (stand) stand.textContent = `${e.geloest} von ${e.anzahl} erledigt · ${e.punkte} von ${e.maxPunkte} Punkten`;
+  const alt = document.getElementById('plaedoyer-stand');
+  const neu = plaedoyerZeile();
+  if (alt && neu) alt.replaceWith(neu);
 }
 
 function setzeBeschaeftigt(an) {
@@ -379,6 +462,7 @@ async function pruefen() {
   }
   setzeBeschaeftigt(false);
   aktuell.antwort.zustand = r.zustand;
+  if (r.plaedoyer) aktuell.antwort.plaedoyer = r.plaedoyer;
   aufgabe.feedback(r.rueckmeldung);
   if (r.ok) {
     aktuell.frischGeloest = r.geloest;
@@ -414,6 +498,9 @@ function teilErgebnisText(r) {
     if (t.zeilenzahl === 'zu_wenige') saetze.push('Deine Ergebnistabelle hat zu wenige Zeilen.');
     if (t.nurReihenfolge) saetze.push('Alle Zeilen stimmen, nur die Reihenfolge nicht. Prüf das ORDER BY.');
     if (Number.isInteger(t.zeilen) && Array.isArray(t.diagnose)) saetze.push(`Deine Abfrage liefert ${A.mehrzahl(t.zeilen, 'Zeile', 'Zeilen')}.`);
+    // Kür K1: Prüfpunkte der Schreib-Aufgabe (die Liste steht in der Sandbox)
+    if (Array.isArray(t.pruefpunkte)) saetze.push(`${t.pruefpunkte.filter((p) => p && p.ok).length} von ${t.pruefpunkte.length} Prüfpunkten erfüllt – die Liste steht unter der Kür-Sandbox.`);
+    else if (t.pruefpunkte === null && Array.isArray(t.diagnose) && t.diagnose.length) saetze.push('Dein Skript bricht ab – die Meldung steht unter der Kür-Sandbox.');
     // Modellierung (Phase 5): Bauplan-Tisch (Kriterienliste) und Schema-Werkbank (Teilfeedback je Relation)
     if (Array.isArray(t.kriterien) && Number.isInteger(t.gesamt)) saetze.push(`${t.richtig} von ${t.gesamt} Kriterien erfüllt – die Liste am Bauplan zeigt, was noch fehlt.`);
     if (Array.isArray(t.relationen)) {
@@ -469,7 +556,7 @@ function zeigeRichtig(r) {
   kopf.append(text, R.stempel('Gelöst', 'geloest', { groesse: 'gross', auftritt: true }));
   karte.appendChild(kopf);
   if (Array.isArray(r.neueAbzeichen) && r.neueAbzeichen.length) {
-    karte.appendChild(el('p', 'abzeichen-neu', `Neues Abzeichen: ${r.neueAbzeichen.map((x) => x.name).join(', ')}`));
+    karte.appendChild(el('p', 'abzeichen-neu', `${r.neueAbzeichen.length > 1 ? 'Neue Abzeichen' : 'Neues Abzeichen'}: ${r.neueAbzeichen.map((x) => (x.akte ? `${x.name} (Akte ${x.akte})` : x.name)).join(', ')}`));
   }
   karte.appendChild(weiterKnoepfe());
   aktuell.feedback.replaceChildren(karte);
@@ -497,7 +584,7 @@ function weiterKnoepfe() {
       l.id = 'k-weiter';
       reihe.appendChild(l);
     }
-    reihe.appendChild(A.linkKnopf(`Zur Akte ${daten.akte.nr}`, `/akte/${daten.akte.nr}`, 'knopf'));
+    reihe.appendChild(A.linkKnopf(daten.akte.kuer ? 'Zur Kür' : `Zur Akte ${daten.akte.nr}`, `/akte/${daten.akte.nr}`, 'knopf'));
     if (daten.ermittlung.coldCase && !istCc) {
       const cc = knopf('Cold Case ansehen', 'knopf leise');
       cc.addEventListener('click', () => oeffneAufgabe(daten.ermittlung.coldCase.id, true));
@@ -538,6 +625,7 @@ function loesungFragen() {
     try {
       const r = await A.senden(A.kursApi(kurs.id, `/aufgaben/${encodeURIComponent(aktuell.id)}/loesung-zeigen`));
       aktuell.antwort.zustand = r.zustand;
+      if (r.plaedoyer) aktuell.antwort.plaedoyer = r.plaedoyer;
       zeichneMeta();
       zeichneTipps();
       aktualisiereKnoepfe();
@@ -623,6 +711,7 @@ function zeigeLoesung(lo, { neu }) {
     aktuell.knoepfe.kernpunkte.hidden = false;
   }
   if (neu) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  zeigePlaedoyer({ neu });
 }
 
 async function kernpunkteAufdecken() {
@@ -684,13 +773,14 @@ async function start() {
   const nav = el('nav', 'ermittlung-nav');
   nav.setAttribute('aria-label', 'Ermittlungen');
   if (daten.vorher) nav.appendChild(A.linkKnopf(`‹ ${daten.vorher.titel}`, `/ermittlung/${daten.vorher.id}`, 'knopf leise'));
-  nav.appendChild(A.linkKnopf(`Akte ${daten.akte.nr}: ${daten.akte.titel}`, `/akte/${daten.akte.nr}`, 'knopf leise'));
+  nav.appendChild(A.linkKnopf(daten.akte.kuer ? daten.akte.titel : `Akte ${daten.akte.nr}: ${daten.akte.titel}`, `/akte/${daten.akte.nr}`, 'knopf leise'));
   if (daten.nachher) nav.appendChild(A.linkKnopf(`${daten.nachher.titel} ›`, `/ermittlung/${daten.nachher.id}`, 'knopf leise'));
   teile.push(nav);
   seite.replaceChildren(...teile.filter(Boolean));
   zeichneKacheln();
   const id = startAufgabe();
   if (id) await oeffneAufgabe(id, false);
+  else if (daten.akte.nr === 7) bereich.appendChild(A.leerKarte('Keine Lab-Aufgaben', 'Die Generalprobe schreibst du auf Papier; im Lab wartet Verhör 7.', [A.linkKnopf(`Akte ${daten.akte.nr}: ${daten.akte.titel}`, `/akte/${daten.akte.nr}`, 'knopf primaer')]));
   else bereich.appendChild(A.leerKarte('Keine Aufgaben', 'Diese Ermittlung hat noch keine Aufgaben.'));
   document.documentElement.dataset.seite = 'bereit';
 }

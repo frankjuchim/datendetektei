@@ -146,6 +146,21 @@ export function linkKnopf(text, href, klasse = 'knopf') {
 }
 
 /**
+ * Link-Knopf zu einem Erklärvideo auf YouTube (Spec §13: Link, kein Embed). Nur Links, die der Server geprüft hat
+ * (https://www.youtube.com/watch?v=…); öffnet in neuem Tab ohne Referrer und ohne Zugriff auf dieses Fenster.
+ */
+export function videoKnopf(v, klasse = 'knopf video-knopf') {
+  if (!v || typeof v.url !== 'string' || !/^https:\/\/www\.youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}(?:&t=\d+)?$/.test(v.url)) return null;
+  const a = el('a', klasse, `Video ${v.nr}: ${v.titel} (YouTube)`);
+  a.href = v.url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.setAttribute('aria-label', `Erklärvideo ${v.nr} „${v.titel}“ auf YouTube (neuer Tab)`);
+  a.dataset.video = String(v.nr);
+  return a;
+}
+
+/**
  * Kurs der Seite bestimmen. Reihenfolge: ?kurs= (wenn das Konto im Kurs ist, Superadmin immer), gemerkter Kurs,
  * einziger Kurs. Bei mehreren Kursen ohne Wahl (oder ?kurswahl=1) zeigt container die Auswahl; ohne Kurs einen
  * Leerzustand. → { ich, kurs: { id, name, rolle, aktiv }, kurse, vorschau } oder null (dann ist container gefüllt).

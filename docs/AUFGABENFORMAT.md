@@ -32,7 +32,8 @@ dem Modellierungs-Kern `src/er`).
 | Feld | Pflicht | Bedeutung |
 |---|---|---|
 | `version` | ja | immer `2` |
-| `welt` | ja | Aktennummer 1–7 (9 nur in der Test-Beispielakte); jede Nummer nur in einer Datei |
+| `welt` | ja | Aktennummer 1–7 (8 = Kür mit `kuer: true`, 9 nur in der Test-Beispielakte); jede Nummer nur in einer Datei |
+| `kuer` | nein | `true` nur für die Kür K1 (`seed/akten/kuer.json`, `welt: 8`), siehe 1.1 |
 | `titel` | ja | Name der Akte („Das Fundbüro“) |
 | `farbe` | empfohlen | Aktenfarbe `#RRGGBB` (fehlt sie: Standardfarbe der Akte) |
 | `levels` | ja | Ermittlungen der Akte (Reihenfolge = Reihenfolge in der Oberfläche) |
@@ -46,6 +47,18 @@ geladene Fassung bleibt aktiv. Einzelne fehlerhafte Aufgaben werden ausgelassen 
 geladen. Alles wird protokolliert (Seed-Bericht im Superadmin-Bereich).
 
 Jede Datei gehört genau einem Bearbeiter bzw. Agenten (`akte1.json` …), damit parallel geschrieben werden kann.
+
+### 1.1 Kür K1 (`seed/akten/kuer.json`, Phase 6)
+
+Die Kür „Eigene Datenbank bauen“ (Spec §3.3, DS_PLANUNG K1) ist eine eigene Welt **8** mit `"kuer": true`:
+
+- ids `K1-E<k>` (Ermittlung) und `K1-E<k>-<nn>` (Aufgaben); kein Verhör (`boss` fehlt).
+- Nur eA: Ermittlungen und Aufgaben mit `niveau: "eA"` – im gA-Pfad ist die Kür ausgeblendet (Spec §3.4, §18).
+- **Ohne Rangwirkung:** Kür-Punkte zählen zu den Gesamtpunkten, aber nicht zum Rang (Anteil an den Punkten der
+  freigeschalteten Akten), nicht zum Abzeichen „Akte geschlossen“, nicht zu den Welten der Verbund-Kursübersicht und
+  nicht zum Manifest-`umfang`; das Manifest nennt weiter die sieben Akten (`welten`). Die Lehrkraft schaltet die Kür wie
+  eine Akte frei (Einstellung `akten` enthält dann `8`); auf dem Stadtplan steht sie als eigener Abschnitt unter dem Plan.
+- Alles sichtbar markiert „KÜR – nicht im Abitur“; `sql`-Aufgaben sind Schreib-Aufgaben (6.6.1).
 
 ## 2. Ermittlung (Level)
 
@@ -69,9 +82,49 @@ Jede Datei gehört genau einem Bearbeiter bzw. Agenten (`akte1.json` …), damit
 | `briefing` | nein | Story-Einstieg von Edda Lorenz, geduzt, **höchstens drei Sätze** (Spec §3.1), Mini-Markdown |
 | `intro` | nein | Blöcke (siehe 5), z. B. `datenbank` und eine Ermittler-Notiz; ohne Lücken |
 | `coldCase` | nein | id einer Cold-Case-Aufgabe `A<n>-E<k>-CC` (siehe 4.3) |
-| `aufgaben` | ja | Reihenfolge der Aufgaben der Ermittlung. Jede Aufgabe steht in genau einer Ermittlung; Verhör-Aufgaben und Cold Cases nie |
+| `aufgaben` | ja | Reihenfolge der Aufgaben der Ermittlung. Jede Aufgabe steht in genau einer Ermittlung; Verhör-Aufgaben und Cold Cases nie. Leer (`[]`) nur in **Akte 7** (Generalprobe, Spec §10): Die Ermittlung „Die Ermittlerprüfung“ trägt nur Briefing und Ermittler-Notiz, geprüft wird im Verhör 7 |
 
 Ziel je Ermittlung (DS_PLANUNG): rund 8 Aufgaben, Stufenmix etwa 40/40/20 % (3/3/2).
+
+**Ermittlung ohne Lab-Aufgaben (Akte 7):** zählt im Manifest-`umfang` als Level, hat 0 Level-Punkte und erscheint
+nicht als Spalte der Lehrkraft-Auswertung; das Verhör der Akte ist im Modus `auto` frei, sobald die Akte im Kurs
+freigeschaltet ist (keine 60-%-Schwelle ohne Level-Punkte; `gesperrt`/`offen` wie sonst); das Abzeichen „Akte
+geschlossen“ gibt es für sie nicht.
+
+### 2.1 Schlussplädoyer `plaedoyer` (Akte 6, Spec §7.7, STORY §7)
+
+Optionales Feld einer Ermittlung: eine Abfolge von `sql`-Aufgaben **derselben Ermittlung**, deren Ergebnisse die
+Indizienkette bilden; nach dem letzten Schritt folgen Auflösung und Überleitung zur Erörterung.
+
+```json
+"plaedoyer": {
+  "titel": "Schlussplädoyer",
+  "schritte": ["A6-E1-09", "A6-E1-10", "A6-E1-11", "A6-E1-12", "A6-E1-13", "A6-E1-14"],
+  "indizien": {
+    "A6-E1-09": "Das Konto ist pseudonym – aber nicht stumm.",
+    "…": "…"
+  },
+  "aufloesung": "Die Indizienkette ist geschlossen: Hinter Nora Falter steht …\n\nAm Morgen nach der Enttarnung …",
+  "ueberleitung": "Bevor ihr feiert, schaut auf das, was wir gerade getan haben: … **Durfte die Detektei das?** …"
+}
+```
+
+| Feld | Pflicht | Regel |
+|---|---|---|
+| `titel` | nein | Anzeige (Standard „Schlussplädoyer“) |
+| `schritte` | ja | ≥ 1 Aufgaben-ids, ohne Doppelte; jede steht in `aufgaben` **dieser** Ermittlung, in derselben Reihenfolge, und ist eine **einteilige `sql`-Aufgabe** |
+| `indizien` | ja | genau ein Text je Schritt (Schlüssel = Aufgaben-id), Mini-Markdown, ohne Lücken – das Indiz, das als Karteikarte an die Pinnwand kommt |
+| `aufloesung` | ja | Mini-Markdown (Absätze mit Leerzeile), ohne Lücken; erscheint nach dem letzten Schritt |
+| `ueberleitung` | nein | Mini-Markdown; Überleitung zur Erörterung (Merkkasten unter der Auflösung) |
+
+**Lösungsdaten:** Indizien, Auflösung und Überleitung bleiben auf dem Server. Ein Indiz wird erst ausgeliefert, wenn
+sein Schritt erledigt ist (`geloest`, `nachgeloest` oder `angesehen` – nach „Lösung zeigen“ ist die Musterlösung
+ohnehin offen); Auflösung und Überleitung erst, wenn **alle** Schritte erledigt sind. Die Schritte sind normale
+Aufgaben (Punkte, Tipps, Prüfung wie immer). API: `GET …/ermittlungen/:id` → `ermittlung.plaedoyer` = `{ titel,
+anzahl, erledigt, abgeschlossen, schritte: [{ nr, id, titel, status, indiz? }], aufloesung?, ueberleitung? }` (ohne
+Plädoyer `null`); `GET …/aufgaben/:id`, `POST …/pruefen`, `POST …/loesung-zeigen` eines Schritts → zusätzlich
+`plaedoyer` = `{ titel, nr, anzahl, erledigt, abgeschlossen, indiz?, aufloesung?, ueberleitung? }`.
+Beispiel: Ermittlung `A9-E1` in `test/fixtures/akte_beispiel.json`.
 
 ## 3. Verhör (Boss)
 
@@ -408,6 +461,59 @@ in der Sandbox, Vergleich als Multimenge (Zahlen auf 1e-6, Text getrimmt, NULL e
 der die Aufgabe als `{ datenbank, varianten, sortierung, aliasPflicht, abimodus, loesung: { sql } }` erhält.
 Leer: nur Leerraum. Max. 4 000 Zeichen. Rückmeldung `{ diagnose, zeilen }` (Anzahl der Zeilen des **Schüler**ergebnisses).
 
+### 6.6.1 `sql` mit `schreiben: true` – Kür-Sandbox (nur Kür K1)
+
+```json
+"interaktion": { "kind": "sql", "schreiben": true, "abimodus": "aus",
+                 "start": { "titel": "Detektei-light (Ermittler)", "skript": "CREATE TABLE Ermittler (…);\nINSERT INTO …" } },
+"loesung": {
+  "sql": "CREATE TABLE Fall (…);\nINSERT INTO Fall VALUES (10, 'Das Phantom', 1);",
+  "pruefung": [
+    { "text": "Die Tabelle Fall gibt es mit FallNr als Primärschlüssel.",
+      "sql": "SELECT SUM(pk > 0) = 1 AND SUM(pk > 0 AND lower(name) = 'fallnr') = 1 FROM pragma_table_info('Fall')" },
+    { "art": "skript", "text": "Du verwendest LEFT JOIN … ON.", "muster": "\\bLEFT\\s+JOIN\\b[\\s\\S]*\\bON\\b" },
+    { "art": "ergebnis", "text": "Dein letztes SELECT liefert genau die Personen ohne Fall." }
+  ]
+}
+```
+
+Die Schülerin schreibt ein **Skript** (mehrere Anweisungen, getrennt durch `;`). „Ausführen“ und „Prüfen“ laufen
+immer auf dem Server in der Sandbox (Kindprozess, `src/sql/sandbox.js` `fuehreSkriptAus`): je Anfrage eine **frische
+In-Memory-DB** – leer, eine Kopie einer öffentlichen Übungs-DB (`start.datenbank`) oder aus dem Startskript
+(`start.skript`) –, `PRAGMA foreign_keys = ON`, danach das Skript. Nichts bleibt gespeichert; das Skript liegt nur im
+`localStorage` des Geräts. Ausführen: `POST /api/kurse/:kurs/aufgaben/:id/skript { skript }` (Protokoll je Anweisung,
+Ergebnis des letzten `SELECT`, Schema; leeres Skript = nur das Startschema).
+
+| Feld | Pflicht | Bedeutung |
+|---|---|---|
+| `schreiben` | ja | `true` – nur in der Kür-Akte (und der Test-Beispielakte) |
+| `abimodus` | ja | immer `"aus"` (keine Abitur-Regeln; die Konsole zeigt das Band „KÜR – nicht im Abitur“ mit dem Hinweis auf `FROM … WHERE`) |
+| `start` | nein | `{ titel }` (leere DB), `{ titel, datenbank }` (Kopie einer öffentlichen Übungs-DB) oder `{ titel, skript }` (Startskript, ≤ 20 000 Zeichen). An den Browser geht nur `titel` |
+| `datenbank`, `varianten`, `sortierung`, `aliasPflicht` | – | gibt es hier nicht |
+| `loesung.sql` | ja | Musterskript (≤ 10 000 Zeichen, nur erlaubte Anweisungen) |
+| `loesung.pruefung` | ja | 1–30 Prüfpunkte (Tabelle unten); `text` ist die Rückmeldung an die Schülerin – ohne Lösungsdaten formulieren |
+
+| `art` | Felder | erfüllt, wenn … |
+|---|---|---|
+| `abfrage` (Standard) | `sql` | die Prüfabfrage auf der DB nach dem Skript genau einen wahren Wert liefert (eine Zeile, eine Spalte, ≠ 0/NULL/'') – z. B. über `sqlite_master`, `pragma_table_info('T')`, `pragma_foreign_key_list('T')`, Zählabfragen |
+| `gleich` | `sql` | die Prüfabfrage dasselbe Ergebnis (Multimenge) liefert wie auf der DB nach dem Musterskript |
+| `daten` | `min` | jede eigene (nicht vom Start mitgebrachte) Tabelle mindestens `min` Datensätze hat |
+| `ergebnis` | – | das letzte `SELECT` des Skripts dasselbe Ergebnis liefert wie das letzte `SELECT` des Musterskripts (Multimenge, Spaltenanzahl und -reihenfolge zählen, Spaltennamen nicht) |
+| `zeilen` | `min` | das letzte `SELECT` mindestens `min` Zeilen liefert |
+| `skript` | `muster` | der reguläre Ausdruck (ohne Groß/Klein) auf das Skript ohne Texte und Kommentare passt |
+
+Prüfabfragen stammen aus dem Inhalt (dürfen also `pragma_…` nutzen) und laufen nur lesend (`query_only`). Richtig ⇔ das
+Skript läuft ohne Fehler und alle Prüfpunkte sind erfüllt. Rückmeldung `{ diagnose, pruefpunkte: [{ text, ok }] }`;
+bricht das Skript ab, `pruefpunkte: null` und eine Diagnose „Anweisung n (Zeile z): …“ (deutsche Texte aus
+`src/sql/fehlertexte_schreiben.js`, z. B. „Fremdschlüssel verletzt …“). Schreib-Skripte landen nie in den
+Fehlabfragen. Max. 10 000 Zeichen.
+
+**Sandbox-Grenzen** (je Anfrage): Zeitlimit 1,5 s für Startskript + Skript + Prüfabfragen (danach SIGKILL), höchstens
+200 Anweisungen, 20 eigene Tabellen, 500 Datensätze je Tabelle (Starttabellen: mindestens ihr Startbestand), 1 MB
+zusätzlicher Speicher (`max_page_count`), 5 000 Ergebniszeilen (angezeigt 300). Verboten (außerhalb von Texten und
+Kommentaren): `ATTACH`, `DETACH`, `PRAGMA` (auch `pragma_…`), `VACUUM`, `load_extension`, `TEMP`/`TEMPORARY`,
+`TRIGGER`, `VIEW`, `VIRTUAL`, Punkt-Befehle – Begründung in `src/sql/skript.js`.
+
 ### 6.7 `zeilen` – Zeilen einer `dbtabelle` antippen
 
 ```json
@@ -658,9 +764,19 @@ erfüllbar und Summe = `anzahl`, Musterantwort wird vom Prüfer als richtig erka
 - `zeitlupe`, `spurenbrett`, `sortierfaecher` (5.6): öffentliche Akten-DB, nicht im Verhör, Abfrage EH-konform und über
   `visual.js` darstellbar (`start` kommt vor, Sortierfächer mit Gruppen, `zeilen` vorhanden, ≤ 2 000 Fäden), Block-SQL ≠
   Musterlösung einer `sql`-Aufgabe derselben Akte.
+- `sql` mit `schreiben: true` (6.6.1): nur in der Kür (`kuer: true`) bzw. der Test-Beispielakte, `abimodus: "aus"`,
+  kein `datenbank`/`varianten`/`sortierung`/`aliasPflicht`; `start` mit `titel` und höchstens einem von `datenbank`
+  (öffentliche Übungs-DB) oder `skript`; Musterskript zulässig (verbotene Wörter, Länge, Anweisungen), läuft samt Start
+  in der Sandbox und erfüllt **jeden** Prüfpunkt (Fehler nennt den Prüfpunkt); Prüfpunkte mit bekannter `art` und
+  passenden Feldern, `muster` als regulärer Ausdruck gültig; **Gegenprobe:** mit dem Skript `SELECT 1;` darf nicht
+  jeder Prüfpunkt erfüllt sein.
+- Kür (`kuer: true`): `welt` 8 (und `welt` 8 nur mit `kuer`), kein Verhör, ids `K1-E<k>` / `K1-E<k>-<nn>`, alles
+  `niveau: "eA"`.
 - `lines.block` zeigt auf `sql`/`code`, `zeilen.block` auf `dbtabelle`; Indizes im Bereich.
 - Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block und keine Verstehenshilfen;
   Mix je Stufe samt `maxJeKind` erfüllbar (maximaler Fluss Stufe → Art), sonst Fehler; für gA-Kurse (nur `alle`) Hinweis.
+- `plaedoyer` (§2.1): Schritte existieren in der Ermittlung, einteilige `sql`-Aufgaben, Reihenfolge wie in `aufgaben`,
+  keine Doppelten; genau ein Indiz je Schritt; `aufloesung` Pflicht; Mini-Markdown ohne Lücken; keine weiteren Felder.
 - Cold Cases und `kernpunkte`: `punkte` 0. Niveau-Regeln (Akte 5 ganz `eA`: Ermittlungen und Verhör mit
   `niveau: "eA"`, keine Aufgabe mit `niveau: "alle"`).
 - Modellierung (§5.7, §6.11; `src/content/modellierung.js`):
@@ -760,3 +876,91 @@ wird vom Prüfer erkannt; `ergebnis`/`zeilen` mit `quelleSql` werden gegen die D
 `POST /api/gast/aufgaben/:id/pruefen` `{ antwort }` → `{ ok, rueckmeldung, geloest, loesung? }` (Lösung und Erklärung
 nur nach dem Lösen), `POST …/tipp` `{ nr }` → `{ nr, tipp, anzahl }`, `POST …/loesung` → `{ loesung, erklaerung }`
 (nur auf ausdrücklichen Wunsch – im Gastmodus erlaubt, weil es reine Demo-Aufgaben sind).
+
+## 11. Fallebene: Beweisstücke und Steckbrief (`seed/fallebene.json`)
+
+Daten der Pinnwand (Spec §7.7, STORY §4 und §6, DESIGN §5.10). Das Schlussplädoyer steht in der Ermittlung (§2.1).
+Geprüft von `pruefeFallebene` (`src/services/fallebene.js`) beim Start und in `npm run validate`.
+
+```json
+{ "version": 1,
+  "beweisstuecke": [
+    { "akte": 1, "titel": "Fundbuch-Seite", "bild": "fundbuch", "text": "Ein Ausdruck der Fundbuch-Seite …",
+      "notiz": "Wer war am Schalter?" } ],
+  "steckbrief": {
+    "felder": [ { "id": "signatur", "titel": "Signatur / Initialen" }, { "id": "name", "titel": "Name / Motiv" } ],
+    "hinweise": [
+      { "akte": 1, "eintraege": [ { "feld": "signatur", "text": "Nachtfalter, Initialen „N. F.“" } ] },
+      { "akte": 6, "auchNachPlaedoyer": "A6-E1", "stempel": "Enttarnt",
+        "eintraege": [ { "feld": "wohnort", "text": "Hafenviertel (bestätigt)", "ersetzt": true } ] },
+      { "akte": 7, "stempel": "Fall abgeschlossen", "eintraege": [] } ] } }
+```
+
+| Feld | Regel |
+|---|---|
+| `beweisstuecke[]` | je Akte höchstens eines: `akte`, `titel`, `bild` ∈ `fundbuch`, `schloss`, `bon`, `ausweis`, `netz`, `steckbrief`, `lizenz` (SVG-Motive in `public/static/js/lernen/pinnwand_bilder.js`), `text` (Polaroid-Text, 2–3 Sätze, Mini-Markdown), `notiz` (optional, Eddas Handschrift) |
+| `steckbrief.felder[]` | `id` (Kleinbuchstaben, eindeutig), `titel` – Reihenfolge = Anzeige |
+| `steckbrief.hinweise[]` | je Akte höchstens einer: `eintraege` (`feld` aus `felder`, `text` Mini-Markdown, `ersetzt: true` verdrängt frühere Einträge des Felds, z. B. „1988 (bestätigt)“), optional `stempel` (über dem Steckbrief: „Enttarnt“, „Fall abgeschlossen“) und `auchNachPlaedoyer` (Ermittlungs-id) |
+
+**Freischaltung (Regel E10, Spec §0):** Der Hinweis einer Akte *n* ist sichtbar, sobald das Verhör der Akte gewonnen
+ist (bester beendeter Versuch ≥ 50 %) **oder** im Kurs eine spätere Akte des Plans (1–7) freigeschaltet ist; mit
+`auchNachPlaedoyer` zusätzlich, sobald das Plädoyer dieser Ermittlung abgeschlossen ist. Hinweise gelten unabhängig vom
+Niveau (gA: der Hinweis der Akte 5 erscheint mit der Freischaltung der Akte 6). Ein **Beweisstück** (Titel, Bild,
+Text, Notiz und die Einträge seines Hinweises als „Erkenntnis“) erscheint nur nach dem gewonnenen Verhör; vorher nur
+„Verhör n“. Polaroids gibt es nur für Akten des Kurs-Niveaus (gA: ohne Akte 5).
+
+**API:** `GET /api/kurse/:kurs/pinnwand` (angemeldet, Zugang wie die Lern-API) → `{ kurs, beweisstuecke: [{ akte,
+verhoer, gewonnen, titel?, bild?, text?, notiz?, erkenntnis? }], steckbrief: { felder: [{ id, titel, eintraege: [{
+akte, text }] }], hinweise, gesamt, stempel }, plaedoyer }`. `plaedoyer` ist das erste Plädoyer der sichtbaren Akten
+(Form wie `ermittlung.plaedoyer` in §2.1, dazu `frei: true`, `akte`, `ermittlung`), für Schüler einer nicht
+freigeschalteten Akte nur `{ frei: false, akte: { nr } }`, ohne Plädoyer `null`. Seite: `/pinnwand`.
+
+## 12. Live-Modus: Live-Pool und Escape Room (`seed/live/`)
+
+Inhalte der Kür K2 (Spec §7.10, DS_PLANUNG K2, STORY §9). Sie werden **nicht** in die Plattform-DB eingespielt
+(`src/content/live.js` lädt sie beim Start in den Speicher); Live-Runden bringen keine Lab-Punkte. Die Aufgaben haben
+das Format aus §4–§7 (inkl. `loesung`, `erklaerung`) und werden mit `pruefeAntwort` geprüft.
+
+**`pool.json`** – Duell-Aufgaben `K2-L-01…20`:
+
+```json
+{ "version": 1, "titel": "Live-Pool …", "aufgaben": [
+  { "id": "K2-L-03", "akte": 1, "zeitSek": 90, "titel": "…", "stufe": 2, "kategorie": "SQL eine Tabelle",
+    "inhalt": [ … ], "interaktion": { "kind": "sql", "datenbank": "fundbuero" }, "loesung": { "sql": "…" }, "erklaerung": [ … ] } ] }
+```
+
+| Feld | Regel |
+|---|---|
+| `akte` | 1–6: die Akte, die die Aufgabe wiederholt (Soll A1 4 · A2 3 · A3 4 · A4 3 · A5 3 · A6 3, sonst Hinweis) |
+| `zeitSek` | 10–90 Sekunden Bearbeitungszeit |
+| `interaktion` | nur `ergebnis`, `choice`, `sql` (öffentliche Akten-DBs) |
+| `niveau` | Akte 5 immer `eA` (in gA-Kursen nicht auswählbar) |
+
+**`escape.json`** – Szenario mit Stationen:
+
+```json
+{ "version": 1, "titel": "Escape Room Weserstedt", "briefing": "…", "abschluss": "…",
+  "dauerMin": 55, "tippNachMin": 10, "tippStrafeMin": 2,
+  "stationen": [ { "id": "S1", "nr": 1, "titel": "Das Fundbuch-Schloss", "niveau": "alle", "story": "…",
+                   "code": { "teile": [ { "quelle": "anzahlZeilen", "stellen": 3 } ] },
+                   "aufgabe": { "id": "K2-S1", …, "tipps": ["… (genau einer: der Tipp-Umschlag)"] } } ] }
+```
+
+| Feld | Regel |
+|---|---|
+| `id`, `nr` | `S1`…`S6` mit `nr` 1–6; gA-Ersatzstation `S5g` (nr 5, `niveau: "gA"`); `S5` hat `niveau: "eA"` |
+| `niveau` | `alle` · `eA` · `gA`; eA-Weg und gA-Weg haben je genau die Stationen 1–6 in Reihenfolge |
+| `aufgabe.id` | `K2-<Station>`; genau ein Tipp (Tipp-Umschlag, kostet `tippStrafeMin` Minuten) |
+| `code.teile` | Regel, wie der Server den Code **aus der Lösung** berechnet (Ziffern aneinander, `stellen` = mit Nullen auffüllen) |
+
+Code-Quellen: `anzahlZeilen` (Zeilenzahl des Ergebnisses der Musterlösung) · `zelle` `{ zeile, spalte }` (1-basiert,
+ganze Zahl) · `zuordnung` (match: je Element in Dateireihenfolge die Nummer der Kategorie) · `auswahl` (choice: Nummer
+der einzigen richtigen Option in Dateireihenfolge) · `anzahlRichtig` · `minimalerSchluessel` (kleinste Attributzahl
+der richtigen Optionen „(A, B)“) · `relationen` · `fremdschluessel` (schema: aus allen Musterlösungen gleich). `teil`
+(1-basiert) wählt bei mehrteiligen Aufgaben den Teil. Der Code steht **nie** im JSON und verlässt den Server erst, wenn
+ein Team die Station gelöst hat.
+
+Der Validator (`validiereLive`, in `npm run validate`) prüft das Format, die Aufgaben intern als Test-Akte (welt 9:
+A9-E1 = Pool, A9-E2 = Stationen) mit allen Regeln aus §8 (SQL in der Sandbox), dass kein Text (ab 20 Zeichen) aus
+`seed/akten` stammt (Transfer), und die Codes: berechenbar, 2–8 Ziffern, je Station verschieden, nicht in der
+öffentlichen Sicht; ein Zellen-Code eines mehrzeiligen Ergebnisses braucht `sortierung` und keinen Gleichstand.

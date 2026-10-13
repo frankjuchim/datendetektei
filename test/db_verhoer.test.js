@@ -1,6 +1,6 @@
 'use strict';
-// Verhör-Kontexte V1–V5 (seed/datenbanken/verhoer/<kontext>/, VERHOER_KONTEXTE.md, Plan Phase 3 Task 11 und
-// Phase 5 Task 6): kuratierte DBs ohne Generator, Pflicht-Randfälle je Blueprint (DS_PLANUNG „Verhör-Blueprint:
+// Verhör-Kontexte V1–V7 (seed/datenbanken/verhoer/<kontext>/, VERHOER_KONTEXTE.md, Plan Phase 3 Task 11,
+// Phase 5 Task 6 und Phase 6 Task 1): kuratierte DBs ohne Generator, Pflicht-Randfälle je Blueprint (DS_PLANUNG „Verhör-Blueprint:
 // Verhör 1 … 5“), Beispielabfragen EH-konform (Abimodus streng), Randfall-Varianten mit entlarvter Fehlabfrage
 // (V4/V5 ohne Varianten: keine SQL-Aufgaben im Verhör).
 const test = require('node:test');
@@ -16,7 +16,8 @@ const { ladeSchema } = require('./hilfen_schema');
 const namenJson = require('../seed/datenbanken/namen.json');
 
 const SEED = path.join(__dirname, '..', 'seed', 'datenbanken');
-const KONTEXTE = ['verhoer/bibliothek', 'verhoer/buergerbus', 'verhoer/kiosk', 'verhoer/musikschule', 'verhoer/kletterhalle'];
+const KONTEXTE = ['verhoer/bibliothek', 'verhoer/buergerbus', 'verhoer/kiosk', 'verhoer/musikschule', 'verhoer/kletterhalle',
+  'verhoer/fitness', 'verhoer/mensa'];
 
 /** Erwartete Varianten je Kontext (LIESMICH „Randfall-Varianten“; „entfällt“ = keine Datei). */
 const VARIANTEN = {
@@ -24,14 +25,19 @@ const VARIANTEN = {
   'verhoer/buergerbus': ['null', 'gleichnamig'],
   'verhoer/kiosk': ['null', 'gleichnamig'],
   'verhoer/musikschule': [],
-  'verhoer/kletterhalle': []
+  'verhoer/kletterhalle': [],
+  'verhoer/fitness': ['null'],
+  'verhoer/mensa': ['gleichnamig', 'grenze']
 };
 
 /** Spalten mit vollem Namen „Vorname Nachname“ (bei Rohlisten ggf. als Kommaliste) je Kontext. */
 const NAMENSSPALTEN = {
   'verhoer/musikschule': ['UnterrichtRoh.Schueler', 'UnterrichtRoh.Lehrkraft', 'LehrkraftRaum.Name'],
-  'verhoer/kletterhalle': ['Mitglied.Name', 'Routenbauer.Name']
+  'verhoer/kletterhalle': ['Mitglied.Name', 'Routenbauer.Name'],
+  'verhoer/mensa': ['BestellUebersicht.Name']
 };
+/** Kontexte ohne Personennamen (pseudonymer Export). */
+const OHNE_NAMEN = ['verhoer/fitness'];
 /** Nachnamen, die VERHOER_KONTEXTE.md ausdrücklich vorgibt, obwohl sie nicht in namen.json stehen. */
 const VORGEGEBENE_NACHNAMEN = { 'verhoer/musikschule': ['Albers'] };
 
@@ -51,7 +57,7 @@ const menge = (db, sql) => alle(db, sql).map((z) => JSON.stringify(z.map((w) => 
 test('Verhör-DBs: Namen, kuratiert, eigene Module, Reihenfolge der Übungs-DBs unverändert', () => {
   assert.deepEqual(bau.VERHOER_DBS, KONTEXTE);
   assert.deepEqual(bau.REIHENFOLGE, ['fundbuero', 'stadtrad', 'stadtfest', 'tus', 'detektei', 'datenspuren', 'eisdiele']);
-  assert.deepEqual(bau.ALLE_DBS, [...bau.REIHENFOLGE, ...KONTEXTE]);
+  assert.deepEqual(bau.ALLE_DBS, [...bau.REIHENFOLGE, ...KONTEXTE, ...bau.PRUEFUNG_DBS]);
   for (const name of KONTEXTE) {
     assert.ok(bau.KURATIERT.includes(name), name);
     assert.equal(bau.modulName(name), name.replace('/', '_'));
@@ -133,7 +139,8 @@ for (const name of KONTEXTE) {
         }
       }
     }
-    assert.ok(geprueft > 0);
+    if (OHNE_NAMEN.includes(name)) assert.equal(geprueft, 0, `${name}: keine Namen erwartet`);
+    else assert.ok(geprueft > 0);
   });
 }
 
@@ -566,4 +573,267 @@ test('V5: LIESMICH und VERHOER_KONTEXTE an DS_PLANUNG angeglichen (klettert, Tra
     assert.doesNotMatch(text, /\bbegeht\(|sichert\(/);
   }
   assert.ok(liesmich.includes('A5-V-03') && liesmich.includes('A5-V-04'));
+});
+
+// ---------------------------------------------------------------- V6 Fitness-App (Phase 6 Task 1)
+
+const KLEINE_GRUPPEN = `SELECT Geburtsjahr, PLZBereich
+FROM Export
+GROUP BY Geburtsjahr, PLZBereich
+HAVING COUNT(*) = 1`;
+
+test('V6: Umfang, Wertebereiche, Export = Stichtag des Verlaufs (eine Zeile je NutzerToken)', () => {
+  const db = haupt('verhoer/fitness');
+  assert.deepEqual(alle(db, 'SELECT COUNT(*), COUNT(DISTINCT NutzerToken), MIN(Datum), MAX(Datum) FROM Export'),
+    [[25, 25, '2026-10-05', '2026-10-05']]);
+  assert.deepEqual(alle(db, 'SELECT COUNT(*), COUNT(DISTINCT NutzerToken), MIN(Datum), MAX(Datum) FROM ExportVerlauf'),
+    [[60, 25, '2026-10-02', '2026-10-05']]);
+  // jede Export-Zeile steht unverändert im Verlauf; Quasi-Identifikatoren je Token konstant
+  assert.equal(wert(db, `SELECT COUNT(*) FROM Export e, ExportVerlauf v WHERE e.NutzerToken = v.NutzerToken
+    AND e.Datum = v.Datum AND e.Geburtsjahr = v.Geburtsjahr AND e.PLZBereich = v.PLZBereich AND e.Geschlecht = v.Geschlecht
+    AND e.Schritte = v.Schritte AND (e.Ruhepuls = v.Ruhepuls OR (e.Ruhepuls IS NULL AND v.Ruhepuls IS NULL))`), 25);
+  assert.equal(wert(db, `SELECT COUNT(*) FROM (SELECT NutzerToken FROM ExportVerlauf GROUP BY NutzerToken
+    HAVING COUNT(DISTINCT Geburtsjahr || PLZBereich || Geschlecht) > 1)`), 0);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT COUNT(*) FROM ExportVerlauf GROUP BY NutzerToken ORDER BY 1'), [1, 2, 3, 4]);
+  // Wertebereiche (Geburtsjahr 1950–2008; einzige Ausnahme der Nachbar Jahrgang 1949 der Kontextkarte)
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Geburtsjahr FROM ExportVerlauf WHERE Geburtsjahr NOT BETWEEN 1950 AND 2008'), [1949]);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT PLZBereich FROM Export ORDER BY 1'), ['001', '002', '003', '004', '005', '006']);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Geschlecht FROM Export ORDER BY 1'), ['d', 'm', 'w']);
+  assert.deepEqual(alle(db, 'SELECT COUNT(*) - COUNT(Ruhepuls) FROM ExportVerlauf'), [[6]]);
+  assert.deepEqual(alle(db, 'SELECT COUNT(*) - COUNT(Ruhepuls) FROM Export'), [[2]]);
+});
+
+test('V6 A6-V-05: genau vier kleine Gruppen; Fehlvarianten liefern andere Ergebnisse', () => {
+  const db = haupt('verhoer/fitness');
+  assert.deepEqual(menge(db, KLEINE_GRUPPEN),
+    menge(db, "SELECT 1949, '004' UNION SELECT 2007, '001' UNION SELECT 1963, '006' UNION SELECT 1985, '003'"));
+  // eine der vier Gruppen hat im Verlauf vier Zeilen (Zeilen ≠ Personen)
+  assert.deepEqual(alle(db, "SELECT NutzerToken, COUNT(*) FROM ExportVerlauf WHERE Geburtsjahr = 1949 AND PLZBereich = '004' GROUP BY NutzerToken"),
+    [['N-687', 4]]);
+  for (const falsch of [
+    'SELECT Geburtsjahr, PLZBereich FROM Export GROUP BY Geburtsjahr, PLZBereich HAVING COUNT(Ruhepuls) = 1',
+    'SELECT Geburtsjahr, PLZBereich FROM ExportVerlauf GROUP BY Geburtsjahr, PLZBereich HAVING COUNT(*) = 1',
+    'SELECT Geburtsjahr, MIN(PLZBereich) FROM Export GROUP BY Geburtsjahr HAVING COUNT(*) = 1',
+    'SELECT Geburtsjahr, PLZBereich FROM Export GROUP BY Geburtsjahr, PLZBereich, Geschlecht HAVING COUNT(*) = 1',
+    'SELECT Geburtsjahr, PLZBereich FROM Export WHERE Ruhepuls IS NOT NULL GROUP BY Geburtsjahr, PLZBereich HAVING COUNT(*) = 1'
+  ]) assert.notDeepEqual(menge(db, falsch), menge(db, KLEINE_GRUPPEN), falsch);
+});
+
+test('V6 A6-V-06: Kontextkarte 1 trifft genau einen Token (vier Zeilen), Kontextkarte 2 drei Tokens', () => {
+  const db = haupt('verhoer/fitness');
+  assert.deepEqual(spalte(db, "SELECT DISTINCT NutzerToken FROM ExportVerlauf WHERE Geburtsjahr = 1949 AND PLZBereich = '004'"), ['N-687']);
+  assert.equal(wert(db, "SELECT COUNT(*) FROM ExportVerlauf WHERE NutzerToken = 'N-687'"), 4);
+  assert.deepEqual(spalte(db, `SELECT NutzerToken FROM Export WHERE Geburtsjahr = 1990 AND PLZBereich = '002'
+    AND Geschlecht = 'w' ORDER BY NutzerToken`), ['N-100', 'N-137', 'N-367']);
+  // ohne das Geschlecht wären es vier – Geburtsjahr und Bereich allein reichen hier nicht
+  assert.equal(wert(db, "SELECT COUNT(*) FROM Export WHERE Geburtsjahr = 1990 AND PLZBereich = '002'"), 4);
+});
+
+test('V6 Variante null: fünfte kleine Gruppe ohne Ruhepuls entlarvt COUNT(Ruhepuls) und LIMIT 4', () => {
+  const h = haupt('verhoer/fitness');
+  const v = bau.baueVariante('verhoer/fitness', 'null');
+  assert.equal(spalte(v, KLEINE_GRUPPEN).length, 5);
+  const limit = 'SELECT Geburtsjahr, PLZBereich FROM Export GROUP BY Geburtsjahr, PLZBereich ORDER BY COUNT(*) LIMIT 4';
+  assert.deepEqual(menge(h, limit), menge(h, KLEINE_GRUPPEN));
+  assert.notDeepEqual(menge(v, limit), menge(v, KLEINE_GRUPPEN));
+  const ruhepuls = 'SELECT Geburtsjahr, PLZBereich FROM Export GROUP BY Geburtsjahr, PLZBereich HAVING COUNT(Ruhepuls) = 1';
+  assert.notDeepEqual(menge(v, ruhepuls), menge(v, KLEINE_GRUPPEN));
+  v.close();
+});
+
+// ---------------------------------------------------------------- V7 Mensa-Vorbestellsystem (Phase 6 Task 1)
+
+const MENSA_VERBUND = `Gericht.GerichtNr = Angebot.GerichtNr AND Angebot.AngebotNr = Bestellung.AngebotNr`;
+const MENSA = {
+  vegetarisch: "SELECT Bezeichnung, Preis FROM Gericht WHERE Vegetarisch = 'ja' AND Preis < 4",
+  stichtag: `SELECT Gericht.Bezeichnung FROM Gericht, Angebot WHERE Gericht.GerichtNr = Angebot.GerichtNr
+    AND Angebot.Datum = '2027-03-15'`,
+  stichtagVeg: `SELECT Gericht.Bezeichnung, Gericht.Preis FROM Gericht, Angebot WHERE Gericht.GerichtNr = Angebot.GerichtNr
+    AND Angebot.Datum = '2027-03-15' AND Gericht.Vegetarisch = 'ja' ORDER BY Gericht.Preis`,
+  nichtAbgeholt: `SELECT Person.Vorname, Person.Nachname, Angebot.Datum, Gericht.Bezeichnung
+    FROM Person, Bestellung, Angebot, Gericht WHERE Person.PersonNr = Bestellung.PersonNr AND ${MENSA_VERBUND}
+    AND Bestellung.Abgeholt IS NULL`,
+  portionen: `SELECT Gericht.GerichtNr, Gericht.Bezeichnung, SUM(Bestellung.Menge) FROM Gericht, Angebot, Bestellung
+    WHERE ${MENSA_VERBUND} GROUP BY Gericht.GerichtNr, Gericht.Bezeichnung`,
+  vielbesteller: `SELECT Person.PersonNr, Person.Vorname, Person.Nachname, COUNT(*) FROM Person, Bestellung
+    WHERE Person.PersonNr = Bestellung.PersonNr GROUP BY Person.PersonNr, Person.Vorname, Person.Nachname
+    HAVING COUNT(*) > 10`,
+  top3: `SELECT Gericht.GerichtNr, Gericht.Bezeichnung, SUM(Bestellung.Menge * Gericht.Preis) AS Umsatz
+    FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND}
+    AND Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19'
+    GROUP BY Gericht.GerichtNr, Gericht.Bezeichnung ORDER BY Umsatz DESC LIMIT 3`,
+  maerz: `SELECT Gericht.GerichtNr, Gericht.Bezeichnung, SUM(Bestellung.Menge) AS Portionen
+    FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND}
+    AND Angebot.Datum BETWEEN '2027-03-01' AND '2027-03-31'
+    GROUP BY Gericht.GerichtNr, Gericht.Bezeichnung HAVING SUM(Bestellung.Menge) > 50 ORDER BY Portionen DESC`,
+  analyse: `SELECT Person.PersonNr, Person.Vorname, Person.Nachname, COUNT(*) AS Anzahl
+    FROM Person, Bestellung, Angebot WHERE Person.PersonNr = Bestellung.PersonNr
+    AND Bestellung.AngebotNr = Angebot.AngebotNr AND Bestellung.Abgeholt IS NULL
+    GROUP BY Person.PersonNr, Person.Vorname, Person.Nachname ORDER BY COUNT(*) DESC LIMIT 3`
+};
+
+test('V7: Umfang und Wertebereiche nach VERHOER_KONTEXTE (Personen, Gerichte, Angebote, Bestellungen)', () => {
+  const db = haupt('verhoer/mensa');
+  assert.deepEqual(alle(db, `SELECT (SELECT COUNT(*) FROM Person), (SELECT COUNT(*) FROM Gericht),
+    (SELECT COUNT(*) FROM Kuechenkraft), (SELECT COUNT(*) FROM BestellUebersicht)`), [[40, 14, 5, 16]]);
+  const angebote = wert(db, "SELECT COUNT(*) FROM Angebot WHERE Datum LIKE '2027-03-%'");
+  const bestellungen = wert(db, 'SELECT COUNT(*) FROM Bestellung');
+  assert.ok(angebote >= 55 && angebote <= 65, `${angebote} Angebote im März`);
+  assert.ok(bestellungen >= 280 && bestellungen <= 330, `${bestellungen} Bestellungen`);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Rolle FROM Person ORDER BY 1'), ['Lehrkraft', 'Personal', 'Schüler']);
+  assert.equal(wert(db, "SELECT COUNT(*) FROM Person WHERE (Rolle = 'Schüler') != (Klasse IS NOT NULL)"), 0);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Kategorie FROM Gericht ORDER BY 1'), ['Dessert', 'Hauptgericht', 'Salat', 'Suppe']);
+  // nur Werktage, Karfreitag 2027-03-26 ausgenommen
+  assert.equal(wert(db, "SELECT COUNT(*) FROM Angebot WHERE strftime('%w', Datum) IN ('0', '6') OR Datum = '2027-03-26'"), 0);
+  assert.deepEqual(alle(db, 'SELECT MIN(Menge), MAX(Menge) FROM Bestellung'), [[1, 3]]);
+  assert.equal(wert(db, `SELECT COUNT(*) FROM Angebot WHERE Portionen < (SELECT SUM(Menge) FROM Bestellung
+    WHERE Bestellung.AngebotNr = Angebot.AngebotNr)`), 0);
+  // jedes Angebot hat mindestens eine Küchenkraft
+  assert.equal(wert(db, 'SELECT COUNT(*) FROM Angebot WHERE AngebotNr NOT IN (SELECT AngebotNr FROM bereitetZu)'), 0);
+});
+
+test('V7 A7-V-01/GP-a: Mehrfachbestellung – (PersonNr, AngebotNr) ist nicht eindeutig', () => {
+  const db = haupt('verhoer/mensa');
+  assert.deepEqual(alle(db, `SELECT PersonNr, AngebotNr, COUNT(*) FROM Bestellung GROUP BY PersonNr, AngebotNr
+    HAVING COUNT(*) > 1`), [[6, 45, 2]]);
+  assert.deepEqual(spalte(db, 'SELECT BestellNr FROM Bestellung WHERE PersonNr = 6 AND AngebotNr = 45'), [204, 209]);
+});
+
+test('V7 A7-V-03/-04, GP-e: Grenzpreis 4.00, Stichtag 2027-03-15 mit vier Angeboten (zwei vegetarisch)', () => {
+  const db = haupt('verhoer/mensa');
+  assert.deepEqual(alle(db, "SELECT Bezeichnung, Preis FROM Gericht WHERE Vegetarisch = 'ja' AND Preis = 4"), [['Gemüselasagne', 4]]);
+  assert.equal(spalte(db, MENSA.vegetarisch).length, 7);
+  assert.notDeepEqual(menge(db, "SELECT Bezeichnung, Preis FROM Gericht WHERE Vegetarisch = 'ja' AND Preis <= 4"),
+    menge(db, MENSA.vegetarisch));
+  assert.deepEqual(spalte(db, MENSA.stichtag).sort(),
+    ['Käsespätzle', 'Linseneintopf mit Würstchen', 'Schokopudding', 'Spaghetti Bolognese']);
+  assert.deepEqual(alle(db, MENSA.stichtagVeg), [['Schokopudding', 1.25], ['Käsespätzle', 3.75]]);
+});
+
+test('V7 A7-V-07, GP-g: NULL bei Abgeholt (≈ 10 %), nicht abgeholt 5/4/3 ohne Gleichstand auf Platz 3/4', () => {
+  const db = haupt('verhoer/mensa');
+  const n = wert(db, 'SELECT COUNT(*) FROM Bestellung');
+  const ohne = spalte(db, MENSA.nichtAbgeholt).length;
+  assert.equal(ohne, 31);
+  assert.ok(ohne / n >= 0.08 && ohne / n <= 0.12);
+  assert.deepEqual(alle(db, 'SELECT COUNT(*) FROM Bestellung WHERE Abgeholt = NULL'), [[0]]);
+  assert.deepEqual(alle(db, MENSA.analyse), [[30, 'Ole', 'Lindemann', 5], [7, 'Pia', 'Fehrmann', 4], [19, 'Joris', 'Wiechmann', 3]]);
+  const platz4 = spalte(db, `SELECT COUNT(*) FROM Bestellung WHERE Abgeholt IS NULL GROUP BY PersonNr ORDER BY COUNT(*) DESC`)[3];
+  assert.equal(platz4, 2);
+  // auch nur im März gezählt gleich (falls die Analyse-Abfrage auf den März eingeschränkt wird)
+  assert.deepEqual(spalte(db, `SELECT Bestellung.PersonNr FROM Bestellung, Angebot WHERE Bestellung.AngebotNr = Angebot.AngebotNr
+    AND Abgeholt IS NULL AND Angebot.Datum >= '2027-03-01' GROUP BY Bestellung.PersonNr ORDER BY COUNT(*) DESC LIMIT 3`), [30, 7, 19]);
+});
+
+test('V7 A7-V-08/-09: COUNT ↔ SUM, genau drei Vielbesteller (> 10), eine Person mit genau 10', () => {
+  const db = haupt('verhoer/mensa');
+  assert.deepEqual(alle(db, 'SELECT COUNT(*), SUM(Menge) FROM Bestellung WHERE Menge > 1').map((z) => z[1] > z[0]), [true]);
+  const portionen = alle(db, MENSA.portionen);
+  assert.equal(portionen.length, 13, 'Kürbissuppe (14) nie angeboten');
+  assert.deepEqual(alle(db, MENSA.vielbesteller), [[3, 'Pia', 'Pundt', 14], [17, 'Ida', 'Eggers', 12], [25, 'Insa', 'Akgül', 11]]);
+  assert.deepEqual(spalte(db, 'SELECT PersonNr FROM Bestellung GROUP BY PersonNr HAVING COUNT(*) = 10'), [9]);
+  // P4: mit SUM(Menge) statt COUNT(*) wären es viel mehr Personen
+  assert.ok(spalte(db, 'SELECT PersonNr FROM Bestellung GROUP BY PersonNr HAVING SUM(Menge) > 10').length > 10);
+  // P5: COUNT(Abgeholt) zählt nur abgeholte Bestellungen – Person 25 (11 Bestellungen, 2 nicht abgeholt) fiele heraus
+  assert.notDeepEqual(spalte(db, 'SELECT PersonNr FROM Bestellung GROUP BY PersonNr HAVING COUNT(Abgeholt) > 10'), [3, 17, 25]);
+  // Person 40 hat nie bestellt
+  assert.deepEqual(spalte(db, 'SELECT PersonNr FROM Person WHERE PersonNr NOT IN (SELECT PersonNr FROM Bestellung)'), [40]);
+});
+
+test('V7 A7-V-13: Top 3 der Woche 2027-03-15 … 19 ohne Gleichstand; Fehlvarianten liefern andere Gerichte', () => {
+  const db = haupt('verhoer/mensa');
+  assert.deepEqual(alle(db, MENSA.top3), [[7, 'Currywurst mit Pommes', 63.75], [1, 'Spaghetti Bolognese', 63], [4, 'Käsespätzle', 52.5]]);
+  const umsatz = spalte(db, `SELECT SUM(Bestellung.Menge * Gericht.Preis) AS U FROM Gericht, Angebot, Bestellung
+    WHERE ${MENSA_VERBUND} AND Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19' GROUP BY Gericht.GerichtNr ORDER BY U DESC`);
+  assert.ok(umsatz[2] > umsatz[3], `Platz 3 ${umsatz[2]} vs. Platz 4 ${umsatz[3]}`);
+  const nummern = (sql) => spalte(db, sql).sort((a, b) => a - b);
+  const soll = nummern(`SELECT Gericht.GerichtNr FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND}
+    AND Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19' GROUP BY Gericht.GerichtNr
+    ORDER BY SUM(Bestellung.Menge * Gericht.Preis) DESC LIMIT 3`);
+  for (const [bedingung, ausdruck] of [
+    ["Angebot.Datum >= '2027-03-15' AND Angebot.Datum < '2027-03-19'", 'SUM(Bestellung.Menge * Gericht.Preis)'],
+    ["Angebot.Datum > '2027-03-15' AND Angebot.Datum <= '2027-03-19'", 'SUM(Bestellung.Menge * Gericht.Preis)'],
+    ["Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19'", 'SUM(Gericht.Preis)'],
+    ["Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19'", 'COUNT(*)'],
+    ['1 = 1', 'SUM(Bestellung.Menge * Gericht.Preis)']
+  ]) {
+    const ist = nummern(`SELECT Gericht.GerichtNr FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND} AND ${bedingung}
+      GROUP BY Gericht.GerichtNr ORDER BY ${ausdruck} DESC LIMIT 3`);
+    assert.notDeepEqual(ist, soll, `${bedingung} / ${ausdruck}`);
+  }
+});
+
+test('V7 GP-f: Portionen im März – genau 50 und 51 an der HAVING-Grenze, WHERE notwendig', () => {
+  const db = haupt('verhoer/mensa');
+  assert.deepEqual(alle(db, MENSA.maerz), [[1, 'Spaghetti Bolognese', 63], [7, 'Currywurst mit Pommes', 57], [3, 'Hähnchen-Curry mit Reis', 51]]);
+  const maerz = alle(db, `SELECT Gericht.GerichtNr, SUM(Bestellung.Menge) FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND}
+    AND Angebot.Datum LIKE '2027-03-%' GROUP BY Gericht.GerichtNr`);
+  assert.deepEqual(maerz.filter((z) => z[1] === 50 || z[1] === 51), [[2, 50], [3, 51]]);
+  const ohneWhere = `SELECT Gericht.GerichtNr FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND}
+    GROUP BY Gericht.GerichtNr HAVING SUM(Bestellung.Menge) > 50`;
+  const abZweitem = `SELECT Gericht.GerichtNr FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND}
+    AND Angebot.Datum > '2027-03-01' GROUP BY Gericht.GerichtNr HAVING SUM(Bestellung.Menge) > 50`;
+  const groesserGleich = `SELECT Gericht.GerichtNr FROM Gericht, Angebot, Bestellung WHERE ${MENSA_VERBUND}
+    AND Angebot.Datum LIKE '2027-03-%' GROUP BY Gericht.GerichtNr HAVING SUM(Bestellung.Menge) >= 50`;
+  const soll = spalte(db, MENSA.maerz).sort();
+  for (const falsch of [ohneWhere, abZweitem, groesserGleich]) assert.notDeepEqual(spalte(db, falsch).sort(), soll, falsch);
+  // P7: Angebot.Portionen (geplant) ist etwas anderes als die bestellten Portionen
+  assert.notDeepEqual(menge(db, `SELECT Gericht.GerichtNr FROM Gericht, Angebot WHERE Gericht.GerichtNr = Angebot.GerichtNr
+    AND Angebot.Datum LIKE '2027-03-%' GROUP BY Gericht.GerichtNr HAVING SUM(Angebot.Portionen) > 50`), menge(db, MENSA.maerz));
+});
+
+test('V7 BestellUebersicht (A7-V-02/-11, GP-b): Lösch- und Änderungsanomalien an konkreten Zeilen', () => {
+  const db = haupt('verhoer/mensa');
+  // ohne Primärschlüssel
+  assert.equal(db.prepare('PRAGMA table_info(BestellUebersicht)').all().filter((s) => s.pk > 0).length, 0);
+  // jede Zeile entspricht einer Bestellung vom 2027-03-16 (bis auf die drei markierten Zellen)
+  assert.deepEqual(spalte(db, 'SELECT BestellNr FROM BestellUebersicht ORDER BY rowid'),
+    spalte(db, "SELECT BestellNr FROM Bestellung, Angebot WHERE Bestellung.AngebotNr = Angebot.AngebotNr AND Datum = '2027-03-16' ORDER BY BestellNr"));
+  const abweichend = alle(db, `SELECT u.BestellNr, u.Klasse IS NOT p.Klasse, u.Preis != g.Preis, u.Name != p.Vorname || ' ' || p.Nachname
+    FROM BestellUebersicht u, Bestellung b, Person p, Angebot a, Gericht g WHERE u.BestellNr = b.BestellNr
+    AND b.PersonNr = p.PersonNr AND u.PersonNr = p.PersonNr AND b.AngebotNr = a.AngebotNr AND a.GerichtNr = g.GerichtNr
+    AND u.Gericht = g.Bezeichnung AND u.Datum = a.Datum AND u.Menge = b.Menge
+    AND (u.Klasse IS NOT p.Klasse OR u.Preis != g.Preis OR u.Name != p.Vorname || ' ' || p.Nachname)`);
+  assert.deepEqual(abweichend, [[214, 1, 0, 0], [216, 0, 1, 0]]);
+  assert.equal(wert(db, 'SELECT COUNT(*) FROM BestellUebersicht u, Bestellung b WHERE u.BestellNr = b.BestellNr'), 16);
+  // Löschanomalie: Tomatensuppe nur einmal; Änderungsanomalie: Klasse von Person 14 in zwei Zeilen verschieden
+  assert.deepEqual(alle(db, 'SELECT Gericht, COUNT(*) FROM BestellUebersicht GROUP BY Gericht HAVING COUNT(*) = 1'), [['Tomatensuppe', 1]]);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Klasse FROM BestellUebersicht WHERE PersonNr = 14 ORDER BY 1'), ['10b', '10c']);
+  assert.deepEqual(spalte(db, "SELECT DISTINCT Preis FROM BestellUebersicht WHERE Gericht = 'Chili sin Carne' ORDER BY 1"), [3.25, 3.5]);
+  // Mehrfachbestellung und Lehrkraft (Klasse NULL) sind sichtbar
+  assert.equal(wert(db, 'SELECT COUNT(*) FROM BestellUebersicht WHERE PersonNr = 6'), 2);
+  assert.ok(wert(db, 'SELECT COUNT(*) FROM BestellUebersicht WHERE Klasse IS NULL') >= 1);
+});
+
+test('V7 Varianten: gleichnamig (Person, Gericht), grenze (Monatsränder)', () => {
+  const h = haupt('verhoer/mensa');
+  const vg = bau.baueVariante('verhoer/mensa', 'gleichnamig');
+  const nachNamen = `SELECT Person.Vorname, Person.Nachname FROM Person, Bestellung WHERE Person.PersonNr = Bestellung.PersonNr
+    GROUP BY Person.Vorname, Person.Nachname HAVING COUNT(*) > 10`;
+  assert.equal(spalte(h, nachNamen).length, 3);
+  assert.equal(spalte(vg, nachNamen).length, 4);
+  assert.deepEqual(alle(vg, MENSA.vielbesteller), alle(h, MENSA.vielbesteller));
+  assert.deepEqual(alle(vg, MENSA.top3), alle(h, MENSA.top3));
+  assert.deepEqual(alle(vg, MENSA.maerz), alle(h, MENSA.maerz));
+  const top3Bezeichnung = `SELECT Gericht.Bezeichnung, SUM(Bestellung.Menge * Gericht.Preis) AS Umsatz FROM Gericht, Angebot, Bestellung
+    WHERE ${MENSA_VERBUND} AND Angebot.Datum BETWEEN '2027-03-15' AND '2027-03-19'
+    GROUP BY Gericht.Bezeichnung ORDER BY Umsatz DESC LIMIT 3`;
+  assert.deepEqual(spalte(h, top3Bezeichnung), ['Currywurst mit Pommes', 'Spaghetti Bolognese', 'Käsespätzle']);
+  assert.ok(spalte(vg, top3Bezeichnung).includes('Fischstäbchen mit Kartoffelpüree'));
+  const portionenBezeichnung = `SELECT MIN(Gericht.GerichtNr), Gericht.Bezeichnung, SUM(Bestellung.Menge) FROM Gericht, Angebot, Bestellung
+    WHERE ${MENSA_VERBUND} GROUP BY Gericht.Bezeichnung`;
+  assert.deepEqual(menge(h, portionenBezeichnung), menge(h, MENSA.portionen));
+  assert.notDeepEqual(menge(vg, portionenBezeichnung), menge(vg, MENSA.portionen));
+  vg.close();
+
+  const vr = bau.baueVariante('verhoer/mensa', 'grenze');
+  assert.deepEqual(alle(vr, MENSA.maerz).map((z) => [z[0], z[2]]), [[1, 63], [7, 57], [5, 52], [3, 51]]);
+  for (const falsch of ["Angebot.Datum >= '2027-03-01' AND Angebot.Datum <= '2027-03-25'", "Angebot.Datum >= '2027-03-01'"]) {
+    const sql = MENSA.maerz.replace("Angebot.Datum BETWEEN '2027-03-01' AND '2027-03-31'", falsch);
+    assert.deepEqual(menge(h, sql), menge(h, MENSA.maerz), falsch);
+    assert.notDeepEqual(menge(vr, sql), menge(vr, MENSA.maerz), falsch);
+  }
+  assert.deepEqual(alle(vr, MENSA.vielbesteller), alle(h, MENSA.vielbesteller));
+  assert.deepEqual(alle(vr, MENSA.top3), alle(h, MENSA.top3));
+  vr.close();
 });

@@ -286,7 +286,7 @@ Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `ga
 | Nr. | Stufe | Ort | Auftrag | Kompetenz |
 |---|---|---|---|---|
 | 1 | ★ | PAPIER | Gib zu jedem Muster zwei passende und ein unpassendes Wort an: `'Sch%'`, `'%ring'`, `'_a%'`. | K19 |
-| 2 | ★ | PAPIER | Korrigiere fünf fehlerhafte Bedingungen (NULL-Vergleich, Datum ohne Hochkommata, `<>`, Dezimalkomma). | K18, K32 |
+| 2 | ★ | PAPIER | Korrigiere fünf fehlerhafte Bedingungen (NULL-Vergleich, Datum ohne Hochkommata, `<>`, Dezimalkomma); hinter jeder Bedingung steht „(gemeint: …)“, damit die Korrektur eindeutig ist (Material Phase 7). | K18, K32 |
 | 3 | ★★ | PAPIER | Gib an, welche Datensätze `WHERE Wert BETWEEN 10 AND 20` aus einer Tabelle mit den Werten 9,50 / 10 / 20 / 20,50 / NULL liefert. | K18, K29 |
 | 4 | ★★ | LAB | Liste alle verschiedenen Kategorien, die im Hafenviertel vorkommen. | K15 |
 | 5 | ★★★ | PAPIER | Beschreibe in Worten, mit welchen drei Abfragen du den Messing-Kompass eingekreist hast. | K30 |
@@ -575,8 +575,8 @@ Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `er
 |---|---|---|---|---|
 | 1 | ★ | PAPIER | Beschreibe den Ermittlungsweg für „Name aller Kunden, die ein Rad an der Station Fischmarkt ausgeliehen haben“. | K24, K30 |
 | 2 | ★ | PAPIER | Ergänze die fehlende Verbundbedingung in einer vorgegebenen Abfrage über vier Tabellen. | K24 |
-| 3 | ★★ | LAB | Alle Reparaturen an Rädern, die zurzeit an einer Station im Hafenviertel stehen (Reparatur, Rad, Station). | K24 |
-| 4 | ★★ | PAPIER | Notiere eine Abfrage mit Start- und Zielstationsname für alle Ausleihen von Kundin 'Lea Meiners'. | K24, K16 |
+| 3 | ★★ | LAB | Alle Reparaturen an Rädern, die zurzeit an einer Station in der **Altstadt** stehen (Reparatur, Rad, Station; im Hafenviertel gäbe es 0 Zeilen – Material Phase 7). | K24 |
+| 4 | ★★ | PAPIER | Notiere eine Abfrage mit Start- und Zielstationsname für alle Ausleihen von Kundin **Clara Rossi** (in der DB vorhanden, mit laufender Ausleihe; Material Phase 7). | K24, K16 |
 | 5 | ★★★ | PAPIER | Begründe, warum die Abfrage aus Auftrag 4 laufende Ausleihen nicht anzeigt, und beschreibe, wie du sie trotzdem (ohne Zielstation) erhältst. | K18, K24 |
 
 - **Abi-Ecke** (rot gerahmt, K24, K16, K17): **Entwerfen** Sie eine SQL-Abfrage, die für alle Ausleihen, die im Stadtteil Hafenviertel begonnen und in einem anderen Stadtteil beendet wurden, die AusleihID sowie die Namen von Start- und Zielstation ausgibt. **[4 BE]** – Operator **entwerfen**, AFB II/III.
@@ -961,8 +961,8 @@ Die Schülerinnen und Schüler …
 **Anomalie-Rennen (20 min).** *Material je Team:* Rohlisten-Ausschnitt (12 Zeilen, eigene Daten) als Streifen – jede Zeile ein Papierstreifen; 6 Auftragskarten (verdeckt, nummeriert); Stifte; Stoppuhr am Beamer.
 1. Jedes Teammitglied erhält 3–4 Zeilenstreifen („Du pflegst diese Datensätze“). Niemand darf fremde Streifen anfassen; Absprachen nur flüsternd.
 2. Die Lehrkraft deckt im 45-Sekunden-Takt Aufträge auf; einige werden **nur einem** Teammitglied gezeigt (Karte wandert verdeckt):
-   - A1 „Trainer Meyer hat eine neue Telefonnummer: 0000-4711.“ (an alle) · A2 „Trainer Meyer heißt nach der Heirat Meyer-Kahl.“ (nur an Mitglied B) · A3 „Der Monatsbeitrag der Gruppe *Erwachsene* steigt von 12 € auf 14 €.“ (an alle, unter Zeitdruck) · A4 „Das letzte Judo-Mitglied (Zeile 9) tritt aus – streicht den Streifen.“ · A5 „Neue Abteilung *Bouldern*, Trainerin Kaya, Halle Nord – noch ohne Mitglieder. Tragt sie ein.“ · A6 „Halle Süd zieht um: neue Adresse Deichweg 3.“
-   *Hinweis:* Das Papier-Rennen nutzt eigene Daten (Bouldern, Halle Nord/Süd). Im Lab und an der Tafel heißt die neue Abteilung **Boule** (Trainerin Gesa Thiele, Bouleplatz Weseraue, A4-E1-05) – beim Übergang zum Simulator kurz darauf hinweisen.
+   - A1 „Trainer Helge Meyer hat eine neue Telefonnummer: 0000-4711.“ (an alle) · A2 „Trainer Helge Meyer heißt nach der Heirat Helge Meyer-Kahl.“ (nur an Mitglied B) · A3 „Der Monatsbeitrag der Gruppe *Erwachsene* steigt von 12 € auf 14 €.“ (an alle, unter Zeitdruck) · A4 „Das letzte Judo-Mitglied (Zeile 9) tritt aus – streicht den Streifen.“ · A5 „Neue Abteilung *Bouldern*, Trainerin Kaja Rohlfs (0000-8480), Halle Nord – noch ohne Mitglieder. Tragt sie ein.“ · A6 „Halle Süd zieht um: neue Adresse Deichweg 3.“
+   *Hinweis:* Das Papier-Rennen nutzt eine eigene Übungsliste „SG Weserufer“ (12 Zeilen; Trainer Helge Meyer, Sönke Habben, Maren Tebbe; Judo = Zeile 9; Bouldern, Halle Nord/Süd; Namen aus `namen.json`, Material Phase 7). Im Lab und an der Tafel heißt die neue Abteilung **Boule** (Trainerin Gesa Thiele, Bouleplatz Weseraue, A4-E1-05) – beim Übergang zum Simulator kurz darauf hinweisen.
 3. Streifen wieder zur Liste zusammenlegen; Teams zählen Widersprüche (gleicher Trainer, verschiedene Namen/Telefone; Gruppe *Erwachsene* mit zwei Beiträgen), verlorene Information (Wer trainiert Judo? Wo ist die Judo-Halle?) und unmögliche Einträge (Bouldern ohne Mitglied → leere Mitglied-Spalte).
 4. Wertung: Team mit den wenigsten Widersprüchen gewinnt – Auflösung: *„Fehlerfrei geht es nur, wenn ihr bei jeder Änderung alle Zeilen findet. Das Problem ist die Liste, nicht ihr.“*
 *Sicherung:* Drei Anomaliearten mit **eurem** konkreten Beispiel (Zeilennummer) an die Tafel; Redundanz als Ursache markieren.
@@ -1013,7 +1013,7 @@ Stufenmix ★/★★/★★★: **3/3/2 (38/38/25 %)** · Interaktionsarten: `an
 |---|---|---|---|---|
 | 1 | ★ | PAPIER | Markiere in der Rohliste alle redundanten Einträge zu Trainer Meyer und Halle Süd. | K07 |
 | 2 | ★ | PAPIER | Nenne zu jeder Anomalieart ein Szenario aus dem Anomalie-Rennen. | K08 |
-| 3 | ★★ | PAPIER | Erläutere eine Löschanomalie an einem konkreten Datensatz der Rohliste. | K08 |
+| 3 | ★★ | PAPIER | Erläutere eine Löschanomalie an einem konkreten Datensatz der Rohliste – nicht am Judo-Beispiel (Material Phase 7: die beiden passiven Mitglieder, Zeilen 19 und 34, Beitragsgruppe Passiv 4,00 €). | K08 |
 | 4 | ★★ | LAB | Simulator-Aufgaben A4-E1-03…05 durchspielen und die Zuordnung festhalten. | K08 |
 | 5 | ★★★ | PAPIER | Erläutere den Zusammenhang zwischen Redundanz und Änderungsanomalie am Beispiel der Beitragsgruppe Erwachsene (12,00 € / 14,00 €). | K10, K07 |
 
@@ -1087,7 +1087,7 @@ Die Schülerinnen und Schüler …
 **Schlüssel-Detektiv (15 min).** *Material je Team:* 8 Datenstreifen (Vorname, Nachname, Geburtsjahr, Stadtteil, Eintritt; eigene Daten), Kärtchen „Unser Schlüssel: …“, bei der Lehrkraft 3 Nachlieferungskarten.
 1. Auftrag: *„Findet eine möglichst kleine Attributkombination, die jedes Mitglied eindeutig bestimmt.“* Teams legen ihr Kärtchen (meist „Nachname“).
 2. Nachlieferung 1: ein neues Mitglied mit gleichem Nachnamen → alle „Nachname“-Teams fallen. Neue Vorschläge (Vorname + Nachname).
-3. Nachlieferung 2: Vater und Sohn „Tim Brandt“ (verschiedene Geburtsjahre) → nächster Vorschlag (Vorname + Nachname + Geburtsjahr).
+3. Nachlieferung 2: Vater und Sohn „Ole Harjes“ (1974/2009; Material Phase 7 statt „Tim Brandt“) → nächster Vorschlag (Vorname + Nachname + Geburtsjahr).
 4. Nachlieferung 3: Zwillinge mit gleichem Vornamen? Unwahrscheinlich, aber *möglich* – und: Geburtsjahr unbekannt (NULL) bei einem Neumitglied.
 5. Impulse: *„Kann ein Datenausschnitt je beweisen, dass ein Attribut eindeutig ist?“* (Nein – nur widerlegen) – *„Ist (Vorname, Nachname, Geburtsjahr, Stadtteil) minimal, wenn schon drei Attribute reichen würden?“* – *„Warum vergeben Vereine Mitgliedsnummern?“*
 *Sicherung:* Schlüssel-Check (Werkzeugkarte 6) an der Tafel: eindeutig für **alle möglichen** Daten · nie NULL · minimal · künstlicher Schlüssel als sichere Wahl.
@@ -1694,6 +1694,8 @@ ORDER BY Anzahl;
 ```
 **Ermittler-Notiz:** Jede Gruppe in diesem Ergebnis ist ein Risiko: Wer Jahrgang und Stadtteil kennt, kann die Person fast eindeutig bestimmen.
 
+*Plattform (Phase 6):* Die Ermittler-Notiz im Lab enthält den Merkkasten **ohne** diese SQL-Abfrage (sie wäre die Lösung von A6-E1-03/04); die Abfrage gehört nur an die Tafel nach dem Lab-Einsatz. Aktenfarbe A6 `#4A5A1A`.
+
 ### Lab-Blueprint (A6-E1)
 
 Die Ermittlung besteht aus 8 Aufgaben (Datenschutz + Verknüpfung) und dem **Schlussplädoyer** (6 `sql`-Aufgaben, Abschnitt 7.7 der Spec): Jedes Ergebnis wird als Indiz an die Pinnwand geheftet; nach A6-E1-14 folgt die Auflösung. Ablauf nach STORY 7, letzter Schritt neu: Verbund AppCheckin × Einwohner über `Ort = Strasse` (das Gerät des Phantoms checkt nachts an 'Kranstraße 7' ein). Nach A6-E1-14 erscheint die Auflösung (STORY 7.1: Merle Falkenrath, Jahrgang 1988, Hafenviertel, Tischtennis, ehemalige Datenschutzbeauftragte) und die Überleitung zur Debatte (STORY 7.2: Tamara Leversen und Ole Brakhage standen kurz auf der Kandidatenliste). Alle sechs Aufgaben laufen auf der DB Datenspuren.
@@ -1705,8 +1707,8 @@ Die Ermittlung besteht aus 8 Aufgaben (Datenschutz + Verknüpfung) und dem **Sch
 | A6-E1-01 | Die Grundsätze | ★ | `match` | K44 | – | gA/eA | DSGVO-Grundsätze (Zweckbindung, Datenminimierung, Transparenz, Speicherbegrenzung, Rechtmäßigkeit) ihren Beschreibungen und je einem Beispiel aus Weserstedt zuordnen. |
 | A6-E1-02 | Pseudonym oder anonym? | ★ | `choice` | K46 | – | gA/eA | Für vier Datensätze (Token mit Jahrgang/Stadtteil, reine Monatssumme je Stadtteil, Name + Adresse, Gerätekennung) entscheiden: personenbezogen, pseudonym oder anonym. |
 | A6-E1-03 | Wie groß sind die Gruppen? | ★ | `sql` | K26, K25, K46 | P3 | gA/eA | Anzahl der Einwohner je Jahrgang und Stadtteil, aufsteigend nach Anzahl sortiert. |
-| A6-E1-04 | Allein in der Gruppe | ★★ | `sql` | K27, K46 | P1 | gA/eA | Nur Kombinationen aus Jahrgang und Stadtteil mit genau einer Person (`HAVING COUNT(*) = 1`) – wie viele Einwohner sind damit eindeutig bestimmbar? |
-| A6-E1-05 | Dieselbe Person? | ★★ | `zeilen` | K46 | P2 | gA/eA | In Ausschnitten von RadExport und VereinExport die Zeilen antippen, die aufgrund von Jahrgang/Geburtsjahr und Stadtteil zu derselben Person gehören könnten. |
+| A6-E1-04 | Allein in der Gruppe | ★★ | `sql` + `gaps` | K27, K46 | P1 | gA/eA | Zweiteilig: a) nur Kombinationen aus Jahrgang und Stadtteil mit genau einer Person (`HAVING COUNT(*) = 1`); b) Lücke: wie viele Einwohner sind damit eindeutig bestimmbar? (150) |
+| A6-E1-05 | Dieselbe Person? | ★★ | `zeilen` | K46 | P2 | gA/eA | Gegeben ein TuS-Mitglied aus dem VereinExport (V-7046, 1983, Altstadt, Tennis – bewusst nicht das Phantom); im RadExport-Ausschnitt (24.–26.08.) alle Zeilen antippen, die nach Jahrgang = Geburtsjahr und Stadtteil zu derselben Person gehören könnten (zwei Fahrten von R-4BB5). |
 | A6-E1-06 | Exporte verknüpfen | ★★ | `sql` | K23, K46 | P2 | gA/eA | RadExport und VereinExport über `Jahrgang = Geburtsjahr AND Stadtteil = Stadtteil` verbinden (Verbund über Quasi-Identifikatoren); KundenToken, MitgliedToken und Abteilung ohne Duplikate. |
 | A6-E1-07 | Werbung mit Raddaten? | ★★★ | `kernpunkte` | K45, K44 | P10 | gA/eA | Beurteilen, ob die Stadt die Rad-Exporte an einen Werbepartner weitergeben darf (Zweckbindung, Einwilligung, Widerruf, Transparenz); Kernpunkte abhaken. |
 | A6-E1-08 | So hätte es sein müssen | ★★★ | `kernpunkte` | K46, K44 | P10 | gA/eA | Technische und organisatorische Maßnahmen für eine datenschutzgerechte Veröffentlichung erläutern und Datenschutz von Datensicherheit abgrenzen. |
@@ -1715,16 +1717,16 @@ Die Ermittlung besteht aus 8 Aufgaben (Datenschutz + Verknüpfung) und dem **Sch
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Inhalt |
 |---|---|---|---|---|---|---|---|
-| A6-E1-09 | Spur 1: Fünf Nächte an der Hafenkante | ★ | `sql` | K18, K21, K32 | P5 | gA/eA | RadExport: alle Fahrten mit StartStation 'Hafenkante' und Start zwischen '2026-09-08 00:00' und '2026-09-12 23:59', mit KundenToken, Start, Jahrgang, Stadtteil und Tarif, sortiert nach Start – fünf Nachtfahrten (01–02 Uhr) unter einem Token (1988, Hafenviertel, Plus). |
+| A6-E1-09 | Spur 1: Fünf Nächte an der Hafenkante | ★ | `sql` | K18, K21, K32 | P5 | gA/eA | RadExport: alle Fahrten mit StartStation 'Hafenkante' und Start zwischen '2026-09-08 00:00' und '2026-09-12 23:59', mit KundenToken, Start, Jahrgang, Stadtteil und Tarif, sortiert nach Start – 9 Zeilen: fünf Nachtfahrten (01–02 Uhr) unter einem Token R-7F3A (1988, Hafenviertel, Plus), vier Tagfahrten anderer Tokens (ohne GROUP BY; Blueprint so beibehalten). |
 | A6-E1-10 | Spur 2: Wie viele teilen diese Merkmale? | ★ | `sql` | K15, K17 | P4 | gA/eA | Alle verschiedenen KundenToken (DISTINCT) mit Jahrgang 1988, Stadtteil 'Hafenviertel' und Tarif 'Plus' → nur ein Token. Erklärung thematisiert: GROUP BY mit COUNT(*) zählt hier Fahrten, nicht Menschen. |
 | A6-E1-11 | Spur 3: Das Handy fährt mit | ★★ | `sql` | K23, K26 | P2 | gA/eA | RadExport × AppCheckin über `AppCheckin.Ort = RadExport.StartStation AND AppCheckin.Zeitpunkt = RadExport.Start`, eingeschränkt auf das Token aus Spur 1; je Gerät die Anzahl Treffer (GROUP BY Geraet) → ein Gerät passt zu allen fünf Fahrten. |
-| A6-E1-12 | Spur 4: Wo war das Gerät sonst? | ★★ | `sql` | K15, K21, K32 | P5 | gA/eA | AppCheckin: alle Check-ins des Geräts aus Spur 3, sortiert nach Zeitpunkt – Festplatz am 2026-08-29 vor 22:00 und nach 23:00, Fundbüro am 2026-09-14 vormittags, dienstags Vereinsheim TuS, nachts 'Kranstraße 7'. (Gegenprobe FestZahlung: keine Kartenzahlung am Kaffeemobil 22:00–22:59 – in der Erklärung.) |
+| A6-E1-12 | Spur 4: Wo war das Gerät sonst? | ★★ | `sql` | K15, K21, K32 | P5 | gA/eA | Nur AppCheckin: alle Check-ins des Geräts aus Spur 3, sortiert nach Zeitpunkt – Festplatz am 2026-08-29 vor 22:00 und nach 23:00, Fundbüro am 2026-09-14 vormittags, dienstags Vereinsheim TuS, nachts 'Kranstraße 7'. (Gegenprobe FestZahlung: keine Kartenzahlung am Kaffeemobil 22:00–22:59 – in der Erklärung.) |
 | A6-E1-13 | Spur 5: Wer aus dem TuS passt? | ★★ | `sql` | K17, K15 | P5 | gA/eA | VereinExport: alle MitgliedToken mit Geburtsjahr 1988, Stadtteil 'Hafenviertel' und Abteilung 'Tischtennis' → genau ein Token (passend zu Steckbrief und Dienstagabend-Check-ins). |
-| A6-E1-14 | Spur 6: Die Enttarnung | ★★★ | `sql` | K24, K17, K46 | P2 | gA/eA | `Einwohner e, AppCheckin a, RadExport r`: `a.Ort = e.Strasse` (nächtliche Check-ins des Geräts aus Spur 3 an 'Kranstraße 7'), `r.Jahrgang = e.Jahrgang AND r.Stadtteil = e.Stadtteil` für das Token aus Spur 1; Vor- und Nachname ohne Duplikate (DISTINCT) → genau eine Person: Merle Falkenrath. |
+| A6-E1-14 | Spur 6: Die Enttarnung | ★★★ | `sql` | K24, K17, K46 | P2 | gA/eA | `Einwohner e, AppCheckin a, RadExport r`: `a.Ort = e.Strasse` (Check-ins des Geräts WA-3917 an einer Wohnadresse – 'Kranstraße 7'; ohne Zeitfilter), `r.Jahrgang = e.Jahrgang AND r.Stadtteil = e.Stadtteil` für das Token aus Spur 1; Vor- und Nachname ohne Duplikate (DISTINCT) → genau eine Person: Merle Falkenrath. |
 
 Stufenmix ★/★★/★★★: **5/6/3 (36/43/21 %)** · Interaktionsarten: `choice`, `kernpunkte`, `match`, `sql`, `zeilen`
 
-**Cold Case im Lab (ohne Punkte):** `A6-E1-CC` „Wie anonym ist Weserstedt?“ (K46, K26) – Bestimme für die Einwohner-Tabelle, wie viel Prozent der Einwohner in einer Gruppe (Jahrgang, Stadtteil) mit weniger als 5 Personen leben – zwei Abfragen, Rechnung im Kopf. Was ändert sich bei Jahrzehnt statt Jahrgang?
+**Cold Case im Lab (ohne Punkte):** `A6-E1-CC` „Wie anonym ist Weserstedt?“ (K46, K26) – Bestimme für die Einwohner-Tabelle, wie viel Prozent der Einwohner in einer Gruppe (Jahrgang, Stadtteil) mit weniger als 5 Personen leben – zwei Abfragen, Rechnung im Kopf. Was ändert sich bei Jahrzehnt statt Jahrgang? *Ergebnis laut Daten:* **100 %** (250 Einwohner, keine Gruppe mit 5 oder mehr Personen, die größte hat 4); mit Jahrzehnt statt Jahrgang noch 67 von 250 (26,8 %). Teile: `sql` + `gaps` + `kernpunkte`.
 
 ### Arbeitsblatt-Blueprint AB 6.1 („Ermittlungsakte“)
 
@@ -1792,7 +1794,7 @@ Rahmensatz: „Eine Fitness-App möchte Nutzerdaten mit einer Krankenkasse und W
 |---|---|---|---|---|---|---|---|
 | A6-V-01 | Grundsätze | ★ | `match` | K44 | – | gA/eA | Ordnen Sie den Auszügen aus der Datenschutzerklärung der Fitness-App den jeweils betroffenen Grundsatz der DSGVO zu. |
 | A6-V-02 | Besondere Daten | ★ | `choice` | K46 | – | gA/eA | Geben Sie an, welche der erfassten Daten zu den besonderen Kategorien personenbezogener Daten gehören und welche Maßnahme der Datensicherheit dient. |
-| A6-V-03 | Selbstbestimmung | ★ | `choice` | K44 | – | gA/eA | Geben Sie an, welche Aussage das Recht auf informationelle Selbstbestimmung zutreffend beschreibt. |
+| A6-V-03 | Recht auf Selbstbestimmung | ★ | `choice` | K44 | – | gA/eA | Geben Sie an, welche Aussage das Recht auf informationelle Selbstbestimmung zutreffend beschreibt. |
 | A6-V-04 | Werbung | ★★ | `choice` | K45 | P10 | gA/eA | Beurteilen Sie, unter welchen Voraussetzungen die App Nutzungsdaten für personalisierte Werbung verwenden darf. |
 | A6-V-05 | Kleine Gruppen | ★★ | `sql` | K27, K26, K46 | P1 | gA/eA | Entwerfen Sie eine Abfrage, die alle Kombinationen aus Geburtsjahr und PLZBereich ausgibt, zu denen nur ein NutzerToken gehört. |
 | A6-V-06 | Re-Identifizierbar | ★★ | `zeilen` | K46 | P2 | gA/eA | Geben Sie an, welche Datensätze des Exports trotz Pseudonym einer bekannten Person zugeordnet werden können. |
@@ -1876,7 +1878,7 @@ werden als **Hausaufgabe vor der Generalprobe** im Leitner-Trainer bearbeitet; f
 
 **Kontext-DB „Mensa-Vorbestellsystem“** (auch Basis der Generalprobe, andere Teilaufgaben):
 `Person(<u>PersonNr</u>, Vorname, Nachname, Rolle, Klasse)` · `Gericht(<u>GerichtNr</u>, Bezeichnung, Kategorie, Preis, Vegetarisch)` · `Angebot(<u>AngebotNr</u>, ↑GerichtNr, Datum, Portionen)` · `Bestellung(<u>BestellNr</u>, ↑PersonNr, ↑AngebotNr, Menge, Abgeholt)` – Abgeholt NULL = nicht abgeholt; zusammengelegte Tabelle `BestellUebersicht` für Anomalie-Aufgaben.
-Rahmensatz: „Zur Ermittlerprüfung wertet die Detektei das Vorbestellsystem einer Schulmensa aus.“ Timer 30 min, Abimodus `streng`. eA-markierte Aufgaben (A7-V-12, -14, -15) sind im gA-Kurs ausgeblendet.
+Rahmensatz (STORY 6, wie VERHOER_KONTEXTE): „Letzte Probe vor der Lizenz: ein ganzer Fall, ohne mich.“ Kontext-Einleitung je Aufgabe: Die Mensa einer Gesamtschule lässt das Mittagessen online vorbestellen. Timer 30 min, Abimodus `streng`. Aktenfarbe A7 `#383E47`; Akte 7 hat keine Lab-Aufgaben, Verhör 7 ist im Modus „auto“ frei, sobald Akte 7 freigeschaltet ist. eA-markierte Aufgaben (A7-V-12, -14, -15) sind im gA-Kurs ausgeblendet.
 
 | ID | Titel | Stufe | Interaktion | Kompetenz(en) | Falle(n) | Niveau | Aufgabe (gesiezt, Transfer) |
 |---|---|---|---|---|---|---|---|
@@ -1890,11 +1892,11 @@ Rahmensatz: „Zur Ermittlerprüfung wertet die Detektei das Vorbestellsystem ei
 | A7-V-08 | Portionen je Gericht | ★★ | `sql` | K26, K25 | P3, P4 | gA/eA | Entwerfen Sie eine Abfrage, die je Gericht (Nummer, Bezeichnung) die Summe der bestellten Portionen ausgibt. |
 | A7-V-09 | Vielbesteller | ★★ | `sql` | K27, K24 | P1 | gA/eA | Entwerfen Sie eine Abfrage für alle Personen mit mehr als 10 Bestellungen. |
 | A7-V-10 | Analyse | ★★ | `choice` | K28 | P10 | gA/eA | Geben Sie an, welche Beschreibung die Information einer gegebenen Abfrage im Sachzusammenhang zutreffend wiedergibt. |
-| A7-V-11 | Zusammengelegt | ★★ | `zellen` | K09, K07 | P10 | gA/eA | Untersuchen Sie BestellUebersicht und geben Sie die Zellen an, an denen eine Änderungsanomalie möglich ist. |
+| A7-V-11 | Zusammengelegt | ★★ | `zellen` | K09, K07 | P10 | gA/eA | Untersuchen Sie BestellUebersicht (Bestellungen vom 2027-03-16, von Hand nachgetragen) und geben Sie alle Zellen an, die an einer **bereits eingetretenen** Änderungsanomalie (Widerspruch) beteiligt sind – 7 Zellen (Klasse bzw. Preis). |
 | A7-V-12 | Kardinalität | ★★ | `choice` | K34 | P9 | eA | Bestimmen Sie die Kardinalität zwischen Gericht und Angebot anhand der Daten und des Sachzusammenhangs. |
 | A7-V-13 | Top 3 der Woche | ★★★ | `sql` | K24, K22 | P2 | gA/eA | Entwerfen Sie eine Abfrage für die drei Gerichte mit dem höchsten Umsatz in der Woche vom '2027-03-15' bis '2027-03-19'. |
-| A7-V-14 | Allergene | ★★★ | `er` | K39, K36 | P9 | eA | Erweitern Sie das ER-Modell: Gerichte enthalten Allergene (n:m, Mengenangabe). |
-| A7-V-15 | Überführung | ★★★ | `schema` | K41 | P9 | eA | Überführen Sie das erweiterte ER-Modell (Allergene, Vertretung unter Küchenkräften) in Relationen. |
+| A7-V-14 | Allergene | ★★★ | `er` | K39, K36 | P9 | eA | Erweitern Sie das ER-Modell: Gerichte enthalten Allergene (n:m, Mengenangabe; Allergen mit Schlüssel Kuerzel). |
+| A7-V-15 | Überführung | ★★★ | `schema` | K41 | P9 | eA | Überführen Sie das erweiterte ER-Modell (Allergene, Vertretung unter Küchenkräften: *vertritt* rekursiv 1:n – jede Küchenkraft hat höchstens eine feste Vertretung) in Relationen. |
 
 Pool-Mix ★/★★/★★★: **6/6/3 (40/40/20 %)** · Ziehung 8 = 3 × ★ + 3 × ★★ + 2 × ★★★ (gA: aus 12 Aufgaben, ★★★ nur A7-V-13).
 
@@ -1906,7 +1908,7 @@ Pool-Mix ★/★★/★★★: **6/6/3 (40/40/20 %)** · Ziehung 8 = 3 × ★ + 
 |---|---|---|---|---|---|---|---|---|---|
 | GP-eA-a | a | **erläutern / beurteilen** | Kennzeichnungen in Bestellung erläutern; beurteilen, ob (PersonNr, AngebotNr) als Primärschlüssel von Bestellung genügen würde (Mehrfachbestellung). | 4 | 2 | 2 |  | K05, K03, K02 | P8 |
 | GP-eA-b | b | **untersuchen** | BestellUebersicht auf Anomalien untersuchen und den Zusammenhang mit der Redundanz an konkreten Datensätzen erläutern. | 5 | 1 | 3 | 1 | K08, K09, K10, K07 | P10 |
-| GP-eA-c | c | **erweitern** | ER-Modell erweitern: Gerichte enthalten Allergene (n:m, Attribut Hinweis); Küchenkräfte vertreten einander (rekursiv); Schlüsselattribute und Kardinalitäten vollständig. | 6 |  | 3 | 3 | K39, K37, K36, K35 | P9 |
+| GP-eA-c | c | **erweitern** | ER-Modell erweitern: Gerichte enthalten Allergene (n:m, Attribut Hinweis); Küchenkräfte vertreten einander (rekursiv, 1:n: höchstens eine feste Vertretung je Küchenkraft – wie A7-V-15); Schlüsselattribute und Kardinalitäten vollständig. | 6 |  | 3 | 3 | K39, K37, K36, K35 | P9 |
 | GP-eA-d | d | **überführen / begründen** | Den erweiterten Teil in Kurzschreibweise überführen und die Umsetzung von *enthaelt* begründen. | 3 | 1 | 1 | 1 | K41, K42, K04 | P9 |
 | GP-eA-e | e | **entwerfen** | SQL: Bezeichnung und Preis aller vegetarischen Gerichte, die am '2027-03-15' angeboten werden, aufsteigend nach Preis. | 3 | 2 | 1 |  | K23, K17, K21, K32 | P5, P7 |
 | GP-eA-f | f | **entwerfen** | SQL: für jedes Gericht (Nummer, Bezeichnung) die Summe der im März 2027 bestellten Portionen, nur Gerichte mit mehr als 50 Portionen, absteigend sortiert. | 5 | 1 | 3 | 1 | K24, K25, K26, K27, K18 | P1, P3, P4 |
@@ -2044,7 +2046,7 @@ AFB-Verteilung: I 9 BE (30 %) · II 15 BE (50 %) · III 6 BE (20 %)
 | Unplugged | – (Teamplanung auf Papier) |
 | Video | – |
 | Verhör | – |
-| Niveau | Kür (eA/gA) |
+| Niveau | Kür (nur eA – entfällt im gA-Pfad, Spec §3.4/§18) |
 
 ### Lernziele
 Die Schülerinnen und Schüler …
@@ -2100,6 +2102,15 @@ FROM Person p LEFT JOIN verdaechtig v ON p.PersonNr = v.PersonNr;
 
 Stufenmix ★/★★/★★★: **2/2/2 (33/33/33 %)** · Interaktionsarten: `sql`
 
+**Umsetzung (Phase 6, `seed/akten/kuer.json`):** Welt 8 mit `kuer: true`, ohne Rangwirkung (AUFGABENFORMAT §1.1); alle
+`sql`-Teile sind Schreib-Aufgaben (§6.6.1) mit Prüfpunkten. Start: 01 leer, 02 Tabelle Ermittler (leer), 03
+„Detektei-light“ (Ermittler 1–3), 04/05 Kopie der Detektei-DB, 06 leer. K1-E1-03 hat zusätzlich Teil b) (`choice`:
+Warum wurde LeiterNr 7 abgewiesen?), damit das Deuten der Fehlermeldung geprüft wird; K1-E1-06 = `sql` (Kernkriterien:
+≥ 3 Tabellen, Primärschlüssel je Tabelle, Beziehungstabelle mit zusammengesetztem Primärschlüssel aus zwei
+Fremdschlüsseln, je Tabelle ≥ 2 Datensätze) + `kernpunkte` (drei Abfragen im Abitur-Stil, Schema auf der Projektkarte).
+Das Intro zeigt das Tafelbild mit einem Schulbeispiel (Klasse/Schueler) statt Ermittler/Fall, damit es die Lösungen von
+K1-E1-01/03 nicht vorwegnimmt.
+
 ### Typische Schwierigkeiten · Differenzierung · Vorbereitung
 **Typische Schwierigkeiten**
 - Verwechslung von Kür- und Abitur-Syntax → Stempel auf jeder Folie, Parser-Hinweis `JOIN_ON` bleibt auch im Abimodus `aus` sichtbar.
@@ -2143,6 +2154,8 @@ Die Schülerinnen und Schüler …
 | Auswertung | 80–90' | Rangliste, häufigste Fehler je Station (anonym), Fallen-Ausblick auf die Generalprobe. Ergebnisse werden nach Rundenende verworfen. | Plenum | – | – |
 
 ### Typische Schwierigkeiten · Differenzierung · Vorbereitung
+**Umsetzung (Phase 6):** Code-Eingabe auch ohne vorheriges Lösen möglich (höchstens 5 Fehlversuche je Minute); die Lehrkraft sieht die Codes in der Steuerung; Beamer nur mit Lehrkraft-Anmeldung; im Duell erscheint das Ergebnis erst nach dem Schließen der Aufgabe; bei falscher `match`/`choice`-Antwort im Escape Room keine Einzelrückmeldung; Statistik (Modus, Teilnehmerzahl, Datum) nur im RAM.
+
 **Typische Schwierigkeiten:** Teams hängen an einer Station fest → nach 10' gibt die Lehrkraft einen Tipp-Umschlag frei (Zeitstrafe 2'). Dominante Teammitglieder → Rolle „Tastatur wechselt je Station“.
 **Differenzierung:** gA-Ersatzstation S5g (Schlüsselkasten); Zusatzschloss (Bonus) für schnelle Teams: Self-Join auf der Detektei-DB.
 **Vorbereitung:** Live-Runde im Lehrkraft-Bereich testen (SSE durch Schul-WLAN?), Stationsumschläge packen, Beamer-Board, Countdown.
@@ -2156,7 +2169,7 @@ Die Schülerinnen und Schüler …
 | S3 Die Geldkassette | GROUP BY/HAVING (Stadtfest) | `sql`: Anzahl der Gruppen, die eine HAVING-Bedingung erfüllen, und Nummer der stärksten Gruppe | K26, K27, K22 | zwei Zahlen hintereinander (Anzahl + StandNr) |
 | S4 Der Vereinsspind | Anomalien und Schlüssel (TuS-Rohliste) | `match`: drei Szenarien je einer Anomalieart zuordnen + `choice`: geeigneter Primärschlüssel | K08, K02 | Ziffernfolge der Zuordnung + Nummer der Schlüssel-Option |
 | S5 Die Planrolle (eA) | ER → Relationenschema (neuer Mini-Kontext) | `schema`: Überführung in der Schema-Werkbank | K41, K34 | Anzahl der Relationen + Anzahl der Fremdschlüssel |
-| S5g Der Schlüsselkasten (gA-Ersatz) | Schlüsselkandidaten, Ausschnitt-Falle | `zellen`: alle als Primärschlüssel tauglichen Attribute(-kombinationen) markieren | K02 | Anzahl geeigneter Kandidaten + Attributzahl des minimalen Schlüssels |
+| S5g Der Schlüsselkasten (gA-Ersatz) | Schlüsselkandidaten, Ausschnitt-Falle | `choice` (umgesetzt statt `zellen`): die als Primärschlüssel tauglichen Attribute(-kombinationen) auswählen | K02 | Anzahl geeigneter Kandidaten + Attributzahl des minimalen Schlüssels |
 | S6 Der Tresor | Datenschutz (Datenspuren + Szenarien) | `match`: fünf Szenarien den Grundsätzen Zweckbindung, Datenminimierung, Transparenz, Rechtsgrundlage/Einwilligung, Speicherbegrenzung zuordnen | K44, K45 | fünfstellige Ziffernfolge der Zuordnung |
 
 **Live-Pool (20 Aufgaben, je Akte 3–4, Typ `ergebnis`/`choice`/`sql`, kurze Bearbeitungszeit ≤ 90 s):** A1 4 · A2 3 · A3 4 · A4 3 · A5 3 (eA) · A6 3. IDs `K2-L-01…20`; Inhalte nicht identisch mit Lab-, Verhör- oder Prüfungsaufgaben (Transfer). Keine Lab-Punkte, keine Speicherung nach Rundenende (Spec 7.10).
@@ -2192,3 +2205,16 @@ Die Schülerinnen und Schüler …
 | 23 | Verhör 5 | Kontext an DS_PLANUNG angeglichen (klettert, Trainer, bildetAus, besucht/assistiertIn, ternär *wertet* mit Relation Wertung, Wettkampf); VERHOER_KONTEXTE nachgezogen. A5-V-07 heißt „Das Beziehungsattribut“. Ziehung mit maxJeKind (choice 3, er 3) statt „je Bereich mindestens eine“. | – |
 | 24 | Warm-up A5 | 12 Karten (W-A5-01…12, W-A5-09…12 in DS 12) – wie geplant, keine Abweichung. | Spec §10 bestätigt. |
 | 25 | Trainingsplatz T4–T7 | T4 (Kardinalität) und T6 (Überführung) nur eA (in gA-Kursen ausgeblendet); T4 bietet auch n:1 (Leserichtung); T6-Optionen als Schema-Blöcke „Vorschlag A–D“ mit ER-Block. | – |
+| 26 | DS 12 / Akte 6 (Phase 6) | Abfolge des Schlussplädoyers nach diesem Blueprint (Spur 1 ohne GROUP BY, Spur 4 nur AppCheckin mit FestZahlung-Gegenprobe in der Erklärung, Spur 6 ohne Zeitfilter); A6-E1-09 liefert 9 Zeilen; A6-E1-04 zweiteilig (150); A6-E1-05 mit V-7046 statt Phantom-Daten; Cold Case 100 %; Ermittler-Notiz ohne Tafelbild-SQL; A6-V-03 „Recht auf Selbstbestimmung“; V6 zieht 5 aus 8. Aktenfarbe A6 `#4A5A1A`. STORY §7 angeglichen. | – |
+| 27 | DS 13 / Akte 7 (Phase 6) | V7-Rahmensatz aus STORY 6; A7-V-11 nur eingetretene Widersprüche (7 Zellen); *vertritt* 1:n in A7-V-15 und GP-eA-c; Beziehungstyp Gericht–Angebot einheitlich *bietetAn* (auch VERHOER_KONTEXTE, LIESMICH Mensa); Allergen mit Schlüssel Kuerzel, *enthaelt* mit Mengenangabe. Aktenfarbe A7 `#383E47`. | – |
+| 28 | K1 / K2 (Phase 6) | Kür K1 nur eA (Welt 8, `kuer: true`, Punkte ohne Rangwirkung), K1-E1-03 mit Teil b) (`choice`), Intro mit Schulbeispiel; K2: S5g als `choice` statt `zellen`. | – |
+| 29 | Material Phase 7 (allgemein) | Die docx/pptx in `materialien/` sind maßgeblich; die Blueprints hier wurden dort, wo sie konkrete Werte nennen, an das Material angeglichen (AB 1.2 Auftrag 2, AB 2.2 Aufträge 3/4, AB 4.1 Auftrag 3, Anomalie-Rennen, Schlüssel-Detektiv). Foliennummern in den Verlaufsplänen („Folien 12–20“) sind Richtwerte – die Präsentationen haben je DS den Aufbau Briefing → Begriffe → Beispiel → Unplugged → Lab → Merkfolie → Abi-Format, die Zahl der Folien weicht ab (v. a. Akte 3 und 5). | – |
+| 30 | AB 1.1–1.2, Unplugged A1 (Phase 7) | AB 1.2 Auftrag 2 mit „(gemeint: …)“; Fundbuch-Ausschnitte und Unplugged-Daten (Karteikarten, Platzhalter-Fahndung) sind eigene Daten (`db=keine`); zusätzliche Kopiervorlage Detektei-Ausweise für den Kick-off. | – |
+| 31 | AB 2.2 (Phase 7) | Auftrag 3 Altstadt statt Hafenviertel (dort 0 Zeilen); Kundin Clara Rossi statt Lea Meiners (Aufträge 4/5, mit laufender Ausleihe); zwei absichtliche Kreuzprodukte sind als fehlerhaft markiert (SQL-Prüfung `fehlerhaft`). | – |
+| 32 | AB 3.1–3.2 (Phase 7) | AB 3.1 Auftrag 2 gruppiert die Positionen der Bons 400–404 nach BonNr; AB 3.2 Auftrag 5 zeigt die Vervielfachung durch die zusätzliche Tabelle Position (eA-Schwerpunkt). | – |
+| 33 | Akte 4 (Phase 7) | Anomalie-Rennen mit eigener Übungsliste „SG Weserufer“ (Helge Meyer, Kaja Rohlfs u. a. aus `namen.json`); Schlüssel-Detektiv Vater und Sohn „Ole Harjes“; Löschanomalie in AB 4.1 an der Beitragsgruppe Passiv (Judo bleibt dem Lab A4-E1-04 vorbehalten); Abi-Format-Folien mit eigenen Aufgaben. | – |
+| 34 | Akte 5 (Phase 7) | ABs 5.1–5.3 je 5 Seiten (Platz für ER-Diagramme); R1–R6 am Schulbeispiel; Verdachtsgrad-Beispiel aus dem Unplugged; Musterbeitrag „Hafenkante“ im Architekturwettbewerb; *vertritt* 1:n in der Abi-Ecke; Cold Cases als Varianten. | – |
+| 35 | Akte 6 (Phase 7) | Rollenkarten-Debatte mit 4 Argumenten je Rolle (STORY 8) als eigene Kopiervorlage; Auflösung (Name, Motiv) nur in Lehrkraftfassungen. Offen: Warm-up-Karte W-A6-03 zeigt im Schüler-PDF den Datensatz „WA-3917 · Kranstraße 7“ (Adresse der Auflösung, ohne Namen) – Spec §18, Frage an Frank. | – |
+| 36 | Akte 7 (Phase 7) | Prüfungs-DBs `seed/datenbanken/pruefung/{sanitaetsdienst,kostuemverleih}` (nie öffentlich); Kostümverleih mit 26 Mitgliedern und 77 Ausleihen, zwei Mitglieder „Lasse Kück“ (GROUP-BY-Falle); NK-B-f ternär; Rollenwechsel nur im Text; Fallen-Checkliste als Kopiervorlage (art `unplugged`). Offen: Bewertungsschlüssel BE → Notenpunkte (Fachkonferenz), Hilfsmittel EH §7/§8. | – |
+| 37 | Gesamt, Kür, Videos (Phase 7) | Abi-Kompass: 18 Kennungen belegt, die 19. „Zuordnung offen“; K1-AB ohne Kompetenz-Zuordnung (Matrix kennt kein AB K1); K2-Lehrkraftfassung als Lösung; Bonus-Schloss auf Papier; Operatoren-Karte selbst formuliert. Videos: eigene Video-DB `video/schachturnier`; Video 6 „R1 + 5 Regeln“; YouTube-Links als Link-Knöpfe aus `seed/videos.json`, sobald Frank sie einträgt. | – |
+| 38 | Kompetenzmatrix K12, K22 (Phase 7) | Die Matrix nennt für K12 (Redundanzfreiheit begründen) und K22 (LIMIT) kein Arbeitsblatt, obwohl AB 4.2 (Beweisstück 4, Auftrag 4) und AB 3.2 (Beweisstück 3, Auftrag 4) beides behandeln. Begründete Ausnahme in `werkzeuge/kompetenz_abdeckung.py` (`AUSNAHMEN`); Matrix unverändert bis zur Entscheidung (Spec §18). | Frank: Matrix ergänzen (z. B. „AB 4.2/4“, „AB 3.2/4“) und Material-Kompetenzen nachziehen? |

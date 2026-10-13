@@ -1,0 +1,9 @@
+{
+  "dateien": [
+    { "datei": "Akte1/DD_A1-AB1_Der_erste_Auftrag.pdf", "ordner": "Arbeitsblaetter_PDF", "titel": "AB 1.1 Der erste Auftrag (Demo)", "fassung": "schueler", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "Akte1/DD_A1_Lehrerhinweise.pdf", "ordner": "Lehrkraft_PDF", "titel": "Lehrerhinweise Akte 1 (Demo)", "fassung": "lehrkraft", "akte": 1, "niveau": "beide", "art": "lehrerhinweise" },
+    { "datei": "Akte1/DD_A1-AB1_Der_erste_Auftrag_LSG.pdf", "ordner": "Loesungen_Portal", "titel": "Lösung ohne Freigabe", "fassung": "lehrkraft", "akte": 1, "art": "loesung" },
+    { "datei": "Akte7/DD_A7_Klausur_eA.pdf", "ordner": "Lehrkraft_PDF", "titel": "Klausur ohne Freigabe", "fassung": "lehrkraft", "akte": 7, "art": "pruefung" },
+    { "datei": "Akte1/DD_A1-AB2_Nicht_gelistet.pdf", "ordner": "Originale", "titel": "falscher Ordner", "fassung": "schueler", "akte": 1 }
+  ]
+}

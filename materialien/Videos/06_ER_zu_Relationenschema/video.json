@@ -1,0 +1,816 @@
+{
+ "nr": 6,
+ "kurz": "ER_zu_Relationenschema",
+ "akte": 5,
+ "aktenname": "Akte 5 · Der Bauplan (eA)",
+ "titel": "Vom ER-Modell zum Relationenschema in 5 Regeln",
+ "untertitel": "Entitätstypen werden Relationen – und fünf Regeln für 1:n, n:m, 1:1, rekursive und ternäre Beziehungstypen, mit Begründung",
+ "einsatz_kurz": "Akte 5 · DS 11 · eA",
+ "einsatz": "Akte 5 (eA), DS 11 · Ermittlung 5.3 „Vom Plan zur Datenbank“ (Schema-Werkbank, Verbund mit sich selbst) · AB 5.3 · vor Verhör 5",
+ "laenge": "8–10 min",
+ "zielgruppe": "Informatik eA (Datenbanken), Akte 5; Wiederholung vor Verhör 5, Klausur und Abitur",
+ "datenbank": "keine",
+ "beispieldaten": "eigenes Beispiel „Tierheim“ aus Video 5 – nicht die Detektei des Labs und nicht das Schulbeispiel der Lab-Intro; Diagramme und Werkbank-Bild aus der Plattform",
+ "lernziele": [
+  "Entitätstypen in Relationen mit Primärschlüssel überführen (Grundregel R1)",
+  "1:n-, n:m-, 1:1-, rekursive und ternäre Beziehungstypen nach den Regeln R2–R6 überführen",
+  "Die Regeln begründen – insbesondere, warum n:m eine eigene Relation braucht und 1:n nicht",
+  "Fremdschlüssel nach ihrer Rolle benennen (MutterNr) und zusammengesetzte Schlüssel wählen",
+  "Die Rückrichtung Schema → ER-Modell beherrschen und Falle P9 vermeiden"
+ ],
+ "hinweise": [
+  "Spec §13 nennt „5 Regeln“, DS_PLANUNG DS 11 zählt R1–R6: Das Video zeigt die Grundregel R1 (Entitätstyp → Relation) und die **fünf Regeln für Beziehungstypen** R2–R6 – Nummern wie im Merkkasten der DS 11.",
+  "Beispiel „Tierheim“ wie in Video 5; Detektei-Modelle (Lab, AB 5.3, Verhör 5 Kletterhalle) und das Schulbeispiel der Lab-Intro kommen nicht vor.",
+  "Die Abfrage mit zwei Aliasen auf Folie 5 bezieht sich auf das Schema auf der Folie (keine Datenbank: nur Parser und EH-§8-Regeln geprüft, db=keine).",
+  "Werkbank-Bild der Auflösung mit scripts/video_bilder.js (Schema-Werkbank ohne Prüfung)."
+ ],
+ "youtube": {
+  "titel": "ER-Modell in Relationenschema überführen: 1:n, n:m, 1:1, rekursiv, ternär (Informatik-Abitur Niedersachsen) | Datendetektei #6",
+  "beschreibung": "Wie wird aus einem ER-Modell ein Relationenschema? In diesem Video lernst du die Grundregel für Entitätstypen und fünf Regeln für Beziehungstypen – 1:n, n:m, 1:1, rekursiv und ternär – jeweils mit Begründung, so wie es im Informatik-Abitur in Niedersachsen verlangt wird. Dazu die Kurzschreibweise nach den Ergänzenden Hinweisen (Primärschlüssel unterstrichen, Fremdschlüssel mit Pfeil), die Rückrichtung vom Schema zum ER-Modell und die Falle P9.\n\nTeil der Unterrichtsreihe „Datendetektei Weserstedt – Ermitteln mit Datenbanken“ (Informatik eA, Abitur ab 2027).\nSelbst ausprobieren: Schema-Werkbank https://datendetektei.frankjuchim.de/werkzeug/werkbank",
+  "tags": [
+   "Informatik Abitur",
+   "Niedersachsen",
+   "Relationenschema",
+   "ER-Modell",
+   "Überführung",
+   "Fremdschlüssel",
+   "n:m",
+   "rekursive Beziehung",
+   "ternäre Beziehung",
+   "Kurzschreibweise",
+   "Datendetektei"
+  ]
+ },
+ "bilder": {
+  "er_1n": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       },
+       {
+        "name": "Art",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Gehege",
+      "attribute": [
+       {
+        "name": "GehegeNr",
+        "schluessel": true
+       },
+       {
+        "name": "Bereich",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "lebtIn",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "1"
+       }
+      ],
+      "attribute": []
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 200,
+     "y": 220
+    },
+    "e2": {
+     "x": 760,
+     "y": 220
+    },
+    "b1": {
+     "x": 480,
+     "y": 220
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_nm": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Helfer",
+      "attribute": [
+       {
+        "name": "HelferNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "betreut",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "m"
+       }
+      ],
+      "attribute": [
+       {
+        "name": "Seit"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 200,
+     "y": 240
+    },
+    "e2": {
+     "x": 760,
+     "y": 240
+    },
+    "b1": {
+     "x": 480,
+     "y": 240
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_rek": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       },
+       {
+        "name": "Geburtsjahr",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "stammtAb",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "1",
+        "rolle": "Mutter"
+       },
+       {
+        "entitaet": "e1",
+        "kard": "n",
+        "rolle": "Jungtier"
+       }
+      ],
+      "attribute": []
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 360,
+     "y": 180
+    },
+    "b1": {
+     "x": 360,
+     "y": 430
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_ter": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Interessent",
+      "attribute": [
+       {
+        "name": "InteressentNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e3",
+      "name": "Helfer",
+      "attribute": [
+       {
+        "name": "HelferNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "lerntKennen",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "m"
+       },
+       {
+        "entitaet": "e3",
+        "kard": "p"
+       }
+      ],
+      "attribute": [
+       {
+        "name": "Datum"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 200,
+     "y": 220
+    },
+    "e2": {
+     "x": 800,
+     "y": 220
+    },
+    "b1": {
+     "x": 500,
+     "y": 220
+    },
+    "e3": {
+     "x": 500,
+     "y": 520
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_pause": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Lieferant",
+      "attribute": [
+       {
+        "name": "LieferantNr",
+        "schluessel": true
+       },
+       {
+        "name": "Firma",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Futtersorte",
+      "attribute": [
+       {
+        "name": "SorteNr",
+        "schluessel": true
+       },
+       {
+        "name": "Bezeichnung",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e3",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "liefert",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "1"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "n"
+       }
+      ],
+      "attribute": []
+     },
+     {
+      "id": "b2",
+      "name": "frisst",
+      "enden": [
+       {
+        "entitaet": "e3",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "m"
+       }
+      ],
+      "attribute": [
+       {
+        "name": "Tagesmenge"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 160,
+     "y": 240
+    },
+    "b1": {
+     "x": 430,
+     "y": 240
+    },
+    "e2": {
+     "x": 720,
+     "y": 240
+    },
+    "b2": {
+     "x": 1010,
+     "y": 240
+    },
+    "e3": {
+     "x": 1280,
+     "y": 240
+    }
+   },
+   "breite": 1600,
+   "hoehe": 760
+  },
+  "werkbank_loesung": {
+   "werkzeug": "werkbank",
+   "breite": 1700,
+   "hoehe": 900,
+   "ausschnitt": ".wk-brett",
+   "relationen": [
+    {
+     "name": "Lieferant",
+     "attribute": [
+      {
+       "name": "LieferantNr",
+       "pk": true
+      },
+      {
+       "name": "Firma"
+      }
+     ]
+    },
+    {
+     "name": "Futtersorte",
+     "attribute": [
+      {
+       "name": "SorteNr",
+       "pk": true
+      },
+      {
+       "name": "Bezeichnung"
+      },
+      {
+       "name": "LieferantNr",
+       "fk": "Lieferant"
+      }
+     ]
+    },
+    {
+     "name": "Tier",
+     "attribute": [
+      {
+       "name": "TierNr",
+       "pk": true
+      },
+      {
+       "name": "Name"
+      }
+     ]
+    },
+    {
+     "name": "frisst",
+     "attribute": [
+      {
+       "name": "TierNr",
+       "pk": true,
+       "fk": "Tier"
+      },
+      {
+       "name": "SorteNr",
+       "pk": true,
+       "fk": "Futtersorte"
+      },
+      {
+       "name": "Tagesmenge"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "folien": [
+  {
+   "typ": "titel",
+   "kapitel": "Einstieg",
+   "regie": "Kamera unten rechts, Titelfolie im Hintergrund.",
+   "sprechertext": "Der Bauplan steht – jetzt wird gebaut. Aus dem ER-Modell wird ein Relationenschema, also die Tabellen der Datenbank. Dafür gibt es eine Grundregel und fünf Regeln für die Beziehungstypen. Nach diesem Video kannst du jede davon anwenden und – genauso wichtig fürs Abitur – begründen."
+  },
+  {
+   "titel": "Grundregel R1 und Regel R2: 1:n",
+   "kapitel": "1:n",
+   "oben": [
+    {
+     "bild": "er_1n",
+     "hoehe": 1.9
+    }
+   ],
+   "links": [
+    {
+     "schema": [
+      "Gehege(<u>GehegeNr</u>, Bereich)",
+      "Tier(<u>TierNr</u>, Name, Art, ↑GehegeNr)"
+     ],
+     "titel": "RELATIONENSCHEMA"
+    },
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Begründung R2",
+      "text": [
+       "Jedes Tier lebt in **genau einem** Gehege → **ein** Wert je Tier-Zeile. Umgekehrt bräuchte ein Gehege eine Liste von Tieren – das geht nicht."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Die Grundregel R1: Jeder Entitätstyp wird eine Relation, seine Attribute werden Spalten, das Schlüsselattribut wird Primärschlüssel – unterstrichen. Jetzt die erste Beziehungsregel, R2 für 1 zu n. Der Fremdschlüssel kommt auf die n-Seite. Tier bekommt also einen Fremdschlüssel GehegeNr, mit Pfeil. Begründung: Jedes Tier lebt in genau einem Gehege, also steht in jeder Tier-Zeile genau ein Wert. Andersherum müsste ein Gehege eine ganze Liste von Tieren speichern – das passt nicht in eine Zelle."
+  },
+  {
+   "titel": "Regel R3: n:m bekommt eine eigene Relation",
+   "kapitel": "n:m",
+   "oben": [
+    {
+     "bild": "er_nm",
+     "hoehe": 1.6
+    }
+   ],
+   "links": [
+    {
+     "schema": [
+      "Helfer(<u>HelferNr</u>, Name)",
+      "Tier(<u>TierNr</u>, Name)",
+      "betreut(<u>↑HelferNr, ↑TierNr</u>, Seit)"
+     ],
+     "titel": "RELATIONENSCHEMA"
+    },
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Begründung R3",
+      "text": [
+       "Auf **keiner** Seite passt ein einzelner Wert. Das Paar der beiden Fremdschlüssel ist der Schlüssel; „Seit“ wandert mit in die neue Relation."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Regel R3 für n zu m. Hier passt ein Fremdschlüssel auf keine Seite: Ein Helfer betreut mehrere Tiere, ein Tier hat mehrere Helfer. Deshalb entsteht eine eigene Relation, benannt nach dem Beziehungstyp: betreut. Sie enthält beide Fremdschlüssel, und zusammen bilden sie den Primärschlüssel – beide unterstrichen. Das Beziehungsattribut Seit kommt mit in diese Relation. Und wenn dasselbe Paar mehrmals vorkommen könnte, nimmst du ein weiteres Attribut, etwa ein Datum, mit in den Schlüssel."
+  },
+  {
+   "titel": "Regel R4: 1:1",
+   "links": [
+    {
+     "schema": [
+      "Tier(<u>TierNr</u>, Name)",
+      "Chip(<u>ChipNr</u>, Hersteller, ↑TierNr)"
+     ],
+     "titel": "TIER 1 — TRAEGT — 1 CHIP"
+    },
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Begründung R4",
+      "text": [
+       "Beide Seiten haben je **einen** Partner → der Fremdschlüssel passt auf **eine** Seite.",
+       "Meist dorthin, wo das Objekt später entsteht (der Chip wird einem vorhandenen Tier eingesetzt).",
+       "Alternative: beide Relationen zusammenlegen."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Regel R4 für 1 zu 1: Ein Tier trägt genau einen Chip, ein Chip gehört zu genau einem Tier. Hier passt der Fremdschlüssel auf jede der beiden Seiten. Üblich ist die Seite, die später entsteht – der Chip wird einem Tier eingesetzt, das es schon gibt. Also bekommt Chip den Fremdschlüssel TierNr. Man könnte die beiden Relationen auch zusammenlegen. Wichtig ist, dass du deine Entscheidung begründest."
+  },
+  {
+   "titel": "Regel R5: rekursiv – der Fremdschlüssel zeigt auf die eigene Relation",
+   "kapitel": "Rekursiv und ternär",
+   "links": [
+    {
+     "schema": [
+      "Tier(<u>TierNr</u>, Name, Geburtsjahr, ↑MutterNr)"
+     ],
+     "titel": "TIER STAMMTAB TIER (1:N)"
+    },
+    {
+     "sql": "SELECT j.Name AS Jungtier, m.Name AS Mutter\nFROM Tier j, Tier m\nWHERE j.MutterNr = m.TierNr",
+     "label": "VERBUND DER TABELLE MIT SICH SELBST (ZWEI ALIASE)",
+     "db": "keine"
+    }
+   ],
+   "rechts": [
+    {
+     "bild": "er_rek"
+    }
+   ],
+   "sprechertext": "Regel R5 für rekursive Beziehungen. Es gelten dieselben Regeln wie bei 1 zu n und n zu m – nur zeigt der Fremdschlüssel auf die eigene Relation. Bei stammtAb, eins zu n, bekommt Tier einen Fremdschlüssel. Er kann nicht TierNr heißen, die gibt es schon. Deshalb benennst du ihn nach seiner Rolle: MutterNr. Wäre die Beziehung n zu m, entstünde eine eigene Relation mit zwei Fremdschlüsseln auf Tier. Abfragen dazu nutzen dieselbe Tabelle zweimal mit Aliasen, wie unten: Jungtier und Mutter."
+  },
+  {
+   "titel": "Regel R6: ternär",
+   "links": [
+    {
+     "bild": "er_ter",
+     "hoehe": 2.4
+    },
+    {
+     "schema": [
+      "lerntKennen(<u>↑InteressentNr, ↑TierNr, ↑HelferNr, Datum</u>)"
+     ],
+     "titel": "RELATION"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Begründung R6",
+      "text": [
+       "Eigene Relation mit **drei** Fremdschlüsseln.",
+       "Dasselbe Trio kann sich mehrmals treffen → **Datum** gehört in den Schlüssel."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Die letzte Regel, R6, für ternäre Beziehungen. Sie bekommen immer eine eigene Relation mit drei Fremdschlüsseln – einen für jeden beteiligten Entitätstyp. Der Schlüssel besteht zunächst aus diesen dreien. Aber Vorsicht: Kann dieselbe Interessentin dasselbe Tier mit demselben Helfer mehrmals kennenlernen? Natürlich. Dann reichen die drei nicht, und das Datum muss mit in den Schlüssel. Genau diese Überlegung wird im Abitur gern abgefragt."
+  },
+  {
+   "titel": "Die Regeln im Überblick",
+   "links": [
+    {
+     "tabelle": {
+      "titel": "DIE REGELN IM ÜBERBLICK",
+      "kopf": [
+       "Regel",
+       "ER-Modell",
+       "Relationenschema"
+      ],
+      "groesse": 16,
+      "zeilen": [
+       [
+        "R1 Entitätstyp",
+        "Tier mit Schlüssel TierNr",
+        "Tier(TierNr, …) – Schlüssel wird PK"
+       ],
+       [
+        "R2 1:n",
+        "Gehege 1 — lebtIn — n Tier",
+        "FK auf der n-Seite: Tier(…, ↑GehegeNr)"
+       ],
+       [
+        "R3 n:m",
+        "Helfer n — betreut — m Tier",
+        "eigene Relation: betreut(↑HelferNr, ↑TierNr, Seit)"
+       ],
+       [
+        "R4 1:1",
+        "Tier 1 — traegt — 1 Chip",
+        "FK auf einer Seite: Chip(…, ↑TierNr)"
+       ],
+       [
+        "R5 rekursiv",
+        "Tier stammtAb Tier (1:n)",
+        "FK auf die eigene Relation: Tier(…, ↑MutterNr)"
+       ],
+       [
+        "R6 ternär",
+        "Interessent, Tier, Helfer",
+        "eigene Relation mit drei FKs (+ Datum)"
+       ]
+      ]
+     }
+    }
+   ],
+   "teilung": 9.6,
+   "sprechertext": "Hier alle Regeln auf einen Blick. R1: Entitätstyp wird Relation. R2: Bei 1 zu n kommt der Fremdschlüssel auf die n-Seite. R3: n zu m bekommt eine eigene Relation. R4: Bei 1 zu 1 auf eine Seite. R5: Rekursiv wie R2 oder R3, mit Fremdschlüsseln auf die eigene Relation. R6: Ternär bekommt eine eigene Relation mit drei Fremdschlüsseln. Beziehungsattribute wandern immer dorthin, wo der Fremdschlüssel bzw. die neue Relation steht."
+  },
+  {
+   "typ": "pause",
+   "kapitel": "Jetzt du",
+   "oben": [
+    {
+     "bild": "er_pause"
+    }
+   ],
+   "links": [
+    {
+     "text": "**Überführe** das ER-Modell aus Video 5 in ein Relationenschema in Kurzschreibweise – mit Primärschlüsseln (unterstrichen) und Fremdschlüsseln (↑)."
+    }
+   ],
+   "pause_s": 40,
+   "sprechertext": "Jetzt du. Hier das Futter-Modell aus dem letzten Video: Lieferant liefert Futtersorte, Tier frisst Futtersorte mit einer Tagesmenge. Überführe es in ein Relationenschema in Kurzschreibweise. Welche Regel gilt bei liefert, welche bei frisst? Halte das Video an."
+  },
+  {
+   "titel": "Auflösung",
+   "oben": [
+    {
+     "bild": "werkbank_loesung",
+     "hoehe": 2.1
+    }
+   ],
+   "links": [
+    {
+     "schema": [
+      "Lieferant(<u>LieferantNr</u>, Firma)",
+      "Futtersorte(<u>SorteNr</u>, Bezeichnung, ↑LieferantNr)",
+      "Tier(<u>TierNr</u>, Name)",
+      "frisst(<u>↑TierNr, ↑SorteNr</u>, Tagesmenge)"
+     ],
+     "titel": "RELATIONENSCHEMA"
+    }
+   ],
+   "sprechertext": "Die Auflösung. liefert ist 1 zu n, also Regel R2: Futtersorte bekommt den Fremdschlüssel LieferantNr. frisst ist n zu m, also Regel R3: eine eigene Relation frisst mit TierNr und SorteNr als gemeinsamem Primärschlüssel und der Tagesmenge. Oben das Ganze in der Schema-Werkbank der Datendetektei. Häufige Fehler: der Fremdschlüssel beim Lieferanten statt bei der Futtersorte oder die Tagesmenge beim Tier."
+  },
+  {
+   "titel": "Rückrichtung: vom Schema zum ER-Modell",
+   "kapitel": "Rückrichtung",
+   "links": [
+    {
+     "schritte": [
+      "Relation mit **eigenem** Schlüssel → Entitätstyp",
+      "Fremdschlüssel in einer Entitäts-Relation → **1:n** (n auf der Seite des Fremdschlüssels)",
+      "Schlüssel aus **zwei** Fremdschlüsseln → **n:m**, aus drei → ternär",
+      "übrige Attribute dieser Relation → **Beziehungsattribute**"
+     ]
+    }
+   ],
+   "sprechertext": "Im Abitur kommt auch die Rückrichtung vor: Aus einem Schema soll ein ER-Modell werden. Eine Relation mit eigenem Schlüssel wird ein Entitätstyp. Ein Fremdschlüssel in so einer Relation ist eine 1-zu-n-Beziehung – das n steht auf der Seite des Fremdschlüssels. Besteht der Schlüssel einer Relation aus zwei Fremdschlüsseln, war es eine n-zu-m-Beziehung, bei drei eine ternäre. Und die übrigen Attribute dieser Relation sind Beziehungsattribute."
+  },
+  {
+   "titel": "Die Fallen bei der Überführung",
+   "kapitel": "Fallen",
+   "links": [
+    {
+     "falle": "P9",
+     "titel": "Fremdschlüssel auf der falschen Seite",
+     "text": "Bei 1:n immer auf die n-Seite – sonst bräuchte eine Zelle mehrere Werte."
+    },
+    {
+     "falle": "P9",
+     "titel": "n:m ohne eigene Relation",
+     "text": "Ein Fremdschlüssel in einer der beiden Relationen reicht bei n:m nie."
+    },
+    {
+     "falle": "P9",
+     "titel": "Schlüssel der Beziehungsrelation",
+     "text": "Beide (bzw. drei) Fremdschlüssel unterstreichen; bei Mehrfachvorkommen ein Attribut ergänzen."
+    },
+    {
+     "falle": "P7",
+     "titel": "Fremdschlüssel unklar benannt",
+     "text": "Bei rekursiven Beziehungen nach der Rolle: MutterNr statt TierNr2."
+    }
+   ],
+   "sprechertext": "Die Fallen bei der Überführung gehören zu P9: der Fremdschlüssel auf der falschen Seite, eine n-zu-m-Beziehung ohne eigene Relation, oder ein unvollständiger Schlüssel in der Beziehungsrelation. Und bei rekursiven Beziehungen P7: Benenne den Fremdschlüssel nach seiner Rolle, also MutterNr, nicht TierNr2."
+  },
+  {
+   "typ": "merke",
+   "kapitel": "Merksätze",
+   "punkte": [
+    "R1: Entitätstyp → Relation, Schlüsselattribut → Primärschlüssel.",
+    "R2: 1:n → Fremdschlüssel auf die n-Seite.",
+    "R3: n:m → eigene Relation, Schlüssel aus beiden Fremdschlüsseln.",
+    "R4: 1:1 → Fremdschlüssel auf eine Seite (begründen).",
+    "R5/R6: rekursiv → FK auf die eigene Relation (Rollenname); ternär → eigene Relation mit drei FKs."
+   ],
+   "sprechertext": "Das nimmst du mit: Entitätstyp wird Relation. Bei 1 zu n kommt der Fremdschlüssel auf die n-Seite. n zu m bekommt eine eigene Relation mit beiden Fremdschlüsseln als Schlüssel. Bei 1 zu 1 entscheidest du dich begründet für eine Seite. Rekursiv zeigt der Fremdschlüssel auf die eigene Relation und heißt nach seiner Rolle, und ternär bekommt eine eigene Relation mit drei Fremdschlüsseln."
+  },
+  {
+   "typ": "ende",
+   "lab": [
+    {
+     "ermittlung": "5.3",
+     "titel": "Vom Plan zur Datenbank",
+     "aufgaben": "A5-E3-01 … 08",
+     "werkzeug": "Schema-Werkbank, Verbund einer Tabelle mit sich selbst"
+    }
+   ],
+   "material": [
+    "AB 5.3 „Vom Plan zur Datenbank“",
+    "Verhör 5 nach Freischaltung durch die Lehrkraft",
+    "Schema-Werkbank frei zum Üben: /werkzeug/werkbank"
+   ],
+   "naechstes": "Video 7 (optional) – Abi-Check Datenbanken: 10 Fallen und die Operatoren",
+   "sprechertext": "Ab ins Lab! In Ermittlung 5.3 baust du aus dem Bauplan der Detektei die Datenbank – in der Schema-Werkbank, und zum Schluss verbindest du eine Tabelle mit sich selbst. Und vor der Prüfung lohnt sich Video 7: der Abi-Check mit allen zehn Fallen und den Operatoren."
+  }
+ ]
+}

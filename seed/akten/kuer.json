@@ -1,0 +1,579 @@
+{
+  "version": 2,
+  "welt": 8,
+  "kuer": true,
+  "titel": "Kür: Eigene Datenbank bauen",
+  "farbe": "#4A5E2A",
+  "levels": [
+    {
+      "id": "K1-E1",
+      "nr": "K1",
+      "titel": "Eigene Datenbank bauen",
+      "ab": "Projektkarte K1",
+      "niveau": "eA",
+      "briefing": "Kür! Hier baust du deine eigene kleine Datenbank, fügst Datensätze ein und erlebst, wie die Datenbank falsche Fremdschlüssel abweist. Alles hier ist ausdrücklich **nicht im Abitur** – eine Spielwiese für Neugierige.",
+      "intro": [
+        {
+          "t": "hinweis",
+          "md": "**KÜR – nicht im Abitur.** Im Abitur schreibst du den Verbund ausschließlich mit `FROM … WHERE`. Hier baust du Datenbanken selbst – mit `CREATE TABLE` und `INSERT` – und lernst zwei Schreibweisen kennen, die Profis oft nutzen: `JOIN … ON` und `LEFT JOIN`."
+        },
+        {
+          "t": "text",
+          "md": "**Vom Schema zur Tabelle.** `CREATE TABLE` legt eine Tabelle mit Spalten und Datentypen an (`INTEGER` für ganze Zahlen, `TEXT` für Texte). `PRIMARY KEY` kennzeichnet den Primärschlüssel, `FOREIGN KEY (…) REFERENCES …` einen Fremdschlüssel. `INSERT INTO … VALUES (…)` fügt einen Datensatz ein. Beispiel aus der Schule – nicht aus unseren Akten:"
+        },
+        {
+          "t": "sql",
+          "sql": "-- KÜR (nicht im Abitur)\nCREATE TABLE Klasse (\n  KlasseNr    INTEGER PRIMARY KEY,\n  Bezeichnung TEXT NOT NULL\n);\nCREATE TABLE Schueler (\n  SchuelerNr INTEGER PRIMARY KEY,\n  Name       TEXT NOT NULL,\n  KlasseNr   INTEGER,\n  FOREIGN KEY (KlasseNr) REFERENCES Klasse(KlasseNr)\n);\nINSERT INTO Klasse VALUES (1, '12a');\nINSERT INTO Schueler VALUES (100, 'Mika R.', 3);   -- Fehler: Klasse 3 gibt es nicht\n\nSELECT k.Bezeichnung, s.Name                        -- Ausblick: auch Klassen ohne Schüler\nFROM Klasse k LEFT JOIN Schueler s ON k.KlasseNr = s.KlasseNr;"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz – referentielle Integrität:** Jeder Fremdschlüsselwert verweist auf einen existierenden Primärschlüsselwert (oder ist NULL). Das DBMS verhindert Verstöße – in SQLite mit `PRAGMA foreign_keys = ON`, in der Sandbox ist das schon eingeschaltet."
+        },
+        {
+          "t": "text",
+          "md": "**So arbeitet die Sandbox:** Bei jedem Ausführen bekommst du eine frische Datenbank (leer oder mit dem Startschema der Aufgabe), dann läuft dein ganzes Skript von oben nach unten. Mehrere Anweisungen trennst du mit `;`. Nach dem Ausführen siehst du das Protokoll, das Ergebnis des letzten `SELECT` und das Schema. Dein Skript merkt sich nur dieses Gerät – kaputtmachen ist ausdrücklich erlaubt."
+        }
+      ],
+      "aufgaben": [
+        "K1-E1-01",
+        "K1-E1-02",
+        "K1-E1-03",
+        "K1-E1-04",
+        "K1-E1-05",
+        "K1-E1-06"
+      ]
+    }
+  ],
+  "aufgaben": [
+    {
+      "id": "K1-E1-01",
+      "titel": "Die erste Tabelle",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Überführung",
+      "kompetenzen": [
+        "DB-K04",
+        "DB-K48"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "**KÜR – nicht im Abitur.** Die Detektei will ihre Ermittlerinnen und Ermittler selbst verwalten. Lege mit `CREATE TABLE` die Tabelle **Ermittler** nach diesem Schema an:"
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Ermittler",
+              "attribute": [
+                {
+                  "name": "ErmittlerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Dienstgrad"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "ErmittlerNr ist eine ganze Zahl und der Primärschlüssel, Name und Dienstgrad sind Texte. Führe dein Skript aus und sieh dir das Schema an, bevor du prüfst."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "schreiben": true,
+        "abimodus": "aus",
+        "start": {
+          "titel": "leere Datenbank"
+        }
+      },
+      "loesung": {
+        "sql": "CREATE TABLE Ermittler (\n  ErmittlerNr INTEGER PRIMARY KEY,\n  Name        TEXT NOT NULL,\n  Dienstgrad  TEXT\n);",
+        "pruefung": [
+          {
+            "text": "Die Tabelle Ermittler gibt es.",
+            "sql": "SELECT COUNT(*) = 1 FROM sqlite_master WHERE type = 'table' AND lower(name) = 'ermittler'"
+          },
+          {
+            "text": "ErmittlerNr ist der Primärschlüssel (und nur ErmittlerNr).",
+            "sql": "SELECT SUM(pk > 0) = 1 AND SUM(pk > 0 AND lower(name) = 'ermittlernr') = 1 FROM pragma_table_info('Ermittler')"
+          },
+          {
+            "text": "ErmittlerNr ist als ganze Zahl (INTEGER) angelegt.",
+            "sql": "SELECT COUNT(*) = 1 FROM pragma_table_info('Ermittler') WHERE lower(name) = 'ermittlernr' AND upper(type) LIKE 'INT%'"
+          },
+          {
+            "text": "Name und Dienstgrad sind Spalten der Tabelle.",
+            "sql": "SELECT COUNT(*) = 2 FROM pragma_table_info('Ermittler') WHERE lower(name) IN ('name', 'dienstgrad')"
+          }
+        ]
+      },
+      "tipps": [
+        "Die Form ist `CREATE TABLE Tabelle ( Spalte Typ, Spalte Typ, … );` – die Spalten stehen durch Kommas getrennt in Klammern.",
+        "Hinter den Typ der Schlüsselspalte schreibst du `PRIMARY KEY`: `ErmittlerNr INTEGER PRIMARY KEY`."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Aus jeder Relation des Schemas wird eine Tabelle, aus jedem Attribut eine Spalte mit Datentyp. Der unterstrichene Primärschlüssel bekommt `PRIMARY KEY` – damit lehnt die Datenbank doppelte Werte ab. `NOT NULL` bei Name ist ein Zusatz: Ein Ermittler ohne Namen soll es nicht geben."
+        },
+        {
+          "t": "hinweis",
+          "md": "SQLite ist bei Datentypen großzügig (typschwach) – andere Datenbanksysteme prüfen sie streng. Im Abitur schreibst du kein `CREATE TABLE`."
+        }
+      ],
+      "niveau": "eA"
+    },
+    {
+      "id": "K1-E1-02",
+      "titel": "Akten anlegen",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Relationales Modell",
+      "kompetenzen": [
+        "DB-K48"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "**KÜR – nicht im Abitur.** Die Tabelle Ermittler steht schon (Startschema), sie ist aber noch leer. Trage mit `INSERT INTO` **drei** Ermittler ein: **Edda Lorenz** mit dem Dienstgrad **Leitung** und zwei weitere deiner Wahl. Kontrolliere am Ende mit einem `SELECT`, was in der Tabelle steht."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Ermittler",
+              "attribute": [
+                {
+                  "name": "ErmittlerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Dienstgrad"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "schreiben": true,
+        "abimodus": "aus",
+        "start": {
+          "titel": "Tabelle Ermittler (leer)",
+          "skript": "CREATE TABLE Ermittler (\n  ErmittlerNr INTEGER PRIMARY KEY,\n  Name        TEXT NOT NULL,\n  Dienstgrad  TEXT\n);"
+        }
+      },
+      "loesung": {
+        "sql": "INSERT INTO Ermittler VALUES (1, 'Edda Lorenz', 'Leitung');\nINSERT INTO Ermittler VALUES (2, 'Juri Brandes', 'Ausbildung');\nINSERT INTO Ermittler VALUES (3, 'Maren Kolthoff', 'Senior');\nSELECT *\nFROM Ermittler;",
+        "pruefung": [
+          {
+            "text": "Ermittler enthält mindestens drei Datensätze.",
+            "sql": "SELECT COUNT(*) >= 3 FROM Ermittler"
+          },
+          {
+            "text": "Edda Lorenz ist mit dem Dienstgrad Leitung eingetragen.",
+            "sql": "SELECT COUNT(*) >= 1 FROM Ermittler WHERE Name = 'Edda Lorenz' AND Dienstgrad = 'Leitung'"
+          },
+          {
+            "art": "zeilen",
+            "min": 3,
+            "text": "Dein letztes SELECT zeigt die eingetragenen Ermittler (mindestens drei Zeilen)."
+          }
+        ]
+      },
+      "tipps": [
+        "Ein Datensatz: `INSERT INTO Ermittler VALUES (1, 'Edda Lorenz', 'Leitung');` – Texte in Hochkommata, Zahlen ohne.",
+        "Jeder Datensatz braucht eine andere ErmittlerNr – sonst meldet die Datenbank einen doppelten Primärschlüssel."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Je Datensatz ein `INSERT INTO … VALUES (…)`; die Werte stehen in der Reihenfolge der Spalten. Mit `SELECT * FROM Ermittler` kontrollierst du das Ergebnis – das Abfragen kennst du aus dem Abitur-Kern."
+        }
+      ],
+      "niveau": "eA"
+    },
+    {
+      "id": "K1-E1-03",
+      "titel": "Der verbotene Verweis",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K06",
+        "DB-K03"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "**KÜR – nicht im Abitur.** Startschema „Detektei-light“: Die Tabelle Ermittler enthält Edda Lorenz (1), Juri Brandes (2) und Maren Kolthoff (3). Lege die Tabelle **Fall** an – LeiterNr verweist als Fremdschlüssel auf Ermittler:"
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Fall",
+              "attribute": [
+                {
+                  "name": "FallNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "LeiterNr",
+                  "fk": "Ermittler"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Füge dann den Fall 10 „Das Phantom“ mit **LeiterNr 7** ein und führe aus: Was meldet die Datenbank? Ändere den Datensatz danach so, dass **Edda Lorenz** den Fall leitet, und prüfe."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "schreiben": true,
+          "abimodus": "aus",
+          "start": {
+            "titel": "Detektei-light (Ermittler)",
+            "skript": "CREATE TABLE Ermittler (\n  ErmittlerNr INTEGER PRIMARY KEY,\n  Name        TEXT NOT NULL,\n  Dienstgrad  TEXT\n);\nINSERT INTO Ermittler VALUES (1, 'Edda Lorenz', 'Leitung');\nINSERT INTO Ermittler VALUES (2, 'Juri Brandes', 'Ausbildung');\nINSERT INTO Ermittler VALUES (3, 'Maren Kolthoff', 'Senior');"
+          },
+          "frage": "a) Lege Fall mit Fremdschlüssel an und trage den Fall 10 so ein, dass Edda Lorenz ihn leitet."
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) Warum hat die Datenbank den Fall mit LeiterNr 7 abgewiesen?",
+          "optionen": [
+            {
+              "id": "a",
+              "md": "Einen Ermittler mit der Nummer 7 gibt es nicht – der Fremdschlüssel würde ins Leere zeigen."
+            },
+            {
+              "id": "b",
+              "md": "Die FallNr 10 ist schon vergeben."
+            },
+            {
+              "id": "c",
+              "md": "LeiterNr ist Primärschlüssel von Fall und darf sich nicht wiederholen."
+            },
+            {
+              "id": "d",
+              "md": "Ein Fremdschlüssel darf nie größer als die Anzahl der Datensätze der anderen Tabelle sein."
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "CREATE TABLE Fall (\n  FallNr   INTEGER PRIMARY KEY,\n  Titel    TEXT,\n  LeiterNr INTEGER NOT NULL,\n  FOREIGN KEY (LeiterNr) REFERENCES Ermittler(ErmittlerNr)\n);\nINSERT INTO Fall VALUES (10, 'Das Phantom', 1);\nSELECT *\nFROM Fall;",
+          "pruefung": [
+            {
+              "text": "Die Tabelle Fall gibt es mit FallNr als Primärschlüssel.",
+              "sql": "SELECT SUM(pk > 0) = 1 AND SUM(pk > 0 AND lower(name) = 'fallnr') = 1 FROM pragma_table_info('Fall')"
+            },
+            {
+              "text": "LeiterNr ist ein Fremdschlüssel auf Ermittler.",
+              "sql": "SELECT COUNT(*) = 1 FROM pragma_foreign_key_list('Fall') WHERE lower(\"from\") = 'leiternr' AND lower(\"table\") = 'ermittler'"
+            },
+            {
+              "text": "Der Fall 10 „Das Phantom“ wird von Edda Lorenz geleitet.",
+              "sql": "SELECT COUNT(*) = 1 FROM Fall f, Ermittler e WHERE f.LeiterNr = e.ErmittlerNr AND f.FallNr = 10 AND f.Titel = 'Das Phantom' AND e.Name = 'Edda Lorenz'"
+            }
+          ]
+        },
+        {
+          "richtig": [
+            "a"
+          ]
+        }
+      ],
+      "tipps": [
+        "Der Fremdschlüssel steht als eigene Zeile am Ende: `FOREIGN KEY (LeiterNr) REFERENCES Ermittler(ErmittlerNr)`.",
+        "Die Meldung „Fremdschlüssel verletzt“ heißt: In Ermittler gibt es keinen Datensatz mit diesem Primärschlüsselwert. Edda Lorenz hat die Nummer 1."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Weil LeiterNr als Fremdschlüssel auf Ermittler verweist, prüft die Datenbank bei jedem Einfügen, ob es den Ermittler gibt. Ermittler 7 fehlt – also wird der Datensatz abgewiesen (FOREIGN KEY constraint failed). Das ist **referentielle Integrität**: Kein Fremdschlüsselwert zeigt ins Leere. Mit LeiterNr 1 (Edda Lorenz) klappt es."
+        },
+        {
+          "t": "hinweis",
+          "md": "Auch umgekehrt schützt die Datenbank: Edda Lorenz lässt sich jetzt nicht mehr löschen, solange ein Fall auf sie verweist. Probier `DELETE FROM Ermittler WHERE ErmittlerNr = 1;` aus."
+        }
+      ],
+      "niveau": "eA"
+    },
+    {
+      "id": "K1-E1-04",
+      "titel": "Zwei Schreibweisen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "**KÜR – nicht im Abitur.** Ausblick: Diese Abfrage im Abitur-Stil zeigt die offenen Fälle mit ihrer Leitung (Startdatenbank: Kopie der Detektei-DB):"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT f.Titel, e.Name\nFROM Fall f, Ermittler e\nWHERE f.LeiterNr = e.ErmittlerNr\n  AND f.Status = 'offen'"
+        },
+        {
+          "t": "text",
+          "md": "Schreib sie mit **`JOIN … ON`** um: Die Verbundbedingung wandert aus dem `WHERE` hinter `ON`. Führe beide Fassungen aus und vergleiche – das Ergebnis muss gleich sein. Für die Prüfung zählt das letzte `SELECT` deines Skripts."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "schreiben": true,
+        "abimodus": "aus",
+        "start": {
+          "titel": "Kopie der Detektei-DB",
+          "datenbank": "detektei"
+        }
+      },
+      "loesung": {
+        "sql": "SELECT f.Titel, e.Name\nFROM Fall f JOIN Ermittler e ON f.LeiterNr = e.ErmittlerNr\nWHERE f.Status = 'offen';",
+        "pruefung": [
+          {
+            "art": "skript",
+            "text": "Du schreibst den Verbund mit JOIN … ON.",
+            "muster": "\\bJOIN\\b[\\s\\S]*\\bON\\b"
+          },
+          {
+            "art": "ergebnis",
+            "text": "Das Ergebnis deines letzten SELECT stimmt mit dem der Abitur-Abfrage überein (Titel, Name)."
+          }
+        ]
+      },
+      "tipps": [
+        "Aus `FROM Fall f, Ermittler e WHERE f.LeiterNr = e.ErmittlerNr` wird `FROM Fall f JOIN Ermittler e ON f.LeiterNr = e.ErmittlerNr`.",
+        "Die übrige Bedingung (`f.Status = 'offen'`) bleibt im `WHERE`."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "`JOIN … ON` trennt die Verbundbedingung (hinter `ON`) von den übrigen Bedingungen (im `WHERE`). Das Ergebnis ist dasselbe wie beim Verbund mit `FROM … WHERE`."
+        },
+        {
+          "t": "hinweis",
+          "md": "**Im Abitur** schreibst du den Verbund **immer** mit `FROM … WHERE` – `JOIN … ON` ist hier nur ein Ausblick."
+        }
+      ],
+      "niveau": "eA"
+    },
+    {
+      "id": "K1-E1-05",
+      "titel": "Personen ohne Fall",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "**KÜR – nicht im Abitur.** Ausblick: Juri will wissen, welche Personen der Detektei-DB in **keinem** Fall verdächtig sind. Mit dem Verbund aus dem Abitur fallen genau diese Personen heraus – sie haben keinen Partner in verdaechtig. Ein **`LEFT JOIN`** behält alle Zeilen der linken Tabelle; fehlt der Partner, stehen im rechten Teil NULL-Werte."
+        },
+        {
+          "t": "text",
+          "md": "Gib mit `LEFT JOIN` **Vorname und Nachname** aller Personen aus, die in keinem Fall verdächtig sind (Startdatenbank: Kopie der Detektei-DB)."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "schreiben": true,
+        "abimodus": "aus",
+        "start": {
+          "titel": "Kopie der Detektei-DB",
+          "datenbank": "detektei"
+        }
+      },
+      "loesung": {
+        "sql": "SELECT p.Vorname, p.Nachname\nFROM Person p LEFT JOIN verdaechtig v ON p.PersonNr = v.PersonNr\nWHERE v.FallNr IS NULL;",
+        "pruefung": [
+          {
+            "art": "skript",
+            "text": "Du verwendest LEFT JOIN … ON.",
+            "muster": "\\bLEFT\\s+(OUTER\\s+)?JOIN\\b[\\s\\S]*\\bON\\b"
+          },
+          {
+            "art": "ergebnis",
+            "text": "Dein letztes SELECT liefert genau die Personen ohne Fall (Vorname, Nachname)."
+          }
+        ]
+      },
+      "tipps": [
+        "Führe zuerst `SELECT * FROM Person p LEFT JOIN verdaechtig v ON p.PersonNr = v.PersonNr;` aus und sieh dir die Zeilen mit NULL an.",
+        "Behalte nur die Zeilen, in denen der rechte Teil leer ist: `WHERE v.FallNr IS NULL`."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Der `LEFT JOIN` liefert jede Person mindestens einmal: mit ihren Verdachtsfällen oder – ohne Partner – mit NULL in den Spalten von verdaechtig. `WHERE v.FallNr IS NULL` behält genau die Personen ohne Fall."
+        },
+        {
+          "t": "hinweis",
+          "md": "**Nicht im Abitur.** Dort fragst du nur nach Datensätzen **mit** Partner (Verbund mit `FROM … WHERE`)."
+        }
+      ],
+      "niveau": "eA"
+    },
+    {
+      "id": "K1-E1-06",
+      "titel": "Unsere Datenbank",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Überführung",
+      "kompetenzen": [
+        "DB-K48",
+        "DB-K41"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "**KÜR – nicht im Abitur.** Teamprojekt: Plant zu einem eigenen Thema (Schul-AG, Bandprobe, Tierheim, Sportturnier …) eine kleine Datenbank mit **3–4 Tabellen** und **mindestens einer n:m-Beziehung**. Notiert das Schema in Kurzschreibweise auf der Projektkarte (Primärschlüssel unterstrichen, ↑ vor Fremdschlüsseln)."
+        },
+        {
+          "t": "text",
+          "md": "Setzt die Datenbank hier mit `CREATE TABLE` und `INSERT` um – jede Tabelle mit mindestens zwei Datensätzen – und schreibt **drei Abfragen im Abitur-Stil** (Verbund mit `FROM … WHERE`). Geprüft werden die Kernkriterien; die Abfragen kontrolliert ihr danach selbst."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "schreiben": true,
+          "abimodus": "aus",
+          "start": {
+            "titel": "leere Datenbank"
+          },
+          "frage": "a) Euer Skript: Tabellen anlegen, Daten einfügen, Abfragen."
+        },
+        {
+          "kind": "kernpunkte",
+          "frage": "b) Eure drei Abfragen im Abitur-Stil – notiert sie hier (bleibt nur auf diesem Gerät) und kontrolliert sie mit den Kernpunkten.",
+          "kernpunkte": [
+            "**Abfrage 1** nutzt eine Tabelle mit einer Bedingung im `WHERE` (Schlüsselwörter groß, je Klausel eine Zeile).",
+            "**Abfrage 2** verbindet zwei Tabellen im Abitur-Stil mit `FROM … WHERE` – **kein** `JOIN … ON`.",
+            "**Abfrage 3** nutzt die n:m-Beziehung (drei Tabellen) und gruppiert oder sortiert sinnvoll; die GROUP-BY-Regel ist eingehalten.",
+            "Das Schema steht in Kurzschreibweise auf der Projektkarte – Primärschlüssel unterstrichen, ↑ vor jedem Fremdschlüssel."
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "CREATE TABLE Schueler (\n  SchuelerNr INTEGER PRIMARY KEY,\n  Name       TEXT NOT NULL,\n  Klasse     TEXT\n);\nCREATE TABLE AG (\n  AGNr  INTEGER PRIMARY KEY,\n  Titel TEXT NOT NULL,\n  Raum  TEXT\n);\nCREATE TABLE nimmtTeil (\n  SchuelerNr INTEGER,\n  AGNr       INTEGER,\n  Seit       TEXT,\n  PRIMARY KEY (SchuelerNr, AGNr),\n  FOREIGN KEY (SchuelerNr) REFERENCES Schueler(SchuelerNr),\n  FOREIGN KEY (AGNr) REFERENCES AG(AGNr)\n);\nINSERT INTO Schueler VALUES (1, 'Mika R.', '12a');\nINSERT INTO Schueler VALUES (2, 'Lena K.', '12b');\nINSERT INTO Schueler VALUES (3, 'Noa T.', '12a');\nINSERT INTO AG VALUES (1, 'Robotik', 'B204');\nINSERT INTO AG VALUES (2, 'Schulgarten', 'Garten');\nINSERT INTO nimmtTeil VALUES (1, 1, '2026-09-01');\nINSERT INTO nimmtTeil VALUES (1, 2, '2026-09-15');\nINSERT INTO nimmtTeil VALUES (2, 1, '2026-09-01');\nINSERT INTO nimmtTeil VALUES (3, 2, '2026-10-01');\nSELECT a.Titel, COUNT(*) AS Teilnehmende\nFROM AG a, nimmtTeil n\nWHERE a.AGNr = n.AGNr\nGROUP BY a.AGNr, a.Titel\nORDER BY Teilnehmende DESC;",
+          "pruefung": [
+            {
+              "text": "Eure Datenbank hat mindestens drei Tabellen.",
+              "sql": "SELECT COUNT(*) >= 3 FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
+            },
+            {
+              "text": "Jede Tabelle hat einen Primärschlüssel.",
+              "sql": "SELECT COUNT(*) = 0 FROM sqlite_master m WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%' AND (SELECT COUNT(*) FROM pragma_table_info(m.name) WHERE pk > 0) = 0"
+            },
+            {
+              "text": "Es gibt eine Beziehungstabelle für die n:m-Beziehung: zusammengesetzter Primärschlüssel aus (mindestens) zwei Fremdschlüsseln.",
+              "sql": "SELECT COUNT(*) >= 1 FROM sqlite_master m WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%' AND (SELECT COUNT(*) FROM pragma_table_info(m.name) t WHERE t.pk > 0 AND t.name IN (SELECT \"from\" FROM pragma_foreign_key_list(m.name))) >= 2 AND (SELECT COUNT(DISTINCT id) FROM pragma_foreign_key_list(m.name)) >= 2"
+            },
+            {
+              "art": "daten",
+              "min": 2,
+              "text": "Jede eurer Tabellen enthält mindestens zwei Datensätze."
+            }
+          ]
+        },
+        null
+      ],
+      "tipps": [
+        "Für die n:m-Beziehung braucht ihr eine eigene Tabelle: `PRIMARY KEY (ANr, BNr)` und zwei Zeilen `FOREIGN KEY (…) REFERENCES …`.",
+        "Legt zuerst die Tabellen an, auf die verwiesen wird, und fügt auch deren Datensätze zuerst ein – sonst meldet die Datenbank einen verletzten Fremdschlüssel."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Beispiel einer Lösung (Schul-AG): Die Beziehungstabelle nimmtTeil hat den zusammengesetzten Primärschlüssel aus beiden Fremdschlüsseln – so kann jede Schülerin an mehreren AGs teilnehmen und jede AG mehrere Mitglieder haben."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Schueler",
+              "attribute": [
+                {
+                  "name": "SchuelerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Klasse"
+                }
+              ]
+            },
+            {
+              "name": "AG",
+              "attribute": [
+                {
+                  "name": "AGNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Raum"
+                }
+              ]
+            },
+            {
+              "name": "nimmtTeil",
+              "attribute": [
+                {
+                  "name": "SchuelerNr",
+                  "pk": true,
+                  "fk": "Schueler"
+                },
+                {
+                  "name": "AGNr",
+                  "pk": true,
+                  "fk": "AG"
+                },
+                {
+                  "name": "Seit"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "hinweis",
+          "md": "Stellt eure Datenbank in zwei Minuten vor und hängt die Projektkarte an die Pinnwand. **Nicht im Abitur:** `CREATE TABLE` und `INSERT` – die Abfragen dagegen schon."
+        }
+      ],
+      "niveau": "eA"
+    }
+  ]
+}

@@ -1,0 +1,525 @@
+{
+ "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Schülerfassungen (nur angemeldet, Spec §12.4/E13) – nie Lösungen.",
+ "dateien": [
+  {
+   "datei": "DD_Ermittler-Handbuch.pdf",
+   "titel": "Ermittler-Handbuch (8 Werkzeugkarten)",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "handbuch",
+   "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_A1-AB1_Der_erste_Auftrag.pdf",
+   "titel": "AB 1.1 · Der erste Auftrag",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-AB2_Das_verschwundene_Fundstueck.pdf",
+   "titel": "AB 1.2 · Das verschwundene Fundstück",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E2",
+   "ds": [
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Praesentation_Fundbuero_Handout.pdf",
+   "titel": "Präsentation Das Fundbüro (Handout)",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Unplugged_Karteikarten.pdf",
+   "titel": "Unplugged: Karteikarten-Filter",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-Unplugged_Detektei-Ausweise.pdf",
+   "titel": "Detektei-Ausweise (Kick-off)",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-Unplugged_Platzhalter-Fahndung.pdf",
+   "titel": "Unplugged: Fahndung mit Platzhaltern",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E2",
+   "ds": [
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 1",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_A2-AB1_Der_rote_Faden.pdf",
+   "titel": "AB 2.1 · Der rote Faden",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "DD_A2-AB2_Nachtfahrten.pdf",
+   "titel": "AB 2.2 · Nachtfahrten",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Praesentation_Raeder_Handout.pdf",
+   "titel": "Spur der Räder (Handout)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "handout",
+   "fassung": "handout",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Unplugged_Roter_Faden.pdf",
+   "titel": "Unplugged: Roter Faden (Kopiervorlage)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "DD_A2-Unplugged_Ermittlungsweg.pdf",
+   "titel": "Unplugged: Ermittlungsweg durchs Schema (Kopiervorlage)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 2",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "warmup",
+   "fassung": "schueler"
+  },
+  {
+   "datei": "DD_A3-AB1_Kassensturz.pdf",
+   "titel": "AB 3.1 · Kassensturz",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "DD_A3-AB2_Die_Statistik_luegt_nicht.pdf",
+   "titel": "AB 3.2 · Die Statistik lügt nicht",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "DD_A3-Praesentation_Stadtfest_Handout.pdf",
+   "titel": "Die Stadtfest-Kasse (Handout)",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "handout",
+   "fassung": "handout"
+  },
+  {
+   "datei": "DD_A3-Unplugged_GROUP_BY_Karten.pdf",
+   "titel": "Unplugged: Menschliches GROUP BY (Bon-Karten, Fächerschilder)",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A3-E1",
+   "ds": [
+    5
+   ]
+  },
+  {
+   "datei": "DD_A3-Unplugged_Zeitlupe_Karten.pdf",
+   "titel": "Unplugged: Menschliche Zeitlupe (Klausel- und Bedingungskarten)",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "ermittlung": "A3-E2",
+   "ds": [
+    6
+   ]
+  },
+  {
+   "datei": "DD_A3-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 3",
+   "akte": 3,
+   "gruppe": "A3",
+   "art": "warmup",
+   "fassung": "schueler"
+  },
+  {
+   "datei": "DD_A4-AB1_Die_Excel-Liste.pdf",
+   "titel": "AB 4.1 · Die Excel-Liste",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-AB2_Ordnung_ins_Archiv.pdf",
+   "titel": "AB 4.2 · Ordnung ins Archiv",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Praesentation_Vereinsarchiv_Handout.pdf",
+   "titel": "Präsentation Chaos im Vereinsarchiv (Handout)",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Anomalie-Rennen.pdf",
+   "titel": "Unplugged: Anomalie-Rennen",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E1",
+   "ds": [
+    7
+   ]
+  },
+  {
+   "datei": "DD_A4-Unplugged_Schluessel-Detektiv.pdf",
+   "titel": "Unplugged: Schlüssel-Detektiv",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A4-E2",
+   "ds": [
+    8
+   ]
+  },
+  {
+   "datei": "DD_A4-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 4",
+   "akte": 4,
+   "gruppe": "A4",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_A5-AB1_Bauplaene_lesen.pdf",
+   "titel": "AB 5.1 · Baupläne lesen",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E1",
+   "ds": [
+    9
+   ]
+  },
+  {
+   "datei": "DD_A5-AB2_Der_Architekturwettbewerb.pdf",
+   "titel": "AB 5.2 · Der Architekturwettbewerb",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E2",
+   "ds": [
+    10
+   ]
+  },
+  {
+   "datei": "DD_A5-AB3_Vom_Plan_zur_Datenbank.pdf",
+   "titel": "AB 5.3 · Vom Plan zur Datenbank",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E3",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Praesentation_Bauplan_Handout.pdf",
+   "titel": "Präsentation Der Bauplan (Handout)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Unplugged_Faeden-Kardinalitaeten.pdf",
+   "titel": "Unplugged: Fäden-Kardinalitäten (Rollenkarten)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E1",
+   "ds": [
+    9
+   ]
+  },
+  {
+   "datei": "DD_A5-Unplugged_Architekturwettbewerb.pdf",
+   "titel": "Unplugged: Architekturwettbewerb (Bewertungsbogen)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E2",
+   "ds": [
+    10
+   ]
+  },
+  {
+   "datei": "DD_A5-Unplugged_Regelkarten.pdf",
+   "titel": "Unplugged: Regelkarten-Umzug",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E3",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 5",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "eA"
+  },
+  {
+   "datei": "DD_A6-AB1_Das_Phantom.pdf",
+   "titel": "AB 6.1 · Das Phantom",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Praesentation_Datenspuren_Handout.pdf",
+   "titel": "Präsentation Datenspuren (Handout)",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "beide",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Unplugged_Steh_auf_wenn.pdf",
+   "titel": "Unplugged: Steh auf, wenn …",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Unplugged_Rollenkarten-Debatte.pdf",
+   "titel": "Unplugged: Rollenkarten-Debatte „Durfte die Detektei das?“",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 6",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_A7-Fallen-Checkliste.pdf",
+   "titel": "Kopiervorlage: Fallen-Checkliste P1–P10",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A7-E1",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Praesentation_Generalprobe_Handout.pdf",
+   "titel": "Präsentation Die Ermittlerprüfung (Handout)",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
+  },
+  {
+   "datei": "DD_A7-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 7",
+   "akte": 7,
+   "gruppe": "A7",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
+   "datei": "DD_K1-Eigene_Datenbank.pdf",
+   "titel": "K1 · Eigene Datenbank bauen",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "K1-E1"
+  },
+  {
+   "datei": "DD_K2-Escape_Room_Stationen.pdf",
+   "titel": "K2 · Escape Room Weserstedt (Stationsumschläge)",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "schueler",
+   "niveau": "beide"
+  }
+ ]
+}

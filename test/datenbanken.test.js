@@ -215,9 +215,9 @@ test('GET /api/db/<name>/schema: unbekannt, Variante, Pfadtricks → 404 JSON', 
   }
 });
 
-test('Verhör-Kontexte Musikschule und Kletterhalle: geladen, aber nie öffentlich unter /db/ oder /api/db/', async () => {
+test('Verhör-Kontexte Musikschule, Kletterhalle, Fitness-App und Mensa: geladen, aber nie öffentlich unter /db/ oder /api/db/', async () => {
   const a = app();
-  for (const kontext of ['musikschule', 'kletterhalle']) {
+  for (const kontext of ['musikschule', 'kletterhalle', 'fitness', 'mensa']) {
     const name = `verhoer/${kontext}`;
     assert.ok(VERHOER_DATENBANKEN.includes(name), name);
     assert.ok(!OEFFENTLICHE_DATENBANKEN.includes(name), name);

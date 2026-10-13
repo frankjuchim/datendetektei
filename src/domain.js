@@ -15,6 +15,13 @@ const AKTEN = Object.freeze(
   ].map((a) => Object.freeze({ ...a, niveaus: Object.freeze(a.niveaus) }))
 );
 
+/**
+ * Kür K1 „Eigene Datenbank bauen“ (Spec §3.3, Plan Phase 6 Task 7): eigene Welt 8 (seed/akten/kuer.json, kuer: true).
+ * Nicht in AKTEN – also nicht im Manifest (welten, umfang), nicht in den Verbund-Welten und ohne Wirkung auf den Rang;
+ * nur eA (entfällt im gA-Pfad, Spec §3.4/§18). Die Lehrkraft schaltet sie wie eine Akte frei.
+ */
+const KUER = Object.freeze({ nr: 8, titel: 'Kür: Eigene Datenbank bauen', niveaus: Object.freeze(['eA']), kuer: true });
+
 /** Ränge (Spec §8): Schwellen nach Vertrag 0/10/30/55/80 % der Level-Punkte der freigeschalteten Akten. */
 const RAENGE = Object.freeze(
   [
@@ -79,6 +86,7 @@ function punkteFuer(punkte, fehlversuche, tipps) {
 }
 
 module.exports = {
+  KUER,
   AKTEN,
   RAENGE,
   rangFuer,
