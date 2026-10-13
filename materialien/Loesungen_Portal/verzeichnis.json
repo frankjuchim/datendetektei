@@ -188,6 +188,25 @@
    "art": "warmup",
    "fassung": "loesung",
    "niveau": "beide"
+  },
+  {
+   "datei": "DD_K1-Eigene_Datenbank_Loesung.pdf",
+   "titel": "K1 · Eigene Datenbank bauen – Lösung",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "K1-E1"
+  },
+  {
+   "datei": "DD_K2-Escape_Room_Stationen_Loesung.pdf",
+   "titel": "K2 · Escape Room Weserstedt (Stationsumschläge) – Lösung",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "loesung",
+   "niveau": "beide"
   }
  ]
 }

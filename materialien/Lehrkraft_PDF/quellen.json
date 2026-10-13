@@ -40,6 +40,16 @@
    "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
    "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
    "verfahren": "notizen"
+  },
+  "DD_Abi-Kompass.pdf": {
+   "quelle": "00_Gesamt/DD_Abi-Kompass.docx",
+   "sha256": "16043ebe0a0bed68c5250c4b1f523a5e28c0a502baf44061b20add988b08c71d",
+   "verfahren": "pdf"
+  },
+  "DD_Gesamtuebersicht.pdf": {
+   "quelle": "00_Gesamt/DD_Gesamtuebersicht.docx",
+   "sha256": "250546cbbe3288c64d3c0762811a8fa064b98fc5ee416f854a801bcd8113edaf",
+   "verfahren": "pdf"
   }
  }
 }

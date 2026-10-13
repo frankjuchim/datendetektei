@@ -125,6 +125,21 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
    "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
    "verfahren": "ohne-loesungsteil"
+  },
+  "DD_Ermittler-Handbuch.pdf": {
+   "quelle": "00_Gesamt/DD_Ermittler-Handbuch.docx",
+   "sha256": "0e179d8272182297421bdbb24b4d23a585f8d36ce4cf931d77d4e253ef82f839",
+   "verfahren": "pdf"
+  },
+  "DD_K1-Eigene_Datenbank.pdf": {
+   "quelle": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank.docx",
+   "sha256": "1e6533715461dc1320569e0e5fb266862855f26b41636c0a5c7d8d850b4b69fd",
+   "verfahren": "pdf"
+  },
+  "DD_K2-Escape_Room_Stationen.pdf": {
+   "quelle": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Stationen.docx",
+   "sha256": "11b7f39f97dca9aa9590af883a58272e13bcc605d6f469a4108e6ef47ffc6b61",
+   "verfahren": "pdf"
   }
  }
 }
