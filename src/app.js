@@ -14,7 +14,7 @@
 
 const path = require('node:path');
 const express = require('express');
-const { sicherheitsHeader, pruefeHerkunft, rateLimit } = require('./kern/sicherheit');
+const { sicherheitsHeader, pruefeHerkunft, rateLimit, auftragsSperre } = require('./kern/sicherheit');
 const { ssoRouten } = require('./routes/sso');
 const { verbundRouten } = require('./routes/verbund');
 const { manifestRoute } = require('./kern/manifest');
@@ -130,9 +130,11 @@ function erzeugeApp(
   app.use(spurenbrettRouten());
   app.use(modellWerkzeugRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
-  if (lernen) app.use(schuelerRouten({ lernen, konfig }));
+  // Höchstens ein Sandbox-Auftrag je Konto (ohne Anmeldung je IP) – eine Sperre für alle Sandbox-Routen (F3, Phase 8).
+  const sandboxSperre = auftragsSperre();
+  if (lernen) app.use(schuelerRouten({ lernen, konfig, sperre: sandboxSperre }));
   // Kür K1: Ausführen in der Schreib-Konsole (Sandbox, frische In-Memory-DB je Anfrage, nichts gespeichert).
-  if (lernen && sandbox && typeof sandbox.fuehreSkriptAus === 'function') app.use(kuerRouten({ lernen, sandbox, konfig }));
+  if (lernen && sandbox && typeof sandbox.fuehreSkriptAus === 'function') app.use(kuerRouten({ lernen, sandbox, konfig, sperre: sandboxSperre }));
   // Kurs-Einstellungen für Lehrkräfte (Akten, Niveau, Verhör); Kennzahlen nur mit geladenen Inhalten.
   app.use(lehrkraftRouten({ db, stand }));
   // Auswertung, CSV, Vorschau, Beamer-Board-API und Superadmin-Funktionen (Phase 6 Task 3).
@@ -140,16 +142,16 @@ function erzeugeApp(
   // Seiten: Urkunden-Druckseite und Beamer-Board (Phase 6 Task 4).
   app.use(lehrkraftSeitenRouten({ db, stand, konfig }));
   // Verhöre (Status, Start, Versuch, Antwort, Abgabe).
-  if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
+  if (verhoer) app.use(verhoerRouten({ verhoer, konfig, sperre: sandboxSperre }));
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
   if (fallebene) app.use(fallebeneRouten({ fallebene }));
-  if (live) app.use(liveRouten({ live, konfig }));
+  if (live) app.use(liveRouten({ live, konfig, sperre: sandboxSperre }));
   // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
   // Materialien (Whitelists verzeichnis.json, Zugriff nach Rolle, Spec §12.4) – eine Instanz für Gast, Themen, Downloads.
   const material = erzeugeMaterial({ verzeichnis: materialVerzeichnis, log: (z) => console.log(z), ...materialOptionen });
   app.locals.material = material;
-  app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen, material }), pruefer, konfig }));
+  app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen, material }), pruefer, konfig, sperre: sandboxSperre }));
   app.use(themenRouten({ themen: erzeugeThemen({ inhalte, material, videos }) }));
   app.use(materialRouten({ material, videos }));
 
@@ -159,7 +161,7 @@ function erzeugeApp(
   // Übungs-Datenbanken: nur die öffentliche Haupt-DB und ihr Schema (Spec §7.2).
   if (datenbanken) app.use(sqlRouten(datenbanken));
   // Fallback der Konsole ohne WebAssembly: Ausführen in der Sandbox, nur Haupt-DB (Spec §18).
-  if (sandbox) app.use(sqlAusfuehrenRoute({ sandbox, konfig }));
+  if (sandbox) app.use(sqlAusfuehrenRoute({ sandbox, konfig, sperre: sandboxSperre }));
 
   // Nur public/static/ wird als Verzeichnis ausgeliefert; HTML-Seiten nur über die Routen oben.
   app.use('/static', express.static(path.join(PUBLIC_DIR, 'static'), { maxAge: '1h', index: false }));

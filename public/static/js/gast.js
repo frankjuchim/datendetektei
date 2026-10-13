@@ -292,7 +292,7 @@ async function api(pfad, { methode = 'GET', body } = {}) {
   } catch {
     daten = null;
   }
-  if (antwort.status === 429) return { fehler: TEXT_ZU_VIELE };
+  if (antwort.status === 429) return { fehler: daten && daten.code === 'LAEUFT_NOCH' && typeof daten.error === 'string' ? daten.error : TEXT_ZU_VIELE };
   if (!antwort.ok) return { fehler: (daten && daten.error) || TEXT_SERVER, status: antwort.status };
   return daten || { fehler: TEXT_SERVER };
 }
@@ -414,7 +414,7 @@ async function baueKonsole() {
       return { fehler: signal.aborted ? 'Abfrage abgebrochen.' : TEXT_SERVER };
     }
     const d = await r.json().catch(() => null);
-    if (r.status === 429) return { fehler: TEXT_ZU_VIELE };
+    if (r.status === 429) return { fehler: d && d.code === 'LAEUFT_NOCH' && typeof d.error === 'string' ? d.error : TEXT_ZU_VIELE };
     if (d && typeof d.fehler === 'string') return { fehler: d.fehler };
     if (!r.ok || !d || !Array.isArray(d.spalten)) return { fehler: TEXT_SERVER };
     return d;

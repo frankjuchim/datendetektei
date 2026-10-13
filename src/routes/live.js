@@ -22,7 +22,7 @@
 const path = require('node:path');
 const express = require('express');
 const { nurAngemeldet } = require('../kern/sitzung');
-const { rateLimit } = require('../kern/sicherheit');
+const { rateLimit, auftragsSperre } = require('../kern/sicherheit');
 const { istKursId } = require('../kern/verbund');
 
 const PUBLIC_DIR = path.join(__dirname, '..', '..', 'public');
@@ -35,7 +35,7 @@ function seite(datei) {
   };
 }
 
-function liveRouten({ live, konfig }) {
+function liveRouten({ live, konfig, sperre = auftragsSperre() }) {
   const router = express.Router();
   const angemeldet = nurAngemeldet(['schueler', 'lehrkraft', 'superadmin']);
   const lehrkraft = nurAngemeldet(['lehrkraft', 'superadmin']);
@@ -87,7 +87,8 @@ function liveRouten({ live, konfig }) {
   const r = '/api/live/:runde';
   router.get(r, angemeldet, runde, json((req) => live.zustand(req.sitzung, req.params.runde, sicht(req))));
   router.post(r + '/beitreten', angemeldet, runde, postLimit, groesse, json((req) => live.beitreten(req.sitzung, req.params.runde, req.body)));
-  router.post(r + '/antwort', angemeldet, runde, postLimit, antwortLimit, groesse, json((req) => live.antworten(req.sitzung, req.params.runde, req.body)));
+  // Antworten: höchstens eine Prüfung je Konto gleichzeitig (F3; Nicht-SQL-Antworten sind sofort fertig)
+  router.post(r + '/antwort', angemeldet, runde, postLimit, antwortLimit, groesse, sperre.middleware(), json((req) => live.antworten(req.sitzung, req.params.runde, req.body)));
   router.post(r + '/code', angemeldet, runde, postLimit, groesse, json((req) => live.code(req.sitzung, req.params.runde, req.body)));
   router.post(r + '/tipp', angemeldet, runde, postLimit, json((req) => live.tipp(req.sitzung, req.params.runde)));
   router.post(r + '/steuerung', angemeldet, runde, postLimit, groesse, json((req) => live.steuern(req.sitzung, req.params.runde, req.body)));

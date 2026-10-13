@@ -119,3 +119,21 @@ test('Sicherheits-Review Phase 8: Entwicklungsschlüssel und -geheimnis werden i
   // in der Entwicklung bleibt alles erlaubt
   assert.doesNotThrow(() => ladeKonfig(umgebung()));
 });
+
+test('F3 (Phase 8): SANDBOX_PROZESSE wird übernommen, Grenzen 1…16, ungültige Werte brechen den Start ab', () => {
+  assert.equal(ladeKonfig(umgebung({ SANDBOX_PROZESSE: '1' })).sandboxProzesse, 1);
+  assert.equal(ladeKonfig(umgebung({ SANDBOX_PROZESSE: '6' })).sandboxProzesse, 6);
+  assert.equal(ladeKonfig(umgebung({ SANDBOX_PROZESSE: ' 16 ' })).sandboxProzesse, 16);
+  for (const falsch of ['0', '17', '-2', '2.5', 'zwei', '3x']) {
+    assert.throws(() => ladeKonfig(umgebung({ SANDBOX_PROZESSE: falsch })), /SANDBOX_PROZESSE/, falsch);
+  }
+});
+
+test('F3 (Phase 8): Standard der Sandbox-Prozesse = min(4, max(2, Kerne − 1))', () => {
+  const { standardSandboxProzesse } = require('../src/kern/konfig');
+  assert.deepEqual([1, 2, 3, 4, 5, 8, 64].map(standardSandboxProzesse), [2, 2, 2, 3, 4, 4, 4]);
+  const os = require('node:os');
+  const k = ladeKonfig(umgebung());
+  assert.equal(k.sandboxProzesse, standardSandboxProzesse(os.availableParallelism()));
+  assert.equal(ladeKonfig(umgebung({ SANDBOX_PROZESSE: '' })).sandboxProzesse, k.sandboxProzesse);
+});
