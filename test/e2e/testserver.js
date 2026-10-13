@@ -45,7 +45,7 @@ function baueTestDb(name) {
  * Die Plattform-URL ist die tatsächliche Adresse (mit Port), damit die Origin-Prüfung für POSTs greift.
  * → { url, t (testApp-Ergebnis), anmelden(nutzer) → Cookie „dd_s=…“, schliessen() }
  */
-async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mitInhalten = false, rateLimits = null, aktenDateien = null, materialVerzeichnis = null, aktenVerzeichnis = null } = {}) {
+async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mitInhalten = false, rateLimits = null, aktenDateien = null, materialVerzeichnis = null, aktenVerzeichnis = null, videos = undefined } = {}) {
   if (mitInhalten) mitDatenbanken = true;
   let weiter = (req, res) => {
     res.statusCode = 503;
@@ -57,6 +57,7 @@ async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mi
 
   let sandbox = null;
   const appOptionen = materialVerzeichnis ? { materialVerzeichnis } : {};
+  if (videos !== undefined) appOptionen.videos = videos;
   if (mitDatenbanken) {
     const datenbanken = ladeDatenbanken(undefined, { log: () => {} });
     sandbox = erzeugeSandbox({

@@ -138,6 +138,14 @@ function zeichneBriefing() {
   if (e.ab) fuss.appendChild(document.createTextNode(`Arbeitsblatt: ${e.ab}`));
   if (Array.isArray(e.ds) && e.ds.length) fuss.appendChild(document.createTextNode(`${e.ab ? ' · ' : ''}Doppelstunde ${e.ds.join(', ')}`));
   if (fuss.childNodes.length) innen.appendChild(fuss);
+  // Erklärvideos zur Doppelstunde (YouTube, nur Link-Knopf; Spec §13)
+  const videos = (Array.isArray(e.videos) ? e.videos : []).map((v) => A.videoKnopf(v)).filter(Boolean);
+  for (const a of videos) a.prepend(R.icon('i-play'));
+  if (videos.length) {
+    const reihe = h('div', 'knopf-reihe video-reihe', ...videos);
+    reihe.id = 'ermittlung-videos';
+    innen.appendChild(reihe);
+  }
   box.appendChild(innen);
   return box;
 }

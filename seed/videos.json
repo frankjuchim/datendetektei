@@ -1,0 +1,99 @@
+{
+ "_hinweis": "YouTube-Links der Erklärvideos (Spec §13, docs/MATERIALIEN.md §10). url nach dem Hochladen eintragen – nur https://www.youtube.com/watch?v=<ID> oder https://youtu.be/<ID>; null = kein Knopf. Danach npm run validate.",
+ "version": 1,
+ "videos": [
+  {
+   "nr": 0,
+   "titel": "So ermittelst du in der Datendetektei",
+   "akte": 0,
+   "ds": [
+    1
+   ],
+   "niveau": "beide",
+   "ordner": "00_So_ermittelst_du",
+   "url": null
+  },
+  {
+   "nr": 1,
+   "titel": "SQL-Grundlagen: SELECT, WHERE und die Bedingungsfallen",
+   "akte": 1,
+   "ds": [
+    1,
+    2
+   ],
+   "niveau": "beide",
+   "ordner": "01_SQL-Grundlagen",
+   "url": null
+  },
+  {
+   "nr": 2,
+   "titel": "Verbund ohne JOIN: Wie FROM a, b WHERE funktioniert",
+   "akte": 2,
+   "ds": [
+    3,
+    4
+   ],
+   "niveau": "beide",
+   "ordner": "02_Verbund_ohne_JOIN",
+   "url": null
+  },
+  {
+   "nr": 3,
+   "titel": "GROUP BY und HAVING – so wie im Abitur",
+   "akte": 3,
+   "ds": [
+    5,
+    6
+   ],
+   "niveau": "beide",
+   "ordner": "03_GROUP_BY_und_HAVING",
+   "url": null
+  },
+  {
+   "nr": 4,
+   "titel": "Redundanz, Anomalien und gute Schlüssel",
+   "akte": 4,
+   "ds": [
+    7,
+    8
+   ],
+   "niveau": "beide",
+   "ordner": "04_Redundanz_und_Schluessel",
+   "url": null
+  },
+  {
+   "nr": 5,
+   "titel": "ER-Modelle nach den Ergänzenden Hinweisen",
+   "akte": 5,
+   "ds": [
+    9,
+    10
+   ],
+   "niveau": "eA",
+   "ordner": "05_ER-Modelle",
+   "url": null
+  },
+  {
+   "nr": 6,
+   "titel": "Vom ER-Modell zum Relationenschema in 5 Regeln",
+   "akte": 5,
+   "ds": [
+    11
+   ],
+   "niveau": "eA",
+   "ordner": "06_ER_zu_Relationenschema",
+   "url": null
+  },
+  {
+   "nr": 7,
+   "titel": "Abi-Check Datenbanken: 10 Fallen und die Operatoren",
+   "akte": 7,
+   "ds": [
+    13
+   ],
+   "niveau": "beide",
+   "ordner": "07_Abi-Check",
+   "url": null
+  }
+ ]
+}

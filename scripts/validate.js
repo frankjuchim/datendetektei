@@ -7,6 +7,7 @@
 //                                         und die Material-Whitelists materialien/*/verzeichnis.json (Format =
 //                                         Fehler; fehlende Dateien und Lösungen in der Gast-Auswahl = Hinweis)
 //                                         sowie den Live-Modus seed/live/{pool,escape}.json (Transfer, Codes ableitbar)
+//                                         und die Video-Links seed/videos.json (nur YouTube, Spec §13)
 //   node scripts/validate.js <datei> …  → prüft einzelne Dateien
 //   Optionen: --json (maschinenlesbar), --ohne-hinweise (nur Fehler)
 // Baut dazu die Übungs- und Verhör-DBs (ladeDatenbanken), eine Sandbox mit zwei Prozessen und den SQL-Prüfer.
@@ -20,10 +21,13 @@ const { erzeugePruefer } = require('../src/sql/pruefer');
 const { validiereAkten, validiereProbefall, formatiere } = require('../src/content/validator');
 const { pruefeFallebene } = require('../src/services/fallebene');
 const { pruefeVerzeichnisse } = require('../src/services/material');
+const { pruefeVideos } = require('../src/services/videos');
 
 const SEED = path.join(__dirname, '..', 'seed');
 const PROBEFALL = path.join(SEED, 'gast', 'probefall.json');
 const FALLEBENE = path.join(SEED, 'fallebene.json');
+const VIDEOS = path.join(SEED, 'videos.json');
+const VIDEO_ORDNER = path.join(__dirname, '..', 'materialien', 'Videos');
 const { validiereLive } = require('../src/content/live');
 
 const LIVE = { pool: path.join(SEED, 'live', 'pool.json'), escape: path.join(SEED, 'live', 'escape.json') };
@@ -132,6 +136,16 @@ async function main() {
     const m = pruefeVerzeichnisse();
     ergebnis.fehler.push(...m.fehler);
     ergebnis.hinweise.push(...m.hinweise);
+    // Erklärvideos (Spec §13): nur YouTube-Links, Zuordnung zu DS (docs/MATERIALIEN.md §10)
+    if (fs.existsSync(VIDEOS)) {
+      try {
+        const v = pruefeVideos(JSON.parse(fs.readFileSync(VIDEOS, 'utf8')), { videoOrdner: VIDEO_ORDNER });
+        for (const text of v.fehler) ergebnis.fehler.push({ datei: 'videos.json', text });
+        for (const text of v.hinweise) ergebnis.hinweise.push({ datei: 'videos.json', text });
+      } catch (e) {
+        ergebnis.fehler.push({ datei: 'videos.json', text: `Kein gültiges JSON: ${e.message}` });
+      }
+    }
   }
   if (ohneArgumente && !pfade.length) ergebnis.hinweise.push({ datei: 'seed', text: 'keine Akten in seed/akten und keine Warm-up-Karten in seed/warmup gefunden.' });
 

@@ -9,6 +9,7 @@
 // Wurzel der Materialien (Standard: materialien/; früher gastOptionen.materialVerzeichnis), materialOptionen gehen an
 // erzeugeMaterial (src/services/material.js, z. B. zipLimitBytes).
 // liveInhalte = ladeLiveInhalte() aus src/content/live.js (optional; ohne sie gibt es keinen Live-Modus).
+// videos = geprüfter Inhalt von seed/videos.json (Standard: ladeVideos(); null = keine Video-Knöpfe, Spec §13).
 // Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
@@ -45,6 +46,7 @@ const { erzeugeTraining } = require('./services/training');
 const { erzeugeFallebene, ladeFallebene } = require('./services/fallebene');
 const { fallebeneRouten } = require('./routes/fallebene');
 const { erzeugeLive } = require('./services/live');
+const { erzeugeVideos, ladeVideos } = require('./services/videos');
 const { liveRouten } = require('./routes/live');
 const { version: VERSION } = require('../package.json');
 
@@ -63,7 +65,8 @@ function erzeugeApp(
     materialVerzeichnis = gastOptionen.materialVerzeichnis || STANDARD_VERZEICHNIS,
     materialOptionen = {},
     fallebene: fallebeneDaten,
-    liveInhalte = null
+    liveInhalte = null,
+    videos: videoDaten
   } = {}
 ) {
   const app = express();
@@ -74,8 +77,11 @@ function erzeugeApp(
   app.locals.datenbanken = datenbanken;
   app.locals.inhalte = inhalte;
   const uhr = konfig.jetzt || Date.now;
+  // Erklärvideos als Link-Knöpfe (nur Einträge mit YouTube-Link; Spec §13).
+  const videos = erzeugeVideos(videoDaten !== undefined ? videoDaten : ladeVideos(undefined, { log: (z) => console.log(z) }));
+  app.locals.videos = videos;
   const stand = inhalte ? erzeugeStand({ db, inhalte, jetzt: uhr }) : null;
-  const lernen = inhalte ? erzeugeLernen({ db, inhalte, stand, pruefer, jetzt: uhr }) : null;
+  const lernen = inhalte ? erzeugeLernen({ db, inhalte, stand, pruefer, videos, jetzt: uhr }) : null;
   app.locals.stand = stand;
   app.locals.lernen = lernen;
   const verhoer = lernen ? erzeugeVerhoer({ db, inhalte, stand, lernen, pruefer, jetzt: uhr }) : null;
@@ -143,8 +149,8 @@ function erzeugeApp(
   const material = erzeugeMaterial({ verzeichnis: materialVerzeichnis, log: (z) => console.log(z), ...materialOptionen });
   app.locals.material = material;
   app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen, material }), pruefer, konfig }));
-  app.use(themenRouten({ themen: erzeugeThemen({ inhalte, material }) }));
-  app.use(materialRouten({ material }));
+  app.use(themenRouten({ themen: erzeugeThemen({ inhalte, material, videos }) }));
+  app.use(materialRouten({ material, videos }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());

@@ -71,7 +71,7 @@ function oeffentlicheBloecke(bloecke) {
  * @param {{ db, inhalte, stand, pruefer?: { pruefeSql }, jetzt?: () => number }} opt
  *   pruefer = erzeugePruefer(…) aus src/sql/pruefer.js (ohne ihn sind sql-Aufgaben nicht prüfbar → 503).
  */
-function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now }) {
+function erzeugeLernen({ db, inhalte, stand, pruefer = null, videos = null, jetzt = Date.now }) {
   const iso = () => new Date(jetzt()).toISOString();
   const sqlPruefer = pruefer ? (aufgabe, sql) => pruefer.pruefeSql({ sql, aufgabe }) : null;
 
@@ -221,7 +221,9 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
       ermittlung: {
         ...kurz,
         intro: oeffentlicheBloecke(sl.level.intro),
-        plaedoyer: sl.level.plaedoyer ? PL.kette(sl.level.plaedoyer, ketteFragen(z, fm)) : null
+        plaedoyer: sl.level.plaedoyer ? PL.kette(sl.level.plaedoyer, ketteFragen(z, fm)) : null,
+        // Erklärvideos zur Doppelstunde (nur mit YouTube-Link; Spec §13) – { nr, titel, url }
+        videos: videos ? videos.fuerDs(kurz.ds, { niveau: z.einst.niveau }).map((v) => ({ nr: v.nr, titel: v.titel, url: v.url })) : []
       },
       vorher: i > 0 ? { id: levels[i - 1].level.id, titel: levels[i - 1].level.titel } : null,
       nachher: i >= 0 && i < levels.length - 1 ? { id: levels[i + 1].level.id, titel: levels[i + 1].level.titel } : null

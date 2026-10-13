@@ -292,3 +292,27 @@ Lösungen in der Gast-Auswahl sind Hinweise.
 ## 9 Docker-Image
 
 Siehe Dockerfile (Stufe `material`, `scripts/materialien_fuer_image.js`): PDFs und Whitelists immer, Originale nur mit `ORIGINALE_IM_IMAGE=1` (Standard).
+
+## 10 Video-Links `seed/videos.json` (Spec §13)
+
+Die Erklärvideos erscheinen als **Link-Knopf** (kein Embed) an der Ermittlung (gleiche Doppelstunde), auf der
+Themenseite (je Akte, öffentlich) und im Lehrkraft-Reiter „Materialien“ – aber **nur, wenn `url` gesetzt ist**.
+
+```json
+{ "version": 1,
+  "videos": [ { "nr": 1, "titel": "SQL-Grundlagen: …", "akte": 1, "ds": [1, 2], "niveau": "beide",
+                "ordner": "01_SQL-Grundlagen", "url": null } ] }
+```
+
+| Feld | Bedeutung |
+|---|---|
+| `nr`, `titel`, `akte`, `ordner` | wie `materialien/Videos/<ordner>/video.json` (Test `test/videos.test.js` gleicht ab); `akte` 0 = Start |
+| `ds` | Doppelstunden (1–13); bestimmt, an welchen Ermittlungen und Akten der Knopf erscheint |
+| `niveau` | `eA`, `gA`, `beide` – eA-Videos fehlen in gA-Kursen (Ermittlung, `/api/material`) |
+| `url` | `null` (Standard) oder **nur** `https://www.youtube.com/watch?v=<ID>` (optional `&t=<s>`) bzw. `https://youtu.be/<ID>` (optional `?si=…`/`?t=…`), ID 11 Zeichen |
+
+Nach dem Hochladen (zuerst „nicht gelistet“) trägt Frank die URL ein und prüft mit `npm run validate`. Achtung: Mit
+eingetragener URL steht der Link auf der **öffentlichen** Themenseite – ein „nicht gelistetes“ Video ist damit für
+alle auffindbar, die die Seite öffnen. Die Plattform gibt immer die Normalform `https://www.youtube.com/watch?v=<ID>`
+aus (Tracking-Parameter wie `si` entfallen); Links öffnen mit `target="_blank"` und `rel="noopener noreferrer"`. Die
+CSP bleibt unverändert (kein `frame-src`). Eine fehlerhafte Datei schaltet alle Video-Knöpfe ab (Log beim Start).
