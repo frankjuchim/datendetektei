@@ -18,7 +18,19 @@
     "db:pruefen": "node scripts/db_bauen.js --pruefen",
     "sqljs": "node scripts/sqljs_kopieren.js",
     "e2e": "node --test test/e2e/*.e2e.js",
-    "validate": "node scripts/validate.js"
+    "validate": "node scripts/validate.js",
+    "arbeitsblaetter": "python3 werkzeuge/arbeitsblaetter_pdf.py",
+    "loesungen": "python3 werkzeuge/loesungen_pdf.py",
+    "lehrkraft": "python3 werkzeuge/lehrkraft_pdf.py",
+    "praesentationen": "python3 werkzeuge/praesentationen_pdf.py",
+    "originale": "python3 werkzeuge/originale_verzeichnis.py",
+    "material:pdf": "npm run arbeitsblaetter && npm run loesungen && npm run praesentationen && npm run lehrkraft && npm run originale",
+    "material:vollstaendig": "python3 werkzeuge/arbeitsblaetter_pdf.py --pruefen && python3 werkzeuge/loesungen_pdf.py --pruefen && python3 werkzeuge/praesentationen_pdf.py --pruefen && python3 werkzeuge/lehrkraft_pdf.py --pruefen && python3 werkzeuge/originale_verzeichnis.py --pruefen",
+    "material:sql": "python3 werkzeuge/material_sql_pruefen.py",
+    "material:pruefen": "python3 werkzeuge/materialien_pruefen.py",
+    "material:kompetenzen": "python3 werkzeuge/kompetenz_abdeckung.py",
+    "material:tests": "python3 -m unittest discover -s werkzeuge/tests",
+    "pruefen": "npm test && npm run validate && npm run material:tests && npm run material:vollstaendig && npm run material:sql && npm run material:pruefen && npm run material:kompetenzen"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

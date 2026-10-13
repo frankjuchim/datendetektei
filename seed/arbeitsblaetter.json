@@ -1,0 +1,76 @@
+{
+ "_hinweis": "Zuordnung aller Unterrichtsmaterialien (Spec §12, docs/MATERIALIEN.md): Quelle der PDF-Pipeline (werkzeuge/*_pdf.py), der Whitelists materialien/*/verzeichnis.json und der Themenseite. Pfade 'quelle'/'loesung' relativ zu materialien/, 'datei' = PDF-Name ohne Umlaute. Arten: ab, praesentation, warmup, unplugged, handbuch, lehrerhinweise, gesamt, generalprobe (freigabe: lehrkraft|schueler), klausur, kuer, video.",
+ "version": 1,
+ "gruppen": [
+  {
+   "gruppe": "Gesamt",
+   "akte": null,
+   "ordner": "00_Gesamt",
+   "titel": "Gesamtmaterial",
+   "materialien": []
+  },
+  {
+   "gruppe": "A1",
+   "akte": 1,
+   "ordner": "Akte1_Fundbuero",
+   "titel": "Akte 1 · Das Fundbüro",
+   "materialien": []
+  },
+  {
+   "gruppe": "A2",
+   "akte": 2,
+   "ordner": "Akte2_Raeder",
+   "titel": "Akte 2 · Spur der Räder",
+   "materialien": []
+  },
+  {
+   "gruppe": "A3",
+   "akte": 3,
+   "ordner": "Akte3_Stadtfest",
+   "titel": "Akte 3 · Die Stadtfest-Kasse",
+   "materialien": []
+  },
+  {
+   "gruppe": "A4",
+   "akte": 4,
+   "ordner": "Akte4_Vereinsarchiv",
+   "titel": "Akte 4 · Chaos im Vereinsarchiv",
+   "materialien": []
+  },
+  {
+   "gruppe": "A5",
+   "akte": 5,
+   "ordner": "Akte5_Bauplan",
+   "titel": "Akte 5 · Der Bauplan",
+   "materialien": []
+  },
+  {
+   "gruppe": "A6",
+   "akte": 6,
+   "ordner": "Akte6_Datenspuren",
+   "titel": "Akte 6 · Datenspuren",
+   "materialien": []
+  },
+  {
+   "gruppe": "A7",
+   "akte": 7,
+   "ordner": "Akte7_Generalprobe",
+   "titel": "Akte 7 · Die Ermittlerprüfung",
+   "materialien": []
+  },
+  {
+   "gruppe": "Kuer",
+   "akte": null,
+   "ordner": "Kuer",
+   "titel": "Kür (nicht im Abitur)",
+   "materialien": []
+  },
+  {
+   "gruppe": "Videos",
+   "akte": null,
+   "ordner": "Videos",
+   "titel": "Erklärvideos (Folien)",
+   "materialien": []
+  }
+ ]
+}

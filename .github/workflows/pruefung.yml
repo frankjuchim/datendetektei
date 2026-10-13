@@ -23,6 +23,21 @@ jobs:
         run: npm run db:pruefen
       - name: Inhalte (Akten, Warm-up, Probefall – jede SQL-Lösung auf allen Varianten, EH-konform)
         run: npm run validate
+      - name: Python für die Material-Werkzeuge (ohne LibreOffice)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install python-docx==1.2.0 python-pptx==1.0.2 pypdf==6.17.0 Pillow==12.3.0
+      - name: Material-Werkzeuge (Python-Tests; Rendern wird ohne LibreOffice übersprungen)
+        run: npm run material:tests
+      - name: Material-PDFs vollständig und aktuell (Hash der Quelle), Whitelists passend
+        run: npm run material:vollstaendig
+      - name: SQL in Materialien (Syntax, EH §8, Ergebnistabellen)
+        run: npm run material:sql
+      - name: Begriffe, Klarnamen, PDF-Namen, Schülerfassungen ohne Lösungen
+        run: npm run material:pruefen
+      - name: Kompetenzabdeckung (Hinweise)
+        run: npm run material:kompetenzen
       - name: Chromium für die E2E-Tests
         run: npx playwright-core install --with-deps chromium
       - name: E2E (Konsole, Worker, Sichtprüfung)
