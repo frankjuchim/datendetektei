@@ -1143,7 +1143,7 @@
     },
     {
       "id": "A2-E2-01",
-      "titel": "Welche Verbindung gehört wohin?",
+      "titel": "Welche Verbundbedingung gehört wohin?",
       "stufe": 1,
       "punkte": 10,
       "kategorie": "SQL Verbund",
@@ -1342,7 +1342,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Am Stadtfest-Samstag, dem 2026-08-29, war viel los. Gib Vorname und Nachname der Kundinnen und Kunden sowie die Startzeit aller Ausleihen dieses Tages aus. Verwende Tabellenaliase (`Ausleihe a, Kunde k`)."
+          "md": "Am Stadtfest-Samstag, dem 29.08.2026, war viel los. Gib Vorname und Nachname der Kundinnen und Kunden sowie die Startzeit aller Ausleihen dieses Tages aus. Verwende Tabellenaliase (`Ausleihe a, Kunde k`)."
         }
       ],
       "interaktion": {
@@ -1529,7 +1529,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Ein Ausschnitt der Ausleihen vom 2026-09-20. Wie viele Zeilen liefert jede der beiden Abfragen **auf diesem Ausschnitt**?"
+          "md": "Ein Ausschnitt der Ausleihen vom 20.09.2026. Wie viele Zeilen liefert jede der beiden Abfragen **auf diesem Ausschnitt**?"
         },
         {
           "t": "dbtabelle",
@@ -1700,7 +1700,7 @@
       },
       "tipps": [
         "Ermittlungsweg: Kunde ← Ausleihe → Rad, Ausleihe → Station (über die **Start**station).",
-        "Eine Verbindung über `ZielStation` kann es bei laufenden Fahrten nicht geben – die ist leer."
+        "Einen Verbund über `ZielStation` kann es bei laufenden Fahrten nicht geben – die Zielstation ist leer."
       ],
       "erklaerung": [
         {
@@ -1913,7 +1913,7 @@
         },
         {
           "t": "text",
-          "md": "**Geben Sie an**, welche Aussage die Bedeutung von ↑FahrerNr in der Relation Fahrt korrekt beschreibt."
+          "md": "**Geben Sie an**, welche Aussage die Bedeutung von ↑FahrerNr in der Relation Fahrt korrekt beschreibt. [1 BE]"
         }
       ],
       "interaktion": {
@@ -2054,7 +2054,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen Sie** den Kennzeichnungen der Relation Fahrt ihre Bedeutung zu."
+          "md": "**Ordnen Sie** den Kennzeichnungen der Relation Fahrt ihre Bedeutung **zu**. [2 BE]"
         }
       ],
       "interaktion": {
@@ -2216,7 +2216,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für alle Fahrten Datum, Abfahrt und Nachname der Fahrerin bzw. des Fahrers ausgibt."
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für alle Fahrten Datum, Abfahrt und Nachname der Fahrerin bzw. des Fahrers ausgibt. [2 BE]"
         }
       ],
       "interaktion": {
@@ -2262,7 +2262,7 @@
         },
         {
           "t": "text",
-          "md": "Die Tabelle Fahrer enthält 8, die Tabelle Bus 4 Datensätze. **Geben Sie an**, wie viele Datensätze die folgende Abfrage liefert."
+          "md": "Die Tabelle Fahrer enthält 8, die Tabelle Bus 4 Datensätze. **Geben Sie an**, wie viele Datensätze die folgende Abfrage liefert. [1 BE]"
         },
         {
           "t": "sql",
@@ -2308,7 +2308,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Gegeben ist ein Ausschnitt aus dem Kreuzprodukt der Relationen Fahrt und Fahrer. **Geben Sie an**, welche Zeilen die Bedingung `Fahrt.FahrerNr = Fahrer.FahrerNr` erfüllen."
+          "md": "Gegeben ist ein Ausschnitt aus dem Kreuzprodukt der Relationen Fahrt und Fahrer. **Geben Sie an**, welche Zeilen die Bedingung `Fahrt.FahrerNr = Fahrer.FahrerNr` erfüllen. [2 BE]"
         },
         {
           "t": "dbtabelle",
@@ -2526,7 +2526,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Fahrten der Fahrerin mit der FahrerNr 4 ausgibt, bei denen **mehr als** 6 Fahrgäste gezählt wurden. Auszugeben sind FahrtNr, Datum, Fahrgaeste sowie Vor- und Nachname der Fahrerin."
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Fahrten der Fahrerin mit der FahrerNr 4 ausgibt, bei denen **mehr als** 6 Fahrgäste gezählt wurden. Auszugeben sind FahrtNr, Datum, Fahrgaeste sowie Vor- und Nachname der Fahrerin. [3 BE]"
         }
       ],
       "interaktion": {
@@ -2656,7 +2656,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen Sie** eine SQL-Abfrage, die zu jeder Fahrt die FahrtNr sowie die Namen der Start- und der Zielhaltestelle ausgibt."
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die zu jeder Fahrt die FahrtNr sowie die Namen der Start- und der Zielhaltestelle ausgibt. [3 BE]"
         }
       ],
       "interaktion": {
@@ -2785,7 +2785,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Vor- und Nachnamen aller Fahrerinnen und Fahrer **ohne Wiederholung** ausgibt, die mindestens einmal einen Bus mit **mehr als** 8 Sitzplätzen gefahren haben."
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Vor- und Nachnamen aller Fahrerinnen und Fahrer **ohne Wiederholung** ausgibt, die mindestens einmal einen Bus mit **mehr als** 8 Sitzplätzen gefahren haben. [3 BE]"
         }
       ],
       "interaktion": {
@@ -2916,7 +2916,7 @@
         },
         {
           "t": "text",
-          "md": "Die folgende Abfrage soll zu jeder Fahrt das Datum, den Nachnamen der Fahrerin bzw. des Fahrers und den Namen der Starthaltestelle ausgeben. **Geben Sie** die fehlerhafte Zeile **an**."
+          "md": "Die folgende Abfrage soll zu jeder Fahrt das Datum, den Nachnamen der Fahrerin bzw. des Fahrers und den Namen der Starthaltestelle ausgeben. **Geben Sie** die fehlerhafte Zeile **an**. [2 BE]"
         },
         {
           "t": "sql",
@@ -3051,7 +3051,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für alle Fahrten **ohne** eingetragene Fahrgastzahl die FahrtNr, das Datum sowie Vor- und Nachname der Fahrerin bzw. des Fahrers ausgibt."
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die für alle Fahrten **ohne** eingetragene Fahrgastzahl die FahrtNr, das Datum sowie Vor- und Nachname der Fahrerin bzw. des Fahrers ausgibt. [3 BE]"
         }
       ],
       "interaktion": {
@@ -3181,7 +3181,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen Sie** eine SQL-Abfrage, die die fünf Fahrten mit den meisten Fahrgästen ausgibt: FahrtNr, Fahrgaeste sowie die Namen der Start- und der Zielhaltestelle, absteigend nach Fahrgästen sortiert."
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die die fünf Fahrten mit den meisten Fahrgästen ausgibt: FahrtNr, Fahrgaeste sowie die Namen der Start- und der Zielhaltestelle, absteigend nach Fahrgästen sortiert. [4 BE]"
         }
       ],
       "interaktion": {
@@ -3319,7 +3319,7 @@
         },
         {
           "t": "text",
-          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Fahrten ausgibt, die im Ortsteil Nordheide beginnen und in einem **anderen** Ortsteil enden. Auszugeben sind FahrtNr, Datum sowie die Namen der Start- und der Zielhaltestelle."
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die alle Fahrten ausgibt, die im Ortsteil Nordheide beginnen und in einem **anderen** Ortsteil enden. Auszugeben sind FahrtNr, Datum sowie die Namen der Start- und der Zielhaltestelle. [4 BE]"
         }
       ],
       "interaktion": {

@@ -46,7 +46,7 @@
       "erklaerung": [{ "t": "text", "md": "`_` steht für genau ein Zeichen, `%` für beliebig viele. `'Schal_'` passt also auf „Schals“, aber nicht auf „Schal“." }]
     },
     {
-      "id": "K2-L-05", "akte": 2, "zeitSek": 60, "titel": "Ohne Verbindung", "stufe": 2, "kategorie": "SQL Verbund", "fallen": ["P2"],
+      "id": "K2-L-05", "akte": 2, "zeitSek": 60, "titel": "Ohne Verbundbedingung", "stufe": 2, "kategorie": "SQL Verbund", "fallen": ["P2"],
       "inhalt": [{ "t": "text", "md": "Die Tabelle Kunde hat 80 Zeilen, die Tabelle Station 13. Wie viele Zeilen liefert `SELECT * FROM Kunde, Station` – ganz ohne `WHERE`?" }],
       "interaktion": { "kind": "choice", "mehrfach": false, "optionen": [
         { "id": "a", "md": "93" },
