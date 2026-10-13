@@ -138,3 +138,43 @@ test('Trainingsplatz T6 auf dem Handy: Vorschläge A–D vollständig sichtbar (
     await kontext.close();
   }
 });
+
+test('Urkunden: lange Namen (30 Zeichen) passen auf die A4-Seite, Stempel überdeckt keinen Text', { timeout: 90000 }, async () => {
+  const KURS = { id: 'k:19', name: 'Inf-LK 12 Weserstedt-Gymnasium' };
+  const lk = await server.anmelden({ sub: 'l:9', rolle: 'lehrkraft', name: 'Frau Dr. Annegret Müller-Lüdenscheidt', kurse: [{ ...KURS, rolle: 'lehrkraft' }] });
+  for (const [i, name] of ['Lena K.', 'Maximiliane-Josephine Wolkenst', 'Bartholomäus Zacharias Wendela'].entries()) {
+    await server.anmelden({ sub: `s:19${i}`, name, kurse: [{ ...KURS, rolle: 'mitglied' }] });
+  }
+  const { kontext, page } = await neueSeite(lk);
+  try {
+    await page.goto(server.url + '/lehrkraft/urkunden?kurs=k:19');
+    await page.waitForSelector('.urkunde');
+    await page.emulateMedia({ media: 'print' });
+    const befunde = await page.evaluate(() => {
+      const schnitt = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+      return [...document.querySelectorAll('.urkunde')].flatMap((u) => {
+        const name = u.querySelector('.urkunde-name').textContent;
+        const rahmen = u.querySelector('.urkunde-rahmen').getBoundingClientRect();
+        const innen = rahmen.bottom - 0.024 * u.getBoundingClientRect().width; // innere Linie (outline-offset 2,4cqw)
+        const fuss = u.querySelector('.urkunde-fuss').getBoundingClientRect();
+        const stempel = u.querySelector('.urkunde-stempel').getBoundingClientRect();
+        const f = [];
+        if (fuss.bottom > innen) f.push(`${name}: Fußzeile reicht über die Rahmenlinie (${Math.round(fuss.bottom - innen)} px)`);
+        for (const sel of ['.urkunde-zitat', '.urkunde-fakten', '.unterschrift .name', '.unterschrift .rolle']) {
+          for (const e of u.querySelectorAll(sel)) if (schnitt(stempel, e.getBoundingClientRect())) f.push(`${name}: Stempel überdeckt ${sel}`);
+        }
+        return f;
+      });
+    });
+    assert.deepEqual(befunde, []);
+    const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true });
+    const seiten = (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+    assert.equal(seiten, 3, 'eine A4-Seite je Schüler:in');
+    if (FOTOS) {
+      await page.locator('.urkunde', { hasText: 'Maximiliane' }).screenshot({ path: path.join(FOTO_ORDNER, 'akten67_urkunde_langer_name.png') });
+    }
+    assert.deepEqual(meldungen, []);
+  } finally {
+    await kontext.close();
+  }
+});
