@@ -89,7 +89,8 @@ test('GET /api/themen mit Seed: Akten 1–3 mit Ermittlungen, DS, Kompetenzen, F
     assert.equal(a.verhoer.dauerMin, roh.boss.dauerMin);
     assert.deepEqual(a.ds, [...new Set(roh.levels.flatMap((l) => l.ds))]);
   }
-  for (const nr of [4, 5, 6, 7]) assert.equal(d.akten.find((a) => a.nr === nr).status, 'folgt');
+  const geseedet = new Set(seedAkten().map((a) => a.welt));
+  for (const nr of [4, 5, 6, 7].filter((n) => !geseedet.has(n))) assert.equal(d.akten.find((a) => a.nr === nr).status, 'folgt');
 });
 
 test('GET /api/themen verrät keine Aufgabentexte, Lösungen, Tipps oder Erklärungen', async () => {
