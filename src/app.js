@@ -8,6 +8,7 @@
 // gibt es keinen Warm-up-Trainer). gastOptionen gehen an erzeugeGast (src/services/gast.js). materialVerzeichnis =
 // Wurzel der Materialien (Standard: materialien/; früher gastOptionen.materialVerzeichnis), materialOptionen gehen an
 // erzeugeMaterial (src/services/material.js, z. B. zipLimitBytes).
+// liveInhalte = ladeLiveInhalte() aus src/content/live.js (optional; ohne sie gibt es keinen Live-Modus).
 // Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
@@ -41,6 +42,8 @@ const { erzeugeWarmup } = require('./services/warmup');
 const { erzeugeTraining } = require('./services/training');
 const { erzeugeFallebene, ladeFallebene } = require('./services/fallebene');
 const { fallebeneRouten } = require('./routes/fallebene');
+const { erzeugeLive } = require('./services/live');
+const { liveRouten } = require('./routes/live');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -57,7 +60,8 @@ function erzeugeApp(
     gastOptionen = {},
     materialVerzeichnis = gastOptionen.materialVerzeichnis || STANDARD_VERZEICHNIS,
     materialOptionen = {},
-    fallebene: fallebeneDaten
+    fallebene: fallebeneDaten,
+    liveInhalte = null
   } = {}
 ) {
   const app = express();
@@ -89,6 +93,9 @@ function erzeugeApp(
         aufraeumen: verhoer ? verhoer.raeumeKursAuf : null
       })
     : null;
+  // Live-Modus (Duell, Escape Room): Runden nur im RAM (Plan Phase 6 Task 6).
+  const live = lernen && liveInhalte ? erzeugeLive({ lernen, inhalte: liveInhalte, pruefer, jetzt: uhr }) : null;
+  app.locals.live = live;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -98,7 +105,7 @@ function erzeugeApp(
   app.use('/api/verbund', rateLimit({ fensterMs: 60000, max: 120, ...limits.verbund, jetzt }));
 
   // Verbund-API vor dem allgemeinen JSON-Parser: JSON wird erst nach der Token-Prüfung gelesen.
-  app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null }));
+  app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null, nachLoeschen: live ? live.verbundLoeschung : null }));
 
   app.use(pruefeHerkunft(konfig));
   app.use(express.json({ limit: '100kb' }));
@@ -124,6 +131,7 @@ function erzeugeApp(
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
   if (fallebene) app.use(fallebeneRouten({ fallebene }));
+  if (live) app.use(liveRouten({ live, konfig }));
   // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
   // Materialien (Whitelists verzeichnis.json, Zugriff nach Rolle, Spec §12.4) – eine Instanz für Gast, Themen, Downloads.
   const material = erzeugeMaterial({ verzeichnis: materialVerzeichnis, log: (z) => console.log(z), ...materialOptionen });

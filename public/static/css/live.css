@@ -1,0 +1,127 @@
+/* Live-Modus (Duell, Escape Room; Spec §7.10): Schülerseite /live, Lehrkraft-Steuerung, Beamer-Ansicht.
+   Nur Tokens aus tokens.css; Beamer immer dunkel (data-theme="dark"), große Schrift; reduzierte Bewegung. */
+
+/* ---------- Gerüst ---------- */
+.live-karte { display: flex; flex-direction: column; min-width: 0; border-radius: var(--radius-gross); overflow: hidden; background: var(--karte); box-shadow: var(--schatten-1); border: 1px solid var(--rand); }
+.live-band .verhoer-titel { overflow-wrap: anywhere; }
+.live-raster { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--a-5); padding: var(--a-5); align-items: start; }
+.live-haupt { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.live-seitenspalte { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; position: sticky; top: calc(var(--kopf-hoehe) + var(--a-4)); }
+.live-verbindung { margin: var(--a-3) var(--a-5) 0; }
+
+/* Countdown (Ring wie im Verhör, hier nur Zahl) */
+.live-countdown { display: flex; align-items: center; gap: var(--a-2); }
+.live-countdown .timer-zeit { font-variant-numeric: tabular-nums; }
+.live-countdown.knapp .timer-zeit { color: var(--konsole-falle-text); }
+
+/* ---------- Beitritt ---------- */
+.live-beitritt .aktendeckel-innen { gap: var(--a-4); }
+.team-wahl { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--a-3); }
+.team-knopf { min-height: 56px; font-size: var(--t-m); justify-content: center; }
+
+/* ---------- Station, Code, Schloss, Tipp ---------- */
+.live-station { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.live-story .md { font-style: italic; }
+.live-code-karte { display: flex; flex-direction: column; align-items: flex-start; gap: var(--a-2); padding: var(--a-5); border: 2px solid var(--gruen); background: var(--gruen-flaeche); }
+.live-code { font-family: var(--schrift-mono); font-weight: 700; font-size: clamp(2.25rem, 8vw, 3.5rem); letter-spacing: 0.25em; color: var(--tinte); margin: 0; overflow-wrap: anywhere; }
+.live-schloss { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4) var(--a-5); }
+.schloss-zeile { display: flex; flex-wrap: wrap; gap: var(--a-3); align-items: stretch; }
+.schloss-eingabe {
+  flex: 1 1 10ch; min-width: 0; max-width: 16ch; min-height: 48px; padding: 0 var(--a-3);
+  font-family: var(--schrift-mono); font-size: var(--t-l); letter-spacing: 0.2em;
+  border: 2px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); color: var(--tinte);
+}
+.live-tipp { display: flex; flex-direction: column; gap: var(--a-3); align-items: flex-start; }
+.live-tipp-text { align-self: stretch; }
+.live-ergebnis { display: flex; flex-direction: column; align-items: flex-start; gap: var(--a-3); padding: var(--a-5); }
+.live-tresor .md { font-size: var(--t-m); }
+
+/* ---------- Punkte, Rangliste, Fortschritt ---------- */
+.live-punkte { display: flex; flex-direction: column; gap: var(--a-1); padding: var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--flaeche); }
+.live-punkte-zahl { font-family: var(--schrift-titel); font-weight: 700; font-size: var(--t-xxl); line-height: 1; }
+.live-rang, .live-fortschritt { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.live-rang-liste, .fortschritt-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.live-rang .rang-zeile {
+  display: grid; grid-template-columns: 2.5em minmax(0, 1fr) auto; gap: var(--a-2); align-items: center;
+  min-height: 44px; padding: 0 var(--a-3); border-radius: var(--radius-klein);
+}
+.live-rang .rang-zeile:nth-child(odd) { background: var(--flaeche); }
+.live-rang .rang-zeile.ich { outline: 2px solid var(--messing-grafik); outline-offset: -2px; }
+.rang-platz { font-family: var(--schrift-titel); font-weight: 700; }
+.rang-zeile.oben .rang-platz { color: var(--messing-text); }
+.rang-name { min-width: 0; overflow-wrap: anywhere; }
+.rang-wert { font-family: var(--schrift-mono); font-weight: 600; }
+.fortschritt-zeile {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--a-3); align-items: center;
+  min-height: 44px; padding: var(--a-2) var(--a-3); border-top: 1px solid var(--rand);
+}
+.fortschritt-zeile:first-child { border-top: 0; }
+.fortschritt-zeile.ich { outline: 2px solid var(--messing-grafik); outline-offset: -2px; border-radius: var(--radius-klein); }
+.fortschritt-team { display: flex; flex-direction: column; font-weight: 600; min-width: 0; }
+.fortschritt-namen { font-weight: 400; font-size: var(--t-xs); color: var(--tinte-2); overflow-wrap: anywhere; }
+.schloesser { display: inline-flex; gap: 6px; }
+.schloss-punkt { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--rand-stark); background: transparent; }
+.schloss-punkt.offen { background: var(--gruen); border-color: var(--gruen); }
+.fortschritt-zeile.fertig .fortschritt-status { color: var(--gruen); font-weight: 700; }
+.fortschritt-status { font-family: var(--schrift-mono); font-size: var(--t-s); }
+
+/* ---------- Lehrkraft-Steuerung ---------- */
+.live-steuerung { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.live-start { display: flex; flex-direction: column; gap: var(--a-4); }
+.live-start-teil { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.live-aufgaben { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--a-3); }
+.live-akte { border: 1px solid var(--rand); border-radius: var(--radius); padding: var(--a-2) var(--a-3); margin: 0; min-width: 0; }
+.live-aufgabe { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 0 var(--a-2); align-items: center; min-height: 44px; cursor: pointer; }
+.live-aufgabe input { width: 22px; height: 22px; accent-color: var(--siegelrot); grid-row: span 2; }
+.live-aufgabe .leise { grid-column: 2 / -1; font-size: var(--t-xs); }
+.live-felder { display: flex; flex-wrap: wrap; gap: var(--a-4); }
+.live-feld { display: flex; flex-direction: column; gap: var(--a-1); min-width: 0; }
+.live-feld-label { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-2); }
+.live-zahl, .live-auswahl { min-height: 44px; padding: 0 var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); color: var(--tinte); font: inherit; }
+.live-zahl { width: 8ch; }
+.live-stationen, .beamer-stationen { margin: 0; padding-left: 1.5em; display: flex; flex-direction: column; gap: var(--a-1); }
+.live-steuer-inhalt { display: flex; flex-direction: column; gap: var(--a-3); padding-top: var(--a-4); min-width: 0; }
+.live-steuer-inhalt > .knopf-reihe { padding: 0 var(--a-5); align-items: center; }
+.live-steuer { display: flex; flex-direction: column; gap: var(--a-3); }
+.live-loesung { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 0; padding: var(--a-3); border-radius: var(--radius); background: var(--konsole); color: var(--konsole-text); }
+.live-teilnehmer, .live-statistik { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--a-1); }
+
+/* ---------- Beamer (immer dunkel, Lesbarkeit aus 8 m) ---------- */
+.beamer-html { font-size: 22px; }
+.beamer { background: var(--papier); color: var(--tinte); }
+.beamer-seite { display: flex; flex-direction: column; min-height: 100vh; max-width: 1840px; margin: 0 auto; padding: var(--a-5); gap: var(--a-5); }
+.beamer-kopf { display: flex; justify-content: space-between; align-items: center; gap: var(--a-5); flex-wrap: wrap; padding-bottom: var(--a-4); border-bottom: 2px solid var(--rand); }
+.beamer-marke { font-family: var(--schrift-mono); font-size: var(--t-s); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinte-2); margin: 0; }
+.beamer-titel { font-family: var(--schrift-titel); font-size: var(--t-xxl); margin: 0; overflow-wrap: anywhere; }
+.live-countdown.gross .timer-zeit { font-size: 3.5rem; }
+.beamer-raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 34%); gap: var(--a-6); align-items: start; }
+.beamer-haupt { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.beamer-spalte { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.beamer-aufgabe { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; padding: var(--a-5); border-radius: var(--radius-gross); background: var(--karte); border: 1px solid var(--rand); }
+.beamer-aufgabe h2 { font-size: var(--t-xl); margin: 0; }
+.beamer-optionen { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--a-3); font-size: var(--t-l); }
+.beamer-stand { font-family: var(--schrift-mono); font-size: var(--t-l); margin: 0; }
+.beamer .live-rang .rang-zeile, .beamer .fortschritt-zeile { min-height: 56px; font-size: var(--t-l); }
+.beamer .schloss-punkt { width: 24px; height: 24px; }
+
+/* ---------- Responsive ---------- */
+@media (min-width: 1700px) {
+  .beamer-html { font-size: 28px; }
+}
+@media (max-width: 1023px) {
+  .live-raster { grid-template-columns: minmax(0, 1fr); }
+  .live-seitenspalte { position: static; }
+  .beamer-raster { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767px) {
+  .beamer-html { font-size: 16px; }
+  .live-raster { padding: var(--a-4); gap: var(--a-4); }
+  .live-steuer-inhalt > .knopf-reihe { padding: 0 var(--a-4); }
+  .live-countdown.gross .timer-zeit { font-size: 2.25rem; }
+  .live-aufgaben { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- Bewegung (DESIGN §7) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .live-karte *, .beamer * { transition: none !important; animation: none !important; }
+}

@@ -15,6 +15,7 @@ const { erzeugeSandbox } = require('../../src/sql/sandbox');
 const { erzeugePruefer } = require('../../src/sql/pruefer');
 const { erzeugeInhalte } = require('../../src/services/inhalte');
 const { ladeWarmupKarten } = require('../../src/services/warmup');
+const { ladeLiveInhalte } = require('../../src/content/live');
 
 const WURZEL = path.join(__dirname, '..', '..');
 const SEITEN = path.join(__dirname, 'seiten');
@@ -37,7 +38,7 @@ function baueTestDb(name) {
  * strengeCsp: CSP ohne 'wasm-unsafe-eval' (simuliert ein Umfeld, in dem WebAssembly nicht ausgeführt werden darf).
  * mitDatenbanken: echte Übungs-DBs (basis.sql) und Sandbox wie im Betrieb (/db/, /api/db/, /api/sql/ausfuehren).
  * mitInhalten: zusätzlich die echten Akten (seed/akten), der SQL-Prüfer und die Warm-up-Karten wie in src/server.js
- *   (Lern-API, Verhöre, Warm-up, Trainingsplatz); schließt mitDatenbanken ein. rateLimits: Überschreibungen für Tests.
+ *   (Lern-API, Verhöre, Warm-up, Trainingsplatz, Live-Modus aus seed/live); schließt mitDatenbanken ein. rateLimits: Überschreibungen für Tests.
  * aktenDateien: weitere Akten-Dateien (z. B. test/fixtures/akte_beispiel.json) zusätzlich zu seed/akten (wie AKTEN_DATEIEN).
  * materialVerzeichnis: Wurzel der Materialien (z. B. test/fixtures/materialien).
  * Die Plattform-URL ist die tatsächliche Adresse (mit Port), damit die Origin-Prüfung für POSTs greift.
@@ -70,6 +71,7 @@ async function starteTestServer({ strengeCsp = false, mitDatenbanken = false, mi
         schemata: Object.fromEntries(datenbanken.namen.map((n) => [n, datenbanken.schema(n)]))
       });
       appOptionen.warmupKarten = ladeWarmupKarten();
+      appOptionen.liveInhalte = ladeLiveInhalte({ datenbanken });
     }
   }
   const konfigTest = { plattformUrl: url, ...(rateLimits ? { rateLimits } : {}) };
