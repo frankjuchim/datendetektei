@@ -1,0 +1,71 @@
+/* Beamer-Board (DESIGN §5.12, Spec §7.12): immer dunkel (data-theme="dark"), Ziel 1920 × 1080 ohne Scrollen,
+   Grundschrift 28 px, Ranglisten-Zeilen 56 px, keine Bedienelemente. Die Schrift wächst mit der Fensterbreite
+   (1920 px → 28 px), damit das Board auch an kleineren Beamern ohne Scrollen passt. Nur Tokens aus tokens.css. */
+
+.board-html { font-size: clamp(14px, 1.4584vw, 28px); }
+.board { min-height: 100vh; background: var(--papier); color: var(--tinte); font-size: 1rem; line-height: 1.3; }
+.board-seite { height: 100vh; display: flex; flex-direction: column; gap: 0.6em; padding: 0.7em 1.1em 0.8em; max-width: 2400px; margin: 0 auto; width: 100%; overflow: hidden; }
+
+.board-kopf { display: flex; align-items: center; gap: 0.6em; padding-bottom: 0.4em; border-bottom: 2px solid var(--rand); flex: none; }
+.board-siegel { width: 1.8em; height: 1.8em; flex: none; }
+.board-titel { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.6em; font-size: 1.25em; min-width: 0; margin-right: auto; }
+.board-marke { font-family: var(--schrift-titel); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.board-kurs { font-family: var(--schrift-titel); font-weight: 500; color: var(--tinte-2); overflow-wrap: anywhere; }
+.board-kurs:not(:empty)::before { content: "·"; margin-right: 0.6em; color: var(--siegelrot); }
+.board-uhr { font-family: var(--schrift-mono); font-weight: 600; font-size: 1.1em; color: var(--tinte-2); }
+.board-hinweis { font-size: 1.1em; color: var(--tinte-2); max-width: 46ch; }
+.board-hinweis.fehler { margin: auto; text-align: center; font-family: var(--schrift-titel); font-size: 1.6em; color: var(--tinte); }
+
+.board-raster { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 1.2em; }
+.board-spalte { display: flex; flex-direction: column; gap: 0.7em; min-height: 0; min-width: 0; }
+.board-abschnitt { font-family: var(--schrift-mono); font-size: 0.62em; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tinte-2); margin-bottom: 0.35em; }
+.board-abschnitt .leise { letter-spacing: 0.06em; }
+
+/* Rangliste (DESIGN §4.9 ×1.5) */
+.board-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; overflow: hidden; }
+.board-zeile { display: grid; grid-template-columns: 1.8em minmax(0, 1fr) auto; align-items: center; gap: 0.6em; height: 2em; flex: none; padding: 0 0.5em; border-radius: var(--radius); }
+.board-zeile:nth-child(odd) { background: var(--flaeche); }
+.board-platz { font-family: var(--schrift-titel); font-weight: 700; font-size: 1.1em; text-align: right; }
+.board-zeile.top .board-platz { color: var(--messing); }
+.board-name { display: flex; align-items: baseline; gap: 0.6em; min-width: 0; white-space: nowrap; overflow: hidden; }
+.board-name strong { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.board-rang { font-family: var(--schrift-mono); font-size: 0.6em; color: var(--tinte-2); }
+.board-punkte { font-family: var(--schrift-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.board-leer { color: var(--tinte-2); font-size: 0.8em; padding: 0.4em 0; }
+
+/* Akten-Fortschritt */
+.board-akten { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(3.6em, 1fr)); gap: 0.4em; }
+.board-akte { display: flex; flex-direction: column; align-items: center; gap: 0.15em; font-size: 0.62em; color: var(--tinte-2); text-align: center; }
+.board-akte svg.ring { width: 4em; height: 4em; }
+.board-akte .board-schloss { width: 4em; height: 4em; display: grid; place-items: center; border: 2px dashed var(--rand-stark); border-radius: 50%; color: var(--tinte-3); }
+.board-akte .board-schloss svg.icon { width: 1.8em; height: 1.8em; }
+.board-akte strong { font-family: var(--schrift-titel); font-size: 1.3em; color: var(--tinte); border-bottom: 3px solid var(--akte-farbe, transparent); }
+.board-akte.gesperrt strong { color: var(--tinte-3); }
+
+/* Letzte Erfolge */
+.board-erfolge-box { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.board-erfolge { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.25em; overflow: hidden; min-height: 0; flex: 1; }
+.board-erfolg { display: grid; grid-template-columns: 6.6em minmax(0, 1fr) auto; align-items: center; gap: 0.5em; min-height: 1.85em; flex: none; padding: 0 0.3em; border-bottom: 1px solid var(--rand); font-size: 0.8em; }
+.board-erfolg .stempel { justify-self: start; font-size: 0.62em; box-shadow: none; transform: rotate(-2deg); }
+.board-erfolg .stempel.besiegt { color: var(--siegelrot); }
+.board-erfolg .stempel.abzeichen { color: var(--messing); }
+.board-erfolg-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board-erfolg-text strong { font-weight: 600; }
+.board-erfolg-zeit { font-family: var(--schrift-mono); font-size: 0.75em; color: var(--tinte-2); display: inline-flex; align-items: center; gap: 0.4em; }
+.board-erfolg .sterne svg.icon { width: 0.9em; height: 0.9em; }
+.board-erfolg.neu { animation: board-ein 420ms var(--kurve) both; }
+@keyframes board-ein { from { opacity: 0; transform: translateY(-0.4em); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .board-erfolg.neu { animation: none; }
+  .board-akte .ring .wert { transition: none; }
+}
+
+/* Kleine Fenster (Vorschau am Laptop oder Handy): einspaltig, scrollen erlaubt */
+@media (max-width: 899px) {
+  .board-html { font-size: 16px; }
+  .board-seite { height: auto; min-height: 100vh; overflow: visible; padding: var(--a-4); }
+  .board-raster { grid-template-columns: minmax(0, 1fr); }
+  .board-liste, .board-erfolge { overflow: visible; }
+  .board-zeile { height: auto; min-height: 44px; }
+}

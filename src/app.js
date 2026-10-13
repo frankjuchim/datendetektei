@@ -27,6 +27,7 @@ const { schuelerRouten } = require('./routes/schueler');
 const { kuerRouten } = require('./routes/kuer');
 const { lehrkraftRouten } = require('./routes/lehrkraft');
 const { lehrkraftAuswertungRouten } = require('./routes/lehrkraft_auswertung');
+const { lehrkraftSeitenRouten } = require('./routes/lehrkraft_seiten');
 const { gastRouten } = require('./routes/gast');
 const { themenRouten } = require('./routes/themen');
 const { materialRouten } = require('./routes/material');
@@ -129,6 +130,8 @@ function erzeugeApp(
   app.use(lehrkraftRouten({ db, stand }));
   // Auswertung, CSV, Vorschau, Beamer-Board-API und Superadmin-Funktionen (Phase 6 Task 3).
   app.use(lehrkraftAuswertungRouten({ db, inhalte, stand, konfig }));
+  // Seiten: Urkunden-Druckseite und Beamer-Board (Phase 6 Task 4).
+  app.use(lehrkraftSeitenRouten({ db, stand, konfig }));
   // Verhöre (Status, Start, Versuch, Antwort, Abgabe).
   if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
