@@ -18,6 +18,7 @@
 const F = require('./format');
 const P = require('./pruefer');
 const M = require('./modellierung');
+const PL = require('./plaedoyer');
 const parser = require('../sql/parser');
 const regeln = require('../sql/regeln');
 const { OEFFENTLICHE_DATENBANKEN } = require('../sql/datenbanken');
@@ -212,6 +213,8 @@ function pruefeAkteStruktur(data, datei, kontext) {
       else if (rolle.has(cc)) fl(`coldCase „${cc}“ wird mehrfach verwendet.`);
       else rolle.set(cc, { art: 'cc', level: lid, niveau });
     }
+    // Schlussplädoyer (AUFGABENFORMAT §2.1, Phase 6)
+    if (l.plaedoyer !== undefined) for (const t of PL.pruefePlaedoyer(l.plaedoyer, l, aufgaben)) fl(t);
   });
 
   /* ---------- Verhör ---------- */

@@ -17,6 +17,16 @@
         { "t": "hinweis", "md": "**Ermittler-Notiz:** Text steht in `'…'`, NULL prüfst du mit `IS NULL`." }
       ],
       "coldCase": "A9-E1-CC",
+      "plaedoyer": {
+        "titel": "Probe-Plädoyer",
+        "schritte": ["A9-E1-02", "A9-E1-03"],
+        "indizien": {
+          "A9-E1-02": "Indiz 1: Nur wenige **Wertsachen** sind mehr als 100 € wert.",
+          "A9-E1-03": "Indiz 2: Der höchste Finderlohn gehört zu einem Schmuckstück."
+        },
+        "aufloesung": "Probe-Auflösung: Die Indizienkette ist geschlossen.\n\nDas Fundstück mit dem höchsten Wert ist gefunden.",
+        "ueberleitung": "Probe-Überleitung: **Durfte die Detektei das?**"
+      },
       "aufgaben": [
         "A9-E1-01", "A9-E1-02", "A9-E1-03", "A9-E1-04", "A9-E1-05", "A9-E1-06",
         "A9-E1-07", "A9-E1-08", "A9-E1-09", "A9-E1-10", "A9-E1-11", "A9-E1-12"

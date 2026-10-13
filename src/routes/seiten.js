@@ -22,7 +22,8 @@ const SCHUELER_SEITEN = [
   ['/ermittlung/:wert', /^A[1-9]\d?-E[1-9]\d?$/, 'ermittlung.html'],
   ['/verhoer/:wert', /^[1-7]$/, 'verhoer.html'],
   ['/warmup', null, 'warmup.html'],
-  ['/training', null, 'training.html']
+  ['/training', null, 'training.html'],
+  ['/pinnwand', null, 'pinnwand.html']
 ];
 
 const OEFFENTLICH = {

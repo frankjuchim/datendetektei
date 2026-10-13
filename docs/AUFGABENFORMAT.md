@@ -73,6 +73,41 @@ Jede Datei gehört genau einem Bearbeiter bzw. Agenten (`akte1.json` …), damit
 
 Ziel je Ermittlung (DS_PLANUNG): rund 8 Aufgaben, Stufenmix etwa 40/40/20 % (3/3/2).
 
+### 2.1 Schlussplädoyer `plaedoyer` (Akte 6, Spec §7.7, STORY §7)
+
+Optionales Feld einer Ermittlung: eine Abfolge von `sql`-Aufgaben **derselben Ermittlung**, deren Ergebnisse die
+Indizienkette bilden; nach dem letzten Schritt folgen Auflösung und Überleitung zur Erörterung.
+
+```json
+"plaedoyer": {
+  "titel": "Schlussplädoyer",
+  "schritte": ["A6-E1-09", "A6-E1-10", "A6-E1-11", "A6-E1-12", "A6-E1-13", "A6-E1-14"],
+  "indizien": {
+    "A6-E1-09": "Das Konto ist pseudonym – aber nicht stumm.",
+    "…": "…"
+  },
+  "aufloesung": "Die Indizienkette ist geschlossen: Hinter Nora Falter steht …\n\nAm Morgen nach der Enttarnung …",
+  "ueberleitung": "Bevor ihr feiert, schaut auf das, was wir gerade getan haben: … **Durfte die Detektei das?** …"
+}
+```
+
+| Feld | Pflicht | Regel |
+|---|---|---|
+| `titel` | nein | Anzeige (Standard „Schlussplädoyer“) |
+| `schritte` | ja | ≥ 1 Aufgaben-ids, ohne Doppelte; jede steht in `aufgaben` **dieser** Ermittlung, in derselben Reihenfolge, und ist eine **einteilige `sql`-Aufgabe** |
+| `indizien` | ja | genau ein Text je Schritt (Schlüssel = Aufgaben-id), Mini-Markdown, ohne Lücken – das Indiz, das als Karteikarte an die Pinnwand kommt |
+| `aufloesung` | ja | Mini-Markdown (Absätze mit Leerzeile), ohne Lücken; erscheint nach dem letzten Schritt |
+| `ueberleitung` | nein | Mini-Markdown; Überleitung zur Erörterung (Merkkasten unter der Auflösung) |
+
+**Lösungsdaten:** Indizien, Auflösung und Überleitung bleiben auf dem Server. Ein Indiz wird erst ausgeliefert, wenn
+sein Schritt erledigt ist (`geloest`, `nachgeloest` oder `angesehen` – nach „Lösung zeigen“ ist die Musterlösung
+ohnehin offen); Auflösung und Überleitung erst, wenn **alle** Schritte erledigt sind. Die Schritte sind normale
+Aufgaben (Punkte, Tipps, Prüfung wie immer). API: `GET …/ermittlungen/:id` → `ermittlung.plaedoyer` = `{ titel,
+anzahl, erledigt, abgeschlossen, schritte: [{ nr, id, titel, status, indiz? }], aufloesung?, ueberleitung? }` (ohne
+Plädoyer `null`); `GET …/aufgaben/:id`, `POST …/pruefen`, `POST …/loesung-zeigen` eines Schritts → zusätzlich
+`plaedoyer` = `{ titel, nr, anzahl, erledigt, abgeschlossen, indiz?, aufloesung?, ueberleitung? }`.
+Beispiel: Ermittlung `A9-E1` in `test/fixtures/akte_beispiel.json`.
+
 ## 3. Verhör (Boss)
 
 ```json
@@ -661,6 +696,8 @@ erfüllbar und Summe = `anzahl`, Musterantwort wird vom Prüfer als richtig erka
 - `lines.block` zeigt auf `sql`/`code`, `zeilen.block` auf `dbtabelle`; Indizes im Bereich.
 - Verhör: `abimodus: "streng"`, Aufgaben nutzen nur die `kontextDb`; kein `kernpunkte`; kein `datenbank`-Block und keine Verstehenshilfen;
   Mix je Stufe samt `maxJeKind` erfüllbar (maximaler Fluss Stufe → Art), sonst Fehler; für gA-Kurse (nur `alle`) Hinweis.
+- `plaedoyer` (§2.1): Schritte existieren in der Ermittlung, einteilige `sql`-Aufgaben, Reihenfolge wie in `aufgaben`,
+  keine Doppelten; genau ein Indiz je Schritt; `aufloesung` Pflicht; Mini-Markdown ohne Lücken; keine weiteren Felder.
 - Cold Cases und `kernpunkte`: `punkte` 0. Niveau-Regeln (Akte 5 ganz `eA`: Ermittlungen und Verhör mit
   `niveau: "eA"`, keine Aufgabe mit `niveau: "alle"`).
 - Modellierung (§5.7, §6.11; `src/content/modellierung.js`):
@@ -760,3 +797,41 @@ wird vom Prüfer erkannt; `ergebnis`/`zeilen` mit `quelleSql` werden gegen die D
 `POST /api/gast/aufgaben/:id/pruefen` `{ antwort }` → `{ ok, rueckmeldung, geloest, loesung? }` (Lösung und Erklärung
 nur nach dem Lösen), `POST …/tipp` `{ nr }` → `{ nr, tipp, anzahl }`, `POST …/loesung` → `{ loesung, erklaerung }`
 (nur auf ausdrücklichen Wunsch – im Gastmodus erlaubt, weil es reine Demo-Aufgaben sind).
+
+## 11. Fallebene: Beweisstücke und Steckbrief (`seed/fallebene.json`)
+
+Daten der Pinnwand (Spec §7.7, STORY §4 und §6, DESIGN §5.10). Das Schlussplädoyer steht in der Ermittlung (§2.1).
+Geprüft von `pruefeFallebene` (`src/services/fallebene.js`) beim Start und in `npm run validate`.
+
+```json
+{ "version": 1,
+  "beweisstuecke": [
+    { "akte": 1, "titel": "Fundbuch-Seite", "bild": "fundbuch", "text": "Ein Ausdruck der Fundbuch-Seite …",
+      "notiz": "Wer war am Schalter?" } ],
+  "steckbrief": {
+    "felder": [ { "id": "signatur", "titel": "Signatur / Initialen" }, { "id": "name", "titel": "Name / Motiv" } ],
+    "hinweise": [
+      { "akte": 1, "eintraege": [ { "feld": "signatur", "text": "Nachtfalter, Initialen „N. F.“" } ] },
+      { "akte": 6, "auchNachPlaedoyer": "A6-E1", "stempel": "Enttarnt",
+        "eintraege": [ { "feld": "wohnort", "text": "Hafenviertel (bestätigt)", "ersetzt": true } ] },
+      { "akte": 7, "stempel": "Fall abgeschlossen", "eintraege": [] } ] } }
+```
+
+| Feld | Regel |
+|---|---|
+| `beweisstuecke[]` | je Akte höchstens eines: `akte`, `titel`, `bild` ∈ `fundbuch`, `schloss`, `bon`, `ausweis`, `netz`, `steckbrief`, `lizenz` (SVG-Motive in `public/static/js/lernen/pinnwand_bilder.js`), `text` (Polaroid-Text, 2–3 Sätze, Mini-Markdown), `notiz` (optional, Eddas Handschrift) |
+| `steckbrief.felder[]` | `id` (Kleinbuchstaben, eindeutig), `titel` – Reihenfolge = Anzeige |
+| `steckbrief.hinweise[]` | je Akte höchstens einer: `eintraege` (`feld` aus `felder`, `text` Mini-Markdown, `ersetzt: true` verdrängt frühere Einträge des Felds, z. B. „1988 (bestätigt)“), optional `stempel` (über dem Steckbrief: „Enttarnt“, „Fall abgeschlossen“) und `auchNachPlaedoyer` (Ermittlungs-id) |
+
+**Freischaltung (Regel E10, Spec §0):** Der Hinweis einer Akte *n* ist sichtbar, sobald das Verhör der Akte gewonnen
+ist (bester beendeter Versuch ≥ 50 %) **oder** im Kurs eine spätere Akte des Plans (1–7) freigeschaltet ist; mit
+`auchNachPlaedoyer` zusätzlich, sobald das Plädoyer dieser Ermittlung abgeschlossen ist. Hinweise gelten unabhängig vom
+Niveau (gA: der Hinweis der Akte 5 erscheint mit der Freischaltung der Akte 6). Ein **Beweisstück** (Titel, Bild,
+Text, Notiz und die Einträge seines Hinweises als „Erkenntnis“) erscheint nur nach dem gewonnenen Verhör; vorher nur
+„Verhör n“. Polaroids gibt es nur für Akten des Kurs-Niveaus (gA: ohne Akte 5).
+
+**API:** `GET /api/kurse/:kurs/pinnwand` (angemeldet, Zugang wie die Lern-API) → `{ kurs, beweisstuecke: [{ akte,
+verhoer, gewonnen, titel?, bild?, text?, notiz?, erkenntnis? }], steckbrief: { felder: [{ id, titel, eintraege: [{
+akte, text }] }], hinweise, gesamt, stempel }, plaedoyer }`. `plaedoyer` ist das erste Plädoyer der sichtbaren Akten
+(Form wie `ermittlung.plaedoyer` in §2.1, dazu `frei: true`, `akte`, `ermittlung`), für Schüler einer nicht
+freigeschalteten Akte nur `{ frei: false, akte: { nr } }`, ohne Plädoyer `null`. Seite: `/pinnwand`.

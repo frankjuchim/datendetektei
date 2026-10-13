@@ -1,0 +1,126 @@
+/* Fallebene (DESIGN.md §4.3 Polaroid, §4.4 Pinnwand, §5.10 Pinnwand/Steckbrief; Spec §7.7): Seite /pinnwand,
+   Steckbrief-Karte (auch Stadtplan) und Schlussplädoyer in der Ermittlung (Indiz-Karte, Auflösung). Präfix pw-. */
+
+/* ---------- Seite ---------- */
+.pw-raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: var(--a-5); align-items: start; }
+.pw-spalte, .pw-seite { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.pw-seite { position: sticky; top: calc(76px + env(safe-area-inset-top)); }
+.pw-bereich { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+
+/* ---------- Korkwand mit Fäden ---------- */
+.pw-brett {
+  position: relative; min-width: 0; border-radius: var(--radius); padding: var(--a-6) var(--a-5) var(--a-5);
+  background-color: var(--kork);
+  background-image: radial-gradient(var(--kork-punkt) 1.2px, transparent 1.4px), radial-gradient(var(--kork-punkt) 1px, transparent 1.2px);
+  background-size: 14px 14px, 9px 9px; background-position: 0 0, 5px 7px;
+  border: 6px solid var(--flaeche-2); box-shadow: var(--schatten-1);
+  overflow: hidden;
+}
+.pw-faeden { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: visible; }
+.pw-faden {
+  fill: none; stroke: var(--siegelrot); stroke-width: 2; stroke-linecap: round;
+  stroke-dasharray: 1200; stroke-dashoffset: 0; animation: pw-faden-spannen 900ms cubic-bezier(.2, .7, .2, 1) both;
+}
+.pw-faden-punkt { fill: var(--siegelrot); }
+@keyframes pw-faden-spannen { from { stroke-dashoffset: 1200; } to { stroke-dashoffset: 0; } }
+
+/* ---------- Polaroids ---------- */
+.pw-polaroids {
+  position: relative; z-index: 2; list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: var(--a-5) var(--a-4); align-items: start;
+}
+.pw-polaroid-platz { display: flex; justify-content: center; min-width: 0; }
+.pw-polaroid {
+  position: relative; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 150px;
+  padding: 8px 8px 0; border: 0; border-radius: 2px; background: var(--polaroid); color: var(--polaroid-text);
+  box-shadow: var(--schatten-2); transform: rotate(-2.5deg); cursor: pointer; font: inherit;
+  transition: transform var(--dauer) var(--kurve), box-shadow var(--dauer) var(--kurve);
+}
+.pw-polaroid-platz:nth-child(even) .pw-polaroid { transform: rotate(2deg); }
+.pw-polaroid:hover { transform: rotate(0deg) translateY(-2px); }
+.pw-polaroid[aria-pressed="true"] { transform: rotate(0deg) scale(1.03); box-shadow: 0 0 0 3px var(--siegelrot), var(--schatten-2); }
+.pw-polaroid:focus-visible { outline: 3px solid var(--fokus); outline-offset: 2px; }
+.pw-polaroid .nadel { position: absolute; top: -6px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--nadel-licht), var(--nadel) 55%, var(--nadel-schatten)); }
+.pw-bild { display: block; width: 100%; aspect-ratio: 1 / 1; background: var(--polaroid-bild); }
+.pw-bild svg { display: block; width: 100%; height: 100%; }
+.pw-unterschrift { font-family: var(--schrift-titel); font-weight: 600; font-size: 0.9375rem; text-align: center; padding: 8px 0 12px; line-height: 1.15; overflow-wrap: anywhere; }
+.pw-polaroid.leer {
+  cursor: default; justify-content: center; gap: var(--a-1); min-height: 150px; max-width: 150px; margin: 0 auto;
+  background: transparent; box-shadow: none; transform: none; border: 2px dashed var(--tinte-3); color: var(--tinte-2); padding: var(--a-3);
+}
+.pw-polaroid.leer .pw-unterschrift { padding: 0; }
+
+.pw-detail:empty { display: none; }
+.pw-detail-karte { padding: var(--a-5); display: flex; flex-direction: column; gap: var(--a-3); border-left: 4px solid var(--siegelrot); }
+.pw-detail-karte h3 { font-size: var(--t-l); }
+.pw-notiz { display: flex; flex-direction: column; gap: 2px; }
+.pw-handschrift { font-family: var(--schrift-titel); font-style: italic; font-size: 1.125rem; color: var(--blau); }
+.pw-erkenntnis { margin: 0; padding-left: 1.2em; display: grid; gap: var(--a-1); font-size: var(--t-s); }
+
+/* ---------- Steckbrief ---------- */
+.pw-steckbrief { position: relative; }
+.pw-steckbrief > .stempel { position: absolute; right: var(--a-4); top: 64px; z-index: 2; background: color-mix(in srgb, var(--karte) 70%, transparent); }
+.pw-steckbrief dd.bekannt { color: var(--tinte); letter-spacing: 0; font-weight: 500; }
+.pw-eintraege { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: var(--t-s); }
+.pw-eintraege li { display: flex; gap: var(--a-2); align-items: baseline; min-width: 0; overflow-wrap: anywhere; }
+.pw-akte-marke { flex: none; font-family: var(--schrift-mono); font-size: 0.6875rem; font-weight: 600; color: var(--tinte-3); }
+.pw-feld { border-radius: var(--radius-klein); transition: background-color var(--dauer) var(--kurve), box-shadow var(--dauer) var(--kurve); }
+.pw-feld.verbunden { background: var(--rot-flaeche); box-shadow: -4px 0 0 var(--siegelrot); padding-left: 4px; }
+.pw-steckbrief.kompakt { padding: var(--a-4); gap: var(--a-3); }
+.pw-steckbrief.kompakt .steckbrief-titel { font-size: 1.5rem; }
+.pw-steckbrief.kompakt > .stempel { font-size: 1.125rem; top: 48px; }
+
+/* ---------- Indizienkette (Schlussplädoyer) ---------- */
+.pw-indizien {
+  position: relative; z-index: 2; list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--a-5) var(--a-4); align-items: start;
+}
+.pw-indiz {
+  position: relative; min-width: 0; padding: var(--a-3) var(--a-3) var(--a-4); background: var(--karte); color: var(--tinte);
+  border-radius: 2px; box-shadow: var(--schatten-1); font-size: var(--t-s); overflow-wrap: anywhere;
+}
+.pw-indiz:nth-child(odd) { transform: rotate(-0.8deg); }
+.pw-indiz:nth-child(even) { transform: rotate(0.6deg); }
+.pw-indiz:not(.bekannt) { opacity: 0.8; border: 2px dashed var(--tinte-3); box-shadow: none; }
+.pw-stift { position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--nadel-licht), var(--nadel) 60%, var(--nadel-schatten)); }
+.pw-indiz-kopf { font-family: var(--schrift-mono); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tinte-3); padding-bottom: 4px; margin-bottom: 6px; border-bottom: 2px solid var(--siegelrot); }
+.pw-indiz-titel { display: inline-block; font-weight: 600; margin-bottom: var(--a-1); color: var(--tinte); min-height: 24px; }
+.pw-indiz-offen { color: var(--tinte-2); }
+
+.pw-aufloesung { padding: var(--a-5); display: flex; flex-direction: column; gap: var(--a-3); border-top: 4px solid var(--siegelrot); }
+.pw-aufloesung-kopf { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--a-3); }
+.pw-aufloesung-kopf h2, .pw-aufloesung-kopf h3 { font-size: var(--t-l); }
+.pw-ueberleitung { grid-template-columns: minmax(0, 1fr); }
+
+/* ---------- Ermittlung: Plädoyer-Schritt ---------- */
+.pw-schritt-marke { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; color: var(--siegelrot-text); text-transform: uppercase; letter-spacing: 0.08em; }
+.pw-indiz-karte {
+  position: relative; padding: var(--a-4) var(--a-4) var(--a-4); background: var(--karte); border-radius: 2px;
+  box-shadow: var(--schatten-1); border-left: 4px solid var(--siegelrot); display: flex; flex-direction: column; gap: var(--a-2);
+}
+.pw-indiz-karte .pw-indiz-kopf { margin-bottom: 0; }
+
+/* ---------- Stadtplan: kleine Pinnwand mit Illustrationen ---------- */
+.polaroid-bild svg { display: block; width: 100%; height: 100%; }
+.pinnwand-kopf-rechts { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--a-1); }
+.pinnwand-kopf-rechts .link-ziel { min-height: 44px; display: inline-flex; align-items: center; }
+.pw-steckbrief.kompakt > .knopf { align-self: flex-start; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1023px) {
+  .pw-raster { grid-template-columns: minmax(0, 1fr); }
+  .pw-seite { position: static; }
+}
+@media (max-width: 699px) {
+  .pw-brett { padding: var(--a-5) var(--a-3) var(--a-4); }
+  .pw-polaroids { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--a-4) var(--a-3); }
+  .pw-indizien { grid-template-columns: minmax(0, 1fr); }
+  .pw-polaroid.leer { min-height: 120px; }
+}
+
+/* ---------- Bewegung (DESIGN §7): Fäden ohne Spannen, Polaroids ohne Kippen ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .pw-faden { animation: none; stroke-dasharray: none; }
+  .pw-polaroid, .pw-feld { transition: none; }
+  .pw-polaroid:hover { transform: rotate(-2.5deg); }
+}

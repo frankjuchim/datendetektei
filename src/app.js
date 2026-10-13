@@ -35,6 +35,8 @@ const { warmupRouten } = require('./routes/warmup');
 const { trainingRouten } = require('./routes/training');
 const { erzeugeWarmup } = require('./services/warmup');
 const { erzeugeTraining } = require('./services/training');
+const { erzeugeFallebene, ladeFallebene } = require('./services/fallebene');
+const { fallebeneRouten } = require('./routes/fallebene');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -42,7 +44,7 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 function erzeugeApp(
   konfig,
   db,
-  { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null, gastOptionen = {} } = {}
+  { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null, gastOptionen = {}, fallebene: fallebeneDaten } = {}
 ) {
   const app = express();
   app.disable('x-powered-by');
@@ -62,6 +64,17 @@ function erzeugeApp(
   // Warm-up-Trainer (nur mit Karten) und Trainingsplatz T1–T3 (Plan Phase 3 Task 8).
   const warmup = lernen && warmupKarten ? erzeugeWarmup({ db, lernen, stand, inhalte, karten: warmupKarten, jetzt: uhr }) : null;
   const training = lernen ? erzeugeTraining({ db, lernen, geheimnis: konfig.sessionSecret, jetzt: uhr }) : null;
+  // Fallebene (Plan Phase 6 Task 2): Pinnwand, Steckbrief, Plädoyer; Daten aus seed/fallebene.json (Option fallebene).
+  const fallebene = lernen
+    ? erzeugeFallebene({
+        db,
+        inhalte,
+        stand,
+        lernen,
+        daten: fallebeneDaten !== undefined ? fallebeneDaten : ladeFallebene(undefined, { log: (z) => console.log(z) }),
+        aufraeumen: verhoer ? verhoer.raeumeKursAuf : null
+      })
+    : null;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -96,6 +109,7 @@ function erzeugeApp(
   if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
+  if (fallebene) app.use(fallebeneRouten({ fallebene }));
   // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
   app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen }), pruefer, konfig }));
   app.use(themenRouten({ themen: erzeugeThemen({ inhalte }) }));
