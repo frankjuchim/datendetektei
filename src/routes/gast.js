@@ -21,8 +21,9 @@ function gastRouten({ gast, pruefer = null, konfig }) {
   const limits = konfig.rateLimits || {};
   const jetzt = konfig.jetzt || Date.now;
   const jeIp = (req) => 'gast:' + req.ip;
-  const pruefLimit = rateLimit({ fensterMs: 60000, max: 30, ...limits.gastPruefen, schluessel: jeIp, jetzt });
-  const postLimit = rateLimit({ fensterMs: 60000, max: 120, ...limits.gast, schluessel: jeIp, jetzt });
+  // je IP: ganze Klassen hinter einer Schul-NAT teilen sich eine Adresse
+  const pruefLimit = rateLimit({ fensterMs: 60000, max: 120, ...limits.gastPruefen, schluessel: jeIp, jetzt });
+  const postLimit = rateLimit({ fensterMs: 60000, max: 600, ...limits.gast, schluessel: jeIp, jetzt });
 
   const json = (f) => async (req, res, next) => {
     try {

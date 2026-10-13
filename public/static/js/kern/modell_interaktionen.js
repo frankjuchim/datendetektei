@@ -145,6 +145,7 @@ function zellKnopf(r, c) {
 
 /** Zellen einer dbtabelle antippen (0-basiert); mehrfach:false → genau eine, reihenfolge:true → Nummern. */
 export function teilZellen(ia, kontext, nr, aufgabe) {
+  const A = (du, sie) => (kontext && kontext.sie ? sie : du); // Verhör: Abitur-Stil
   const mehrfach = ia.mehrfach !== false;
   const folge = ia.reihenfolge === true;
   const block = aufgabe && Array.isArray(aufgabe.inhalt) ? aufgabe.inhalt[ia.block] : null;
@@ -175,7 +176,7 @@ export function teilZellen(ia, kontext, nr, aufgabe) {
       if (nrEl) nrEl.textContent = folge && i >= 0 ? String(i + 1) : '';
     }
     const n = gewaehlt.length;
-    const auftrag = mehrfach ? (folge ? 'Zellen in der richtigen Reihenfolge antippen.' : 'Alle passenden Zellen antippen.') : 'Die passende Zelle antippen.';
+    const auftrag = mehrfach ? (folge ? A('Tippe die Zellen in der richtigen Reihenfolge an.', 'Tippen Sie die Zellen in der richtigen Reihenfolge an.') : A('Tippe alle passenden Zellen an.', 'Tippen Sie alle passenden Zellen an.')) : A('Tippe die passende Zelle an.', 'Tippen Sie die passende Zelle an.');
     info.textContent = `${auftrag} Gewählt: ${n === 0 ? 'keine' : n === 1 ? 'eine Zelle' : n + ' Zellen'}.`;
   }
   function klick(r, c) {
@@ -351,6 +352,7 @@ export function befundEinfuegen(kopf, werte, index) {
 
 /** Anomalie-Simulator: Auftrag auf einer Kopie ausführen, Befund ansehen, Anomalieart wählen, Zellen markieren. */
 export function teilAnomalie(ia, kontext, nr, aufgabe) {
+  const A = (du, sie) => (kontext && kontext.sie ? sie : du); // Verhör: Abitur-Stil
   const block = aufgabe && Array.isArray(aufgabe.inhalt) ? aufgabe.inhalt[ia.block] : null;
   const kopf = block && Array.isArray(block.kopf) ? block.kopf : [];
   const original = block && Array.isArray(block.zeilen) ? block.zeilen.map((z) => [...z]) : [];
@@ -419,11 +421,11 @@ export function teilAnomalie(ia, kontext, nr, aufgabe) {
   const anleitung = el('p', 'teil-hinweis');
   const name = (c) => (kopf[c] && kopf[c].name) || `Spalte ${c + 1}`;
   if (op === 'aendern') {
-    anleitung.textContent = `Auftrag so ausführen, wie die Tabelle es erlaubt: In der Spalte ${name(spalte)} jede Zelle antippen, die von ${zellText(sim.alt)} auf ${zellText(sim.neu)} geändert werden soll – welche, ist frei wählbar.`;
+    anleitung.textContent = A(`Führe den Auftrag so aus, wie die Tabelle es erlaubt: Tippe in der Spalte ${name(spalte)} jede Zelle an, die du von ${zellText(sim.alt)} auf ${zellText(sim.neu)} ändern willst. Du entscheidest, welche.`, `Führen Sie den Auftrag so aus, wie die Tabelle es erlaubt: Tippen Sie in der Spalte ${name(spalte)} jede Zelle an, die Sie von ${zellText(sim.alt)} auf ${zellText(sim.neu)} ändern wollen. Sie entscheiden, welche.`);
   } else if (op === 'loeschen') {
-    anleitung.textContent = 'Auftrag so ausführen, wie die Tabelle es erlaubt: die betroffene Zeile mit dem Knopf „Zeile löschen“ entfernen.';
+    anleitung.textContent = A('Führe den Auftrag so aus, wie die Tabelle es erlaubt: Lösche die betroffene Zeile mit dem Knopf „Zeile löschen“.', 'Führen Sie den Auftrag so aus, wie die Tabelle es erlaubt: Löschen Sie die betroffene Zeile mit dem Knopf „Zeile löschen“.');
   } else {
-    anleitung.textContent = 'Auftrag so ausführen, wie die Tabelle es erlaubt: die neue Zeile anlegen. Bekannt sind nur einige Werte.';
+    anleitung.textContent = A('Führe den Auftrag so aus, wie die Tabelle es erlaubt: Lege die neue Zeile an. Bekannt sind nur einige Werte.', 'Führen Sie den Auftrag so aus, wie die Tabelle es erlaubt: Legen Sie die neue Zeile an. Bekannt sind nur einige Werte.');
   }
   karte.appendChild(anleitung);
 
@@ -454,7 +456,7 @@ export function teilAnomalie(ia, kontext, nr, aufgabe) {
   fertig.addEventListener('click', () => {
     if (gesperrt) return;
     if (!ausgefuehrt()) {
-      hinweisAuftrag.textContent = 'Zuerst den Auftrag in der Tabelle ausführen.';
+      hinweisAuftrag.textContent = A('Führe zuerst den Auftrag in der Tabelle aus.', 'Führen Sie zuerst den Auftrag in der Tabelle aus.');
       return;
     }
     phase = 'bestimmen';
@@ -517,7 +519,7 @@ export function teilAnomalie(ia, kontext, nr, aufgabe) {
     'sim-bestimmen',
     el('p', 'etikett', 'Welche Anomalie ist das?'),
     artBox,
-    el('p', 'teil-hinweis', 'Danach in der Tabelle die betroffenen Zellen markieren (antippen; Tastatur: Pfeiltasten und Leertaste).'),
+    el('p', 'teil-hinweis', A('Markiere dann in der Tabelle die betroffenen Zellen (antippen; Tastatur: Pfeiltasten und Leertaste).', 'Markieren Sie dann in der Tabelle die betroffenen Zellen (antippen; Tastatur: Pfeiltasten und Leertaste).')),
     markInfo,
     h('div', 'knopf-reihe', zurueck, neuKnopf())
   );
@@ -745,6 +747,7 @@ export function vorschauRelationen(tabellen) {
 
 /** Zerlegungs-Puzzle: Spaltenchips auf Tabellen verteilen (Ziehen oder Auswahlmenü), Schlüssel setzen. */
 export function teilZerlegen(ia, kontext, nr) {
+  const A = (du, sie) => (kontext && kontext.sie ? sie : du); // Verhör: Abitur-Stil
   const attribute = Array.isArray(ia.attribute) ? ia.attribute.filter((a) => typeof a === 'string') : [];
   const max = Number.isInteger(ia.tabellenMax) && ia.tabellenMax > 0 ? ia.tabellenMax : 30;
   const schluessel = entwurfSchluessel(kontext, 'zerlegen', nr);
@@ -791,7 +794,7 @@ export function teilZerlegen(ia, kontext, nr) {
   /* ---------- Oberfläche ---------- */
   const pool = el('ul', 'spalten-pool');
   pool.setAttribute('aria-label', 'Spalten der Rohtabelle');
-  const poolHinweis = el('p', 'teil-hinweis', 'Spalten auf eine Tabelle ziehen – oder antippen, dann landen sie in der gewählten Tabelle. Eine Spalte darf in mehreren Tabellen stehen (Fremdschlüssel).');
+  const poolHinweis = el('p', 'teil-hinweis', A('Ziehe eine Spalte auf eine Tabelle – oder tippe sie an, dann landet sie in der gewählten Tabelle. Eine Spalte darf in mehreren Tabellen stehen (Fremdschlüssel).', 'Ziehen Sie eine Spalte auf eine Tabelle – oder tippen Sie sie an, dann landet sie in der gewählten Tabelle. Eine Spalte darf in mehreren Tabellen stehen (Fremdschlüssel).'));
   const tabBox = el('div', 'zerlegen-tabellen');
   const plus = knopf('Tabelle hinzufügen', 'knopf', 'i-plus');
   plus.addEventListener('click', () => {

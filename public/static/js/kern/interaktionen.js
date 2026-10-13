@@ -253,7 +253,7 @@ function teilOrder(ia, kontext) {
       b.addEventListener('click', nehmen);
       poolBox.appendChild(h('li', null, b));
     }
-    if (!folge.length) folgeBox.appendChild(el('li', 'teil-hinweis', 'Tippe die Bausteine in der richtigen Reihenfolge an.'));
+    if (!folge.length) folgeBox.appendChild(el('li', 'teil-hinweis', kontext.sie ? 'Tippen Sie die Bausteine in der richtigen Reihenfolge an.' : 'Tippe die Bausteine in der richtigen Reihenfolge an.'));
     folge.forEach((id, i) => {
       const cls = markiere !== null ? (i < markiere ? ' richtig' : i === markiere ? ' falsch' : '') : '';
       const li = el('li', 'puzzle-teil gesetzt' + cls);
@@ -327,7 +327,7 @@ function teilLines(ia, kontext) {
       e.disabled = gesperrt;
     });
     const liste = [...gewaehlt].sort((a, b) => a - b).map((z) => 'Zeile ' + z);
-    info.textContent = `Tippe ${anzahl === 1 ? 'die gesuchte Zeile' : `${anzahl} Zeilen`} im Code an. Gewählt: ${liste.length ? liste.join(', ') : '–'}`;
+    info.textContent = `${kontext.sie ? 'Tippen Sie' : 'Tippe'} ${anzahl === 1 ? 'die gesuchte Zeile' : `${anzahl} Zeilen`} im Code an. Gewählt: ${liste.length ? liste.join(', ') : '–'}`;
   }
   return {
     kind: 'lines',
@@ -459,7 +459,8 @@ function teilZeilen(ia, kontext) {
         b.disabled = gesperrt;
       }
     });
-    info.textContent = `${mehrfach ? 'Tippe alle passenden Zeilen an.' : 'Tippe die passende Zeile an.'} Gewählt: ${gewaehlt.size}`;
+    const tippe = kontext.sie ? 'Tippen Sie' : 'Tippe';
+    info.textContent = `${tippe} ${mehrfach ? 'alle passenden Zeilen' : 'die passende Zeile'} an. Gewählt: ${gewaehlt.size}`;
   }
   return {
     kind: 'zeilen',
@@ -504,6 +505,13 @@ function teilZeilen(ia, kontext) {
 }
 
 /** Ergebnistabelle vorhersagen: feste Zeilenzahl oder freie Zeilen. */
+/** Hinweis über der Ergebnistabelle (Einzahl bei einer Zeile; sie: Abitur-Stil). */
+function ergebnisHinweis(frei, anzahl, sie) {
+  if (frei) return sie ? 'Tragen Sie die Ergebniszeilen ein – Zeilen fügen Sie selbst hinzu. NULL schreiben Sie als NULL.' : 'Trage die Ergebniszeilen ein – Zeilen fügst du selbst hinzu. NULL schreibst du als NULL.';
+  const was = anzahl === 1 ? 'die Ergebniszeile' : `die ${anzahl} Ergebniszeilen`;
+  return sie ? `Tragen Sie ${was} ein. NULL schreiben Sie als NULL.` : `Trage ${was} ein. NULL schreibst du als NULL.`;
+}
+
 function teilErgebnis(ia, kontext) {
   const kopf = Array.isArray(ia.kopf) ? ia.kopf : [];
   const frei = ia.freieZeilen === true;
@@ -582,7 +590,7 @@ function teilErgebnis(ia, kontext) {
   const ui = h(
     'div',
     'teil-ergebnis',
-    el('p', 'teil-hinweis', frei ? 'Ergebniszeilen eintragen – weitere Zeilen über „Zeile hinzufügen“. NULL als NULL eintragen.' : `Die ${zeilen.length} Ergebniszeilen eintragen. NULL als NULL eintragen.`),
+    el('p', 'teil-hinweis', ergebnisHinweis(frei, zeilen.length, kontext.sie)),
     h('div', 'tabelle-rahmen', tabelle),
     plus,
     meld
@@ -722,7 +730,8 @@ function teilSqlEinfach(ia, kontext) {
 export function erzeugeAufgabe(a, opt = {}) {
   const mehrteilig = Array.isArray(a.interaktion);
   const ias = mehrteilig ? a.interaktion : [a.interaktion];
-  const kontext = { geaendert: () => opt.onChange && opt.onChange(), speicher: opt.speicher || null };
+  // sie: Bedienhinweise im Abitur-Stil (Verhör, gesiezt); sonst geduzt
+  const kontext = { geaendert: () => opt.onChange && opt.onChange(), speicher: opt.speicher || null, sie: opt.sie === true };
   const entwurfBasis = opt.speicher || `dd-entwurf:aufgabe:${a.id}`;
   const teile = ias.map((ia, i) => {
     switch (ia && ia.kind) {
@@ -817,7 +826,7 @@ export function erzeugeAufgabe(a, opt = {}) {
     if (!stufeOffen) return null;
     const meld = stufeBox.querySelector('.teil-meldung');
     if (teile[0].leer()) {
-      meld.textContent = 'Wähle zuerst die gesuchte Zeile.';
+      meld.textContent = opt.sie ? 'Wählen Sie zuerst die gesuchte Zeile.' : 'Wähle zuerst die gesuchte Zeile.';
       return null;
     }
     if (!opt.teilPruefen) {
@@ -858,7 +867,7 @@ export function erzeugeAufgabe(a, opt = {}) {
       stufeBox = h(
         'div',
         'stufe-box',
-        el('p', 'teil-hinweis', opt.teilPruefen ? 'Finde zuerst die gesuchte Zeile. Teil b) erscheint, sobald Teil a) richtig ist.' : 'Lege zuerst die Zeile fest. Danach erscheint Teil b) – die Zeile kannst du dann nicht mehr ändern.'),
+        el('p', 'teil-hinweis', opt.teilPruefen ? 'Finde zuerst die gesuchte Zeile. Teil b) erscheint, sobald Teil a) richtig ist.' : opt.sie ? 'Legen Sie zuerst die Zeile fest. Danach erscheint Teil b) – die Zeile können Sie dann nicht mehr ändern.' : 'Lege zuerst die Zeile fest. Danach erscheint Teil b) – die Zeile kannst du dann nicht mehr ändern.'),
         k,
         meldung()
       );

@@ -168,3 +168,56 @@ test('Lösung angesehen (Bauplan-Tisch A5-E2-07): kein Versprechen „weiter üb
     await context.close();
   }
 });
+
+test('Verhöre 4 und 5 siezen auch die Bedienhinweise der Modellierungs-Widgets; das Lab duzt', { timeout: 300000 }, async () => {
+  const DU = /\b(du|Du|dein|deine|dir|dich|Tippe|Ziehe|Markiere|Lege|Zeichne|Ergänze|Wähle|Gib|Setze|Verbinde|Führe|Lösche)\b/;
+  const gesehen = new Set();
+  for (let n = 0; n < 4; n++) {
+    const cookie = await server.anmelden({ sub: `s:${4100 + n}`, name: `Test ${n}`, kurse: [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied' }] });
+    const db = server.t.db;
+    const alt = JSON.parse(db.prepare('SELECT einstellungen FROM kurse WHERE kurs_id = ?').get('k:17').einstellungen);
+    db.prepare('UPDATE kurse SET einstellungen = ? WHERE kurs_id = ?').run(JSON.stringify({ ...alt, akten: [1, 2, 3, 4, 5], niveau: 'eA', verhoer: 'offen' }), 'k:17');
+    const { context, page, meldungen } = await neueSeite({ viewport: { width: 1024, height: 768 } });
+    const [name, wert] = cookie.split(/=(.*)/s);
+    await context.addCookies([{ name, value: wert, url: server.url }]);
+    try {
+      for (const akte of [4, 5]) {
+        await page.goto(`${server.url}/verhoer/${akte}`);
+        await page.click('#k-verhoer-start');
+        await page.waitForSelector('html[data-seite="verhoer"]');
+        const kacheln = page.locator('#verhoer-kacheln .kachel');
+        const anzahl = await kacheln.count();
+        for (let i = 0; i < anzahl; i++) {
+          await kacheln.nth(i).click();
+          await page.waitForTimeout(250);
+          const karte = page.locator('#verhoer-aufgabe');
+          const art = (await karte.locator('.bauplan').count()) ? 'er'
+            : (await karte.locator('.werkbank').count()) ? 'schema'
+              : (await karte.locator('.teil-zerlegen').count()) ? 'zerlegen'
+                : (await karte.locator('.sim-tabelle').count()) ? 'anomalie' : null;
+          if (!art) continue;
+          gesehen.add(art);
+          if (art === 'er') {
+            // Statusmeldung nach einer Aktion
+            await karte.locator('[data-werkzeug="verbinden"]').click();
+          }
+          const text = (await karte.textContent()).replace(/\s+/g, ' ');
+          const fund = DU.exec(text);
+          assert.equal(fund, null, `V${akte} (${art}): du-Form „${fund && text.slice(Math.max(0, fund.index - 40), fund.index + 40)}“`);
+        }
+      }
+      assert.deepEqual(meldungen, []);
+    } finally {
+      await context.close();
+    }
+  }
+  assert.ok(gesehen.has('er') && gesehen.has('schema'), `Verhör 5 mit er und schema (${[...gesehen]})`);
+  // Lab: geduzt
+  const { context, page } = await lenaSeite();
+  try {
+    await oeffneAufgabe(page, 'A5-E2-07');
+    assert.match(await page.locator('#aufgabe-karte .bp-kopf-text').textContent(), /Zeichne den Bauplan/);
+  } finally {
+    await context.close();
+  }
+});

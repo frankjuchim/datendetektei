@@ -81,10 +81,12 @@ export function kurzschreibweise(r) {
  *   modus        'schluessel' | 'frei'
  *   start        Relationen (Format Block `schema`) – Pflicht bei schluessel
  *   entwurf      localStorage-Schlüssel (oder null)
+ *   sie          true: Bedienhinweise im Abitur-Stil (Verhör, gesiezt); sonst geduzt
  *   beiAenderung () => void
  *   pruefbar     false: Werkzeugseite ohne Prüfung (kein Ergebnisbereich)
  */
 export function erzeugeWerkbank(opt = {}) {
+  const A = (du, sie) => (opt.sie ? sie : du); // opt.sie: Verhör im Abitur-Stil
   const modus = opt.modus === 'schluessel' ? 'schluessel' : 'frei';
   const start = normalisiere(opt.start);
   // Im Modus „schluessel“ sind PK/FK des Starts nur Vorbelegung; Relationen und Attribute stehen fest.
@@ -107,8 +109,8 @@ export function erzeugeWerkbank(opt = {}) {
     'p',
     'wk-hinweis',
     modus === 'schluessel'
-      ? 'Attribut antippen, um es als Primärschlüssel zu markieren. Mit „↑FK“ wird es Fremdschlüssel – dann die Zielrelation auswählen.'
-      : 'Relationen und Attribute anlegen. „PK“ markiert den Primärschlüssel, „↑FK“ einen Fremdschlüssel mit Zielrelation.'
+      ? A('Tippe ein Attribut an, um es als Primärschlüssel zu markieren. Mit „↑FK“ wird es Fremdschlüssel – wähle dann die Zielrelation.', 'Tippen Sie ein Attribut an, um es als Primärschlüssel zu markieren. Mit „↑FK“ wird es Fremdschlüssel – wählen Sie dann die Zielrelation.')
+      : A('Lege Relationen und Attribute an. Tippe „PK“ für den Primärschlüssel und „↑FK“ für einen Fremdschlüssel mit Zielrelation.', 'Legen Sie Relationen und Attribute an. Tippen Sie „PK“ für den Primärschlüssel und „↑FK“ für einen Fremdschlüssel mit Zielrelation.')
   );
   const leiste = el('div', 'knopf-reihe wk-leiste');
   const plusRel = knopf('Relation', 'knopf', 'i-plus');
@@ -331,7 +333,7 @@ export function erzeugeWerkbank(opt = {}) {
   function zeichne() {
     karten.replaceChildren();
     relationen.forEach((r, ri) => karten.appendChild(karte(r, ri)));
-    if (!relationen.length) karten.appendChild(el('p', 'wk-leer', modus === 'frei' ? 'Noch keine Relation – die erste entsteht mit „Relation“.' : 'Keine Relationen vorgegeben.'));
+    if (!relationen.length) karten.appendChild(el('p', 'wk-leer', modus === 'frei' ? A('Noch keine Relation. Lege mit „Relation“ die erste an.', 'Noch keine Relation. Legen Sie mit „Relation“ die erste an.') : 'Keine Relationen vorgegeben.'));
     plusRel.disabled = gesperrt || relationen.length >= GRENZEN.relationen;
     zeichneVorschau();
     markiereErgebnis();

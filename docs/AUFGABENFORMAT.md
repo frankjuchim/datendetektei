@@ -459,7 +459,7 @@ in der Sandbox, Vergleich als Multimenge (Zahlen auf 1e-6, Text getrimmt, NULL e
 `sortierung`. Richtig ⇔ alle Varianten stimmen. `src/content/pruefer.js` delegiert dazu an eine injizierte Funktion
 `sqlPruefer(aufgabe, sql) → Promise<{ ok, diagnose: [{ code, falle, text }], zeilen }>` (Phase 2: `src/sql/pruefer.js`),
 der die Aufgabe als `{ datenbank, varianten, sortierung, aliasPflicht, abimodus, loesung: { sql } }` erhält.
-Leer: nur Leerraum. Max. 4 000 Zeichen. Rückmeldung `{ diagnose, zeilen }` (Anzahl der Zeilen des **Schüler**ergebnisses).
+Leer: nur Leerraum. Max. 4 000 Zeichen. Rückmeldung `{ diagnose, zeilen }` (Anzahl der Zeilen des **Schüler**ergebnisses; `null`, wenn die Abfrage nicht ausgeführt werden konnte).
 
 ### 6.6.1 `sql` mit `schreiben: true` – Kür-Sandbox (nur Kür K1)
 
