@@ -1,5 +1,5 @@
 'use strict';
-// Trainingsplatz (Spec §7.8, Plan Phase 3 Task 8; Muster Algo Quest src/services/training.js): Zufallsaufgaben T1–T3
+// Trainingsplatz (Spec §7.8, Plan Phase 3 Task 8 + Phase 5 Task 5; Muster Algo Quest src/services/training.js): Zufallsaufgaben T1–T7
 // aus src/content/generatoren.js, 1 Punkt je richtig gelöster Aufgabe, max. 30 Punkte je Tag (deutsche Zeit).
 //
 // Die Aufgabe wird NICHT gespeichert. Der Server leitet den Seed aus (sub, Kurs, Typ, Tag, Nummer) per HMAC ab und
@@ -17,6 +17,7 @@ const crypto = require('node:crypto');
 const G = require('../content/generatoren');
 const { pruefeAntwort, AntwortFehler } = require('../content/pruefer');
 const { HttpFehler } = require('./lernen');
+const { niveauSichtbar } = require('./stand');
 
 const MAX_PUNKTE_TAG = 30;
 const SIGNATUR_RE = /^(\d{4}-\d{2}-\d{2})\.(\d{1,6})\.([0-9a-f]{64})$/;
@@ -46,16 +47,19 @@ function erzeugeTraining({ db, lernen, geheimnis, jetzt = Date.now }) {
     return { punkte: r.punkte, aufgaben: r.anzahl };
   };
 
-  function typVon(body) {
+  /** Generatoren, die im Kurs-Niveau sichtbar sind (gA-Kurse: ohne die eA-Typen T4/T6, Spec §3.4). */
+  const generatorenFuer = (z) => G.GENERATOREN.filter((g) => niveauSichtbar(z.einst.niveau, g.niveau));
+
+  function typVon(z, body) {
     const typ = body && typeof body.typ === 'string' ? body.typ : '';
-    if (!G.istTyp(typ)) throw new HttpFehler(400, 'Unbekannter Aufgabentyp.');
+    if (!G.istTyp(typ) || !generatorenFuer(z).some((g) => g.typ === typ)) throw new HttpFehler(400, 'Unbekannter Aufgabentyp.');
     return typ;
   }
 
   /** Signatur und Seed prüfen → { typ, seed, tag, nr }; jede Abweichung → 400 (ohne Details). */
   function pruefeSignatur(z, body) {
     const b = body && typeof body === 'object' ? body : {};
-    const typ = typVon(b);
+    const typ = typVon(z, b);
     const seed = b.seed;
     const m = typeof b.signatur === 'string' ? SIGNATUR_RE.exec(b.signatur) : null;
     const ungueltig = new HttpFehler(400, 'Ungültige Trainingsaufgabe.');
@@ -92,7 +96,7 @@ function erzeugeTraining({ db, lernen, geheimnis, jetzt = Date.now }) {
     const z = lernen.zugang(sitzung, kursId);
     const gesamt = db.prepare('SELECT COALESCE(SUM(punkte), 0) AS p FROM training WHERE sub = ? AND kurs_id = ?').get(z.sub, z.kurs.id).p;
     return {
-      generatoren: G.GENERATOREN.map((g) => ({ ...g })),
+      generatoren: generatorenFuer(z).map((g) => ({ ...g })),
       heute: heute(z),
       maxProTag: MAX_PUNKTE_TAG,
       punkteGesamt: gesamt
@@ -102,7 +106,7 @@ function erzeugeTraining({ db, lernen, geheimnis, jetzt = Date.now }) {
   /** Aktuelle Aufgabe eines Typs: { typ, seed, signatur, aufgabe (öffentlich), heute, maxProTag }. */
   function neu(sitzung, kursId, body) {
     const z = lernen.zugang(sitzung, kursId, { schreiben: true });
-    const typ = typVon(body);
+    const typ = typVon(z, body);
     const tag = tagBerlin(jetzt());
     const nr = zeile(z.sub, z.kurs.id, tag).anzahl;
     const seed = seedFuer(z.sub, z.kurs.id, typ, tag, nr);

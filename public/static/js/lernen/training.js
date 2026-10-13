@@ -1,5 +1,6 @@
-// Trainingsplatz T1–T3 (/training, Spec §7.8): Zufallsaufgaben (Ergebnis vorhersagen, Gruppen auszählen, Zeilen
-// zählen). Es ist immer genau EINE Aufgabe offen und sichtbar; 1 Punkt je richtig gelöster Aufgabe, höchstens 30 am Tag.
+// Trainingsplatz T1–T7 (/training, Spec §7.8): Zufallsaufgaben (SQL: Ergebnis vorhersagen, Gruppen auszählen, Zeilen
+// zählen; Modellierung: Kardinalität, Schlüssel, Bauplan überführen, Anomalie – die Liste kommt vom Server, gA-Kurse ohne
+// die eA-Typen). Es ist immer genau EINE Aufgabe offen und sichtbar; 1 Punkt je richtig gelöster Aufgabe, höchstens 30 am Tag.
 // Die Aufgabe wird nicht gespeichert – der Server erzeugt sie aus dem signierten Seed neu und prüft dort.
 
 const V = new URL(import.meta.url).search;
@@ -103,7 +104,7 @@ function zeigeAufgabe() {
         fertig(rueck, r, true, [pruefen, loesung]);
       } else {
         const f = el('section', 'feedback falsch');
-        f.append(el('h3', 'feedback-titel', 'Noch nicht'), el('p', null, falschText(r.rueckmeldung)));
+        f.append(el('h3', 'feedback-titel', 'Noch nicht'), el('p', null, falschText(r.rueckmeldung, a.interaktion)));
         rueck.replaceChildren(f);
       }
     } catch (f) {
@@ -133,7 +134,8 @@ function zeigeAufgabe() {
   });
 }
 
-function falschText(rm) {
+function falschText(rm, ia) {
+  if (ia && ia.kind === 'choice') return 'Diese Auswahl stimmt noch nicht. Falsche Antworten kosten hier nichts.';
   if (rm && rm.felder) {
     const w = Object.values(rm.felder);
     return `${w.filter(Boolean).length} von ${w.length} Lücken stimmen. Falsche Antworten kosten hier nichts.`;
@@ -181,7 +183,7 @@ async function start() {
   }
   const gemerkt = A.lies(TYP_SCHLUESSEL);
   if (gemerkt && info.generatoren.some((g) => g.typ === gemerkt)) typ = gemerkt;
-  const kopf = h('div', 'seiten-kopf', el('span', 'etikett', 'Trainingsplatz · Zufallsaufgaben'), el('h1', null, 'Trainingsplatz'), el('p', null, 'Immer eine Aufgabe nach der anderen: Ergebnis vorhersagen, Gruppen auszählen, Zeilen zählen. Jede richtige Aufgabe bringt einen Punkt, höchstens 30 am Tag.'));
+  const kopf = h('div', 'seiten-kopf', el('span', 'etikett', 'Trainingsplatz · Zufallsaufgaben'), el('h1', null, 'Trainingsplatz'), el('p', null, 'Immer eine Aufgabe nach der anderen – wähle oben die Aufgabenart. Jede richtige Aufgabe bringt einen Punkt, höchstens 30 am Tag.'));
   platz = el('div', 'training-platz');
   tagesBox = el('div', 'karte tages-karte');
   seite.replaceChildren(...[A.vorschauHinweis(kontext), kopf, waehler(), h('div', 'training-raster', platz, h('aside', 'training-seite', tagesBox))].filter(Boolean));
