@@ -446,8 +446,8 @@ test('Docker: materialien/ kommt ins Image, Originale nur mit ORIGINALE_IM_IMAGE
   const docker = fs.readFileSync(path.join(WURZEL, 'Dockerfile'), 'utf8');
   assert.match(docker, /^ARG ORIGINALE_IM_IMAGE=1$/m);
   assert.match(docker, /^COPY materialien \.\/materialien$/m);
-  assert.match(docker, /ORIGINALE_IM_IMAGE" != "1".*\n.*-iname '\*\.docx' -o -iname '\*\.pptx'/);
-  assert.match(docker, /^COPY --from=material \/app\/materialien \.\/materialien$/m);
+  assert.match(docker, /ORIGINALE_IM_IMAGE=\$ORIGINALE_IM_IMAGE node materialien_fuer_image\.js/);
+  assert.match(docker, /^COPY --from=material \/material \.\/materialien$/m);
   const ignore = fs.readFileSync(path.join(WURZEL, '.dockerignore'), 'utf8').split('\n').map((z) => z.trim());
   assert.ok(!ignore.includes('materialien') && !ignore.includes('materialien/'), '.dockerignore schließt materialien aus');
 });
