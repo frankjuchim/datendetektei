@@ -13,6 +13,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const { chromium } = require('playwright-core');
 const { starteTestServer } = require('./testserver');
@@ -27,10 +28,16 @@ const LOESUNG = (id) => BEISPIEL.aufgaben.find((a) => a.id === id).loesung.sql;
 let browser;
 let server;
 let cookie;
+let aktenOrdner;
 
 test.before(async () => {
   browser = await chromium.launch({ executablePath: CHROMIUM });
-  server = await starteTestServer({ mitInhalten: true, aktenDateien: [FIXTURE] });
+  // Echte Akten ohne akte6.json: deren Schlussplädoyer (Akte 6, hier nicht freigeschaltet) stünde sonst vor dem der
+  // Beispielakte, die dieser Test durchspielt.
+  aktenOrdner = fs.mkdtempSync(path.join(os.tmpdir(), "dd-akten-"));
+  const seedAkten = path.join(__dirname, "..", "..", "seed", "akten");
+  for (const d of fs.readdirSync(seedAkten)) if (d !== "akte6.json") fs.copyFileSync(path.join(seedAkten, d), path.join(aktenOrdner, d));
+  server = await starteTestServer({ mitInhalten: true, aktenDateien: [FIXTURE], aktenVerzeichnis: aktenOrdner });
   cookie = await server.anmelden({});
   const db = server.t.db;
   const alt = JSON.parse(db.prepare('SELECT einstellungen FROM kurse WHERE kurs_id = ?').get('k:17').einstellungen);
@@ -45,6 +52,7 @@ test.before(async () => {
 test.after(async () => {
   if (browser) await browser.close();
   if (server) await server.schliessen();
+  if (aktenOrdner) fs.rmSync(aktenOrdner, { recursive: true, force: true });
 });
 
 async function neueSeite(viewport = { width: 1440, height: 900 }) {

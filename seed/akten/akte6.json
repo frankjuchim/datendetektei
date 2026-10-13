@@ -1,0 +1,1891 @@
+{
+  "version": 2,
+  "welt": 6,
+  "titel": "Datenspuren",
+  "farbe": "#4A5A1A",
+  "levels": [
+    {
+      "id": "A6-E1",
+      "nr": "6.1",
+      "titel": "Das Phantom",
+      "ds": [
+        12
+      ],
+      "ab": "AB 6.1 Das Phantom",
+      "niveau": "alle",
+      "briefing": "Die Stadt hat der Detektei pseudonyme Datenexporte überlassen – ohne Namen, aber mit Jahrgang, Stadtteil und Zeitstempeln. Verknüpfe die Spuren im Schlussplädoyer Schritt für Schritt, bis nur noch eine Person übrig bleibt. Und dann frag dich, ob wir das hätten tun dürfen.",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "datenspuren"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:** **Informationelle Selbstbestimmung:** Jede Person entscheidet grundsätzlich selbst über Preisgabe und Verwendung ihrer persönlichen Daten.\n\n- **Pseudonym ≠ anonym:** Ein Token ersetzt den Namen, aber Quasi-Identifikatoren (Jahrgang, Stadtteil, Tarif, Zeitmuster) lassen sich verknüpfen. Kleine Gruppen machen Personen erkennbar.\n- **Datenschutz** schützt Personen und ihre Rechte; **Datensicherheit** schützt Daten (Vertraulichkeit, Integrität, Verfügbarkeit).\n- **Maßnahmen:** Aggregation, Mindestgruppengröße (z. B. keine Gruppen unter 5), Vergröberung (Jahrzehnt statt Jahrgang), wechselnde Pseudonyme, Zugriffsrechte, Verschlüsselung, Löschfristen.\n- Die Exporte haben **keine Fremdschlüssel**: Verbunden wird über gleiche Werte – das vervielfacht Zeilen, also an `DISTINCT` denken."
+        },
+        {
+          "t": "tabelle",
+          "kopf": [
+            "DSGVO-Grundsatz",
+            "Bedeutung"
+          ],
+          "zeilen": [
+            [
+              "Rechtmäßigkeit / Einwilligung",
+              "Jede Verarbeitung braucht eine Rechtsgrundlage, z. B. eine freiwillige, widerrufbare Einwilligung."
+            ],
+            [
+              "Zweckbindung",
+              "Daten nur für den Zweck nutzen, für den sie erhoben wurden."
+            ],
+            [
+              "Datenminimierung",
+              "Nur so viele Daten wie nötig."
+            ],
+            [
+              "Transparenz",
+              "Betroffene wissen, wer was wozu verarbeitet."
+            ],
+            [
+              "Speicherbegrenzung",
+              "Löschen, sobald der Zweck erfüllt ist."
+            ],
+            [
+              "besondere Kategorien",
+              "Gesundheitsdaten u. a. sind besonders geschützt."
+            ]
+          ]
+        }
+      ],
+      "coldCase": "A6-E1-CC",
+      "plaedoyer": {
+        "titel": "Schlussplädoyer",
+        "schritte": [
+          "A6-E1-09",
+          "A6-E1-10",
+          "A6-E1-11",
+          "A6-E1-12",
+          "A6-E1-13",
+          "A6-E1-14"
+        ],
+        "indizien": {
+          "A6-E1-09": "Fünf Nachtfahrten an der Hafenkante, alle unter dem Token **R-7F3A** – Jahrgang 1988, Hafenviertel, Tarif Plus. Das Konto ist pseudonym – aber nicht stumm.",
+          "A6-E1-10": "Nur **ein einziges** Token hat diese drei Merkmale. Kleine Gruppen machen Personen erkennbar: Drei harmlose Angaben wirken wie ein Name.",
+          "A6-E1-11": "Das Gerät **WA-3917** war bei allen fünf Fahrten dabei. Das Token hat ein Handy – und das Handy ist überall dabei.",
+          "A6-E1-12": "WA-3917 war am Festplatz vor 22 und nach 23 Uhr, im Fundbüro am 14.09., dienstags im Vereinsheim, in den Tatnächten an der Hafenkante – und nachts in der **Kranstraße 7**. Am Kaffeemobil zwischen 22 und 23 Uhr: keine einzige Kartenzahlung. Eine Person an allen vier Tatorten, zur Tatzeit.",
+          "A6-E1-13": "Im TuS passt genau ein Mitglied: **V-2571**, Tischtennis, 1988, Hafenviertel. Verein, Rad und Fest gehören zu derselben Person.",
+          "A6-E1-14": "In der Kranstraße 7 wohnt mit Jahrgang 1988 nur eine Person: **Merle Falkenrath**. Name gefunden."
+        },
+        "aufloesung": "Die Indizienkette ist geschlossen: Hinter Nora Falter steht **Merle Falkenrath**, Jahrgang 1988, wohnhaft im Hafenviertel, Tischtennisspielerin beim TuS – und bis 2025 Datenschutzbeauftragte der Stadt Weserstedt. Erinnert ihr euch an die Rohliste des TuS? Da stand sie, nur ein paar Zeilen unter ihrem Tarnnamen.\n\nAm Morgen nach der Enttarnung wird im Fundbüro ein brauner Umschlag mit einem Nachtfalter darauf abgegeben. Darin liegen der Messing-Kompass, 312,50 € in bar mit einem Zettel „für die Festkasse“, ein Beleg über die nachgezahlten Vereinsbeiträge und der Schlüssel zu Schuppen 4 am Hafen, wo die fünf Lastenräder unbeschädigt stehen.\n\nDazu ein Brief: Jahrelang hatte sie gewarnt, dass die Stadt zu viele Daten zu lange speichert, dass „pseudonym“ nicht „anonym“ heißt und dass ihr alter Verwaltungszugang nie gesperrt wurde – mit ihm hat sie den Fundbuch-Eintrag geändert und einen Abholschein gedruckt, den am Schalter niemand hinterfragte. Ihr Gutachten verschwand in einer Schublade, also hat sie gezeigt, was sie meinte. Jede ihrer Spuren war eine absichtlich gelegte Datenpanne, und am Ende sollte jemand die Daten verknüpfen und sie finden. Dieser Jemand waren wir.\n\nMerle Falkenrath hat sich bei der Stadt gemeldet; was aus ihren Taten folgt, entscheiden andere, nicht die Detektei. Edda legt den Brief auf den Tisch: „Sie hat Unrecht getan, um auf Unrecht hinzuweisen – und wir haben genau das getan, wovor sie gewarnt hat.“",
+        "ueberleitung": "Bevor ihr feiert, schaut auf das, was wir gerade getan haben: Daten, die für Fahrradverleih, Festabrechnung, Vereinsverwaltung und eine Stadt-App erhoben wurden, haben wir für eine Fahndung zusammengeführt – als private Detektei, ohne dass auch nur ein Mensch in Weserstedt davon wusste. Tamara Leversen und Ole Brakhage standen auf unserer Kandidatenliste, nur weil sie 1988 geboren sind und im Hafenviertel wohnen.\n\n**Durfte die Detektei das? Was hätte die Stadt nie speichern, nie weitergeben dürfen – und was hätte sie technisch anders machen müssen?** Darüber streiten wir jetzt mit verteilten Rollen."
+      },
+      "aufgaben": [
+        "A6-E1-01",
+        "A6-E1-02",
+        "A6-E1-03",
+        "A6-E1-04",
+        "A6-E1-05",
+        "A6-E1-06",
+        "A6-E1-07",
+        "A6-E1-08",
+        "A6-E1-09",
+        "A6-E1-10",
+        "A6-E1-11",
+        "A6-E1-12",
+        "A6-E1-13",
+        "A6-E1-14"
+      ]
+    }
+  ],
+  "boss": {
+    "id": "A6-V",
+    "titel": "Verhör 6 · Fitness-App",
+    "kontextDb": "verhoer/fitness",
+    "rahmensatz": "Du weißt jetzt, wie leicht man Menschen in Daten findet – zeig mir, dass du weißt, wann man es nicht darf.",
+    "abimodus": "streng",
+    "dauerMin": 15,
+    "anzahl": 5,
+    "mix": {
+      "1": 2,
+      "2": 2,
+      "3": 1
+    },
+    "pool": [
+      "A6-V-01",
+      "A6-V-02",
+      "A6-V-03",
+      "A6-V-04",
+      "A6-V-05",
+      "A6-V-06",
+      "A6-V-07",
+      "A6-V-08"
+    ]
+  },
+  "aufgaben": [
+    {
+      "id": "A6-E1-01",
+      "titel": "Die Grundsätze",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K44"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Bevor du Exporte verknüpfst, brauchst du die Spielregeln. Ordne jede Beschreibung und jedes Beispiel aus Weserstedt dem passenden **DSGVO-Grundsatz** zu."
+        }
+      ],
+      "interaktion": {
+        "kind": "match",
+        "elemente": [
+          {
+            "id": "b1",
+            "md": "Daten dürfen nur für den Zweck verwendet werden, für den sie erhoben wurden."
+          },
+          {
+            "id": "b2",
+            "md": "Es werden nur so viele Daten erhoben, wie für den Zweck nötig sind."
+          },
+          {
+            "id": "b3",
+            "md": "Betroffene können nachvollziehen, wer welche Daten über sie wozu verarbeitet."
+          },
+          {
+            "id": "b4",
+            "md": "Daten werden gelöscht, sobald der Zweck erfüllt ist."
+          },
+          {
+            "id": "b5",
+            "md": "Für jede Verarbeitung braucht es eine Rechtsgrundlage, z. B. eine Einwilligung."
+          },
+          {
+            "id": "w1",
+            "md": "Weserstedt: Die Fahrtdaten von StadtRad dienen der Abrechnung – nun sollen sie für eine Fahndung genutzt werden."
+          },
+          {
+            "id": "w2",
+            "md": "Weserstedt: Für eine Statistik der Ausleihen je Station hätte die Stadt weder Jahrgang noch Tarif gebraucht."
+          },
+          {
+            "id": "w3",
+            "md": "Weserstedt: Niemand in der Stadt wusste, dass die WeserApp an jeder StadtRad-Station automatisch eincheckt."
+          },
+          {
+            "id": "w4",
+            "md": "Weserstedt: Die Stadt hebt die Check-ins der WeserApp aus mehreren Jahren auf."
+          },
+          {
+            "id": "w5",
+            "md": "Weserstedt: Wer sich bei StadtRad anmeldet, hat einem Vertrag über die Ausleihe zugestimmt – nicht einer Weitergabe an eine Detektei."
+          }
+        ],
+        "kategorien": [
+          {
+            "id": "zw",
+            "md": "Zweckbindung"
+          },
+          {
+            "id": "mi",
+            "md": "Datenminimierung"
+          },
+          {
+            "id": "tr",
+            "md": "Transparenz"
+          },
+          {
+            "id": "sp",
+            "md": "Speicherbegrenzung"
+          },
+          {
+            "id": "re",
+            "md": "Rechtmäßigkeit (Rechtsgrundlage, Einwilligung)"
+          }
+        ]
+      },
+      "loesung": {
+        "b1": "zw",
+        "b2": "mi",
+        "b3": "tr",
+        "b4": "sp",
+        "b5": "re",
+        "w1": "zw",
+        "w2": "mi",
+        "w3": "tr",
+        "w4": "sp",
+        "w5": "re"
+      },
+      "tipps": [
+        "Frag dich bei jedem Beispiel: Geht es um den **Zweck**, die **Menge**, das **Wissen** der Betroffenen, die **Dauer** oder die **Erlaubnis**?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Zweckbindung: Fahndung ist ein neuer Zweck. Datenminimierung: Jahrgang und Tarif waren für eine Ausleihstatistik überflüssig. Transparenz: Die automatischen Check-ins kannte niemand. Speicherbegrenzung: Check-ins über Jahre statt Löschung nach Zweckerfüllung. Rechtmäßigkeit: Der Ausleihvertrag ist keine Rechtsgrundlage für eine Weitergabe an Dritte."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-02",
+      "titel": "Pseudonym oder anonym?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K46"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Edda legt dir vier Auszüge aus den Exporten der Stadt hin. Entscheide für jeden Datensatz: Ist er **personenbezogen** (die Person ist direkt genannt), **pseudonym** (ein Kennzeichen statt des Namens – mit Zusatzwissen zuordenbar) oder **anonym** (keine Person mehr bestimmbar)?"
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "a) `R-21C4 | 1988 | Hafenviertel | Basis | Hafenkante | 2026-09-10 07:55`",
+          "optionen": [
+            {
+              "id": "p",
+              "md": "personenbezogen (direkt)"
+            },
+            {
+              "id": "s",
+              "md": "pseudonym"
+            },
+            {
+              "id": "a",
+              "md": "anonym"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) „Im August 2026 gab es im Stadtteil Lindenhof insgesamt 312 Ausleihen.“",
+          "optionen": [
+            {
+              "id": "p",
+              "md": "personenbezogen (direkt)"
+            },
+            {
+              "id": "s",
+              "md": "pseudonym"
+            },
+            {
+              "id": "a",
+              "md": "anonym"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "c) `1107 | Tamara | Leversen | 1988 | Hafenviertel | Speicherstraße 14`",
+          "optionen": [
+            {
+              "id": "p",
+              "md": "personenbezogen (direkt)"
+            },
+            {
+              "id": "s",
+              "md": "pseudonym"
+            },
+            {
+              "id": "a",
+              "md": "anonym"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "d) `WA-1288 | Festplatz | 2026-08-29 22:15`",
+          "optionen": [
+            {
+              "id": "p",
+              "md": "personenbezogen (direkt)"
+            },
+            {
+              "id": "s",
+              "md": "pseudonym"
+            },
+            {
+              "id": "a",
+              "md": "anonym"
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "s"
+          ]
+        },
+        {
+          "richtig": [
+            "a"
+          ]
+        },
+        {
+          "richtig": [
+            "p"
+          ]
+        },
+        {
+          "richtig": [
+            "s"
+          ]
+        }
+      ],
+      "tipps": [
+        "Ein Token oder eine Gerätekennung ersetzt nur den Namen – die Person dahinter gibt es weiterhin."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) und d) sind **pseudonym**: Token bzw. Gerätekennung ersetzen den Namen, aber mit Zusatzwissen (Jahrgang, Stadtteil, Ort, Uhrzeit) lässt sich die Person bestimmen – pseudonyme Daten bleiben personenbezogene Daten. b) ist **anonym**: eine Monatssumme über einen ganzen Stadtteil lässt keinen Rückschluss auf einzelne Menschen zu. c) nennt die Person mit Namen und Adresse – **personenbezogen**."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-03",
+      "titel": "Wie groß sind die Gruppen?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K26",
+        "DB-K25",
+        "DB-K46"
+      ],
+      "fallen": [
+        "P3"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wer Jahrgang und Stadtteil einer Person kennt, sucht sie in einer kleinen Gruppe. Gib für jede Kombination aus **Jahrgang** und **Stadtteil** die Anzahl der Einwohner aus – die kleinsten Gruppen zuerst."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [],
+        "sortierung": [
+          {
+            "spalte": 3,
+            "richtung": "ASC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Jahrgang, Stadtteil, COUNT(*) AS Anzahl\nFROM Einwohner\nGROUP BY Jahrgang, Stadtteil\nORDER BY Anzahl"
+      },
+      "tipps": [
+        "Gruppiere nach **beiden** Merkmalen – jede Spalte im SELECT ohne Aggregat gehört in GROUP BY.",
+        "Sortiere nach dem Aggregat: `ORDER BY Anzahl` (Alias in ORDER BY ist erlaubt)."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Jahrgang, Stadtteil, COUNT(*) AS Anzahl\nFROM Einwohner\nGROUP BY Jahrgang, Stadtteil\nORDER BY Anzahl",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: 193 Gruppen für 250 Einwohner – die größte hat gerade einmal 4 Personen. Fehlt `Stadtteil` in GROUP BY, verletzt die Abfrage die GROUP-BY-Regel (P3)."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-04",
+      "titel": "Allein in der Gruppe",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27",
+        "DB-K46"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Besonders gefährlich sind Gruppen mit **genau einer** Person: Dort reichen Jahrgang und Stadtteil, um einen Menschen eindeutig zu bestimmen."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "datenbank": "datenspuren",
+          "varianten": [],
+          "abimodus": "hinweis",
+          "frage": "a) Gib alle Kombinationen aus Jahrgang und Stadtteil aus, zu denen genau **ein** Einwohner gehört."
+        },
+        {
+          "kind": "gaps",
+          "frage": "b) Wie viele Einwohner sind damit allein durch Jahrgang und Stadtteil eindeutig bestimmbar? [[g1]]",
+          "felder": {
+            "g1": {
+              "typ": "zahl",
+              "breite": 4
+            }
+          }
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "SELECT Jahrgang, Stadtteil\nFROM Einwohner\nGROUP BY Jahrgang, Stadtteil\nHAVING COUNT(*) = 1"
+        },
+        {
+          "g1": [
+            "150"
+          ]
+        }
+      ],
+      "tipps": [
+        "Eine Bedingung über die **Gruppe** (`COUNT(*)`) gehört in HAVING, nicht in WHERE.",
+        "Jede Ergebniszeile steht für genau eine Person – die Zeilenzahl ist die Antwort auf b)."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Jahrgang, Stadtteil\nFROM Einwohner\nGROUP BY Jahrgang, Stadtteil\nHAVING COUNT(*) = 1",
+          "markiere": [
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: 150 Kombinationen – also 150 von 250 Einwohnern, die man ohne Namen eindeutig erkennt. `WHERE COUNT(*) = 1` ist ein Fehler: WHERE prüft einzelne Zeilen vor dem Gruppieren, Aggregate gehören in HAVING (P1)."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Jahrgang, Stadtteil, COUNT(*) AS Anzahl\nFROM Einwohner\nGROUP BY Jahrgang, Stadtteil\nHAVING COUNT(*) < 3\nORDER BY Anzahl"
+        },
+        {
+          "t": "text",
+          "md": "**Ermittler-Notiz:** Jede Gruppe in diesem Ergebnis ist ein Risiko: Wer Jahrgang und Stadtteil kennt, kann die Person fast eindeutig bestimmen."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-05",
+      "titel": "Dieselbe Person?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K46"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Im Vereinsexport des TuS steht dieses Mitglied:"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "VereinExport (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "MitgliedToken",
+              "pk": true
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Abteilung",
+              "pk": true
+            },
+            {
+              "name": "Stadtteil"
+            }
+          ],
+          "zeilen": [
+            [
+              "V-7046",
+              1983,
+              "Tennis",
+              "Altstadt"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "datenspuren",
+            "sql": "SELECT MitgliedToken, Geburtsjahr, Abteilung, Stadtteil\nFROM VereinExport\nWHERE MitgliedToken = 'V-7046'"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Tippe im Ausschnitt aus dem RadExport **alle Zeilen** an, die nach Jahrgang (= Geburtsjahr) und Stadtteil zu derselben Person gehören könnten."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "RadExport (Ausschnitt, 24.–26.08.)",
+          "kopf": [
+            {
+              "name": "KundenToken",
+              "pk": true
+            },
+            {
+              "name": "Jahrgang"
+            },
+            {
+              "name": "Stadtteil"
+            },
+            {
+              "name": "Tarif"
+            },
+            {
+              "name": "Start",
+              "pk": true
+            }
+          ],
+          "zeilen": [
+            [
+              "R-4BB5",
+              1983,
+              "Altstadt",
+              "Basis",
+              "2026-08-24 18:54"
+            ],
+            [
+              "R-8001",
+              1968,
+              "Altstadt",
+              "Plus",
+              "2026-08-25 07:49"
+            ],
+            [
+              "R-8846",
+              1995,
+              "Altstadt",
+              "Plus",
+              "2026-08-25 11:13"
+            ],
+            [
+              "R-D8A3",
+              1983,
+              "Mühlenfeld",
+              "Basis",
+              "2026-08-25 17:30"
+            ],
+            [
+              "R-8001",
+              1968,
+              "Altstadt",
+              "Plus",
+              "2026-08-25 17:56"
+            ],
+            [
+              "R-78F4",
+              1968,
+              "Altstadt",
+              "Plus",
+              "2026-08-25 18:59"
+            ],
+            [
+              "R-6E89",
+              1977,
+              "Altstadt",
+              "Basis",
+              "2026-08-26 07:36"
+            ],
+            [
+              "R-4BB5",
+              1983,
+              "Altstadt",
+              "Basis",
+              "2026-08-26 08:53"
+            ],
+            [
+              "R-8001",
+              1968,
+              "Altstadt",
+              "Plus",
+              "2026-08-26 09:11"
+            ],
+            [
+              "R-D8A3",
+              1983,
+              "Mühlenfeld",
+              "Basis",
+              "2026-08-26 11:23"
+            ],
+            [
+              "R-D8A3",
+              1983,
+              "Mühlenfeld",
+              "Basis",
+              "2026-08-26 17:28"
+            ],
+            [
+              "R-8001",
+              1968,
+              "Altstadt",
+              "Plus",
+              "2026-08-26 20:51"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "datenspuren",
+            "sql": "SELECT KundenToken, Jahrgang, Stadtteil, Tarif, Start\nFROM RadExport\nWHERE (Jahrgang = 1983 OR Stadtteil = 'Altstadt')\n  AND Start BETWEEN '2026-08-24 00:00' AND '2026-08-26 23:59'\nORDER BY Start"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "zeilen",
+        "block": 3,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zeilen": [
+          0,
+          7
+        ],
+        "quelleSql": "SELECT KundenToken, Jahrgang, Stadtteil, Tarif, Start\nFROM RadExport\nWHERE Jahrgang = 1983\n  AND Stadtteil = 'Altstadt'\n  AND Start BETWEEN '2026-08-24 00:00' AND '2026-08-26 23:59'"
+      },
+      "tipps": [
+        "Beide Merkmale müssen stimmen: Jahrgang 1983 **und** Stadtteil Altstadt.",
+        "Eine Person kann mehrere Fahrten haben – jede passende Zeile zählt."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Nur das Token **R-4BB5** (1983, Altstadt) passt – mit 2 Fahrten im Ausschnitt. Wer die Exporte über Jahrgang und Stadtteil verbindet, bekommt für ein Mitglied also mehrere Zeilen: Ein Verbund über Merkmale, die kein Schlüssel sind, vervielfacht (P2). Gleicher Jahrgang allein (R-D8A3, Mühlenfeld) oder gleicher Stadtteil allein (R-8001, 1968) reicht nicht."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-06",
+      "titel": "Exporte verknüpfen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K46"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "RadExport und VereinExport haben keinen gemeinsamen Schlüssel – aber gemeinsame Merkmale. Verbinde die beiden Exporte über **Jahrgang = Geburtsjahr** und **gleichen Stadtteil**. Gib KundenToken, MitgliedToken und Abteilung aus – jede Kombination nur **einmal**."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [
+          "null"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT DISTINCT RadExport.KundenToken, VereinExport.MitgliedToken, VereinExport.Abteilung\nFROM RadExport, VereinExport\nWHERE RadExport.Jahrgang = VereinExport.Geburtsjahr\n  AND RadExport.Stadtteil = VereinExport.Stadtteil"
+      },
+      "tipps": [
+        "Zwei Bedingungen im WHERE, verbunden mit AND – und bei `Stadtteil` musst du sagen, aus welcher Tabelle.",
+        "Jede Fahrt erzeugt eine eigene Zeile: Doppelte entfernst du mit `DISTINCT`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT DISTINCT RadExport.KundenToken, VereinExport.MitgliedToken, VereinExport.Abteilung\nFROM RadExport, VereinExport\nWHERE RadExport.Jahrgang = VereinExport.Geburtsjahr\n  AND RadExport.Stadtteil = VereinExport.Stadtteil",
+          "markiere": [
+            1
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: 9 Kombinationen. Ohne `DISTINCT` sind es 54 Zeilen – eine je Fahrt und Mitgliedschaft (P2: der Verbund über Nicht-Schlüssel vervielfacht). Auffällig: Die Tokens R-7F3A und R-21C4 passen beide zu zwei Mitgliedern (Tischtennis und Fußball) – die Merkmale allein reichen also noch nicht für eine eindeutige Zuordnung. Einträge ohne Geburtsjahr fallen beim Vergleich mit `=` heraus."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-07",
+      "titel": "Werbung mit Raddaten?",
+      "stufe": 3,
+      "punkte": 0,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K45",
+        "DB-K44"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ein Werbepartner bietet der Stadt Geld für die Ausleihdaten von StadtRad (KundenToken, Jahrgang, Stadtteil, Tarif, Stationen, Zeitpunkte), um personalisierte Werbung auszuspielen. **Beurteile**, ob die Stadt die Daten weitergeben darf. Beziehe dich auf mindestens zwei Grundsätze und komm zu einem begründeten Urteil. Schreib deine Antwort auf – sie bleibt auf deinem Gerät."
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "nennt den Sachverhalt: Weitergabe von Ausleihdaten an einen Dritten für **Werbung**",
+          "**Zweckbindung:** erhoben für Ausleihe und Abrechnung – Werbung ist ein neuer Zweck",
+          "**Rechtsgrundlage/Einwilligung:** nur mit freiwilliger, informierter und ausdrücklicher Einwilligung, die jederzeit **widerrufen** werden kann",
+          "**Transparenz:** Die Kundschaft muss vorher erfahren, wer welche Daten wozu erhält",
+          "erläutert, dass die Daten trotz Token **personenbezogen** (pseudonym, nicht anonym) sind – Jahrgang, Stadtteil und Fahrtmuster verraten Personen",
+          "fällt ein **Urteil** mit Begründung (z. B. ohne Einwilligung unzulässig) statt nur Argumente aufzuzählen"
+        ]
+      },
+      "tipps": [
+        "Schema: Grundsatz – Sachverhalt – Abwägung – Urteil."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Musterurteil: „Die Weitergabe ist ohne Einwilligung unzulässig. Die Daten wurden für Ausleihe und Abrechnung erhoben; Werbung ist ein neuer Zweck (Zweckbindung). Eine Rechtsgrundlage wäre nur eine freiwillige, informierte Einwilligung, die jederzeit widerrufen werden kann. Da Jahrgang, Stadtteil und Fahrtmuster Personen erkennbar machen, sind die Daten trotz Token personenbezogen.“ Wer nur Argumente sammelt und kein Urteil fällt, verfehlt den Operator **beurteilen** (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-08",
+      "titel": "So hätte es sein müssen",
+      "stufe": 3,
+      "punkte": 0,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K46",
+        "DB-K44"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadt will künftig Daten für die Verkehrsplanung veröffentlichen, ohne dass jemand so enttarnt werden kann wie in dieser Akte. **Erläutere** mindestens drei technische oder organisatorische Maßnahmen und **grenze** Datenschutz von Datensicherheit **ab**. Schreib deine Antwort auf – sie bleibt auf deinem Gerät."
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "**Aggregation:** nur Summen (z. B. Ausleihen je Station und Stunde) statt einzelner Fahrten",
+          "**Mindestgruppengröße / Vergröberung:** keine Gruppen unter z. B. 5 Personen, Jahrzehnt statt Jahrgang, kein Tarif",
+          "**Pseudonyme wechseln** bzw. Zuordnungstabelle getrennt und geschützt aufbewahren",
+          "**Löschfristen** (Speicherbegrenzung) sowie **Zugriffsrechte** nach Rollen, alte Zugänge sperren",
+          "**Datenschutz** schützt Personen und ihr Recht auf informationelle Selbstbestimmung; **Datensicherheit** schützt die Daten selbst (Vertraulichkeit, Integrität, Verfügbarkeit)",
+          "ordnet richtig zu: Verschlüsselung und Zugriffsrechte sind Mittel der **Datensicherheit**, Aggregation und Datenminimierung dienen dem **Datenschutz**"
+        ]
+      },
+      "tipps": [
+        "Denk an die Abfragen dieser Akte: Welche Angabe hat jeweils den entscheidenden Hinweis geliefert – und wie hätte man sie entschärfen können?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Jede Maßnahme setzt an einem Schritt der Enttarnung an: Aggregation und Mindestgruppengröße hätten die kleinen Gruppen verhindert, wechselnde Pseudonyme die Verknüpfung über Wochen, Löschfristen die alten Check-ins. Datenschutz fragt, **ob** und **wozu** Daten über Menschen verarbeitet werden dürfen; Datensicherheit sorgt dafür, dass die Daten technisch geschützt sind. Verschlüsselung allein hätte die Detektei nicht aufgehalten – die Stadt hat die Daten ja freiwillig übergeben."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-09",
+      "titel": "Spur 1: Fünf Nächte an der Hafenkante",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K21",
+        "DB-K32"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "In den fünf Nächten vom 8. bis 12. September verschwand an der Hafenkante jeweils ein Lastenrad. Gib aus dem RadExport alle Fahrten aus, die an der Station **Hafenkante** zwischen dem **2026-09-08 00:00** und dem **2026-09-12 23:59** begonnen haben – mit KundenToken, Start, Jahrgang, Stadtteil und Tarif, sortiert nach Start. Schau dir die Uhrzeiten genau an."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [],
+        "sortierung": [
+          {
+            "spalte": "Start",
+            "richtung": "ASC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT KundenToken, Start, Jahrgang, Stadtteil, Tarif\nFROM RadExport\nWHERE StartStation = 'Hafenkante'\n  AND Start BETWEEN '2026-09-08 00:00' AND '2026-09-12 23:59'\nORDER BY Start"
+      },
+      "tipps": [
+        "Ein Zeitraum lässt sich mit `BETWEEN … AND …` angeben; Zeitpunkte stehen als Text im Format `'JJJJ-MM-TT hh:mm'`.",
+        "Mit `'2026-09-12'` als Obergrenze fehlen alle Fahrten **am** 12. September – die Uhrzeit gehört dazu."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT KundenToken, Start, Jahrgang, Stadtteil, Tarif\nFROM RadExport\nWHERE StartStation = 'Hafenkante'\n  AND Start BETWEEN '2026-09-08 00:00' AND '2026-09-12 23:59'\nORDER BY Start",
+          "markiere": [
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: 9 Fahrten. Fünf davon beginnen mitten in der Nacht (zwischen 01:00 und 02:00) – alle unter demselben Token **R-7F3A**, Jahrgang 1988, Hafenviertel, Tarif Plus. Die übrigen Fahrten liegen am Tag und gehören zu anderen Tokens. Wer `'2026-09-12'` als Obergrenze schreibt, verliert alles nach Mitternacht des 12. (P5: Literale genau notieren)."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-10",
+      "titel": "Spur 2: Wie viele teilen diese Merkmale?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P4"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Jahrgang 1988, Hafenviertel, Tarif Plus – wie viele **verschiedene** Kundinnen und Kunden haben genau diese Merkmale? Gib alle verschiedenen KundenToken mit Jahrgang 1988, Stadtteil Hafenviertel und Tarif Plus aus, jedes nur einmal."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT DISTINCT KundenToken\nFROM RadExport\nWHERE Jahrgang = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Tarif = 'Plus'"
+      },
+      "tipps": [
+        "Drei Bedingungen, verbunden mit AND.",
+        "Jedes Token soll nur einmal erscheinen: `SELECT DISTINCT`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT DISTINCT KundenToken\nFROM RadExport\nWHERE Jahrgang = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Tarif = 'Plus'",
+          "markiere": [
+            1
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: ein einziges Token – **R-7F3A**. Ohne den Tarif wären es zwei (R-7F3A und R-21C4). Vorsicht bei `GROUP BY Jahrgang, Stadtteil, Tarif` mit `COUNT(*)`: Das zählt **Fahrten**, nicht Menschen (P4) – der RadExport hat eine Zeile je Fahrt."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-11",
+      "titel": "Spur 3: Das Handy fährt mit",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K23",
+        "DB-K26"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die WeserApp checkt an StadtRad-Stationen automatisch ein. Verbinde RadExport und AppCheckin über **Ort = StartStation** und **Zeitpunkt = Start** und beschränke dich auf das Token **R-7F3A**. Gib je Gerät die Anzahl der Treffer aus – die meisten Treffer zuerst."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [],
+        "sortierung": [
+          {
+            "spalte": 2,
+            "richtung": "DESC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT AppCheckin.Geraet, COUNT(*) AS Treffer\nFROM RadExport, AppCheckin\nWHERE AppCheckin.Ort = RadExport.StartStation\n  AND AppCheckin.Zeitpunkt = RadExport.Start\n  AND RadExport.KundenToken = 'R-7F3A'\nGROUP BY AppCheckin.Geraet\nORDER BY Treffer DESC"
+      },
+      "tipps": [
+        "Ein Check-in passt nur, wenn **Ort und Zeitpunkt** übereinstimmen – zwei Verbundbedingungen.",
+        "Gruppiere nach `AppCheckin.Geraet` und zähle mit `COUNT(*)`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT AppCheckin.Geraet, COUNT(*) AS Treffer\nFROM RadExport, AppCheckin\nWHERE AppCheckin.Ort = RadExport.StartStation\n  AND AppCheckin.Zeitpunkt = RadExport.Start\n  AND RadExport.KundenToken = 'R-7F3A'\nGROUP BY AppCheckin.Geraet\nORDER BY Treffer DESC",
+          "markiere": [
+            3,
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: **WA-3917** mit 5 Treffern, WA-5530 mit 2 (ein Gerät aus der Nachtschicht im Hafen). Nur ein Gerät war bei **allen** fünf Fahrten dabei. Fehlt die Zeitbedingung, wird jede Fahrt mit jedem Check-in an der Hafenkante verbunden – die Treffer vervielfachen sich (P2)."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-12",
+      "titel": "Spur 4: Wo war das Gerät sonst?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15",
+        "DB-K21",
+        "DB-K32"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gib alle Check-ins des Geräts **WA-3917** mit Ort und Zeitpunkt aus, chronologisch sortiert. Vergleiche die Orte mit den Tatorten der Akten 1 bis 4."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [],
+        "sortierung": [
+          {
+            "spalte": "Zeitpunkt",
+            "richtung": "ASC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Ort, Zeitpunkt\nFROM AppCheckin\nWHERE Geraet = 'WA-3917'\nORDER BY Zeitpunkt"
+      },
+      "tipps": [
+        "Die Gerätekennung ist Text: `'WA-3917'` in Hochkommata.",
+        "Chronologisch heißt: `ORDER BY Zeitpunkt`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Ort, Zeitpunkt\nFROM AppCheckin\nWHERE Geraet = 'WA-3917'\nORDER BY Zeitpunkt",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: 19 Check-ins. Das Gerät war am Stadtfest-Samstag (2026-08-29) um 21:52 und 23:06 am **Festplatz**, am 2026-09-14 um 10:17 im **Fundbüro**, an drei Dienstagabenden im **Vereinsheim TuS**, in den fünf Tatnächten an der **Hafenkante** – und nachts immer wieder an der Adresse **Kranstraße 7**."
+        },
+        {
+          "t": "text",
+          "md": "Gegenprobe in `FestZahlung`: Am Kaffeemobil (StandNr 4) gibt es am 2026-08-29 zwischen 22:00 und 22:59 **keine einzige** Kartenzahlung – in der Stunde davor 5, danach 4. Genau in der Lücke zwischen den beiden Festplatz-Check-ins."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT COUNT(*) AS Kartenzahlungen\nFROM FestZahlung\nWHERE StandNr = 4\n  AND Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 22:59'"
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-13",
+      "titel": "Spur 5: Wer aus dem TuS passt?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K17",
+        "DB-K15"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Das Gerät war dienstagabends im Vereinsheim, und der Steckbrief nennt Tischtennis. Gib aus dem VereinExport alle MitgliedToken mit Geburtsjahr **1988**, Stadtteil **Hafenviertel** und Abteilung **Tischtennis** aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [
+          "null"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT MitgliedToken\nFROM VereinExport\nWHERE Geburtsjahr = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Abteilung = 'Tischtennis'"
+      },
+      "tipps": [
+        "Im VereinExport heißt der Jahrgang `Geburtsjahr`.",
+        "Texte wie `'Tischtennis'` stehen in Hochkommata, Zahlen wie 1988 nicht."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT MitgliedToken\nFROM VereinExport\nWHERE Geburtsjahr = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Abteilung = 'Tischtennis'",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: genau **V-2571**. Der Eintrag „Nora Falter“ (V-9952) hat weder Geburtsjahr noch Stadtteil – mit `= 1988` fällt er heraus, denn ein Vergleich mit NULL ist nie wahr (P5). Das Phantom ist unter seinem Tarnnamen also gerade **nicht** zu finden, sondern nur unter seinen echten Merkmalen."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-14",
+      "titel": "Spur 6: Die Enttarnung",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL Verbund",
+      "kompetenzen": [
+        "DB-K24",
+        "DB-K17",
+        "DB-K46"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Nachts checkt das Gerät **WA-3917** an einer Adresse ein – und das Einwohnerverzeichnis kennt die Adressen. Verbinde `Einwohner e`, `AppCheckin a` und `RadExport r`: Der Ort des Check-ins ist die Straße des Einwohners (`a.Ort = e.Strasse`), das Gerät ist WA-3917, und Jahrgang und Stadtteil des Einwohners stimmen mit denen des Tokens **R-7F3A** überein. Gib Vor- und Nachname aus – ohne Duplikate."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "datenspuren",
+        "varianten": [],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT DISTINCT e.Vorname, e.Nachname\nFROM Einwohner e, AppCheckin a, RadExport r\nWHERE a.Ort = e.Strasse\n  AND a.Geraet = 'WA-3917'\n  AND r.KundenToken = 'R-7F3A'\n  AND r.Jahrgang = e.Jahrgang\n  AND r.Stadtteil = e.Stadtteil"
+      },
+      "tipps": [
+        "Drei Tabellen im FROM, jede mit Alias; im WHERE: Ort = Strasse, das Gerät, das Token und die beiden Merkmale.",
+        "Jeder nächtliche Check-in und jede Fahrt erzeugen eine eigene Zeile – `DISTINCT` macht daraus eine Person."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT DISTINCT e.Vorname, e.Nachname\nFROM Einwohner e, AppCheckin a, RadExport r\nWHERE a.Ort = e.Strasse\n  AND a.Geraet = 'WA-3917'\n  AND r.KundenToken = 'R-7F3A'\n  AND r.Jahrgang = e.Jahrgang\n  AND r.Stadtteil = e.Stadtteil",
+          "markiere": [
+            1,
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: **Merle Falkenrath**. Ohne `DISTINCT` steht sie 40-mal im Ergebnis – acht nächtliche Check-ins mal fünf Fahrten (P2). Ohne die Bedingungen zu Jahrgang und Stadtteil erscheint zusätzlich der Nachbar Rune Siemers (Jahrgang 1961), der ebenfalls in der Kranstraße 7 wohnt. Die beiden anderen Kandidaten mit Jahrgang 1988 im Hafenviertel – Tamara Leversen und Ole Brakhage – fallen heraus: Sie wohnen woanders."
+        }
+      ]
+    },
+    {
+      "id": "A6-E1-CC",
+      "titel": "Cold Case: Wie anonym ist Weserstedt?",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K46",
+        "DB-K26"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: Die Stadt überlegt, Daten nur noch zu veröffentlichen, wenn jede Gruppe mindestens **5 Personen** umfasst. Wie viel Prozent der Einwohner leben heute in einer Gruppe (Jahrgang, Stadtteil) mit **weniger als 5** Personen? Zwei Abfragen, Rechnung im Kopf."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "datenbank": "datenspuren",
+          "varianten": [],
+          "abimodus": "hinweis",
+          "frage": "a) Wie viele Einwohner stehen im Verzeichnis? Schreib die Abfrage."
+        },
+        {
+          "kind": "gaps",
+          "frage": "b) Prüfe mit einer zweiten Abfrage (`HAVING COUNT(*) >= 5`), welche Gruppen groß genug sind. Anteil der Einwohner in Gruppen mit weniger als 5 Personen: [[g1]] %",
+          "felder": {
+            "g1": {
+              "typ": "zahl",
+              "breite": 5
+            }
+          }
+        },
+        {
+          "kind": "kernpunkte",
+          "frage": "c) Was ändert sich, wenn die Stadt statt des Jahrgangs nur das **Jahrzehnt** (z. B. 1980–1989) veröffentlicht? Notiere deine Vermutung und begründe sie.",
+          "kernpunkte": [
+            "erkennt: Vergröberung macht die Gruppen größer, weil je zehn Jahrgänge zusammenfallen",
+            "erkennt: Das reicht trotzdem nicht überall – in kleinen Stadtteilen (Deichkamp, Weserufer) bleiben Gruppen unter 5 (nachgerechnet: 67 von 250 Einwohnern, also 26,8 %)",
+            "folgert: Eine Mindestgruppengröße muss beim Veröffentlichen **geprüft** werden (kleine Gruppen weglassen oder zusammenfassen)"
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "SELECT COUNT(*) AS Einwohner\nFROM Einwohner"
+        },
+        {
+          "g1": [
+            "100"
+          ]
+        },
+        null
+      ],
+      "tipps": [
+        "Die zweite Abfrage liefert kein einziges Ergebnis – was heißt das für den Anteil?"
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT COUNT(*) AS Einwohner\nFROM Einwohner"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Jahrgang, Stadtteil, COUNT(*) AS Anzahl\nFROM Einwohner\nGROUP BY Jahrgang, Stadtteil\nHAVING COUNT(*) >= 5",
+          "markiere": [
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Das Verzeichnis hat 250 Einwohner, aber keine einzige Gruppe aus Jahrgang und Stadtteil mit 5 oder mehr Personen – die größte hat 4. Also leben **100 %** der Einwohner in einer Gruppe unter 5. Mit dem Jahrzehnt statt des Jahrgangs sind es noch 67 von 250 (26,8 %) – besser, aber ohne Prüfung nicht sicher."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-01",
+      "titel": "Grundsätze",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K44"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        },
+        {
+          "t": "text",
+          "md": "**Auszüge aus der Datenschutzerklärung der App:**\n\n- **A** „Mit dem Öffnen der App willigen Sie automatisch in personalisierte Werbung ein. Ein Widerruf ist nicht vorgesehen.“\n- **B** „Ihre Daten können an Partnerunternehmen übermittelt werden. Welche Unternehmen das sind und welche Daten sie erhalten, teilen wir nicht mit.“\n- **C** „Ihre Daten werden unbegrenzt gespeichert – auch nach dem Löschen Ihres Kontos.“\n- **D** „Die App erfasst dauerhaft Ihren genauen Standort, auch wenn Sie nur die Schrittzählung nutzen.“"
+        },
+        {
+          "t": "text",
+          "md": "**Ordnen Sie** jedem Auszug den Grundsatz der DSGVO **zu**, gegen den er verstößt. Ein Grundsatz bleibt übrig. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "match",
+        "elemente": [
+          {
+            "id": "A",
+            "md": "Auszug **A** (Werbung)"
+          },
+          {
+            "id": "B",
+            "md": "Auszug **B** (Partnerunternehmen)"
+          },
+          {
+            "id": "C",
+            "md": "Auszug **C** (Speicherdauer)"
+          },
+          {
+            "id": "D",
+            "md": "Auszug **D** (Standort)"
+          }
+        ],
+        "kategorien": [
+          {
+            "id": "re",
+            "md": "Rechtmäßigkeit (Einwilligung)"
+          },
+          {
+            "id": "tr",
+            "md": "Transparenz"
+          },
+          {
+            "id": "sp",
+            "md": "Speicherbegrenzung"
+          },
+          {
+            "id": "mi",
+            "md": "Datenminimierung"
+          },
+          {
+            "id": "zw",
+            "md": "Zweckbindung"
+          }
+        ]
+      },
+      "loesung": {
+        "A": "re",
+        "B": "tr",
+        "C": "sp",
+        "D": "mi"
+      },
+      "tipps": [
+        "Eine Einwilligung muss freiwillig, ausdrücklich und widerrufbar sein."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "A: Eine Einwilligung durch bloßes Öffnen und ohne Widerruf ist keine wirksame Einwilligung (Rechtmäßigkeit). B: Betroffene erfahren nicht, wer welche Daten erhält (Transparenz). C: unbegrenzte Speicherung (Speicherbegrenzung). D: Der Standort ist für die Schrittzählung nicht nötig (Datenminimierung). Zweckbindung bleibt übrig."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-02",
+      "titel": "Besondere Daten",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K46"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": true,
+          "frage": "a) **Geben Sie** alle erfassten Angaben **an**, die für sich genommen zu den **besonderen Kategorien** personenbezogener Daten (Art. 9 DSGVO) gehören. [1 BE]",
+          "optionen": [
+            {
+              "id": "r",
+              "md": "Ruhepuls"
+            },
+            {
+              "id": "s",
+              "md": "Schritte pro Tag"
+            },
+            {
+              "id": "g",
+              "md": "Geburtsjahr"
+            },
+            {
+              "id": "p",
+              "md": "PLZ-Bereich"
+            },
+            {
+              "id": "t",
+              "md": "NutzerToken"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) **Geben Sie** die Maßnahme **an**, die der **Datensicherheit** dient. [1 BE]",
+          "optionen": [
+            {
+              "id": "v",
+              "md": "Die Daten werden verschlüsselt gespeichert und übertragen."
+            },
+            {
+              "id": "e",
+              "md": "Vor der Weitergabe wird eine Einwilligung eingeholt."
+            },
+            {
+              "id": "z",
+              "md": "Die Daten werden nur für die Schrittzählung verwendet."
+            },
+            {
+              "id": "n",
+              "md": "Der Standort wird gar nicht erst erhoben."
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "r"
+          ]
+        },
+        {
+          "richtig": [
+            "v"
+          ]
+        }
+      ],
+      "tipps": [
+        "Besondere Kategorien sind z. B. Gesundheitsdaten."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Der Ruhepuls ist ein **Gesundheitsdatum** und damit besonders geschützt; Schritte erlauben erst in Kombination Rückschlüsse. Geburtsjahr und PLZ-Bereich sind Quasi-Identifikatoren, das Token ein Pseudonym. Verschlüsselung schützt die Daten selbst (Datensicherheit); Einwilligung, Zweckbindung und Datenminimierung sind Grundsätze des Datenschutzes."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-03",
+      "titel": "Recht auf Selbstbestimmung",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K44"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, welche Aussage das Recht auf **informationelle Selbstbestimmung** zutreffend beschreibt. [1 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Jede Person entscheidet grundsätzlich selbst über die Preisgabe und Verwendung ihrer persönlichen Daten."
+          },
+          {
+            "id": "b",
+            "md": "Jede Person darf selbst bestimmen, welche Daten anderer Menschen sie speichert."
+          },
+          {
+            "id": "c",
+            "md": "Unternehmen bestimmen selbst, welche Daten sie für ihre Angebote benötigen."
+          },
+          {
+            "id": "d",
+            "md": "Daten sind geschützt, sobald sie verschlüsselt gespeichert werden."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Wer ist das „Selbst“ in Selbstbestimmung?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Das Recht auf informationelle Selbstbestimmung schützt die betroffene Person: Sie entscheidet grundsätzlich selbst, wer was über sie weiß und wozu es verwendet wird. Verschlüsselung (d) ist eine Maßnahme der Datensicherheit, keine Beschreibung des Rechts."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-04",
+      "titel": "Werbung",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K45"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        },
+        {
+          "t": "text",
+          "md": "**Beurteilen Sie**, unter welchen Voraussetzungen die App die Nutzungsdaten für personalisierte Werbung verwenden darf. Wählen Sie **alle** zutreffenden Voraussetzungen. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": true,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Die Nutzerinnen und Nutzer haben **ausdrücklich und freiwillig** eingewilligt."
+          },
+          {
+            "id": "b",
+            "md": "Sie wurden **vorher verständlich informiert**, welche Daten zu welchem Zweck an wen gehen."
+          },
+          {
+            "id": "c",
+            "md": "Die Einwilligung kann **jederzeit widerrufen** werden."
+          },
+          {
+            "id": "d",
+            "md": "Die Daten sind pseudonymisiert – dann ist keine Einwilligung nötig."
+          },
+          {
+            "id": "e",
+            "md": "Die Werbung steht in den AGB, die mit der Nutzung der App als akzeptiert gelten."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a",
+          "b",
+          "c"
+        ]
+      },
+      "tipps": [
+        "Pseudonyme Daten sind weiterhin personenbezogene Daten."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Werbung ist ein anderer Zweck als die Schrittzählung; zulässig ist sie nur mit einer freiwilligen, ausdrücklichen und informierten Einwilligung, die widerrufen werden kann. Pseudonymisierung ersetzt keine Rechtsgrundlage, und eine Zustimmung „durch Nutzung“ ist keine ausdrückliche Einwilligung."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-05",
+      "titel": "Kleine Gruppen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL Aggregation",
+      "kompetenzen": [
+        "DB-K27",
+        "DB-K26",
+        "DB-K46"
+      ],
+      "fallen": [
+        "P1"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Export",
+              "attribute": [
+                {
+                  "name": "NutzerToken",
+                  "pk": true
+                },
+                {
+                  "name": "Geburtsjahr"
+                },
+                {
+                  "name": "PLZBereich"
+                },
+                {
+                  "name": "Geschlecht"
+                },
+                {
+                  "name": "Schritte"
+                },
+                {
+                  "name": "Ruhepuls"
+                },
+                {
+                  "name": "Datum",
+                  "pk": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Die Tabelle `Export` enthält genau einen Datensatz je NutzerToken (Stichtag 2026-10-05). Ist kein Messgerät verbunden, ist `Ruhepuls` NULL.\n\n**Entwerfen Sie** eine SQL-Abfrage, die alle Kombinationen aus Geburtsjahr und PLZBereich ausgibt, zu denen nur **ein** NutzerToken gehört. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/fitness",
+        "varianten": [
+          "null"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Geburtsjahr, PLZBereich\nFROM Export\nGROUP BY Geburtsjahr, PLZBereich\nHAVING COUNT(*) = 1"
+      },
+      "tipps": [
+        "Bedingungen über Gruppen gehören in HAVING."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Geburtsjahr, PLZBereich\nFROM Export\nGROUP BY Geburtsjahr, PLZBereich\nHAVING COUNT(*) = 1",
+          "markiere": [
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ergebnis: vier Kombinationen – (1949, 004), (1963, 006), (1985, 003), (2007, 001). `WHERE COUNT(*) = 1` ist ein Fehler (P1); `COUNT(Ruhepuls)` zählt Datensätze ohne Ruhepuls nicht mit und liefert falsche Gruppen."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-06",
+      "titel": "Re-Identifizierbar",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K46"
+      ],
+      "fallen": [
+        "P2"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "ExportVerlauf (Ausschnitt, 02.–05.10.2026)",
+          "kopf": [
+            {
+              "name": "NutzerToken",
+              "pk": true
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "PLZBereich"
+            },
+            {
+              "name": "Geschlecht"
+            },
+            {
+              "name": "Schritte"
+            },
+            {
+              "name": "Ruhepuls"
+            },
+            {
+              "name": "Datum",
+              "pk": true
+            }
+          ],
+          "zeilen": [
+            [
+              "N-687",
+              1949,
+              "004",
+              "m",
+              1830,
+              69,
+              "2026-10-02"
+            ],
+            [
+              "N-687",
+              1949,
+              "004",
+              "m",
+              3150,
+              72,
+              "2026-10-03"
+            ],
+            [
+              "N-687",
+              1949,
+              "004",
+              "m",
+              8750,
+              79,
+              "2026-10-04"
+            ],
+            [
+              "N-687",
+              1949,
+              "004",
+              "m",
+              6200,
+              76,
+              "2026-10-05"
+            ],
+            [
+              "N-100",
+              1990,
+              "002",
+              "w",
+              12080,
+              59,
+              "2026-10-05"
+            ],
+            [
+              "N-137",
+              1990,
+              "002",
+              "w",
+              5870,
+              55,
+              "2026-10-03"
+            ],
+            [
+              "N-137",
+              1990,
+              "002",
+              "w",
+              2590,
+              66,
+              "2026-10-04"
+            ],
+            [
+              "N-137",
+              1990,
+              "002",
+              "w",
+              8710,
+              62,
+              "2026-10-05"
+            ],
+            [
+              "N-249",
+              1990,
+              "002",
+              "m",
+              8940,
+              60,
+              "2026-10-03"
+            ],
+            [
+              "N-249",
+              1990,
+              "002",
+              "m",
+              7480,
+              67,
+              "2026-10-04"
+            ],
+            [
+              "N-249",
+              1990,
+              "002",
+              "m",
+              3970,
+              71,
+              "2026-10-05"
+            ],
+            [
+              "N-367",
+              1990,
+              "002",
+              "w",
+              9560,
+              59,
+              "2026-10-05"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/fitness",
+            "sql": "SELECT NutzerToken, Geburtsjahr, PLZBereich, Geschlecht, Schritte, Ruhepuls, Datum\nFROM ExportVerlauf\nWHERE Geburtsjahr IN (1949, 1990)\nORDER BY Geburtsjahr, NutzerToken, Datum"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Sie wissen: Ihr **Nachbar** (Jahrgang 1949, wohnt im PLZ-Bereich 004) und Ihre **Kollegin** (Jahrgang 1990, PLZ-Bereich 002) nutzen beide die App.\n\n**Geben Sie** alle Datensätze des Ausschnitts **an**, die sich trotz Pseudonym **eindeutig** einer dieser beiden Personen zuordnen lassen. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "zeilen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zeilen": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "quelleSql": "SELECT NutzerToken, Geburtsjahr, PLZBereich, Geschlecht, Schritte, Ruhepuls, Datum\nFROM ExportVerlauf\nWHERE Geburtsjahr = 1949\n  AND PLZBereich = '004'"
+      },
+      "tipps": [
+        "Eindeutig heißt: Nur ein einziges Token passt zu dem, was Sie über die Person wissen."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Zum Nachbarn passt nur **N-687** – alle vier Datensätze gehören zu ihm, samt Ruhepuls. Zur Kollegin passen drei Tokens von Frauen (N-100, N-137, N-367): Sie ist nicht eindeutig bestimmbar. Mehrere Zeilen je Person bedeuten: Wer ein Token zuordnet, kennt gleich den ganzen Verlauf."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-07",
+      "titel": "Die Krankenkasse",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K45"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        },
+        {
+          "t": "text",
+          "md": "Der Anbieter plant, die Ruhepuls-Werte aller Nutzerinnen und Nutzer pseudonymisiert an eine Krankenkasse zu übermitteln, die damit ihre Tarife berechnen will. In der Datenschutzerklärung steht dazu nichts.\n\n**Beurteilen Sie** die geplante Weitergabe. Wählen Sie die fachlich tragfähige Beurteilung. [4 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Unzulässig: Der Ruhepuls ist ein Gesundheitsdatum (besondere Kategorie); die Tarifberechnung ist ein neuer Zweck, für den es weder eine ausdrückliche Einwilligung noch Transparenz gibt. Pseudonymisierung ändert daran nichts, weil die Daten über Geburtsjahr und PLZ-Bereich zuordenbar bleiben."
+          },
+          {
+            "id": "b",
+            "md": "Zulässig: Die Daten sind pseudonymisiert und damit anonym; eine Einwilligung ist nicht erforderlich."
+          },
+          {
+            "id": "c",
+            "md": "Zulässig, wenn die Daten bei der Übertragung verschlüsselt werden, weil dann die Datensicherheit gewährleistet ist."
+          },
+          {
+            "id": "d",
+            "md": "Die Weitergabe hat Vor- und Nachteile: Die Krankenkasse kann günstigere Tarife anbieten, die Nutzer verlieren Kontrolle."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Eine Beurteilung braucht Grundsatz, Sachverhalt und ein begründetes Urteil."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Nur a) verbindet die Grundsätze (besondere Kategorie, Zweckbindung, Einwilligung, Transparenz) mit dem Sachverhalt und kommt zu einem begründeten Urteil. b) verwechselt pseudonym und anonym, c) verwechselt Datensicherheit mit Datenschutz, d) zählt nur Argumente auf, ohne zu urteilen (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A6-V-08",
+      "titel": "Schutzmaßnahmen",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Datenschutz",
+      "kompetenzen": [
+        "DB-K46"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Eine (fiktive) Fitness-App zeichnet Schritte und Ruhepuls ihrer Nutzerinnen und Nutzer auf. Der Anbieter möchte einen pseudonymisierten Export mit einer Krankenkasse und mit Werbepartnern teilen. Statt eines Namens enthält der Export nur ein `NutzerToken`; dazu kommen Geburtsjahr, ein PLZ-Bereich (`'001'` … `'006'`) und das Geschlecht."
+        },
+        {
+          "t": "text",
+          "md": "**Ordnen Sie** jedem Risiko die technische bzw. organisatorische Maßnahme **zu**, die ihm am wirksamsten begegnet. [4 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "match",
+        "elemente": [
+          {
+            "id": "r1",
+            "md": "**Re-Identifizierung:** Über Geburtsjahr und PLZ-Bereich lassen sich einzelne Personen erkennen."
+          },
+          {
+            "id": "r2",
+            "md": "**Datenleck:** Eine Sicherungskopie des Exports gerät in falsche Hände."
+          },
+          {
+            "id": "r3",
+            "md": "**Unbefugter Zugriff:** Alle Beschäftigten des Anbieters können sämtliche Pulswerte einsehen."
+          },
+          {
+            "id": "r4",
+            "md": "**Zu lange Speicherung:** Verläufe gekündigter Konten liegen noch Jahre später vor."
+          }
+        ],
+        "kategorien": [
+          {
+            "id": "agg",
+            "md": "Aggregation und Mindestgruppengröße (z. B. keine Gruppe unter 5, Jahrzehnt statt Geburtsjahr)"
+          },
+          {
+            "id": "ver",
+            "md": "Verschlüsselung der gespeicherten Daten"
+          },
+          {
+            "id": "rec",
+            "md": "Zugriffsrechte nach Rollen mit Protokollierung"
+          },
+          {
+            "id": "loe",
+            "md": "Löschfristen mit automatischer Löschung"
+          }
+        ]
+      },
+      "loesung": {
+        "r1": "agg",
+        "r2": "ver",
+        "r3": "rec",
+        "r4": "loe"
+      },
+      "tipps": [
+        "Fragen Sie je Risiko: Was genau geht schief – zu viel Detail, falsche Hände, falsche Personen im Haus oder zu viel Zeit?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Gegen Re-Identifizierung helfen nur gröbere bzw. zusammengefasste Daten; ein gestohlenes Backup ist ohne Schlüssel wertlos; Zugriffsrechte begrenzen, wer im Haus etwas sieht; Löschfristen setzen die Speicherbegrenzung technisch um."
+        }
+      ]
+    }
+  ]
+}
