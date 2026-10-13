@@ -5,7 +5,9 @@
 // nicht). inhalte = erzeugeInhalte(db) aus src/services/inhalte.js (optional; ohne sie meldet das Manifest den Standard-umfang
 // und es gibt keine Lern-API). pruefer = erzeugePruefer({ sandbox, schemata }) aus src/sql/pruefer.js (optional; ohne ihn
 // sind sql-Aufgaben nicht prüfbar). warmupKarten = ladeWarmupKarten() aus src/services/warmup.js (optional; ohne sie
-// gibt es keinen Warm-up-Trainer). gastOptionen gehen an erzeugeGast (src/services/gast.js, z. B. materialVerzeichnis).
+// gibt es keinen Warm-up-Trainer). gastOptionen gehen an erzeugeGast (src/services/gast.js). materialVerzeichnis =
+// Wurzel der Materialien (Standard: materialien/; früher gastOptionen.materialVerzeichnis), materialOptionen gehen an
+// erzeugeMaterial (src/services/material.js, z. B. zipLimitBytes).
 // Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
@@ -25,6 +27,8 @@ const { lehrkraftRouten } = require('./routes/lehrkraft');
 const { lehrkraftAuswertungRouten } = require('./routes/lehrkraft_auswertung');
 const { gastRouten } = require('./routes/gast');
 const { themenRouten } = require('./routes/themen');
+const { materialRouten } = require('./routes/material');
+const { erzeugeMaterial, STANDARD_VERZEICHNIS } = require('./services/material');
 const { erzeugeGast } = require('./services/gast');
 const { erzeugeThemen } = require('./services/themen');
 const { erzeugeStand } = require('./services/stand');
@@ -42,7 +46,16 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 function erzeugeApp(
   konfig,
   db,
-  { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null, gastOptionen = {} } = {}
+  {
+    datenbanken = null,
+    sandbox = null,
+    inhalte = null,
+    pruefer = null,
+    warmupKarten = null,
+    gastOptionen = {},
+    materialVerzeichnis = gastOptionen.materialVerzeichnis || STANDARD_VERZEICHNIS,
+    materialOptionen = {}
+  } = {}
 ) {
   const app = express();
   app.disable('x-powered-by');
@@ -97,8 +110,12 @@ function erzeugeApp(
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
   // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
-  app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen }), pruefer, konfig }));
-  app.use(themenRouten({ themen: erzeugeThemen({ inhalte }) }));
+  // Materialien (Whitelists verzeichnis.json, Zugriff nach Rolle, Spec §12.4) – eine Instanz für Gast, Themen, Downloads.
+  const material = erzeugeMaterial({ verzeichnis: materialVerzeichnis, log: (z) => console.log(z), ...materialOptionen });
+  app.locals.material = material;
+  app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen, material }), pruefer, konfig }));
+  app.use(themenRouten({ themen: erzeugeThemen({ inhalte, material }) }));
+  app.use(materialRouten({ material }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());
