@@ -24,7 +24,9 @@ const AKTEN_DATENBANKEN = Object.freeze(['fundbuero', 'stadtrad', 'stadtfest', '
 const OEFFENTLICHE_DATENBANKEN = Object.freeze([...AKTEN_DATENBANKEN]);
 
 /** Verhör-Kontexte (seed/datenbanken/verhoer/<kontext>, VERHOER_KONTEXTE.md) – geladen für Prüfer/Verhöre, nie öffentlich. */
-const VERHOER_DATENBANKEN = Object.freeze(['verhoer/bibliothek', 'verhoer/buergerbus', 'verhoer/kiosk']);
+const VERHOER_DATENBANKEN = Object.freeze([
+  'verhoer/bibliothek', 'verhoer/buergerbus', 'verhoer/kiosk', 'verhoer/musikschule', 'verhoer/kletterhalle'
+]);
 
 /** Alle beim Start geladenen DBs. */
 const ALLE_DATENBANKEN = Object.freeze([...AKTEN_DATENBANKEN, ...VERHOER_DATENBANKEN]);

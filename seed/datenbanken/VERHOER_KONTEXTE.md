@@ -7,7 +7,8 @@ Zielkompetenzen und die **Pflicht-Randfälle** fest, die die Aufgaben aus `docs/
 Klausur-Blueprints) lösbar und trennscharf machen. Die SQL-Dateien (`seed/datenbanken/verhoer/<kontext>/schema.sql`,
 `pflicht.sql`, `varianten/*.sql`, `LIESMICH.md`) werden vollständig kuratiert (kein Generator) und von
 `scripts/db_bauen.js` unter dem Namen `verhoer/<kontext>` gebaut und geprüft (nie öffentlich). Fertig: V1
-`verhoer/bibliothek`, V2 `verhoer/buergerbus`, V3 `verhoer/kiosk` (Phase 3, Task 11) – die jeweilige `LIESMICH.md`
+`verhoer/bibliothek`, V2 `verhoer/buergerbus`, V3 `verhoer/kiosk` (Phase 3, Task 11), V4 `verhoer/musikschule`,
+V5 `verhoer/kletterhalle` (Phase 5, Task 6) – die jeweilige `LIESMICH.md`
 nennt die konkreten Pflicht-Datensätze und ist für die Aufgaben maßgeblich.
 
 **Gemeinsame Regeln**
@@ -182,10 +183,16 @@ Querflöte, Schlagzeug, Cello, Gesang), 5 Räume auf 3 Etagen, Tarife `Kind`, `J
 
 ---
 
-## V5 · Kletterhalle (ER)
+## V5 · Kletterhalle (ER) – angeglichen an DS_PLANUNG
+
+**Angeglichen an DS_PLANUNG** (Verhör-Blueprint V5, Rangfolge Spec > DS_PLANUNG > übrige; Phase 5 Task 6): Die
+Beziehung Mitglied–Route heißt *klettert*, Kurse leitet ein *Trainer*, die rekursive Beziehung ist *bildetAus*
+(Trainer–Trainer), Mitglied–Kurs hat die zwei Beziehungen *besucht* und *assistiertIn*. Frühere Fassung: *begeht*,
+Kursleitung durch ein Mitglied, rekursiv *sichert* (Mitglied–Mitglied, n:m). Routenbauer bleibt (A5-V-13).
 
 **Kontext:** Die Kletterhalle Weserstedt plant eine neue Mitgliederverwaltung. Erfasst werden sollen Mitglieder, Wände
-und Routen, die Kurse der Halle, gegenseitiges Sichern sowie die Ergebnisse der Hallenwettkämpfe.
+und Routen, die Trainerinnen und Trainer samt ihrer Ausbildung, die Kurse der Halle sowie die Ergebnisse der
+Hallenwettkämpfe.
 
 **Rahmensatz:** „Ein Bauplan, den du nicht selbst gezeichnet hast – lies ihn, erweitere ihn, bau ihn um.“
 
@@ -193,44 +200,51 @@ und Routen, die Kurse der Halle, gegenseitiges Sichern sowie die Ergebnisse der 
 > Jedes Mitglied der Kletterhalle hat eine Mitgliedsnummer, einen Namen und einen Jahrgang. Die Halle besteht aus
 > Wänden mit Nummer und Bereich (z. B. „Nordwand“). An jeder Wand gibt es mehrere Routen; eine Route (Nummer, Name,
 > Schwierigkeit) befindet sich an genau einer Wand und wurde von genau einem Routenbauer (Nummer, Name) geschraubt.
-> Mitglieder begehen Routen; für jede Begehung werden das Datum und der Erfolg (Durchstieg ja/nein) gespeichert.
-> Beim Klettern sichern sich Mitglieder gegenseitig; es soll festgehalten werden, wer wen schon gesichert hat.
-> Kurse (Nummer, Titel, Termin) werden von genau einem Mitglied geleitet und von mehreren Mitgliedern besucht.
+> Mitglieder klettern Routen; für jede Begehung werden das Datum und der Erfolg (Durchstieg ja/nein) gespeichert.
+> Die Halle beschäftigt Trainerinnen und Trainer (Nummer, Name). Jede Trainerin und jeder Trainer wurde von höchstens
+> einer anderen Trainerin bzw. einem anderen Trainer der Halle ausgebildet und kann selbst mehrere ausbilden.
+> Kurse (Nummer, Titel, Termin) werden von genau einer Trainerin oder einem Trainer geleitet. Mitglieder besuchen
+> Kurse; außerdem können Mitglieder in Kursen assistieren.
 > Bei Hallenwettkämpfen (Nummer, Titel, Datum) erhält jedes teilnehmende Mitglied für jede gekletterte Route Punkte.
 
 **Musterlösung ER (Chen):**
 - **Entitätstypen:** `Mitglied` (<u>MitgliedsNr</u>, Name, Jahrgang) · `Wand` (<u>WandNr</u>, Bereich) · `Route`
-  (<u>RoutenNr</u>, Name, Schwierigkeit) · `Routenbauer` (<u>BauerNr</u>, Name) · `Kurs` (<u>KursNr</u>, Titel, Termin) ·
-  `Wettkampf` (<u>WettkampfNr</u>, Titel, Datum).
-- **Beziehungstypen:** *hat* Wand (1) – Route (n) · *schraubt* Routenbauer (1) – Route (n) · *begeht* Mitglied (n) –
-  Route (m) mit **Datum, Erfolg** · *sichert* Mitglied (n, Rolle Sichernde) – Mitglied (m, Rolle Kletternde),
-  **rekursiv n:m** · *leitet* Mitglied (1) – Kurs (n) · *besucht* Mitglied (n) – Kurs (m) (**zwei Beziehungen zwischen
-  denselben Entitätstypen**) · *wertet* **ternär** Mitglied (m) – Route (n) – Wettkampf (p) mit **Punkte**.
+  (<u>RoutenNr</u>, Name, Schwierigkeit) · `Routenbauer` (<u>BauerNr</u>, Name) · `Trainer` (<u>TrainerNr</u>, Name) ·
+  `Kurs` (<u>KursNr</u>, Titel, Termin) · `Wettkampf` (<u>WettkampfNr</u>, Titel, Datum).
+- **Beziehungstypen:** *hat* Wand (1) – Route (n) · *schraubt* Routenbauer (1) – Route (n) · *klettert* Mitglied (n) –
+  Route (m) mit **Datum, Erfolg** · *bildetAus* Trainer (1, Rolle Ausbildende) – Trainer (n, Rolle Ausgebildete),
+  **rekursiv 1:n** · *leitet* Trainer (1) – Kurs (n) · *besucht* Mitglied (n) – Kurs (m) und *assistiertIn*
+  Mitglied (n) – Kurs (m) (**zwei Beziehungen zwischen denselben Entitätstypen**) · *wertet* **ternär** Mitglied (m) –
+  Route (n) – Wettkampf (p) mit **Punkte** (Relation `Wertung`).
 - Grenzen der Notation: „höchstens 8 Teilnehmende je Kurs“, „jede Route hat mindestens drei Begehungen“ sind mit 1/n/m
-  nicht darstellbar (A5-V-10). Variante aus STORY.md 6: „Trainer bildet Trainer aus“ als zusätzliche rekursive Beziehung
-  *bildetAus* Mitglied (1) – Mitglied (n) – nur als Cold Case.
+  nicht darstellbar (A5-V-10). Mögliche Cold-Case-Variante: rekursiv **n:m** *sichert* Mitglied – Mitglied (wer wen
+  schon gesichert hat).
 
 **Musterlösung Relationenschema:**
 Mitglied(<u>MitgliedsNr</u>, Name, Jahrgang) · Wand(<u>WandNr</u>, Bereich) · Routenbauer(<u>BauerNr</u>, Name) ·
 Route(<u>RoutenNr</u>, Name, Schwierigkeit, ↑WandNr, ↑BauerNr) ·
-begeht(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg) – Datum im Schlüssel, weil dieselbe Route mehrfach
-begangen wird · sichert(<u>↑SichererNr</u>, <u>↑KlettererNr</u>) – beide verweisen auf `Mitglied` ·
-Kurs(<u>KursNr</u>, Titel, Termin, ↑LeiterNr) · besucht(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>) ·
+klettert(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg) – Datum im Schlüssel, weil dieselbe Route
+mehrfach geklettert wird · Trainer(<u>TrainerNr</u>, Name, ↑AusbilderNr) – rekursiv 1:n, `AusbilderNr` verweist auf
+`Trainer` (NULL, wenn extern ausgebildet) · Kurs(<u>KursNr</u>, Titel, Termin, ↑TrainerNr) ·
+besucht(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>) · assistiertIn(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>) ·
 Wettkampf(<u>WettkampfNr</u>, Titel, Datum) · Wertung(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>↑WettkampfNr</u>, Punkte).
 
-**Mini-DB für Kardinalität aus Daten** (A5-V-03/04): `Wand` (4), `Route` (12, jede Route genau eine WandNr),
-`begeht` (≈ 25 Zeilen, Mitglieder mit mehreren Routen **und** Routen mit mehreren Mitgliedern; dasselbe Paar einmal an
-zwei Tagen).
+**Mini-DB für Kardinalität aus Daten** (A5-V-03/04; `verhoer/kletterhalle`): `Mitglied` (8), `Wand` (4),
+`Routenbauer` (3), `Route` (12, jede Route genau eine WandNr), `klettert` (25 Zeilen, Mitglieder mit mehreren Routen
+**und** Routen mit mehreren Mitgliedern; dasselbe Paar einmal an zwei Tagen).
 
 **Neuer Anbau (A5-V-13, eigener kurzer Text):** Boulderbereich mit Blöcken (Nummer, Farbe), Griffe (Nummer, Form) gehören
 zu genau einem Hersteller und werden an mehreren Blöcken verwendet (n:m, Anzahl), Routenbauer schrauben Blöcke (1:n).
 
-**Rückwärts (A5-V-14):** gegebenes Schema `Route(…, ↑WandNr, ↑BauerNr)`, `begeht(…)`, `sichert(…)` → ER rekonstruieren.
+**Rückwärts (A5-V-14):** gegebenes Schema `Route(…, ↑WandNr, ↑BauerNr)`, `klettert(…)`, `Trainer(…, ↑AusbilderNr)` →
+ER rekonstruieren.
 
 **Zielkompetenzen:** K33, K34, K35, K36, K37, K38, K39, K40, K41, K42, K43, K47 (Blueprint A5-V-01 … 15).
 
-**Randfälle / Fallen:** Beziehungsattribut Datum/Erfolg an *begeht* statt an Route (P9); Rollenangaben an *sichert*;
-FK auf der n-Seite (`Route.WandNr`); n:m ohne eigene Tabelle (P9); ternäre Überführung mit dreiteiligem Schlüssel.
+**Randfälle / Fallen:** Beziehungsattribut Datum/Erfolg an *klettert* statt an Route (P9); Rollenangaben an
+*bildetAus*; rekursive 1:n-Beziehung als FK in derselben Relation (keine eigene Tabelle); FK auf der n-Seite
+(`Route.WandNr`, `Kurs.TrainerNr`); n:m ohne eigene Tabelle (P9); *besucht*/*assistiertIn* als zwei getrennte
+Relationen; ternäre Überführung mit dreiteiligem Schlüssel.
 
 ---
 

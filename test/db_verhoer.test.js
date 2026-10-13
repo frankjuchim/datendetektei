@@ -1,7 +1,8 @@
 'use strict';
-// Verhör-Kontexte V1–V3 (seed/datenbanken/verhoer/<kontext>/, VERHOER_KONTEXTE.md, Plan Phase 3 Task 11):
-// kuratierte DBs ohne Generator, Pflicht-Randfälle je Blueprint (DS_PLANUNG „Verhör-Blueprint: Verhör 1/2/3“),
-// Beispielabfragen EH-konform (Abimodus streng), Randfall-Varianten mit entlarvter Fehlabfrage.
+// Verhör-Kontexte V1–V5 (seed/datenbanken/verhoer/<kontext>/, VERHOER_KONTEXTE.md, Plan Phase 3 Task 11 und
+// Phase 5 Task 6): kuratierte DBs ohne Generator, Pflicht-Randfälle je Blueprint (DS_PLANUNG „Verhör-Blueprint:
+// Verhör 1 … 5“), Beispielabfragen EH-konform (Abimodus streng), Randfall-Varianten mit entlarvter Fehlabfrage
+// (V4/V5 ohne Varianten: keine SQL-Aufgaben im Verhör).
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -15,14 +16,24 @@ const { ladeSchema } = require('./hilfen_schema');
 const namenJson = require('../seed/datenbanken/namen.json');
 
 const SEED = path.join(__dirname, '..', 'seed', 'datenbanken');
-const KONTEXTE = ['verhoer/bibliothek', 'verhoer/buergerbus', 'verhoer/kiosk'];
+const KONTEXTE = ['verhoer/bibliothek', 'verhoer/buergerbus', 'verhoer/kiosk', 'verhoer/musikschule', 'verhoer/kletterhalle'];
 
 /** Erwartete Varianten je Kontext (LIESMICH „Randfall-Varianten“; „entfällt“ = keine Datei). */
 const VARIANTEN = {
   'verhoer/bibliothek': ['gleichnamig'],
   'verhoer/buergerbus': ['null', 'gleichnamig'],
-  'verhoer/kiosk': ['null', 'gleichnamig']
+  'verhoer/kiosk': ['null', 'gleichnamig'],
+  'verhoer/musikschule': [],
+  'verhoer/kletterhalle': []
 };
+
+/** Spalten mit vollem Namen „Vorname Nachname“ (bei Rohlisten ggf. als Kommaliste) je Kontext. */
+const NAMENSSPALTEN = {
+  'verhoer/musikschule': ['UnterrichtRoh.Schueler', 'UnterrichtRoh.Lehrkraft', 'LehrkraftRaum.Name'],
+  'verhoer/kletterhalle': ['Mitglied.Name', 'Routenbauer.Name']
+};
+/** Nachnamen, die VERHOER_KONTEXTE.md ausdrücklich vorgibt, obwohl sie nicht in namen.json stehen. */
+const VORGEGEBENE_NACHNAMEN = { 'verhoer/musikschule': ['Albers'] };
 
 const hauptCache = new Map();
 function haupt(name) {
@@ -105,6 +116,20 @@ for (const name of KONTEXTE) {
           geprueft++;
           assert.ok((s === 'Vorname' ? vor : nach).has(w), `${t}.${s} = ${w} nicht in namen.json`);
           assert.ok(!namenJson.reservierteNachnamen.includes(w), `${t}.${s} = ${w} ist reserviert`);
+        }
+      }
+    }
+    for (const angabe of NAMENSSPALTEN[name] || []) {
+      const [t, s] = angabe.split('.');
+      for (const liste of spalte(db, `SELECT DISTINCT "${s}" FROM "${t}" WHERE "${s}" IS NOT NULL`)) {
+        for (const voll of liste.split(', ')) {
+          const teile = voll.split(' ');
+          geprueft++;
+          assert.equal(teile.length, 2, `${angabe} = ${voll}`);
+          assert.ok(vor.has(teile[0]), `${angabe}: Vorname ${teile[0]} nicht in namen.json`);
+          assert.ok(nach.has(teile[1]) || (VORGEGEBENE_NACHNAMEN[name] || []).includes(teile[1]),
+            `${angabe}: Nachname ${teile[1]} nicht in namen.json`);
+          assert.ok(!namenJson.reservierteNachnamen.includes(teile[1]), `${angabe} = ${voll} ist reserviert`);
         }
       }
     }
@@ -343,4 +368,202 @@ test('V3 Varianten: null entlarvt COUNT(Preis) (A3-V-05), gleichnamig das Gruppi
     GROUP BY Produkt.ProduktNr ORDER BY SUM(Posten.Anzahl * Produkt.Preis) DESC LIMIT 3`;
   assert.deepEqual(spalte(v, top3), spalte(h, top3));
   v.close();
+});
+
+// ---------------------------------------------------------------- V4 Musikschule (Rohliste, Phase 5 Task 6)
+
+/** Rohzeilen in Listenreihenfolge (rowid = „Zeile“ der LIESMICH). */
+const rohzeilen = (db) => db.prepare('SELECT rowid AS Zeile, * FROM UnterrichtRoh ORDER BY rowid').all();
+
+test('V4: Rohliste ohne Schlüssel, Umfang und Wertebereiche nach VERHOER_KONTEXTE', () => {
+  const db = haupt('verhoer/musikschule');
+  const spalten = db.prepare('PRAGMA table_info(UnterrichtRoh)').all();
+  assert.deepEqual(spalten.map((s) => s.name),
+    ['Schueler', 'Geburtsjahr', 'Instrumente', 'Lehrkraft', 'LehrkraftTelefon', 'Raum', 'Tarif', 'Monatsgebuehr']);
+  assert.ok(spalten.every((s) => s.pk === 0), 'Rohliste ohne Primärschlüssel');
+  assert.deepEqual(db.prepare('PRAGMA table_info(LehrkraftRaum)').all().map((s) => [s.name, s.pk]),
+    [['LehrkraftNr', 1], ['Name', 0], ['Telefon', 0], ['Raum', 0], ['Etage', 0]]);
+  assert.deepEqual(db.prepare('PRAGMA table_info(Raum)').all().map((s) => [s.name, s.pk]), [['Raum', 1], ['Etage', 0]]);
+  const n = wert(db, 'SELECT COUNT(*) FROM UnterrichtRoh');
+  assert.ok(n >= 28 && n <= 32, `${n} Rohzeilen`);
+  // 6 Lehrkräfte, 7 Instrumente, 5 Räume auf 3 Etagen, 4 Tarife (atomare Zeilen)
+  assert.equal(wert(db, 'SELECT COUNT(*) FROM LehrkraftRaum'), 6);
+  const atomar = rohzeilen(db).filter((z) => !z.Instrumente.includes(','));
+  assert.equal(new Set(atomar.map((z) => z.Lehrkraft)).size, 6);
+  assert.deepEqual([...new Set(rohzeilen(db).flatMap((z) => z.Instrumente.split(', ')))].sort(),
+    ['Cello', 'Geige', 'Gesang', 'Gitarre', 'Klavier', 'Querflöte', 'Schlagzeug']);
+  assert.deepEqual(alle(db, 'SELECT COUNT(*), COUNT(DISTINCT Etage) FROM Raum'), [[5, 3]]);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Tarif FROM UnterrichtRoh ORDER BY Tarif'), ['Erwachsen', 'Geschwister', 'Jugend', 'Kind']);
+  // keine NULL-Werte in der Rohliste (Anomalien sollen nicht mit NULL-Fragen vermischt werden)
+  for (const s of spalten) assert.equal(wert(db, `SELECT COUNT(*) FROM UnterrichtRoh WHERE "${s.name}" IS NULL`), 0, s.name);
+});
+
+test('V4: Lehrkraft- und Raumdaten in Rohliste, LehrkraftRaum und Raum widerspruchsfrei', () => {
+  const db = haupt('verhoer/musikschule');
+  const lehrkraft = new Map(alle(db, 'SELECT Name, Telefon, Raum, Etage FROM LehrkraftRaum').map((z) => [z[0], z]));
+  const etage = new Map(alle(db, 'SELECT Raum, Etage FROM Raum'));
+  for (const [, [, , raum, e]] of lehrkraft) assert.equal(etage.get(raum), e, raum);
+  for (const z of rohzeilen(db)) {
+    const namen = z.Lehrkraft.split(', ');
+    const telefone = z.LehrkraftTelefon.split(', ');
+    const raeume = z.Raum.split(', ');
+    const instrumente = z.Instrumente.split(', ');
+    assert.ok(namen.length === instrumente.length && telefone.length === instrumente.length && raeume.length === instrumente.length,
+      `Zeile ${z.Zeile}: Listen gleich lang`);
+    namen.forEach((name, i) => {
+      assert.ok(lehrkraft.has(name), `Zeile ${z.Zeile}: ${name}`);
+      assert.equal(telefone[i], lehrkraft.get(name)[1], `Zeile ${z.Zeile}: Telefon`);
+      assert.equal(raeume[i], lehrkraft.get(name)[2], `Zeile ${z.Zeile}: Raum`);
+    });
+  }
+  // FA Lehrkraft → Telefon, Raum gilt; Raum ↛ Lehrkraft, Instrument ↛ Lehrkraft, Lehrkraft ↛ Instrument
+  assert.deepEqual(alle(db, 'SELECT Raum, COUNT(*) FROM LehrkraftRaum GROUP BY Raum HAVING COUNT(*) > 1'), [['Bandraum', 2]]);
+  assert.deepEqual(spalte(db, "SELECT DISTINCT Lehrkraft FROM UnterrichtRoh WHERE Instrumente = 'Klavier' ORDER BY Lehrkraft"),
+    ['Jana Albers', 'Okke Tebbe']);
+  assert.ok(wert(db, "SELECT COUNT(DISTINCT Instrumente) FROM UnterrichtRoh WHERE Lehrkraft = 'Jana Albers'") >= 2);
+});
+
+test('V4: Pflicht-Randfälle Redundanz, Änderungs-, Einfüge-, Löschanomalie, nicht-atomar, Ausschnitt-Falle, Mehrfachvorkommen', () => {
+  const db = haupt('verhoer/musikschule');
+  const zeilen = rohzeilen(db);
+  // Redundanz: Telefon von Jana Albers in genau 6 Zeilen (eine davon nicht-atomar), überall gleich
+  const albers = zeilen.filter((z) => z.Lehrkraft.split(', ').includes('Jana Albers'));
+  assert.equal(albers.length, 6);
+  assert.equal(new Set(albers.map((z) => z.LehrkraftTelefon.split(', ')[z.Lehrkraft.split(', ').indexOf('Jana Albers')])).size, 1);
+  assert.equal(albers.filter((z) => z.Instrumente.includes(',')).length, 1);
+  // Monatsgebühr in jeder Zeile; je Tarif einheitlich bis auf genau eine Jugend-Zeile mit 38,00 statt 36,00
+  assert.deepEqual(alle(db, 'SELECT Tarif, Monatsgebuehr, COUNT(*) FROM UnterrichtRoh GROUP BY Tarif, Monatsgebuehr ORDER BY Tarif, Monatsgebuehr'),
+    [['Erwachsen', 45, 7], ['Geschwister', 28, 3], ['Jugend', 36, 13], ['Jugend', 38, 1], ['Kind', 32, 6]]);
+  // Einfügeanomalie: Harfe kommt nirgends vor
+  assert.equal(wert(db, "SELECT COUNT(*) FROM UnterrichtRoh WHERE Instrumente LIKE '%Harfe%'"), 0);
+  // Löschanomalie: einzige Cello-Zeile = einzige Zeile der Cello-Lehrkraft und ihres Telefons und Raums
+  const cello = zeilen.filter((z) => z.Instrumente.includes('Cello'));
+  assert.equal(cello.length, 1);
+  assert.equal(cello[0].Instrumente, 'Cello');
+  for (const s of ['Lehrkraft', 'LehrkraftTelefon', 'Raum']) {
+    assert.equal(zeilen.filter((z) => z[s].includes(cello[0][s])).length, 1, s);
+  }
+  // nicht-atomar: genau 3 Zeilen, Lehrkraft und Telefon ebenfalls als Liste
+  const liste = zeilen.filter((z) => z.Instrumente.includes(','));
+  assert.equal(liste.length, 3);
+  for (const z of liste) assert.ok(z.Lehrkraft.includes(',') && z.LehrkraftTelefon.includes(',') && z.Raum.includes(','));
+  // Ausschnitt-Falle: im Ausschnitt (Zeile 1–12) alle Namen verschieden, insgesamt zwei „Mira Lindemann“
+  const ausschnitt = zeilen.slice(0, 12).map((z) => z.Schueler);
+  assert.equal(new Set(ausschnitt).size, 12);
+  assert.ok(ausschnitt.includes('Mira Lindemann'));
+  assert.deepEqual(spalte(db, "SELECT Geburtsjahr FROM UnterrichtRoh WHERE Schueler = 'Mira Lindemann' ORDER BY rowid"), [2011, 2007]);
+  // Mehrfachvorkommen: (Schueler, Instrumente) genau einmal doppelt – Lotta Renken, Klavier bei zwei Lehrkräften
+  assert.deepEqual(alle(db, `SELECT Schueler, Instrumente, COUNT(*), COUNT(DISTINCT Lehrkraft) FROM UnterrichtRoh
+    GROUP BY Schueler, Instrumente HAVING COUNT(*) > 1`), [['Lotta Renken', 'Klavier', 2, 2]]);
+  // (Schueler, Geburtsjahr, Instrumente, Lehrkraft) ist in den Daten eindeutig
+  assert.equal(wert(db, 'SELECT COUNT(*) FROM (SELECT 1 FROM UnterrichtRoh GROUP BY Schueler, Geburtsjahr, Instrumente, Lehrkraft)'), zeilen.length);
+  // Geschwister-Tarif nur bei gleichem Nachnamen (Geburtsjahr ↛ Tarif)
+  const geschwister = spalte(db, "SELECT DISTINCT Schueler FROM UnterrichtRoh WHERE Tarif = 'Geschwister'");
+  assert.equal(new Set(geschwister.map((s) => s.split(' ')[1])).size, 1);
+});
+
+test('V4: Tabellenzeilen der LIESMICH („welche Zeile zeigt welchen Randfall“) stimmen', () => {
+  const db = haupt('verhoer/musikschule');
+  const z = rohzeilen(db);
+  const zeile = (nr) => z[nr - 1];
+  assert.equal(zeile(8).Instrumente, 'Cello');
+  assert.deepEqual([zeile(10).Instrumente, zeile(16).Instrumente, zeile(22).Instrumente],
+    ['Klavier, Gesang', 'Gitarre, Schlagzeug', 'Geige, Querflöte']);
+  assert.deepEqual([zeile(17).Schueler, zeile(17).Tarif, zeile(17).Monatsgebuehr], ['Levke Bohlken', 'Jugend', 38]);
+  assert.deepEqual([zeile(4).Schueler, zeile(20).Schueler], ['Mira Lindemann', 'Mira Lindemann']);
+  assert.deepEqual([zeile(1).Schueler, zeile(1).Lehrkraft, zeile(14).Schueler, zeile(14).Lehrkraft],
+    ['Lotta Renken', 'Jana Albers', 'Lotta Renken', 'Okke Tebbe']);
+  assert.deepEqual(z.filter((r) => r.Lehrkraft.includes('Jana Albers')).map((r) => r.Zeile), [1, 3, 10, 15, 18, 23]);
+});
+
+test('V4: FA-Liste der LIESMICH (zerlegen, A4-V-11) – Schlüssel, Musterzerlegung, keine FA Instrument → Lehrkraft', () => {
+  const liesmich = fs.readFileSync(path.join(SEED, 'verhoer/musikschule', 'LIESMICH.md'), 'utf8');
+  const json = /```json\n([\s\S]*?)\n```/.exec(liesmich);
+  assert.ok(json, 'JSON-Block fehlt');
+  const fa = JSON.parse(json[1]);
+  const attribute = new Set(fa.attribute);
+  for (const f of fa.fa) for (const a of [...f.links, ...f.rechts]) assert.ok(attribute.has(a), a);
+  // Hülle des Schlüssels = alle Attribute
+  const huelle = (start) => {
+    const h = new Set(start);
+    let neu = true;
+    while (neu) {
+      neu = false;
+      for (const f of fa.fa) {
+        if (f.links.every((a) => h.has(a)) && f.rechts.some((a) => !h.has(a))) { f.rechts.forEach((a) => h.add(a)); neu = true; }
+      }
+    }
+    return h;
+  };
+  assert.equal(huelle(fa.schluessel).size, attribute.size);
+  for (const a of fa.schluessel) assert.ok(huelle(fa.schluessel.filter((b) => b !== a)).size < attribute.size, `${a} nötig`);
+  assert.deepEqual([...fa.schluessel].sort(), ['Instrument', 'LehrkraftNr', 'SchuelerNr']);
+  assert.ok(!huelle(['Instrument']).has('LehrkraftNr'));
+  assert.ok(!huelle(['LehrkraftNr']).has('Instrument'));
+  // in den Daten: Instrument bestimmt die Lehrkraft nicht (Klavier)
+  const db = haupt('verhoer/musikschule');
+  assert.ok(wert(db, "SELECT COUNT(DISTINCT Lehrkraft) FROM UnterrichtRoh WHERE Instrumente = 'Klavier'") > 1);
+});
+
+// ---------------------------------------------------------------- V5 Kletterhalle (Mini-DB, Phase 5 Task 6)
+
+test('V5: Mini-DB Wand 4, Route 12 (je genau eine Wand), klettert ≈ 25 nach Musterschema', () => {
+  const db = haupt('verhoer/kletterhalle');
+  assert.deepEqual(spalte(db, "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY rowid"),
+    ['Mitglied', 'Wand', 'Routenbauer', 'Route', 'klettert']);
+  assert.deepEqual(db.prepare('PRAGMA table_info(Route)').all().map((s) => [s.name, s.pk, s.notnull]),
+    [['RoutenNr', 1, 0], ['Name', 0, 1], ['Schwierigkeit', 0, 1], ['WandNr', 0, 1], ['BauerNr', 0, 1]]);
+  assert.deepEqual(db.prepare('PRAGMA table_info(klettert)').all().map((s) => [s.name, s.pk]),
+    [['MitgliedsNr', 1], ['RoutenNr', 2], ['Datum', 3], ['Erfolg', 0]]);
+  assert.deepEqual(db.prepare('PRAGMA foreign_key_list(Route)').all().map((f) => [f.from, f.table, f.to]).sort(),
+    [['BauerNr', 'Routenbauer', 'BauerNr'], ['WandNr', 'Wand', 'WandNr']]);
+  assert.deepEqual(db.prepare('PRAGMA foreign_key_list(klettert)').all().map((f) => [f.from, f.table, f.to]).sort(),
+    [['MitgliedsNr', 'Mitglied', 'MitgliedsNr'], ['RoutenNr', 'Route', 'RoutenNr']]);
+  assert.deepEqual(alle(db, `SELECT (SELECT COUNT(*) FROM Wand), (SELECT COUNT(*) FROM Route),
+    (SELECT COUNT(*) FROM Mitglied), (SELECT COUNT(*) FROM Routenbauer)`), [[4, 12, 8, 3]]);
+  const n = wert(db, 'SELECT COUNT(*) FROM klettert');
+  assert.ok(n >= 22 && n <= 28, `${n} Begehungen`);
+});
+
+test('V5: Kardinalität aus Daten – Wand 1:n Route, klettert n:m, dasselbe Paar an zwei Tagen', () => {
+  const db = haupt('verhoer/kletterhalle');
+  // jede Wand hat mehrere Routen, jede Route genau eine Wand (Spalte NOT NULL, FK)
+  assert.deepEqual(spalte(db, 'SELECT COUNT(*) FROM Route GROUP BY WandNr ORDER BY WandNr'), [4, 3, 3, 2]);
+  // Mitglieder mit mehreren Routen UND Routen mit mehreren Mitgliedern
+  const routenJeMitglied = spalte(db, 'SELECT COUNT(DISTINCT RoutenNr) FROM klettert GROUP BY MitgliedsNr');
+  const mitgliederJeRoute = spalte(db, 'SELECT COUNT(DISTINCT MitgliedsNr) FROM klettert GROUP BY RoutenNr');
+  assert.ok(routenJeMitglied.filter((x) => x > 1).length >= 5, JSON.stringify(routenJeMitglied));
+  assert.ok(mitgliederJeRoute.filter((x) => x > 1).length >= 5, JSON.stringify(mitgliederJeRoute));
+  // dasselbe Paar genau einmal an zwei Tagen (erst ohne, dann mit Durchstieg) → Datum gehört in den Schlüssel
+  assert.deepEqual(alle(db, `SELECT MitgliedsNr, RoutenNr, COUNT(*), COUNT(DISTINCT Datum) FROM klettert
+    GROUP BY MitgliedsNr, RoutenNr HAVING COUNT(*) > 1`), [[1, 3, 2, 2]]);
+  assert.deepEqual(spalte(db, 'SELECT Erfolg FROM klettert WHERE MitgliedsNr = 1 AND RoutenNr = 3 ORDER BY Datum'), ['nein', 'ja']);
+  // jede Route mindestens einmal begangen, jedes Mitglied mindestens zweimal
+  assert.equal(wert(db, 'SELECT COUNT(DISTINCT RoutenNr) FROM klettert'), 12);
+  assert.ok(Math.min(...routenJeMitglied) >= 2);
+  // Herbst 2026, Erfolg ja/nein
+  assert.deepEqual(alle(db, "SELECT MIN(Datum) >= '2026-09-01', MAX(Datum) <= '2026-11-30' FROM klettert"), [[1, 1]]);
+  assert.deepEqual(spalte(db, 'SELECT DISTINCT Erfolg FROM klettert ORDER BY Erfolg'), ['ja', 'nein']);
+  // Ausschnitt für A5-V-04 (LIESMICH): zeigt beide Richtungen
+  const ausschnitt = alle(db, `SELECT MitgliedsNr, RoutenNr FROM klettert
+    WHERE (MitgliedsNr = 1 AND RoutenNr IN (1, 3)) OR (MitgliedsNr IN (2, 3) AND RoutenNr = 1) OR (MitgliedsNr = 2 AND RoutenNr = 2)`);
+  assert.ok(ausschnitt.length >= 5);
+});
+
+test('V5: LIESMICH und VERHOER_KONTEXTE an DS_PLANUNG angeglichen (klettert, Trainer, bildetAus, assistiertIn, Wertung)', () => {
+  const liesmich = fs.readFileSync(path.join(SEED, 'verhoer/kletterhalle', 'LIESMICH.md'), 'utf8');
+  const kontexte = fs.readFileSync(path.join(SEED, 'VERHOER_KONTEXTE.md'), 'utf8');
+  const v5 = kontexte.slice(kontexte.indexOf('## V5 '), kontexte.indexOf('## V6 '));
+  for (const text of [liesmich, v5]) {
+    for (const teil of ['angeglichen an DS_PLANUNG', '*klettert*', '*bildetAus*', '*assistiertIn*', '*besucht*', '*leitet*',
+      '*wertet*', 'Trainer (1) – Kurs (n)', 'Trainer(<u>TrainerNr</u>, Name, ↑AusbilderNr)',
+      'klettert(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>Datum</u>, Erfolg)',
+      'Route(<u>RoutenNr</u>, Name, Schwierigkeit, ↑WandNr, ↑BauerNr)',
+      'Wertung(<u>↑MitgliedsNr</u>, <u>↑RoutenNr</u>, <u>↑WettkampfNr</u>, Punkte)',
+      'assistiertIn(<u>↑MitgliedsNr</u>, <u>↑KursNr</u>)']) {
+      assert.ok(text.includes(teil), teil);
+    }
+    assert.doesNotMatch(text, /\bbegeht\(|sichert\(/);
+  }
+  assert.ok(liesmich.includes('A5-V-03') && liesmich.includes('A5-V-04'));
 });
