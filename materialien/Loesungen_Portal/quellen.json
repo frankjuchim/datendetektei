@@ -16,6 +16,21 @@
    "sha256": "5c76d35060b26a39d27678fa3277d4d8109ed4f7d9510bb705f045297cc9cda1",
    "verfahren": "pdf"
   },
+  "DD_A2-AB1_Der_rote_Faden_Loesung.pdf": {
+   "quelle": "Akte2_Raeder/5_Loesungen/DD_A2_AB1_Der_rote_Faden_LSG.docx",
+   "sha256": "6f8f1f1f8bba9fbdc085cdc31eb5e04664ab6db6142d3c5627ce3916bfd2ffb4",
+   "verfahren": "pdf"
+  },
+  "DD_A2-AB2_Nachtfahrten_Loesung.pdf": {
+   "quelle": "Akte2_Raeder/5_Loesungen/DD_A2_AB2_Nachtfahrten_LSG.docx",
+   "sha256": "6e55739045dc3cc88c54a70bb07d59527a5943e73b13bfe3096561047fb3a26e",
+   "verfahren": "pdf"
+  },
+  "DD_A2-Warm-up-Karten_Loesungen.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A2.docx",
+   "sha256": "352608ba7613f77ee6077653e5952f0ec7f06a41f2fce1bf120e8abfb5733e5b",
+   "verfahren": "pdf"
+  },
   "DD_A3-AB1_Kassensturz_Loesung.pdf": {
    "quelle": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB1_Kassensturz_LSG.docx",
    "sha256": "e68a9a4b4e88edb9185cdd2777685a260845503ba06570257aa36229c3a54433",

@@ -28,6 +28,30 @@
    ]
   },
   {
+   "datei": "DD_A2-Praesentation_Raeder.pdf",
+   "titel": "Spur der Räder (mit Notizen)",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 2",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
    "datei": "DD_A3-Praesentation_Stadtfest.pdf",
    "titel": "Die Stadtfest-Kasse (mit Notizen)",
    "akte": 3,

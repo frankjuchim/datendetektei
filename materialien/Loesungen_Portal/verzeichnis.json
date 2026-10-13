@@ -37,6 +37,40 @@
    "niveau": "beide"
   },
   {
+   "datei": "DD_A2-AB1_Der_rote_Faden_Loesung.pdf",
+   "titel": "AB 2.1 · Der rote Faden – Lösung",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A2-E1",
+   "ds": [
+    3
+   ]
+  },
+  {
+   "datei": "DD_A2-AB2_Nachtfahrten_Loesung.pdf",
+   "titel": "AB 2.2 · Nachtfahrten – Lösung",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A2-E2",
+   "ds": [
+    4
+   ]
+  },
+  {
+   "datei": "DD_A2-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 2 – mit Lösungen",
+   "akte": 2,
+   "gruppe": "A2",
+   "art": "warmup",
+   "fassung": "loesung"
+  },
+  {
    "datei": "DD_A3-AB1_Kassensturz_Loesung.pdf",
    "titel": "AB 3.1 · Kassensturz – Lösung",
    "akte": 3,

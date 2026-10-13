@@ -11,6 +11,16 @@
    "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
    "verfahren": "notizen"
   },
+  "DD_A2-Lehrerhinweise.pdf": {
+   "quelle": "Akte2_Raeder/4_Lehrerhinweise/DD_A2_Lehrerhinweise.docx",
+   "sha256": "7e38a4e36cc430c11aafa3070d426dd3ae89888e1ed48ecc8f02371ee8089eac",
+   "verfahren": "pdf"
+  },
+  "DD_A2-Praesentation_Raeder.pdf": {
+   "quelle": "Akte2_Raeder/1_Praesentation/DD_A2_Raeder.pptx",
+   "sha256": "2121dbc6fbf1cae6d4f07f379d246de79ab1f49ef710178d504c411a73c14b32",
+   "verfahren": "notizen"
+  },
   "DD_A3-Lehrerhinweise.pdf": {
    "quelle": "Akte3_Stadtfest/4_Lehrerhinweise/DD_A3_Lehrerhinweise.docx",
    "sha256": "3deaa0119f35a53f9843a349dd356f7f44561ad3c1d5b6d8c938b62ba043668e",
