@@ -109,8 +109,9 @@ function erzeugeApp(
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
   const limits = konfig.rateLimits || {};
   const jetzt = konfig.jetzt || Date.now;
-  app.use('/sso', rateLimit({ fensterMs: 60000, max: 30, ...limits.sso, schluessel: (req) => req.ip, jetzt }));
-  app.use('/api/verbund', rateLimit({ fensterMs: 60000, max: 120, ...limits.verbund, jetzt }));
+  // Je IP großzügig: Eine ganze Klasse meldet sich hinter einer Schul-NAT gleichzeitig an (Probelauf Phase 8).
+  app.use('/sso', rateLimit({ fensterMs: 60000, max: 300, ...limits.sso, schluessel: (req) => req.ip, jetzt }));
+  app.use('/api/verbund', rateLimit({ fensterMs: 60000, max: 120, ...limits.verbund, schluessel: (req) => req.ip, jetzt }));
 
   // Verbund-API vor dem allgemeinen JSON-Parser: JSON wird erst nach der Token-Prüfung gelesen.
   app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null, nachLoeschen: live ? live.verbundLoeschung : null }));

@@ -229,12 +229,18 @@ test('Prüfen ohne SQL-Prüfer: sql-Aufgabe 503, andere Aufgaben gehen', async (
   assert.equal((await post(t, '/api/gast/aufgaben/G-05/pruefen', { antwort: ['b'] })).body.ok, true);
 });
 
-test('Rate-Limit Prüfen je IP (konfigurierbar, Standard 30/min)', async () => {
+test('Rate-Limit Prüfen je IP (konfigurierbar, Standard 120/min)', async () => {
   const t = app({ rateLimits: { gastPruefen: { max: 2 } } });
   for (let i = 0; i < 2; i++) assert.equal((await post(t, '/api/gast/aufgaben/G-05/pruefen', { antwort: ['a'] })).status, 200);
   const zuViel = await post(t, '/api/gast/aufgaben/G-05/pruefen', { antwort: ['a'] });
   assert.equal(zuViel.status, 429);
   assert.ok(zuViel.headers['retry-after']);
+});
+
+test('Standard-Rate-Limit Prüfen im Gastmodus: 120 je Minute und IP (Klasse hinter einer Schul-NAT)', async () => {
+  const t = app();
+  for (let i = 0; i < 120; i++) assert.equal((await post(t, '/api/gast/aufgaben/G-05/pruefen', { antwort: ['a'] })).status, 200);
+  assert.equal((await post(t, '/api/gast/aufgaben/G-05/pruefen', { antwort: ['a'] })).status, 429);
 });
 
 /* ---------- Tipp und Lösung ---------- */
