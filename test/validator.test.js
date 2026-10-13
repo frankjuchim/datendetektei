@@ -352,6 +352,26 @@ test('Lab-Aufgabe auf einer Verhör-DB → Fehler (nur öffentliche Akten-DBs)',
   await erwarteFehler(k, /datenbank/);
 });
 
+/* ---------- Akte 7: Level ohne Lab-Aufgaben (Spec §10) ---------- */
+
+test('Ermittlung ohne Aufgaben: nur in Akte 7 (Generalprobe) erlaubt, sonst Fehler', async () => {
+  const j = akte();
+  j.levels[0].aufgaben = [];
+  await erwarteFehler(j, /aufgaben.*leer/);
+  // Akte 7: eine Ermittlung nur mit Briefing/Intro, die Aufgaben stehen nur im Verhör-Pool
+  const g = JSON.parse(AKTE_TEXT.replace(/A9-/g, 'A7-'));
+  g.welt = 7;
+  g.levels = [{ id: 'A7-E1', nr: '7.1', titel: 'Die Ermittlerprüfung', ds: [13], briefing: 'Heute ist Ermittlerprüfung.', aufgaben: [] }];
+  const pool = new Set(g.boss.pool);
+  g.aufgaben = g.aufgaben.filter((a) => pool.has(a.id));
+  const r = await validiere(g, 'akte7.json');
+  assert.deepEqual(r.fehler.filter((f) => /aufgaben/.test(f.text)), []);
+  // fehlt aufgaben ganz, bleibt es ein Fehler
+  delete g.levels[0].aufgaben;
+  const r2 = await validiere(g, 'akte7.json');
+  assert.ok(r2.fehler.some((f) => /aufgaben.*fehlt/.test(f.text)), JSON.stringify(r2.fehler));
+});
+
 /* ---------- Niveau, Punkte, Markdown ---------- */
 
 test('Niveau: Akte 5 komplett eA', async () => {

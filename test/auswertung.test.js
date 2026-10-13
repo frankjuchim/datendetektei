@@ -472,7 +472,7 @@ test('Superadmin: Seed-Bericht ohne absolute Pfade', async () => {
   assert.ok(Array.isArray(r.body.bericht.entfernt));
   assert.equal(typeof r.body.bericht.zeit, 'string');
   assert.ok(!JSON.stringify(r.body).includes('/home/') && !JSON.stringify(r.body).includes(__dirname));
-  assert.equal(r.body.umfang.welten, 1);
+  assert.deepEqual(r.body.umfang, { welten: 7, level: 13, aufgaben: 0, bosse: 7 }, 'Beispielakte zählt nicht zum Manifest-umfang');
   const akte = r.body.akten.find((a) => a.nr === 9);
   assert.equal(akte.ermittlungen, 2);
   assert.equal(akte.verhoerPool, 4);

@@ -69,9 +69,14 @@ Jede Datei gehört genau einem Bearbeiter bzw. Agenten (`akte1.json` …), damit
 | `briefing` | nein | Story-Einstieg von Edda Lorenz, geduzt, **höchstens drei Sätze** (Spec §3.1), Mini-Markdown |
 | `intro` | nein | Blöcke (siehe 5), z. B. `datenbank` und eine Ermittler-Notiz; ohne Lücken |
 | `coldCase` | nein | id einer Cold-Case-Aufgabe `A<n>-E<k>-CC` (siehe 4.3) |
-| `aufgaben` | ja | Reihenfolge der Aufgaben der Ermittlung. Jede Aufgabe steht in genau einer Ermittlung; Verhör-Aufgaben und Cold Cases nie |
+| `aufgaben` | ja | Reihenfolge der Aufgaben der Ermittlung. Jede Aufgabe steht in genau einer Ermittlung; Verhör-Aufgaben und Cold Cases nie. Leer (`[]`) nur in **Akte 7** (Generalprobe, Spec §10): Die Ermittlung „Die Ermittlerprüfung“ trägt nur Briefing und Ermittler-Notiz, geprüft wird im Verhör 7 |
 
 Ziel je Ermittlung (DS_PLANUNG): rund 8 Aufgaben, Stufenmix etwa 40/40/20 % (3/3/2).
+
+**Ermittlung ohne Lab-Aufgaben (Akte 7):** zählt im Manifest-`umfang` als Level, hat 0 Level-Punkte und erscheint
+nicht als Spalte der Lehrkraft-Auswertung; das Verhör der Akte ist im Modus `auto` frei, sobald die Akte im Kurs
+freigeschaltet ist (keine 60-%-Schwelle ohne Level-Punkte; `gesperrt`/`offen` wie sonst); das Abzeichen „Akte
+geschlossen“ gibt es für sie nicht.
 
 ### 2.1 Schlussplädoyer `plaedoyer` (Akte 6, Spec §7.7, STORY §7)
 

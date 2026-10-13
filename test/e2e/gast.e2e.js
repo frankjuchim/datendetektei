@@ -186,7 +186,7 @@ test('Gast und Themen: Handy ohne horizontales Scrollen; Themenseite aus dem See
         assert.equal(await t.page.$$eval('.akte-thema', (a) => a.length), 8);
         assert.equal(await t.page.getAttribute('#akte-1', 'data-status'), 'offen');
         assert.equal(await t.page.getAttribute('#akte-4', 'data-status'), 'offen');
-        assert.equal(await t.page.getAttribute('#akte-6', 'data-status'), 'folgt');
+        assert.equal(await t.page.getAttribute('#akte-6', 'data-status'), 'offen');
         assert.equal(await t.page.$$eval('#niveaus-zeilen tr', (z) => z.length), 9);
         assert.ok((await t.page.$$eval('#akte-1 .chip', (c) => c.length)) > 3, 'Kompetenzen Akte 1');
         assert.ok((await ueberlauf(t.page)) <= 0, `/themen ${breite}: Überlauf`);

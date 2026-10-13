@@ -167,6 +167,8 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
     const modus = verhoerModus(einst, akte.nr);
     if (modus === 'offen') return { frei: true, grund: null };
     if (modus === 'gesperrt') return { frei: false, grund: 'Die Verhöre sind in deinem Kurs noch gesperrt.' };
+    // Akte ohne Lab-Aufgaben (Akte 7, Generalprobe – Spec §10): keine Level-Punkte, die Freischaltung der Akte genügt.
+    if (!max) return { frei: true, grund: null };
     const noetig = Math.ceil(VERHOER_AUTO_ANTEIL * max);
     if (ist >= noetig) return { frei: true, grund: null };
     return { frei: false, grund: `Sammle mindestens 60 % der Punkte der Ermittlungen dieser Akte (${ist} von ${noetig} nötigen Punkten).` };
@@ -198,7 +200,8 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
         continue;
       }
       for (const akte of inhalte.akten()) {
-        if (d.id === 'akte-geschlossen' && !akte.levels.length) continue;
+        // „Akte geschlossen“ nur für Akten mit Lab-Aufgaben (Akte 7 = Generalprobe hat eine Ermittlung ohne Aufgaben)
+        if (d.id === 'akte-geschlossen' && !akte.levels.some((l) => l.aufgaben.length)) continue;
         if (d.id === 'beweisstueck' && !(akte.boss && akte.boss.pool.length)) continue;
         liste.push({ id: `${d.id}-${akte.nr}`, name: d.name, beschreibung: d.beschreibung, akte: akte.nr, akteTitel: akte.titel });
       }
@@ -363,9 +366,28 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
   }
 
   /**
+   * Letzte Aktivität eines Kontos in diesem Kurs (Vertrag §6 `zuletzt`): späteste Zeit aus Lernstand (Lösen, Aufdecken)
+   * und Verhör-Versuchen; ohne Aktivität die letzte Anmeldung. Leere Zeitangaben → null. Alle Zeiten im Format
+   * JJJJ-MM-TTThh:mm:ssZ, daher ist der Textvergleich zugleich der Zeitvergleich.
+   */
+  function zuletztAktiv(sub, kursId) {
+    const z = db
+      .prepare(
+        `SELECT MAX(t) AS t FROM (
+           SELECT MAX(zeit) AS t FROM fortschritt WHERE sub = ? AND kurs_id = ?
+           UNION ALL SELECT MAX(COALESCE(ende, beginn)) FROM verhoer_versuche WHERE sub = ? AND kurs_id = ?
+           UNION ALL SELECT zuletzt FROM konten WHERE sub = ?
+         ) WHERE t IS NOT NULL AND t != ''`
+      )
+      .get(sub, kursId, sub, kursId, sub);
+    return z && z.t ? z.t : null;
+  }
+
+  /**
    * Kennzahlen für die Verbund-Kursübersicht (Vertrag §6) – nur Zahlen, keine Namen.
-   * → { schueler: Map sub → { punkte, geloest, anteil }, welten: [{ nr, titel, anteil }] }
-   * welten: Akten des Plans (1–7) und alle geladenen Akten; anteil = Durchschnitt der Schüler-Anteile je Akte.
+   * → { schueler: Map sub → { punkte, geloest, anteil, zuletzt }, welten: [{ nr, titel, anteil }] }
+   * welten: Akten des Plans (1–7) und alle geladenen Akten, die es im Kurs-Niveau gibt (gA ohne Akte 5);
+   * anteil = Durchschnitt der Schüler-Anteile je Akte.
    */
   function kennzahlen(kursId, subs) {
     if (aufraeumen) aufraeumen(kursId);
@@ -375,11 +397,11 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
     const summen = new Map();
     for (const sub of subs) {
       const kz = kennzahlenVon(sub, kursId, einst);
-      schueler.set(sub, { punkte: kz.gesamt, geloest: kz.geloest, anteil: kz.anteil });
+      schueler.set(sub, { punkte: kz.gesamt, geloest: kz.geloest, anteil: kz.anteil, zuletzt: zuletztAktiv(sub, kursId) });
       for (const [nr, a] of kz.akten) summen.set(nr, (summen.get(nr) || 0) + a.anteil);
     }
-    const titel = new Map(AKTEN.map((a) => [a.nr, a.titel]));
-    for (const a of inhalte.akten()) if (!titel.has(a.nr)) titel.set(a.nr, a.titel);
+    const titel = new Map(AKTEN.filter((a) => a.niveaus.includes(einst.niveau)).map((a) => [a.nr, a.titel]));
+    for (const a of inhalte.akten()) if (!titel.has(a.nr) && akteSichtbar(a, einst.niveau)) titel.set(a.nr, a.titel);
     const welten = [...titel.entries()]
       .sort((x, y) => x[0] - y[0])
       .map(([nr, t]) => ({ nr, titel: t, anteil: subs.length ? (summen.get(nr) || 0) / subs.length : 0 }));
@@ -404,6 +426,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
     istSchuelerKonto,
     stand,
     kennzahlen,
+    zuletztAktiv,
     ermittlungKurz,
     aufgabeKurz,
     fortschritt
