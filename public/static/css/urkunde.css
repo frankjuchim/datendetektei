@@ -44,6 +44,7 @@
   font-family: var(--schrift-titel); font-weight: 700; font-size: 7.4cqw; line-height: 1.1; margin: 1.2cqw 0;
   padding: 0 4cqw 1cqw; border-bottom: 0.3cqw solid var(--messing-grafik); overflow-wrap: anywhere;
 }
+.urkunde-name.lang { font-size: 5cqw; }
 .urkunde-befaehigung { margin-top: 1.6cqw; }
 .urkunde-fakten { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6cqw 3cqw; font-size: 2.5cqw; margin-top: 1.6cqw; }
 .urkunde-rang { color: var(--messing-text); }
