@@ -19,6 +19,9 @@ class AntwortFehler extends Error {
 const MAX_LISTE = 300;
 const MAX_TEXT = 500;
 const MAX_SQL = 4000;
+/** Kür K1: Schreib-Skripte (sql mit schreiben: true) dürfen länger sein (src/sql/skript.js MAX_SKRIPT). */
+const MAX_SKRIPT = 10000;
+const istSchreiben = (ia) => !!(ia && ia.kind === 'sql' && ia.schreiben === true);
 
 /* ---------- Antworten vereinheitlichen (Objekt-Hüllen wie in der Lösung erlaubt) ---------- */
 
@@ -100,7 +103,7 @@ function bereinige(ia, antwort, aufgabe) {
       return out;
     }
     case 'sql':
-      return text(auspacken(antwort, 'sql'), MAX_SQL);
+      return text(auspacken(antwort, 'sql'), istSchreiben(ia) ? MAX_SKRIPT : MAX_SQL);
     case 'zeilen': {
       const anzahl = zielTabelle(aufgabe, ia).zeilen.length;
       const idx = [...new Set(liste(auspacken(antwort, 'zeilen'), 'Zeilen').map(ganzzahl))];
@@ -253,8 +256,16 @@ function pruefeErgebnis(ia, lo, a) {
   return { ok, rueckmeldung: { zeilenzahl, nurReihenfolge: ia.reihenfolge === true && mengeOk && !listeOk } };
 }
 
-/** Aufgabe in der Form, die der SQL-Prüfer aus Phase 2 erwartet. */
+/** Aufgabe in der Form, die der SQL-Prüfer aus Phase 2 erwartet (Kür K1: Schreib-Aufgabe, src/sql/schreibpruefer.js). */
 function sqlAufgabe(ia, lo, abimodus) {
+  if (istSchreiben(ia)) {
+    return {
+      schreiben: true,
+      start: ia.start && typeof ia.start === 'object' ? { datenbank: ia.start.datenbank, skript: ia.start.skript } : null,
+      abimodus: 'aus',
+      loesung: { sql: lo && lo.sql, pruefung: lo && Array.isArray(lo.pruefung) ? lo.pruefung : [] }
+    };
+  }
   return {
     datenbank: ia.datenbank,
     varianten: Array.isArray(ia.varianten) ? ia.varianten : [],
@@ -269,6 +280,12 @@ async function pruefeSql(ia, lo, a, opt) {
   if (a.trim() === '') return { ok: false, rueckmeldung: { diagnose: [], zeilen: 0 } };
   if (typeof opt.sqlPruefer !== 'function') throw new Error('Kein SQL-Prüfer konfiguriert.');
   const r = await opt.sqlPruefer(sqlAufgabe(ia, lo, opt.abimodus), a);
+  if (istSchreiben(ia)) {
+    // Kür K1: Rückmeldung je Prüfpunkt (nur die Texte des Inhalts), Diagnose bei Abbruch des Skripts
+    const diagnose = (r && Array.isArray(r.diagnose) ? r.diagnose : []).map((d) => ({ code: d.code, falle: null, text: d.text, ...(Number.isInteger(d.zeile) ? { zeile: d.zeile } : {}) }));
+    const pruefpunkte = r && Array.isArray(r.pruefpunkte) ? r.pruefpunkte.map((p) => ({ text: String(p.text), ok: p.ok === true })) : null;
+    return { ok: !!(r && r.ok === true), rueckmeldung: { diagnose, pruefpunkte } };
+  }
   const diagnose = (r && Array.isArray(r.diagnose) ? r.diagnose : []).map((d) => ({
     code: d.code,
     falle: d.falle ?? null,
@@ -410,6 +427,7 @@ function antwortKurz(antworten) {
 module.exports = {
   AntwortFehler,
   MAX_SQL,
+  MAX_SKRIPT,
   bereinige,
   istLeer,
   feldRichtig,

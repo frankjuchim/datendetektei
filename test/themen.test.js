@@ -62,7 +62,7 @@ test('GET /api/themen ohne Inhalte: sieben Akten „folgt“, Fallen P1–P10, N
 test('GET /api/themen mit Seed: Akten 1–3 mit Ermittlungen, DS, Kompetenzen, Fallen, Anzahl, Verhör; 4–7 folgen', async () => {
   const { app } = mitInhalten();
   const d = (await request(app).get('/api/themen')).body;
-  for (const roh of seedAkten()) {
+  for (const roh of seedAkten().filter((x) => !x.kuer)) {
     const a = d.akten.find((x) => x.nr === roh.welt);
     assert.ok(a, `Akte ${roh.welt}`);
     assert.equal(a.status, 'offen');

@@ -10,6 +10,8 @@
 // - Lösung, Erklärung, nicht abgerufene Tipps und Kernpunkte verlassen den Server erst nach Lösen/Aufdecken.
 // - Cold Cases: prüfbar, 0 Punkte, zählen nicht für Rang, Freischaltung, Serie, Abzeichen.
 // - Verhör-Aufgaben sind hier nie erreichbar (404; nur über die Verhör-Engine).
+// - Kür K1 (Schreib-Skripte, sql mit schreiben: true): keine Fehlabfragen – das Skript wird nirgends gespeichert (E7);
+//   schreibStart liefert der Ausführen-Route (src/routes/kuer.js) den Start der Aufgabe nach derselben Zugangsprüfung.
 
 const F = require('../content/format');
 const { pruefeAntwort, bereinige, AntwortFehler } = require('../content/pruefer');
@@ -173,7 +175,7 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const liste = l.aufgaben;
     const i = liste.indexOf(a.id);
     return {
-      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe },
+      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe, kuer: !!akte.kuer },
       ermittlung: { id: l.id, nr: l.nr, titel: l.titel },
       index: i,
       anzahl: liste.length,
@@ -215,7 +217,7 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const levels = stand.sichtbareLevels(akte, z.einst.niveau);
     const i = levels.findIndex((x) => x.level.id === sl.level.id);
     return {
-      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe },
+      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe, kuer: !!akte.kuer },
       ermittlung: {
         ...kurz,
         intro: oeffentlicheBloecke(sl.level.intro),
@@ -266,7 +268,7 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     if (a.art === 'lab') stand.serieFortschreiben(z.sub, z.kurs.id, false);
     if (!teilweise && z.rolle === 'schueler') {
       teileVon(a).forEach((t, i) => {
-        if (F.artVon(t.interaktion) === 'sql' && typeof antworten[i] === 'string') fehlabfrageSpeichern(z, a, antworten[i]);
+        if (F.artVon(t.interaktion) === 'sql' && t.interaktion.schreiben !== true && typeof antworten[i] === 'string') fehlabfrageSpeichern(z, a, antworten[i]);
       });
     }
   }
@@ -389,13 +391,28 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     return out;
   }
 
+  /**
+   * Kür K1: Start der Schreib-Konsole einer Aufgabe (Zugang, Niveau und Freischaltung wie GET …/aufgaben/:id; auch im
+   * gesperrten Kurs lesend, denn Ausführen speichert nichts). → { start: null | { datenbank } | { skript } }
+   */
+  function schreibStart(sitzung, kursId, id) {
+    const z = zugang(sitzung, kursId);
+    const a = aufgabeFuer(z, id);
+    const t = teileVon(a).find((x) => F.artVon(x.interaktion) === 'sql' && x.interaktion.schreiben === true);
+    if (!t) throw new HttpFehler(404, 'Aufgabe nicht gefunden.');
+    const st = t.interaktion.start;
+    if (st && typeof st.datenbank === 'string') return { start: { datenbank: st.datenbank } };
+    if (st && typeof st.skript === 'string') return { start: { skript: st.skript } };
+    return { start: null };
+  }
+
   /** Für das Rate-Limit: hat die Aufgabe (falls vorhanden) einen sql-Teil? */
   function istSqlAufgabe(id) {
     const a = inhalte.aufgabe(String(id));
     return !!a && hatSql(a);
   }
 
-  return { zugang, stand: standFuer, ermittlung, aufgabe, pruefen, tipp, loesungZeigen, kernpunkte, istSqlAufgabe };
+  return { zugang, stand: standFuer, ermittlung, aufgabe, pruefen, tipp, loesungZeigen, kernpunkte, istSqlAufgabe, schreibStart };
 }
 
 module.exports = { erzeugeLernen, normalisiereSql, HttpFehler, MAX_FEHLABFRAGEN };

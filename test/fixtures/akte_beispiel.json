@@ -43,6 +43,7 @@
         { "t": "datenbank", "name": "eisdiele" },
         { "t": "zeitlupe", "datenbank": "eisdiele", "sql": "SELECT Vegan, COUNT(*) AS Sorten\nFROM Sorte\nWHERE Preis >= 1.5\nGROUP BY Vegan", "start": "WHERE" }
       ],
+      "coldCase": "A9-E2-CC",
       "aufgaben": ["A9-E2-01", "A9-E2-02", "A9-E2-03", "A9-E2-04", "A9-E2-05", "A9-E2-06", "A9-E2-07", "A9-E2-08"]
     }
   ],
@@ -675,6 +676,29 @@
       "loesung": {"elemente": ["e1", "e2", "b1", "e1.0", "e2.0"]},
       "erklaerung": [
         {"t": "text", "md": "Entitätstypen sind Rechtecke (Sorte, Verkauf), der Beziehungstyp ist die Raute (wirdVerkauft), Schlüsselattribute sind unterstrichen (SorteNr, VerkaufNr)."}
+      ]
+    },
+    {
+      "id": "A9-E2-CC",
+      "titel": "Cold Case: Die eigene Kartei",
+      "stufe": 1,
+      "punkte": 0,
+      "kategorie": "Überführung",
+      "inhalt": [
+        {"t": "text", "md": "**KÜR – nicht im Abitur.** Beispiel für eine Schreib-Aufgabe (sql mit schreiben: true): Lege die Tabelle Karte(KarteNr, Titel) an und trage zwei Karten ein."}
+      ],
+      "interaktion": {"kind": "sql", "schreiben": true, "abimodus": "aus", "start": {"titel": "leere Datenbank"}},
+      "loesung": {
+        "sql": "CREATE TABLE Karte (\n  KarteNr INTEGER PRIMARY KEY,\n  Titel   TEXT\n);\nINSERT INTO Karte VALUES (1, 'Eins');\nINSERT INTO Karte VALUES (2, 'Zwei');\nSELECT * FROM Karte;",
+        "pruefung": [
+          {"text": "KarteNr ist der Primärschlüssel von Karte.", "sql": "SELECT COUNT(*) = 1 FROM pragma_table_info('Karte') WHERE pk > 0 AND lower(name) = 'kartenr'"},
+          {"art": "daten", "min": 2, "text": "Karte enthält mindestens zwei Datensätze."},
+          {"art": "skript", "muster": "\\bINSERT\\b", "text": "Du fügst die Datensätze mit INSERT ein."},
+          {"art": "zeilen", "min": 2, "text": "Dein letztes SELECT zeigt die Karten."}
+        ]
+      },
+      "erklaerung": [
+        {"t": "text", "md": "`CREATE TABLE` mit `PRIMARY KEY`, danach je Datensatz ein `INSERT`."}
       ]
     }
   ]

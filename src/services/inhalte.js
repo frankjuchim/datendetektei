@@ -39,8 +39,9 @@ const STANDARD_VERZEICHNIS = path.join(__dirname, '..', '..', 'seed', 'akten');
 /** Teil des Fingerabdrucks: ändert sich die Lade-Logik, wird jede Datei einmal neu eingespielt. */
 const SEED_VERSION = 'akten-2'; // akten-2: Ermittlungen behalten plaedoyer (Phase 6)
 const STUFEN_PUNKTE = Object.freeze({ 1: 10, 2: 20, 3: 30 });
-const ID_RE = /^A\d{1,2}-(?:E\d{1,2}-(?:\d{2,3}|CC)|V-\d{2,3})$/;
-const LEVEL_ID_RE = /^A\d{1,2}-E\d{1,2}$/;
+// Kür K1 (Phase 6 Task 7): ids K1-E<k>-<nn> bzw. Ermittlung K1-E<k> (DS_PLANUNG); Datei mit kuer: true, welt 8.
+const ID_RE = /^(?:A\d{1,2}-(?:E\d{1,2}-(?:\d{2,3}|CC)|V-\d{2,3})|K\d-E\d{1,2}-(?:\d{2,3}|CC))$/;
+const LEVEL_ID_RE = /^(?:A\d{1,2}|K\d)-E\d{1,2}$/;
 /** Felder einer Interaktion, die nie an den Browser gehen. */
 const GEHEIME_INTERAKTIONSFELDER = ['varianten', 'sortierung', 'aliasPflicht', 'kernpunkte', 'loesung', 'quelleSql', 'erklaerung', 'tipps'];
 
@@ -198,7 +199,7 @@ function aktenDaten(d, gut) {
   if (istObjekt(d.boss)) {
     boss = { ...d.boss, niveau: F.NIVEAUS.includes(d.boss.niveau) ? d.boss.niveau : 'alle', pool: d.boss.pool.filter((id) => gut.has(id)) };
   }
-  return { version: 2, welt: d.welt, titel: d.titel, farbe: typeof d.farbe === 'string' ? d.farbe : null, levels, boss };
+  return { version: 2, welt: d.welt, titel: d.titel, farbe: typeof d.farbe === 'string' ? d.farbe : null, kuer: d.kuer === true, levels, boss };
 }
 
 /**
@@ -416,6 +417,8 @@ function baueKatalog(db) {
       nr: z.nr,
       titel: d.titel,
       farbe: d.farbe,
+      // Kür (Phase 6 Task 7): ohne Rangwirkung, nicht im Manifest-umfang und nicht in den Verbund-Welten
+      kuer: d.kuer === true,
       levels,
       boss,
       maxPunkte: levels.reduce((s, l) => s + l.maxPunkte, 0)
@@ -434,7 +437,12 @@ function oeffentlicherBlock(b) {
 
 function oeffentlicheInteraktion(ia, art) {
   const basis = { kind: ia.kind };
-  if (ia.kind === 'sql') {
+  if (ia.kind === 'sql' && ia.schreiben === true) {
+    // Kür K1: Schreib-Konsole; Startskript und Prüfpunkte bleiben auf dem Server (nur der Titel des Starts geht mit)
+    basis.schreiben = true;
+    basis.abimodus = 'aus';
+    basis.start = { titel: ia.start && typeof ia.start.titel === 'string' ? ia.start.titel : 'leere Datenbank' };
+  } else if (ia.kind === 'sql') {
     basis.datenbank = ia.datenbank;
     basis.abimodus = art === 'verhoer' ? 'streng' : F.ABIMODI.includes(ia.abimodus) ? ia.abimodus : 'hinweis';
   } else if (ia.kind === 'kernpunkte') {
