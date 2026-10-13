@@ -116,6 +116,107 @@
    "ds": [
     12
    ]
+  },
+  {
+   "datei": "DD_Video00-So_ermittelst_du_Folien.pdf",
+   "titel": "Video 0 · So ermittelst du in der Datendetektei (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_Video01-SQL-Grundlagen_Folien.pdf",
+   "titel": "Video 1 · SQL-Grundlagen: SELECT, WHERE und die Bedingungsfallen (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "DD_Video02-Verbund_ohne_JOIN_Folien.pdf",
+   "titel": "Video 2 · Verbund ohne JOIN: Wie FROM a, b WHERE funktioniert (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    3,
+    4
+   ]
+  },
+  {
+   "datei": "DD_Video03-GROUP_BY_und_HAVING_Folien.pdf",
+   "titel": "Video 3 · GROUP BY und HAVING – so wie im Abitur (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    5,
+    6
+   ]
+  },
+  {
+   "datei": "DD_Video04-Redundanz_und_Schluessel_Folien.pdf",
+   "titel": "Video 4 · Redundanz, Anomalien und gute Schlüssel (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    7,
+    8
+   ]
+  },
+  {
+   "datei": "DD_Video05-ER-Modelle_Folien.pdf",
+   "titel": "Video 5 · ER-Modelle nach den Ergänzenden Hinweisen (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10
+   ]
+  },
+  {
+   "datei": "DD_Video06-ER_zu_Relationenschema_Folien.pdf",
+   "titel": "Video 6 · Vom ER-Modell zum Relationenschema in 5 Regeln (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "eA",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_Video07-Abi-Check_Folien.pdf",
+   "titel": "Video 7 · Abi-Check Datenbanken: 10 Fallen und die Operatoren (Folien)",
+   "akte": null,
+   "gruppe": "Videos",
+   "art": "video",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    13
+   ]
   }
  ]
 }

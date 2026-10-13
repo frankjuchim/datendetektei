@@ -1,0 +1,458 @@
+{
+ "nr": 1,
+ "kurz": "SQL-Grundlagen",
+ "akte": 1,
+ "aktenname": "Akte 1 · Das Fundbüro",
+ "titel": "SQL-Grundlagen: SELECT, WHERE und die Bedingungsfallen",
+ "untertitel": "Spalten wählen, Zeilen filtern, sortieren – und die Fallen bei AND/OR und NULL umgehen",
+ "einsatz_kurz": "Akte 1 · DS 1–2",
+ "einsatz": "Akte 1, DS 1–2 · Ermittlungen 1.1 „Der erste Auftrag“ und 1.2 „Das verschwundene Fundstück“ · AB 1.1, AB 1.2 · Hausaufgabe nach DS 1",
+ "laenge": "8–10 min",
+ "zielgruppe": "Informatik eA und gA (Datenbanken), Akte 1; Wiederholung vor Verhör 1, Klausur und Abitur",
+ "datenbank": "video/schachturnier",
+ "beispieldaten": "eigene Video-DB `video/schachturnier` (Jugendschach in Weserstedt: Spieler, Verein) – keine Lab-, AB-, Verhör- oder Klausuraufgabe",
+ "lernziele": [
+  "Eine SQL-Abfrage aus SELECT, FROM, WHERE, ORDER BY und LIMIT aufbauen und die Aufgabe jeder Klausel nennen",
+  "Bedingungen mit Vergleichsoperatoren (=, !=, <, <=, >, >=), AND, OR und Klammern formulieren (P6)",
+  "Muster mit LIKE (% und _) und Bereiche mit BETWEEN (Grenzen eingeschlossen) nutzen",
+  "Fehlende Werte mit IS NULL bzw. IS NOT NULL finden und Texte in Hochkommata schreiben (P5)",
+  "Ergebnisse mehrstufig sortieren (ASC/DESC) und mit LIMIT begrenzen"
+ ],
+ "hinweise": [
+  "Alle Beispiele laufen auf der eigenen Video-DB `video/schachturnier` (seed/datenbanken/video/schachturnier) – nicht auf der Fundbüro-DB des Labs; das Video verrät keine Lab-, AB- oder Verhörlösung.",
+  "Alle Ergebnistabellen auf den Folien sind aus der DB erzeugt und mit werkzeuge/material_sql_pruefen.py geprüft (EH §8, Abimodus streng).",
+  "Geprüfte Werte: Jahrgang >= 2009 → 5 Personen; ohne Klammern 4 Zeilen (Imke Bargmann, Jahrgang 2008, rutscht durch), mit Klammern 3; LIKE '%ke' → Imke, Tomke, Hauke, Levke; BETWEEN 1480 AND 1690 trifft beide Grenzen (4 Zeilen); Wertung IS NULL → Joris, Keno; = NULL → keine Zeile; Top 3: 1830, 1755, 1690.",
+  "Pause-Folie: Im Schnitt den Hinweis „Video anhalten“ einblenden; die Auflösung kommt erst auf der nächsten Folie.",
+  "Kamera unten rechts; auf den SQL-Folien beim Erklären mit dem Mauszeiger die Klausel zeigen, über die gerade gesprochen wird."
+ ],
+ "youtube": {
+  "titel": "SQL-Grundlagen: SELECT, WHERE, AND/OR, LIKE, BETWEEN, IS NULL (Informatik-Abitur Niedersachsen) | Datendetektei #1",
+  "beschreibung": "Wie schreibst du eine SQL-Abfrage so, wie es das Informatik-Abitur in Niedersachsen verlangt? In diesem Video baust du Abfragen aus SELECT, FROM und WHERE, kombinierst Bedingungen mit AND, OR und Klammern, suchst mit LIKE und BETWEEN, findest fehlende Werte mit IS NULL und sortierst mit ORDER BY und LIMIT. Dazu die typischen Fallen: AND bindet stärker als OR, BETWEEN schließt die Grenzen ein, und mit NULL vergleicht man nie mit =.\n\nTeil der Unterrichtsreihe „Datendetektei Weserstedt – Ermitteln mit Datenbanken“ (Informatik eA/gA, Abitur ab 2027).\nSelbst ausprobieren: https://datendetektei.frankjuchim.de/gast",
+  "tags": [
+   "Informatik Abitur",
+   "Niedersachsen",
+   "SQL",
+   "SELECT",
+   "WHERE",
+   "AND OR",
+   "LIKE",
+   "BETWEEN",
+   "IS NULL",
+   "ORDER BY",
+   "Datenbanken",
+   "Datendetektei"
+  ]
+ },
+ "bilder": {},
+ "folien": [
+  {
+   "typ": "titel",
+   "kapitel": "Einstieg",
+   "regie": "Kamera unten rechts, Titelfolie im Hintergrund.",
+   "sprechertext": "Willkommen in der Datendetektei! Jede Ermittlung beginnt mit einer Frage an die Datenbank – und die stellst du in SQL. Nach diesem Video kannst du Spalten auswählen, Zeilen gezielt filtern und sortieren. Und du kennst die zwei Fallen, über die im Abitur fast alle einmal stolpern: AND und OR ohne Klammern und der Vergleich mit NULL."
+  },
+  {
+   "titel": "Unsere Beispieldaten: ein Schachturnier",
+   "kapitel": "Beispieldaten",
+   "links": [
+    {
+     "schema": [
+      "Spieler(<u>SpielerNr</u>, Vorname, Nachname, Jahrgang, Wertung, ↑VereinNr)"
+     ],
+     "titel": "KURZSCHREIBWEISE"
+    },
+    {
+     "tabelle": {
+      "titel": "TABELLE SPIELER (VOLLSTÄNDIG)",
+      "kopf": [
+       "SpielerNr",
+       "Vorname",
+       "Nachname",
+       "Jahrgang",
+       "Wertung",
+       "VereinNr"
+      ],
+      "pk": [
+       "SpielerNr"
+      ],
+      "fk": [
+       "VereinNr"
+      ],
+      "groesse": 13,
+      "zeilen": [
+       [
+        "1",
+        "Imke",
+        "Bargmann",
+        "2008",
+        "1620",
+        "1"
+       ],
+       [
+        "2",
+        "Mats",
+        "Okafor",
+        "2009",
+        "1480",
+        "1"
+       ],
+       [
+        "3",
+        "Fenja",
+        "Harjes",
+        "2007",
+        "1755",
+        "2"
+       ],
+       [
+        "4",
+        "Joris",
+        "Kampen",
+        "2010",
+        "NULL",
+        "2"
+       ],
+       [
+        "5",
+        "Smilla",
+        "Onken",
+        "2008",
+        "1390",
+        "3"
+       ],
+       [
+        "6",
+        "Keno",
+        "Uphoff",
+        "2009",
+        "NULL",
+        "NULL"
+       ],
+       [
+        "7",
+        "Tomke",
+        "Saathoff",
+        "2007",
+        "1830",
+        "3"
+       ],
+       [
+        "8",
+        "Hauke",
+        "Demir",
+        "2010",
+        "1210",
+        "1"
+       ],
+       [
+        "9",
+        "Levke",
+        "Wilms",
+        "2009",
+        "1545",
+        "NULL"
+       ],
+       [
+        "10",
+        "Arne",
+        "Bargmann",
+        "2006",
+        "1690",
+        "2"
+       ]
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Unsere Beispieldaten kommen nicht aus dem Fundbüro, sondern von einem Jugend-Schachturnier in Weserstedt. Die Tabelle Spieler hat zehn Zeilen. Jede Person hat eine SpielerNr – das ist der Primärschlüssel, deshalb ist er unterstrichen. Dazu Vorname, Nachname, Jahrgang und eine Wertung, also eine Spielstärke. VereinNr ist ein Fremdschlüssel, erkennbar am Pfeil: Er verweist auf eine zweite Tabelle Verein, die brauchen wir erst im nächsten Video. Achte schon jetzt auf die Einträge NULL: Joris und Keno haben noch keine Wertung, Keno und Levke spielen ohne Verein. NULL heißt: Hier steht kein Wert."
+  },
+  {
+   "titel": "Das Abfrage-Gerüst",
+   "kapitel": "Das Abfrage-Gerüst",
+   "links": [
+    {
+     "sql": "SELECT Vorname, Nachname, Jahrgang\nFROM Spieler\nWHERE Jahrgang >= 2009",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "schritte": [
+      "**FROM** – aus welcher Tabelle? Hier: Spieler",
+      "**WHERE** – jede Zeile prüfen: Jahrgang >= 2009?",
+      "**SELECT** – nur diese Spalten anzeigen"
+     ]
+    }
+   ],
+   "regie": "Beim Sprechen die Schritte rechts von oben nach unten zeigen.",
+   "sprechertext": "Das Grundgerüst jeder Abfrage hat drei Teile. Geschrieben wird SELECT, FROM, WHERE – gedacht wird aber in einer anderen Reihenfolge. Zuerst FROM: Aus welcher Tabelle kommen die Daten? Dann WHERE: Die Datenbank prüft jede einzelne Zeile, ob die Bedingung wahr ist – hier: Jahrgang größer oder gleich 2009. Nur die passenden Zeilen bleiben übrig. Zum Schluss SELECT: Welche Spalten willst du sehen? Ergebnis: fünf Personen. Merke dir: WHERE filtert Zeilen, SELECT wählt Spalten. Und im Abitur-Stil steht jede Klausel in einer eigenen Zeile, Schlüsselwörter groß."
+  },
+  {
+   "titel": "AND bindet stärker als OR",
+   "kapitel": "AND, OR und Klammern",
+   "links": [
+    {
+     "text": "Gesucht: Mitglieder von Verein 1 **oder** 2, die 2009 oder später geboren sind."
+    },
+    {
+     "sql": "SELECT Vorname, Nachname, Jahrgang\nFROM Spieler\nWHERE VereinNr = 1 OR VereinNr = 2\n  AND Jahrgang >= 2009",
+     "label": "✘ OHNE KLAMMERN · FALLE P6",
+     "art": "falsch",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "rot",
+      "titel": "Was die Datenbank liest",
+      "text": [
+       "`VereinNr = 1 OR (VereinNr = 2 AND Jahrgang >= 2009)`",
+       "Alle aus Verein 1 kommen durch – auch Imke, Jahrgang **2008**."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Jetzt wird es knifflig. Gesucht sind Mitglieder von Verein 1 oder 2, die 2009 oder später geboren sind. Die Abfrage links sieht vernünftig aus – aber im Ergebnis steht Imke Bargmann mit Jahrgang 2008. Warum? AND bindet stärker als OR, so wie Punkt- vor Strichrechnung. Die Datenbank liest also: VereinNr gleich 1 – oder: VereinNr gleich 2 und Jahrgang ab 2009. Für Verein 1 wird das Alter gar nicht geprüft. Das ist Falle P6, Bedingungslogik."
+  },
+  {
+   "titel": "Mit Klammern stimmt es",
+   "links": [
+    {
+     "sql": "SELECT Vorname, Nachname, Jahrgang\nFROM Spieler\nWHERE (VereinNr = 1 OR VereinNr = 2)\n  AND Jahrgang >= 2009",
+     "label": "✔ MIT KLAMMERN",
+     "art": "richtig",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "gruen",
+      "titel": "Regel",
+      "text": [
+       "Kommen AND und OR in einer Bedingung vor: **immer Klammern setzen**.",
+       "Kontrolle: Passt **jede** Ergebniszeile zur Frage?"
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Die Lösung sind Klammern. Erst wird das OR geklammert: Verein 1 oder Verein 2. Dann muss für alle zusätzlich der Jahrgang passen. Jetzt bleiben drei Personen übrig: Mats, Joris und Hauke – und alle drei sind 2009 oder später geboren. Gewöhn dir an: Sobald AND und OR gemeinsam auftauchen, setzt du Klammern. Und prüfe am Ende jede Zeile des Ergebnisses gegen die Frage. Das kostet zehn Sekunden und rettet Punkte."
+  },
+  {
+   "titel": "Platzhalter mit LIKE",
+   "kapitel": "LIKE und BETWEEN",
+   "links": [
+    {
+     "sql": "SELECT Vorname, Nachname\nFROM Spieler\nWHERE Vorname LIKE '%ke'",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Platzhalter",
+      "text": [
+       "- `%` beliebig viele Zeichen (auch keins)",
+       "- `_` genau ein Zeichen",
+       "- `'%ke'` endet auf „ke“, `'B%'` beginnt mit B",
+       "- ohne `%` sucht LIKE den genauen Text (P6)"
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Manchmal kennst du nur einen Teil eines Textes. Dafür gibt es LIKE mit zwei Platzhaltern. Das Prozentzeichen steht für beliebig viele Zeichen – auch für gar keins. Der Unterstrich steht für genau ein Zeichen. Prozent k e findet also alle Vornamen, die auf k e enden: Imke, Hauke, Tomke und Levke. Und B Prozent würde alle Nachnamen finden, die mit B beginnen. Eine typische Falle: LIKE ohne Prozentzeichen sucht genau diesen Text und findet dann oft nichts."
+  },
+  {
+   "titel": "Bereiche mit BETWEEN – Grenzen zählen mit",
+   "links": [
+    {
+     "sql": "SELECT Vorname, Nachname, Wertung\nFROM Spieler\nWHERE Wertung BETWEEN 1480 AND 1690",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "gold",
+      "titel": "BETWEEN = >= und <=",
+      "text": [
+       "`Wertung >= 1480 AND Wertung <= 1690`",
+       "Beide Grenzen gehören dazu: Mats (1480) und Arne (1690) sind dabei. `>` statt `>=` verliert sie (P6)."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Für Bereiche gibt es BETWEEN. Wertung zwischen 1480 und 1690 liefert vier Personen. Schau genau hin: Mats hat genau 1480 und Arne genau 1690 – beide sind dabei. BETWEEN schließt die Grenzen nämlich ein. Es ist dasselbe wie größer gleich 1480 und kleiner gleich 1690. Wer stattdessen größer und kleiner schreibt, verliert genau die Grenzfälle – auch das zählt zu Falle P6. Lies im Abitur deshalb genau: Heißt es „mindestens“, „mehr als“ oder „bis einschließlich“?"
+  },
+  {
+   "titel": "NULL ist kein Wert – IS NULL",
+   "kapitel": "NULL und Texte",
+   "links": [
+    {
+     "sql": "SELECT Vorname, Nachname\nFROM Spieler\nWHERE Wertung = NULL",
+     "label": "✘ FALLE P5",
+     "art": "falsch",
+     "pruefung": "fehlerhaft",
+     "ergebnis": true
+    },
+    {
+     "sql": "SELECT Vorname, Nachname\nFROM Spieler\nWHERE Wertung IS NULL",
+     "label": "✔ RICHTIG",
+     "art": "richtig",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "rot",
+      "titel": "Falle P5: NULL und Literale",
+      "text": [
+       "- NULL = „unbekannt“: `= NULL` ist nie wahr → `IS NULL`, `IS NOT NULL`",
+       "- Text in Hochkommata: `Nachname = 'Onken'`",
+       "- Datum als Text: `'2026-03-14'`"
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Joris und Keno haben noch keine Wertung. Die naheliegende Abfrage „Wertung gleich NULL“ liefert aber keine einzige Zeile. NULL ist kein Wert, sondern bedeutet „unbekannt“ – und ob etwas Unbekanntes gleich etwas anderem ist, ist wieder unbekannt, also nie wahr. Richtig ist IS NULL, beziehungsweise IS NOT NULL für alle mit Wertung. Das ist Falle P5. Dazu gehören auch Literale: Texte stehen immer in einfachen Hochkommata, etwa Nachname gleich 'Onken', und ein Datum schreibst du als Text im Format Jahr-Monat-Tag."
+  },
+  {
+   "titel": "Sortieren und begrenzen: ORDER BY und LIMIT",
+   "kapitel": "ORDER BY und LIMIT",
+   "links": [
+    {
+     "sql": "SELECT Vorname, Nachname, Wertung\nFROM Spieler\nORDER BY Wertung DESC\nLIMIT 3",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Sortieren",
+      "text": [
+       "- `ASC` aufsteigend (Standard), `DESC` absteigend",
+       "- mehrstufig: `ORDER BY Nachname, Vorname`",
+       "- `LIMIT 3` erst **nach** dem Sortieren",
+       "- NULL steht in SQLite bei ASC oben, bei DESC unten"
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Die drei stärksten Spielerinnen und Spieler? Erst sortieren, dann begrenzen. ORDER BY Wertung DESC sortiert absteigend, ASC wäre aufsteigend und ist der Standard. LIMIT 3 schneidet danach die ersten drei Zeilen ab: Tomke, Fenja und Arne. Du kannst auch mehrstufig sortieren, zum Beispiel erst nach Nachname und bei Gleichstand nach Vorname – bei uns wichtig, denn es gibt zwei Bargmanns. Kleiner Hinweis zu NULL: In SQLite stehen fehlende Werte beim aufsteigenden Sortieren oben, beim absteigenden unten."
+  },
+  {
+   "typ": "pause",
+   "kapitel": "Jetzt du",
+   "links": [
+    {
+     "text": "Gesucht sind alle Spielerinnen und Spieler aus **Verein 3** oder **ohne Verein** – mit Vorname, Nachname und VereinNr, **sortiert nach Nachname**."
+    },
+    {
+     "text": "Schreib die Abfrage auf, bevor du weiterschaust."
+    },
+    {
+     "schema": [
+      "Spieler(<u>SpielerNr</u>, Vorname, Nachname, Jahrgang, Wertung, ↑VereinNr)"
+     ]
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "gold",
+      "titel": "Tipp",
+      "text": [
+       "„Ohne Verein“ heißt: In VereinNr steht NULL.",
+       "Wie viele Zeilen erwartest du?"
+      ]
+     }
+    }
+   ],
+   "pause_s": 20,
+   "sprechertext": "Jetzt bist du dran. Gesucht sind alle aus Verein 3 oder ohne Verein, mit Vorname, Nachname und VereinNr, sortiert nach Nachname. Halte das Video an und schreib die Abfrage auf. Überleg dir auch, wie viele Zeilen herauskommen müssten."
+  },
+  {
+   "titel": "Auflösung",
+   "links": [
+    {
+     "sql": "SELECT Vorname, Nachname, VereinNr\nFROM Spieler\nWHERE VereinNr = 3 OR VereinNr IS NULL\nORDER BY Nachname",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "rot",
+      "titel": "Typische Fehler",
+      "text": [
+       "- `VereinNr = NULL` → nur Verein 3 (P5)",
+       "- ORDER BY vergessen oder nach SpielerNr sortiert",
+       "- nur OR – hier sind keine Klammern nötig"
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Hier die Auflösung. In der Bedingung steht VereinNr gleich 3 oder VereinNr IS NULL. Da es nur OR ist, brauchst du keine Klammern. Danach ORDER BY Nachname. Ergebnis: vier Zeilen – Smilla Onken und Tomke Saathoff aus Verein 3, dazu Keno Uphoff und Levke Wilms ohne Verein. Wer VereinNr gleich NULL geschrieben hat, bekommt nur die zwei aus Verein 3 – genau Falle P5."
+  },
+  {
+   "titel": "Die Fallen dieses Videos",
+   "kapitel": "Fallen",
+   "links": [
+    {
+     "falle": "P6",
+     "titel": "Bedingungslogik",
+     "text": "AND und OR ohne Klammern; `>` statt `>=`; BETWEEN schließt die Grenzen ein; LIKE ohne `%` oder mit `*`."
+    },
+    {
+     "falle": "P5",
+     "titel": "NULL und Literale",
+     "text": "`= NULL` statt `IS NULL`; Text ohne Hochkommata; Datum nicht als `'JJJJ-MM-TT'`."
+    },
+    {
+     "falle": "P10",
+     "titel": "Ergebnis nicht kontrolliert",
+     "text": "Im Abitur zählt die richtige Abfrage – lies jede Ergebniszeile gegen die Frage."
+    }
+   ],
+   "sprechertext": "Fassen wir die Fallen zusammen. P6, Bedingungslogik: AND und OR ohne Klammern, größer statt größer gleich, und LIKE ohne Prozentzeichen. P5, NULL und Literale: gleich NULL statt IS NULL, Texte ohne Hochkommata, ein Datum im falschen Format. Und ein allgemeiner Tipp: Kontrolliere dein Ergebnis Zeile für Zeile gegen die Frage. In der Datendetektei hilft dir dabei die Zeitlupe – sie zeigt dir Klausel für Klausel, welche Zeilen übrig bleiben."
+  },
+  {
+   "typ": "merke",
+   "kapitel": "Merksätze",
+   "punkte": [
+    "Gedacht wird FROM → WHERE → SELECT → ORDER BY → LIMIT.",
+    "WHERE filtert Zeilen, SELECT wählt Spalten.",
+    "AND bindet stärker als OR – bei Mischung immer Klammern.",
+    "BETWEEN schließt beide Grenzen ein; LIKE mit `%` und `_`.",
+    "Fehlende Werte nur mit `IS NULL` / `IS NOT NULL`; Texte in `'…'`."
+   ],
+   "sprechertext": "Das nimmst du mit: Gedacht wird FROM, WHERE, SELECT, dann sortieren und begrenzen. WHERE filtert Zeilen, SELECT wählt Spalten. AND bindet stärker als OR, also bei Mischung immer Klammern. BETWEEN schließt beide Grenzen ein, LIKE arbeitet mit Prozent und Unterstrich. Und fehlende Werte findest du nur mit IS NULL."
+  },
+  {
+   "typ": "ende",
+   "lab": [
+    {
+     "ermittlung": "1.1",
+     "titel": "Der erste Auftrag",
+     "aufgaben": "A1-E1-01 … 08",
+     "werkzeug": "Konsole und Zeitlupe"
+    },
+    {
+     "ermittlung": "1.2",
+     "titel": "Das verschwundene Fundstück",
+     "aufgaben": "A1-E2-01 … 08"
+    }
+   ],
+   "material": [
+    "AB 1.1 „Der erste Auftrag“ und AB 1.2 „Das verschwundene Fundstück“",
+    "Warm-up-Karten Akte 1 im Lab"
+   ],
+   "naechstes": "Video 2 – Verbund ohne JOIN: Wie `FROM a, b WHERE` funktioniert",
+   "sprechertext": "Und jetzt ab ins Lab! In den Ermittlungen 1.1 und 1.2 im Fundbüro wartet ein echter Fall auf dich – mit Konsole und Zeitlupe. Im nächsten Video verbinden wir zwei und drei Tabellen miteinander – ganz ohne JOIN, so wie im Abitur. Bis dann!"
+  }
+ ]
+}
