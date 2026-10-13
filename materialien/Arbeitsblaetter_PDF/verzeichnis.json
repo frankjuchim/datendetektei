@@ -87,6 +87,107 @@
    "art": "warmup",
    "fassung": "schueler",
    "niveau": "beide"
+  },
+  {
+   "datei": "DD_A5-AB1_Bauplaene_lesen.pdf",
+   "titel": "AB 5.1 · Baupläne lesen",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E1",
+   "ds": [
+    9
+   ]
+  },
+  {
+   "datei": "DD_A5-AB2_Der_Architekturwettbewerb.pdf",
+   "titel": "AB 5.2 · Der Architekturwettbewerb",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E2",
+   "ds": [
+    10
+   ]
+  },
+  {
+   "datei": "DD_A5-AB3_Vom_Plan_zur_Datenbank.pdf",
+   "titel": "AB 5.3 · Vom Plan zur Datenbank",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E3",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Praesentation_Bauplan_Handout.pdf",
+   "titel": "Präsentation Der Bauplan (Handout)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "eA",
+   "ds": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Unplugged_Faeden-Kardinalitaeten.pdf",
+   "titel": "Unplugged: Fäden-Kardinalitäten (Rollenkarten)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E1",
+   "ds": [
+    9
+   ]
+  },
+  {
+   "datei": "DD_A5-Unplugged_Architekturwettbewerb.pdf",
+   "titel": "Unplugged: Architekturwettbewerb (Bewertungsbogen)",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E2",
+   "ds": [
+    10
+   ]
+  },
+  {
+   "datei": "DD_A5-Unplugged_Regelkarten.pdf",
+   "titel": "Unplugged: Regelkarten-Umzug",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "A5-E3",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 5",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "eA"
   }
  ]
 }

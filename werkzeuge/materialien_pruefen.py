@@ -36,7 +36,7 @@ A_NS = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
 
 ALTBEGRIFFE = re.compile(r"\b(Entitätsmengen?|Arrays?|XP)\b")
 UNGLEICH = re.compile(r"<>")
-JOIN = re.compile(r"\bJOIN\b", re.I)
+JOIN = re.compile(r"(?<!Self-)\bJOIN\b", re.I)  # „Self-Join“ ist ein Fachbegriff (Verbund einer Tabelle mit sich selbst)
 VERNEINUNG = re.compile(r"\b(statt|nicht|nie|kein|keine|keinen|ohne|verboten|anstelle)\b", re.I)
 SQL_ROH = re.compile(r"^\s*SELECT\b.+\bFROM\b", re.S | re.I)
 LOESUNGSMARKER = (MARKER_LEHRKRAFT, NOTIZ_NUR_LEHRKRAFT, LOESUNGSTEIL_WARMUP, "LÖSUNG ·", "ERWARTUNGSHORIZONT ·")

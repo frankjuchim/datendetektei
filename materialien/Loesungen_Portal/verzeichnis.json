@@ -35,6 +35,54 @@
    "art": "warmup",
    "fassung": "loesung",
    "niveau": "beide"
+  },
+  {
+   "datei": "DD_A5-AB1_Bauplaene_lesen_Loesung.pdf",
+   "titel": "AB 5.1 · Baupläne lesen – Lösung",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A5-E1",
+   "ds": [
+    9
+   ]
+  },
+  {
+   "datei": "DD_A5-AB2_Der_Architekturwettbewerb_Loesung.pdf",
+   "titel": "AB 5.2 · Der Architekturwettbewerb – Lösung",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A5-E2",
+   "ds": [
+    10
+   ]
+  },
+  {
+   "datei": "DD_A5-AB3_Vom_Plan_zur_Datenbank_Loesung.pdf",
+   "titel": "AB 5.3 · Vom Plan zur Datenbank – Lösung",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "A5-E3",
+   "ds": [
+    11
+   ]
+  },
+  {
+   "datei": "DD_A5-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 5 – mit Lösungen",
+   "akte": 5,
+   "gruppe": "A5",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "eA"
   }
  ]
 }

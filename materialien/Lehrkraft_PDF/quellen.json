@@ -10,6 +10,16 @@
    "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
    "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
    "verfahren": "notizen"
+  },
+  "DD_A5-Lehrerhinweise.pdf": {
+   "quelle": "Akte5_Bauplan/4_Lehrerhinweise/DD_A5_Lehrerhinweise.docx",
+   "sha256": "987201f1556d4b2ea34ea141517dff8ad174f1969fcc0758e397744269c9a6de",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Praesentation_Bauplan.pdf": {
+   "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
+   "sha256": "1554fa23b8ae2fdd0d48eeb8744e030f61c810d2e5df875963b162ba8c072cfd",
+   "verfahren": "notizen"
   }
  }
 }
