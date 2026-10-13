@@ -167,6 +167,9 @@ test('zu lange Abfrage → zu_lang, ohne Ausführung', async () => {
 // ---------- Review Focus 1: Zeitlimit, Pool danach voll einsatzbereit ----------
 
 test('Endlosabfrage → zeitlimit nach ~1,5 s; zwei parallele Endlosabfragen + eine normale → normale < 3,5 s', async () => {
+  // Zeitmessungen erst mit bereiten Prozessen: der Start von Ersatzprozessen (voriger Test) zählt nicht mit (Phase 8,
+  // unter Parallel-Last sonst gelegentlich zu langsam).
+  await bisBereit(sandbox);
   const pidsVorher = sandbox.status().prozesse.map((p) => p.pid);
   const start = Date.now();
   const endlos1 = sandbox.fuehreAus({ db: 'stadtrad', sql: ENDLOS });
@@ -185,6 +188,7 @@ test('Endlosabfrage → zeitlimit nach ~1,5 s; zwei parallele Endlosabfragen + e
   const status = sandbox.status();
   assert.equal(status.prozesse.length, 2);
   for (const p of status.prozesse) assert.ok(!pidsVorher.includes(p.pid), 'getöteter Prozess wurde ersetzt');
+  await bisBereit(sandbox);
   const t0 = Date.now();
   const parallel = await Promise.all([1, 2, 3, 4].map((i) => sandbox.fuehreAus({ db: 'stadtrad', sql: 'SELECT ' + i })));
   assert.deepEqual(parallel.map((e) => e.zeilen[0][0]), [1, 2, 3, 4]);
@@ -192,6 +196,7 @@ test('Endlosabfrage → zeitlimit nach ~1,5 s; zwei parallele Endlosabfragen + e
 });
 
 test('großes Kreuzprodukt blockiert nicht länger als ~1,6 s', async () => {
+  await bisBereit(sandbox); // Ersatzprozesse aus dem vorigen Test zählen nicht mit
   const start = Date.now();
   const e = await sandbox.fuehreAus({ db: 'stadtrad', sql: 'SELECT COUNT(*) FROM Ausleihe a, Ausleihe b, Ausleihe c' });
   const ms = Date.now() - start;
@@ -206,8 +211,9 @@ test('großes Kreuzprodukt blockiert nicht länger als ~1,6 s', async () => {
 // ---------- Absturz, Warteschlange ----------
 
 test('Absturz eines Prozesses: laufende Anfrage → absturz, Prozess wird ersetzt', async () => {
+  await bisBereit(sandbox);
   const laufend = sandbox.fuehreAus({ db: 'stadtrad', sql: ENDLOS });
-  await new Promise((r) => setTimeout(r, 150));
+  while (!sandbox.status().prozesse.some((p) => p.belegt)) await new Promise((r) => setTimeout(r, 5));
   const belegt = sandbox.status().prozesse.find((p) => p.belegt);
   assert.ok(belegt, 'ein Prozess ist belegt');
   process.kill(belegt.pid, 'SIGKILL');
@@ -244,15 +250,19 @@ test('Warteschlange: FIFO, höchstens 50 wartend, sonst ueberlastet', async () =
 
 test('beende(): wartende und laufende Anfragen werden beantwortet, Prozesse sind weg', async () => {
   const kurz = erzeugeSandbox({ prozesse: 1, datenbanken });
+  await bisBereit(kurz);
   const laufend = kurz.fuehreAus({ db: 'eisdiele', sql: ENDLOS });
   const wartend = kurz.fuehreAus({ db: 'eisdiele', sql: 'SELECT 1' });
-  await new Promise((r) => setTimeout(r, 100));
+  // Robust unter Last (Phase 8): auf den belegten Prozess warten statt einer festen Wartezeit …
+  while (!kurz.status().prozesse.some((p) => p.belegt)) await new Promise((r) => setTimeout(r, 5));
   const pids = kurz.status().prozesse.map((p) => p.pid);
-  kurz.beende();
+  const ende = kurz.beende();
   assert.equal((await laufend).ok, false);
   assert.equal((await wartend).ok, false);
   assert.equal((await kurz.fuehreAus({ db: 'eisdiele', sql: 'SELECT 1' })).ok, false);
-  await new Promise((r) => setTimeout(r, 100));
+  // … und auf das tatsächliche Ende ('exit' = eingesammelt): vorher ist ein mit SIGKILL beendeter Prozess noch ein
+  // Zombie, und process.kill(pid, 0) gelingt – nach festen 100 ms auf einer ausgelasteten Maschine nicht sicher.
+  await ende;
   for (const pid of pids) assert.throws(() => process.kill(pid, 0), 'Prozess ' + pid + ' läuft noch');
 });
 
@@ -346,4 +356,21 @@ test('Vorprüfung (Phase 8): Hochkomma in "…"-Bezeichnern versteckt keine verb
   assert.equal(vorpruefen("SELECT `c'` , 1 FROM x WHERE 1 /* ' */ AND attach").ok, false);
   // Texte und Bezeichner ohne verbotene Wörter bleiben erlaubt
   assert.equal(vorpruefen(`SELECT "Name" AS "Kund'in", 'pragma' FROM Kunde`).ok, true);
+});
+
+test('F3 (Phase 8): Prozessanzahl wird übernommen und auf 1…16 begrenzt', async () => {
+  const drei = erzeugeSandbox({ prozesse: 3, datenbanken: { eisdiele: datenbanken.eisdiele } });
+  try {
+    assert.equal(drei.status().prozesse.length, 3);
+    await bisBereit(drei);
+    const ergebnisse = await Promise.all([1, 2, 3].map(() => drei.fuehreAus({ db: 'eisdiele', sql: 'SELECT 1' })));
+    assert.ok(ergebnisse.every((e) => e.ok));
+  } finally {
+    drei.beende();
+  }
+  const null_ = erzeugeSandbox({ prozesse: 0, datenbanken: { eisdiele: datenbanken.eisdiele } });
+  assert.equal(null_.status().prozesse.length, 1);
+  null_.beende();
+  const { MAX_PROZESSE } = require('../src/sql/sandbox');
+  assert.equal(MAX_PROZESSE, 16);
 });

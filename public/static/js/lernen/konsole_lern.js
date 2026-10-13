@@ -256,7 +256,8 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
     } catch {
       daten = null;
     }
-    if (antwort.status === 429) return { fehler: TEXT_ZU_VIELE, deutsch: true };
+    // 429 LAEUFT_NOCH: die vorige Abfrage dieses Kontos läuft noch (Sicherheitsprüfung Phase 8, F3) – Text des Servers
+    if (antwort.status === 429) return { fehler: daten && daten.code === 'LAEUFT_NOCH' && typeof daten.error === 'string' ? daten.error : TEXT_ZU_VIELE, deutsch: true };
     if (daten && typeof daten.fehler === 'string') return { fehler: daten.fehler, deutsch: true };
     if (!antwort.ok || !daten || !Array.isArray(daten.spalten)) return { fehler: TEXT_SERVER, deutsch: true };
     return daten;

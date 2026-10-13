@@ -136,6 +136,14 @@ Umgebungsvariablen (Vertrag §8):
 | `DATA_DIR` | `/app/data` (Persistent Directory) |
 | `PORT` | `80` |
 | `TRUST_PROXY` | `1` |
+| `SANDBOX_PROZESSE` | optional, 1–16; Standard min(4, max(2, Kerne − 1)) |
+
+**SQL-Sandbox:** Schüler-SQL läuft in einem Pool aus Kindprozessen (`src/sql/sandbox.js`; Lese- und Schreibmodus der
+Kür K1 teilen sich den Pool). `SANDBOX_PROZESSE` legt die Größe fest; der Standard min(4, max(2, Kerne − 1)) lässt einen
+Kern für den Server frei (SQLite-Abfragen sind CPU-gebunden). Speicher je Prozess: ~60 MB Grundbedarf plus bis zu 128 MB
+während einer Abfrage (dann beendet der Speicherwächter den Prozess) – bei 4 Prozessen also bis ~750 MB einplanen. Je
+Konto (ohne Anmeldung je IP) läuft höchstens ein Sandbox-Auftrag gleichzeitig; ein zweiter bekommt sofort 429 „Deine
+vorige Abfrage läuft noch.“ Ein ungültiger Wert bricht den Start mit Meldung ab.
 
 Nach dem ersten Deploy: Superadmin trägt die Plattform im Portal unter „Plattformen“ ein, bestätigt die
 Rücksprung-Adresse `https://datendetektei.frankjuchim.de/sso/ende` und schaltet Lehrkräfte frei.

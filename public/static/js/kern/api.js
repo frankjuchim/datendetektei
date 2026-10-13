@@ -6,6 +6,8 @@ const TEXTE = {
   0: 'Keine Verbindung zum Server. Prüf dein Netz und versuch es noch einmal.',
   401: 'Du bist nicht mehr angemeldet. Melde dich über das Portal neu an.',
   429: 'Zu viele Anfragen in kurzer Zeit. Warte einen Moment und versuch es dann noch einmal.',
+  // 429 mit code LAEUFT_NOCH: höchstens ein Sandbox-Auftrag je Konto (Sicherheitsprüfung Phase 8, F3)
+  laeuftNoch: 'Deine vorige Abfrage läuft noch. Warte kurz und versuch es dann noch einmal.',
   500: 'Da ist etwas schiefgegangen. Versuch es gleich noch einmal.',
   503: 'Die Prüfung ist gerade nicht verfügbar. Versuch es gleich noch einmal.'
 };
@@ -14,6 +16,7 @@ const TEXTE_SIE = {
   0: 'Keine Verbindung zum Server. Bitte prüfen Sie das Netz und versuchen Sie es erneut.',
   401: 'Sie sind nicht mehr angemeldet. Bitte melden Sie sich über das Portal neu an.',
   429: 'Zu viele Anfragen in kurzer Zeit. Bitte warten Sie einen Moment und versuchen Sie es dann erneut.',
+  laeuftNoch: 'Ihre vorige Abfrage läuft noch. Bitte warten Sie kurz und versuchen Sie es dann erneut.',
   500: 'Da ist etwas schiefgegangen. Bitte versuchen Sie es gleich noch einmal.',
   503: 'Der Dienst ist gerade nicht verfügbar. Bitte versuchen Sie es gleich noch einmal.'
 };
@@ -49,7 +52,9 @@ async function anfrage(pfad, optionen) {
     daten = null;
   }
   if (!antwort.ok) {
-    const text = antwort.status === 401 || antwort.status === 429 ? standardText(antwort.status)
+    const laeuftNoch = antwort.status === 429 && daten && daten.code === 'LAEUFT_NOCH';
+    const text = laeuftNoch ? standardText('laeuftNoch')
+      : antwort.status === 401 || antwort.status === 429 ? standardText(antwort.status)
       : daten && typeof daten.error === 'string' ? daten.error
         : standardText(antwort.status);
     throw new ApiFehler(antwort.status, text, daten || {});

@@ -8,7 +8,12 @@
  *
  * erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, maxWartend = 50, datenbanken })
  *   datenbanken = { <name>: { haupt: Buffer, varianten: { <typ>: Buffer } } }  (serialisierte SQLite-DBs)
- *   → { fuehreAus({ db, variante?, sql, modus = 'lesen' }), status(), beende() }
+ *   → { fuehreAus({ db, variante?, sql, modus = 'lesen' }), fuehreSkriptAus(…), status(), beende() }
+ *   prozesse wird auf 1…MAX_PROZESSE (16) begrenzt; im Betrieb kommt er aus SANDBOX_PROZESSE (src/kern/konfig.js,
+ *   Sicherheitsprüfung Phase 8 F3). Lese- und Schreibmodus (Kür K1) teilen sich diesen einen Pool. Speicher je Prozess:
+ *   ~60 MB Grundbedarf (Node + alle DB-Buffer) plus bis zu speicherMb (128) Zuwachs, dann greift der Speicherwächter.
+ *   Höchstens ein Auftrag je Konto (bzw. je IP ohne Anmeldung) sichert auftragsSperre() in src/kern/sicherheit.js ab.
+ *   beende() → Promise, die sich erfüllt, wenn alle Kindprozesse beendet (und eingesammelt) sind.
  *
  * fuehreAus → Promise, die nie verworfen wird:
  *   { ok: true, spalten: [name], zeilen: [[wert]], anzahl, abgeschnitten, ms }
@@ -49,6 +54,8 @@ const MAX_LAENGE = 4000;
 const MAX_STARTFEHLER = 3;
 const MAX_STARTSKRIPT = 20000;
 const MAX_PRUEFUNGEN = 30;
+/** Obergrenze der Kindprozesse (wie SANDBOX_PROZESSE in src/kern/konfig.js). */
+const MAX_PROZESSE = 16;
 /** Grenzen der Kür-Sandbox (Spec §3.3; Plan Phase 6 Task 7). */
 const GRENZEN_SCHREIBEN = Object.freeze({ tabellen: 20, zeilen: 500, bytes: 1024 * 1024 });
 /**
@@ -333,19 +340,25 @@ function erzeugeSandbox({
     };
   }
 
+  /** Alle Prozesse beenden; die Promise erfüllt sich, wenn jeder Kindprozess wirklich beendet ist ('exit'). */
   function beende() {
-    if (beendet) return;
+    if (beendet) return Promise.resolve();
     beendet = true;
     const antwort = { ok: false, code: 'beendet', text: 'Sandbox beendet' };
     leereWarteschlange(antwort);
+    const ende = [];
     for (const p of pool.slice()) {
-      try { p.kind.kill('SIGKILL'); } catch { /* schon beendet */ }
+      const k = p.kind;
+      if (k.exitCode === null && k.signalCode === null) ende.push(new Promise((r) => k.once('exit', () => r())));
+      try { k.kill('SIGKILL'); } catch { /* schon beendet */ }
       weg(p, antwort);
     }
+    return Promise.all(ende).then(() => undefined);
   }
 
-  for (let i = 0; i < Math.max(1, prozesse); i++) starte();
+  const anzahl = Math.min(MAX_PROZESSE, Math.max(1, Math.floor(Number(prozesse)) || 1));
+  for (let i = 0; i < anzahl; i++) starte();
   return { fuehreAus, fuehreSkriptAus, status, beende };
 }
 
-module.exports = { erzeugeSandbox, vorpruefen, ohneStringsUndKommentare, MAX_LAENGE, GRENZEN_SCHREIBEN, STANDARD_SPEICHER_MB };
+module.exports = { erzeugeSandbox, vorpruefen, ohneStringsUndKommentare, MAX_LAENGE, MAX_PROZESSE, GRENZEN_SCHREIBEN, STANDARD_SPEICHER_MB };

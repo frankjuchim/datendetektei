@@ -18,7 +18,7 @@
 
 const express = require('express');
 const { nurAngemeldet } = require('../kern/sitzung');
-const { rateLimit } = require('../kern/sicherheit');
+const { rateLimit, auftragsSperre } = require('../kern/sicherheit');
 const { istKursId } = require('../kern/verbund');
 const { MAX_SKRIPT } = require('../sql/skript');
 const FS = require('../sql/fehlertexte_schreiben');
@@ -27,7 +27,7 @@ const MAX_ANZEIGE = 300;
 const NUR_SCHEMA = 'SELECT 1 WHERE 0;';
 const TECHNISCH = new Set(['ueberlastet', 'absturz', 'beendet']);
 
-function kuerRouten({ lernen, sandbox, konfig }) {
+function kuerRouten({ lernen, sandbox, konfig, sperre = auftragsSperre() }) {
   const router = express.Router();
   const angemeldet = nurAngemeldet(['schueler', 'lehrkraft', 'superadmin']);
   const limits = konfig.rateLimits || {};
@@ -39,7 +39,7 @@ function kuerRouten({ lernen, sandbox, konfig }) {
     schluessel: (req) => 'kuer:' + req.sitzung.sub
   });
 
-  router.post('/api/kurse/:kurs/aufgaben/:id/skript', angemeldet, begrenzer, async (req, res, next) => {
+  router.post('/api/kurse/:kurs/aufgaben/:id/skript', angemeldet, begrenzer, sperre.middleware(), async (req, res, next) => {
     res.set('Cache-Control', 'no-store');
     try {
       if (!istKursId(req.params.kurs)) return res.status(400).json({ error: 'Ungültige Kurs-ID.' });

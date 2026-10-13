@@ -3,6 +3,7 @@
 // ladeKonfig wirft bei ungültigen Werten einen Error mit deutscher Meldung (Startabbruch).
 
 const crypto = require('node:crypto');
+const os = require('node:os');
 
 const ID_MUSTER = /^[a-z][a-z0-9-]{1,30}$/;
 const PEM_MUSTER = /-----BEGIN PUBLIC KEY-----[\s\S]*?-----END PUBLIC KEY-----/g;
@@ -63,6 +64,16 @@ function ganzzahl(name, wert, standard, min, max) {
 }
 
 /**
+ * Standard für SANDBOX_PROZESSE (Sicherheitsprüfung Phase 8, F3): min(4, max(2, Kerne − 1)).
+ * SQLite-Abfragen sind CPU-gebunden – mehr Kindprozesse als Kerne bringen keinen Durchsatz; ein Kern bleibt für den
+ * Server-Prozess. Mindestens 2, damit eine Zeitlimit-Abfrage nicht alles blockiert; höchstens 4, weil jeder Prozess
+ * ~60 MB Grundbedarf plus bis zu 128 MB Zuwachs (Speicherwächter) belegen kann (4 Prozesse ≈ 750 MB im ungünstigsten Fall).
+ */
+function standardSandboxProzesse(kerne) {
+  return Math.min(4, Math.max(2, Math.floor(Number(kerne) || 1) - 1));
+}
+
+/**
  * Konfiguration aus der Umgebung.
  * PLATTFORM_URL ist Pflicht (Vertrag §8 erlaubt „sonst aus der Anfrage“; im Modus portal brauchen wir sie aber fest
  * für die Rücksprung-Adresse, die im Portal zeichengenau hinterlegt ist – aus Host-Headern abgeleitet wäre sie fälschbar).
@@ -99,8 +110,10 @@ function ladeKonfig(env = process.env) {
     port: ganzzahl('PORT', env.PORT, 3000, 1, 65535),
     trustProxy: ganzzahl('TRUST_PROXY', env.TRUST_PROXY, 0, 0, 10),
     erlaubeHttp: env.ERLAUBE_HTTP === '1',
+    // Anzahl der Sandbox-Kindprozesse (Lese- und Schreibmodus teilen sich einen Pool), 1…16.
+    sandboxProzesse: ganzzahl('SANDBOX_PROZESSE', env.SANDBOX_PROZESSE, standardSandboxProzesse(os.availableParallelism()), 1, 16),
     jetzt: Date.now
   };
 }
 
-module.exports = { ladeKonfig };
+module.exports = { ladeKonfig, standardSandboxProzesse };

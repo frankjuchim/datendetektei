@@ -12,7 +12,7 @@ const { OEFFENTLICHE_DATENBANKEN } = require('../sql/datenbanken');
 const { MAX_LAENGE } = require('../sql/sandbox');
 const fehlertexte = require('../sql/fehlertexte');
 const { leseSitzung } = require('../kern/sitzung');
-const { rateLimit } = require('../kern/sicherheit');
+const { rateLimit, auftragsSperre } = require('../kern/sicherheit');
 
 const CACHE = 'public, max-age=3600';
 
@@ -73,7 +73,8 @@ function sqlRouten(datenbanken) {
 //
 // Antwort 200: { spalten, zeilen (≤ 300), gesamt, abgeschnitten, ms } – abgeschnitten = true, wenn die Sandbox
 //   nach 5 000 Zeilen aufgehört hat (gesamt ist dann eine Untergrenze) – oder { fehler, code } (deutscher Text aus
-//   fehlertexte.js, nie die Rohmeldung). 400 ungültig · 401 nicht angemeldet · 404 unbekannte DB · 429 Rate-Limit ·
+//   fehlertexte.js, nie die Rohmeldung). 400 ungültig · 401 nicht angemeldet · 404 unbekannte DB · 429 Rate-Limit
+//   bzw. vorige Abfrage desselben Kontos/derselben IP läuft noch (code LAEUFT_NOCH) ·
 //   503 Sandbox überlastet/nicht verfügbar.
 
 const MAX_ANZEIGE = 300;
@@ -107,7 +108,7 @@ function fehlerAntwort(e) {
   return { status: 503, body: { fehler: TEXT_NICHT_VERFUEGBAR, code: 'NICHT_VERFUEGBAR' } };
 }
 
-function sqlAusfuehrenRoute({ sandbox, konfig }) {
+function sqlAusfuehrenRoute({ sandbox, konfig, sperre = auftragsSperre() }) {
   const router = express.Router({ caseSensitive: true, strict: true });
   const limit = (konfig.rateLimits && konfig.rateLimits.sqlAusfuehren) || {};
   const begrenzer = rateLimit({
@@ -126,6 +127,7 @@ function sqlAusfuehrenRoute({ sandbox, konfig }) {
       next();
     },
     begrenzer,
+    sperre.middleware(), // höchstens ein Sandbox-Auftrag je Konto bzw. IP (F3)
     async (req, res, next) => {
       try {
         const body = req.body && typeof req.body === 'object' ? req.body : {};
