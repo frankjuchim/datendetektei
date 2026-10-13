@@ -39,6 +39,7 @@
  * Keine Abhängigkeit von src/kern.
  */
 
+const fs = require('node:fs');
 const path = require('node:path');
 const childProcess = require('node:child_process');
 const { vorpruefenSkript } = require('./skript');
@@ -50,6 +51,28 @@ const MAX_STARTSKRIPT = 20000;
 const MAX_PRUEFUNGEN = 30;
 /** Grenzen der Kür-Sandbox (Spec §3.3; Plan Phase 6 Task 7). */
 const GRENZEN_SCHREIBEN = Object.freeze({ tabellen: 20, zeilen: 500, bytes: 1024 * 1024 });
+/**
+ * Speicherwächter (Sicherheits-Review Phase 8): hard_heap_limit wirkt in better-sqlite3 nicht (kompiliert mit
+ * SQLITE_DEFAULT_MEMSTATUS=0), und Zwischenwerte wie hex(zeroblob(…)) belegen Hunderte MB, ohne dass das Ergebnis groß
+ * ist. Deshalb misst der Elternprozess während eines Auftrags alle WAECHTER_MS den belegten Speicher (VmRSS) des
+ * Kindprozesses; wächst er um mehr als speicherMb über den Stand nach dem Start, wird der Prozess mit SIGKILL beendet
+ * und ersetzt, die Anfrage bekommt ergebnis_zu_gross. Nur unter Linux (/proc); anderswo bleibt es bei Zeit- und
+ * Ergebnisgrenze.
+ */
+const STANDARD_SPEICHER_MB = 128;
+const WAECHTER_MS = 20;
+const PROC = process.platform === 'linux' && fs.existsSync('/proc/self/status');
+
+/** Belegter Speicher (VmRSS) eines Prozesses in MB oder null. */
+function rssMb(pid) {
+  if (!PROC || !pid) return null;
+  try {
+    const m = /VmRSS:\s+(\d+)\s+kB/.exec(fs.readFileSync(`/proc/${pid}/status`, 'utf8'));
+    return m ? Number(m[1]) / 1024 : null;
+  } catch {
+    return null;
+  }
+}
 
 // Verbotene Wörter (ganze Wörter, ohne Groß/Klein); PRAGMA auch als Präfix (pragma_table_info(…) usw.).
 const VERBOTEN = [
@@ -63,7 +86,7 @@ const VERBOTEN = [
 /**
  * Ersetzt String-Literale ('…', '' als Hochkomma) und Kommentare (-- …, /* … *\/) durch Leerzeichen; Zeilenumbrüche
  * bleiben erhalten. Bezeichner in "…", `…` und […] bleiben stehen – "load_extension"(…) ist in SQLite ein
- * Funktionsaufruf und muss erkannt werden.
+ * Funktionsaufruf und muss erkannt werden – und werden wie in src/sql/skript.js als Ganzes gelesen.
  */
 function ohneStringsUndKommentare(sql) {
   let aus = '';
@@ -82,6 +105,20 @@ function ohneStringsUndKommentare(sql) {
         j++;
       }
       aus += ' ' + leer(sql.slice(i + 1, j)) + (j < n ? ' ' : '');
+      i = j + 1;
+    } else if (c === '"' || c === '`' || c === '[') {
+      // Bezeichner bleiben stehen, werden aber als Ganzes übersprungen: ein ' darin beginnt keinen Text
+      // (sonst ließe sich ein verbotenes Wort zwischen "a'" und einem späteren ' verstecken – Sicherheits-Review Phase 8).
+      const zu = c === '[' ? ']' : c;
+      let j = i + 1;
+      while (j < n) {
+        if (sql[j] === zu) {
+          if (zu !== ']' && sql[j + 1] === zu) { j += 2; continue; }
+          break;
+        }
+        j++;
+      }
+      aus += sql.slice(i, Math.min(n, j + 1));
       i = j + 1;
     } else if (c === '-' && sql[i + 1] === '-') {
       let j = sql.indexOf('\n', i);
@@ -128,7 +165,15 @@ function bereinigeDatenbanken(datenbanken) {
   return aus;
 }
 
-function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, maxWartend = 50, datenbanken, grenzen = {} } = {}) {
+function erzeugeSandbox({
+  prozesse = 2,
+  zeitlimitMs = 1500,
+  maxZeilen = 5000,
+  maxWartend = 50,
+  datenbanken,
+  grenzen = {},
+  speicherMb = STANDARD_SPEICHER_MB
+} = {}) {
   const dbs = bereinigeDatenbanken(datenbanken);
   const schreibGrenzen = { ...GRENZEN_SCHREIBEN, ...grenzen };
   const pool = [];
@@ -150,18 +195,20 @@ function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, ma
       serialization: 'advanced', // Buffer per IPC
       stdio: ['ignore', 'ignore', 'inherit', 'ipc']
     });
-    const p = { kind, bereit: false, auftrag: null, timer: null, tot: false };
+    const p = { kind, bereit: false, auftrag: null, timer: null, waechter: null, basisMb: null, tot: false };
     pool.push(p);
     kind.on('message', (m) => {
       if (p.tot || !m || typeof m !== 'object') return;
       if (m.typ === 'bereit') {
         p.bereit = true;
+        p.basisMb = rssMb(kind.pid);
         startfehler = 0;
         verteile();
       } else if (m.typ === 'ergebnis' && p.auftrag && m.id === p.auftrag.id) {
         const auftrag = p.auftrag;
         p.auftrag = null;
         clearTimeout(p.timer);
+        clearInterval(p.waechter);
         auftrag.erledige(m.ergebnis);
         verteile();
       }
@@ -179,6 +226,7 @@ function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, ma
     if (p.tot) return;
     p.tot = true;
     clearTimeout(p.timer);
+    clearInterval(p.waechter);
     const i = pool.indexOf(p);
     if (i !== -1) pool.splice(i, 1);
     if (p.auftrag) {
@@ -210,6 +258,20 @@ function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, ma
         try { p.kind.kill('SIGKILL'); } catch { /* schon beendet */ }
         weg(p, null);
       }, zeitlimitMs);
+      if (p.basisMb !== null) {
+        const grenze = p.basisMb + speicherMb;
+        p.waechter = setInterval(() => {
+          if (p.auftrag !== auftrag) return clearInterval(p.waechter);
+          const mb = rssMb(p.kind.pid);
+          if (mb === null || mb <= grenze) return undefined;
+          p.auftrag = null;
+          auftrag.erledige({ ok: false, code: 'ergebnis_zu_gross', text: 'Ergebnis zu groß' });
+          try { p.kind.kill('SIGKILL'); } catch { /* schon beendet */ }
+          weg(p, null);
+          return undefined;
+        }, WAECHTER_MS);
+        if (typeof p.waechter.unref === 'function') p.waechter.unref();
+      }
       p.kind.send(auftrag.nachricht, (fehler) => {
         if (fehler) weg(p, { ok: false, code: 'absturz', text: 'Sandbox-Prozess nicht erreichbar' });
       });
@@ -286,4 +348,4 @@ function erzeugeSandbox({ prozesse = 2, zeitlimitMs = 1500, maxZeilen = 5000, ma
   return { fuehreAus, fuehreSkriptAus, status, beende };
 }
 
-module.exports = { erzeugeSandbox, vorpruefen, ohneStringsUndKommentare, MAX_LAENGE, GRENZEN_SCHREIBEN };
+module.exports = { erzeugeSandbox, vorpruefen, ohneStringsUndKommentare, MAX_LAENGE, GRENZEN_SCHREIBEN, STANDARD_SPEICHER_MB };

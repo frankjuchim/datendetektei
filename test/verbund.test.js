@@ -287,10 +287,18 @@ test('Rate-Limit für /sso/* je IP, Fenster läuft ab (Uhr aus konfig.jetzt)', a
   assert.equal((await request(t.app).get('/sso/start')).status, 302);
 });
 
-test('Standard-Rate-Limits: /sso/* 30 je Minute', async () => {
+test('Standard-Rate-Limits: /sso/* 300 je Minute und IP (eine Klasse hinter einer Schul-NAT, Probelauf Phase 8)', async () => {
   const t = testApp();
-  for (let i = 0; i < 30; i++) assert.equal((await request(t.app).get('/sso/start')).status, 302);
+  for (let i = 0; i < 300; i++) assert.equal((await request(t.app).get('/sso/start')).status, 302);
   assert.equal((await request(t.app).get('/sso/start')).status, 429);
+});
+
+test('Rate-Limit der Verbund-API je IP: fremde Absender bremsen das Portal nicht aus (Sicherheits-Review F2)', async () => {
+  const t = testApp({ trustProxy: 1, rateLimits: { verbund: { fensterMs: 60000, max: 3 } } });
+  const von = (ip) => request(t.app).get('/api/verbund/kurse/k%3A17/uebersicht').set('X-Forwarded-For', ip);
+  for (let i = 0; i < 3; i++) assert.notEqual((await von('203.0.113.9')).status, 429);
+  assert.equal((await von('203.0.113.9')).status, 429);
+  assert.notEqual((await von('198.51.100.7')).status, 429, 'anderer Absender zählt getrennt');
 });
 
 test('rateLimit: Schlüssel trennt Zähler', () => {

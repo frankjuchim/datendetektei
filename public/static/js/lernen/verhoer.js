@@ -175,6 +175,7 @@ function aufgabeObjekt(index) {
       };
     },
     speicher: entwurfSchluessel(o.id),
+    sie: true, // Verhör im Abitur-Stil: auch die Bedienhinweise siezen
     onChange: () => {
       eintrag.geaendert = true;
       A.schreibJson(entwurfSchluessel(o.id), eintrag.aufgabe.antwort());

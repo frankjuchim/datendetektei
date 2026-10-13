@@ -195,7 +195,7 @@ test('anomalie per Tastatur: alle Zellen ändern, Art wählen, Zellen markieren'
   await page.keyboard.press('ArrowDown'); // Zeile 3 (Brede) ist nicht änderbar → übersprungen
   assert.deepEqual(await fokusZelle(page), [3, 4]);
   await page.keyboard.press('Space');
-  assert.match(await page.locator('.sim-befund').textContent(), /Kein Widerspruch – aber für diese eine Änderung musstest du 3 Zellen ändern/);
+  assert.match(await page.locator('.sim-befund').textContent(), /Kein Widerspruch – aber für diese eine Änderung waren 3 Zellen zu ändern/);
   await page.locator('.sim-auftrag .knopf:has-text("Auftrag ausgeführt")').focus();
   await page.keyboard.press('Enter');
   // Fokus springt auf die erste Anomalieart

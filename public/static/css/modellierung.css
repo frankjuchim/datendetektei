@@ -162,3 +162,5 @@ body.zieht, body.zieht * { cursor: grabbing; user-select: none; }
 @media (prefers-reduced-motion: reduce) {
   .zelle-knopf, .zerlegen-tabelle { transition: none; }
 }
+/* Probelauf 8: Musterzerlegung auf schmalen Bildschirmen umbrechen statt abgeschnitten seitlich scrollen */
+.zerlegen-loesung .schema-block .relation { white-space: normal; overflow-wrap: break-word; }

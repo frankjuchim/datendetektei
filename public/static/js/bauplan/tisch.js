@@ -105,10 +105,12 @@ function nameAusTeil(text) {
  *   modus        'ergaenzen' | 'entwickeln' | 'frei'
  *   start        { graph, layout } (nur ergaenzen)
  *   entwurf      localStorage-Schlüssel für Graph + Layout (oder null)
+ *   sie          true: Bedienhinweise im Abitur-Stil (Verhör, gesiezt); sonst geduzt
  *   beiAenderung () => void
  *   titel        Überschrift für Screenreader (Standard „Bauplan-Tisch“)
  */
 export function erzeugeTisch(opt = {}) {
+  const A = (du, sie) => (opt.sie ? sie : du); // opt.sie: Verhör im Abitur-Stil
   const modus = ['ergaenzen', 'entwickeln', 'frei'].includes(opt.modus) ? opt.modus : 'entwickeln';
   const startGraph = modus === 'ergaenzen' && istObjekt(opt.start) ? normalisiere(opt.start.graph) : { entitaeten: [], beziehungen: [] };
   const startLayout = modus === 'ergaenzen' && istObjekt(opt.start) && istObjekt(opt.start.layout) ? opt.start.layout : {};
@@ -218,7 +220,7 @@ export function erzeugeTisch(opt = {}) {
   kZeichnen.dataset.ansicht = 'zeichnen';
   kListe.dataset.ansicht = 'liste';
   segment.append(kZeichnen, kListe);
-  const kopfText = el('p', 'bp-kopf-text', modus === 'ergaenzen' ? 'Ergänze das vorgegebene Diagramm. Vorgegebene Elemente bleiben stehen.' : 'Zeichne den Bauplan in Chen-Notation.');
+  const kopfText = el('p', 'bp-kopf-text', modus === 'ergaenzen' ? A('Ergänze das vorgegebene Diagramm. Vorgegebene Elemente bleiben stehen.', 'Ergänzen Sie das vorgegebene Diagramm. Vorgegebene Elemente bleiben stehen.') : A('Zeichne den Bauplan in Chen-Notation.', 'Zeichnen Sie den Bauplan in Chen-Notation.'));
   kopf.append(kopfText, segment);
 
   const handyHinweis = h('p', 'bp-handy-hinweis', 'Auf dem Handy geht es im Listenmodus leichter. ');
@@ -347,7 +349,7 @@ export function erzeugeTisch(opt = {}) {
     kBez.disabled = gesperrt || voll(graph.beziehungen);
     const b = auswahl ? besitzerVon(auswahl) : null;
     kAttr.disabled = gesperrt || !b || b.el.attribute.length >= GRENZEN.attribute;
-    kAttr.title = b ? `Attribut an „${C.nameVon(b.el)}“ anhängen` : 'Wähle zuerst einen Entitäts- oder Beziehungstyp.';
+    kAttr.title = b ? `Attribut an „${C.nameVon(b.el)}“ anhängen` : A('Wähle zuerst einen Entitäts- oder Beziehungstyp.', 'Wählen Sie zuerst einen Entitäts- oder Beziehungstyp.');
     kVerb.disabled = gesperrt;
     kVerb.setAttribute('aria-pressed', verbinden ? 'true' : 'false');
     kZeichnen.setAttribute('aria-pressed', ansicht === 'zeichnen' ? 'true' : 'false');
@@ -396,7 +398,7 @@ export function erzeugeTisch(opt = {}) {
     graph.entitaeten.push({ id, name: '', attribute: [] });
     layout[id] = freiePosition(80, 30);
     auswahl = id;
-    melde('Neuer Entitätstyp angelegt. Gib ihm einen Namen.');
+    melde(A('Neuer Entitätstyp angelegt. Gib ihm einen Namen.', 'Neuer Entitätstyp angelegt. Geben Sie ihm einen Namen.'));
     sichtbarMachen(id);
     geaendert({ struktur: true });
     fokussiereName(id);
@@ -423,7 +425,7 @@ export function erzeugeTisch(opt = {}) {
     }
     auswahl = id;
     sichtbarMachen(id);
-    melde(enden.length ? 'Neuer Beziehungstyp angelegt. Gib ihm einen Namen und setze die Kardinalitäten.' : 'Neuer Beziehungstyp angelegt. Verbinde ihn mit Entitätstypen.');
+    melde(enden.length ? A('Neuer Beziehungstyp angelegt. Gib ihm einen Namen und setze die Kardinalitäten.', 'Neuer Beziehungstyp angelegt. Geben Sie ihm einen Namen und setzen Sie die Kardinalitäten.') : A('Neuer Beziehungstyp angelegt. Verbinde ihn mit Entitätstypen.', 'Neuer Beziehungstyp angelegt. Verbinden Sie ihn mit Entitätstypen.'));
     geaendert({ struktur: true });
     fokussiereName(id);
     return id;
@@ -507,7 +509,7 @@ export function erzeugeTisch(opt = {}) {
     if (!f) return;
     if (!verbinden.erstes) {
       verbinden.erstes = f.id;
-      melde(`Verbinden: „${C.nameVon(f.el)}“ gewählt. Tippe jetzt das zweite Element an.`);
+      melde(`Verbinden: „${C.nameVon(f.el)}“ gewählt. ${A('Tippe jetzt das zweite Element an.', 'Tippen Sie jetzt das zweite Element an.')}`);
       zeichneSvg();
       return;
     }
@@ -521,11 +523,11 @@ export function erzeugeTisch(opt = {}) {
         return beendeVerbinden();
       }
       neueBeziehung([a.id, b.id]);
-      melde(a.id === b.id ? `Rekursiver Beziehungstyp an „${C.nameVon(a.el)}“ angelegt. Gib ihm einen Namen, Rollen und Kardinalitäten.` : `Beziehungstyp zwischen „${C.nameVon(a.el)}“ und „${C.nameVon(b.el)}“ angelegt. Gib ihm einen Namen und setze die Kardinalitäten.`);
+      melde(a.id === b.id ? `Rekursiver Beziehungstyp an „${C.nameVon(a.el)}“ angelegt. ${A('Gib ihm einen Namen, Rollen und Kardinalitäten.', 'Geben Sie ihm einen Namen, Rollen und Kardinalitäten.')}` : `Beziehungstyp zwischen „${C.nameVon(a.el)}“ und „${C.nameVon(b.el)}“ angelegt. ${A('Gib ihm einen Namen und setze die Kardinalitäten.', 'Geben Sie ihm einen Namen und setzen Sie die Kardinalitäten.')}`);
       return beendeVerbinden(false);
     }
     if (a.art === 'beziehung' && b.art === 'beziehung') {
-      melde('Verbinde einen Entitätstyp mit einem Beziehungstyp oder zwei Entitätstypen miteinander.');
+      melde(A('Verbinde einen Entitätstyp mit einem Beziehungstyp oder zwei Entitätstypen miteinander.', 'Verbinden Sie einen Entitätstyp mit einem Beziehungstyp oder zwei Entitätstypen miteinander.'));
       return beendeVerbinden();
     }
     const bez = a.art === 'beziehung' ? a : b;
@@ -536,7 +538,7 @@ export function erzeugeTisch(opt = {}) {
     }
     bez.el.enden.push({ entitaet: ent.id, kard: '', rolle: '' });
     auswahl = bez.id;
-    melde(`„${C.nameVon(ent.el)}“ mit „${C.nameVon(bez.el)}“ verbunden. Setze die Kardinalität.`);
+    melde(`„${C.nameVon(ent.el)}“ mit „${C.nameVon(bez.el)}“ verbunden. ${A('Setze die Kardinalität.', 'Setzen Sie die Kardinalität.')}`);
     geaendert({ struktur: true });
     return beendeVerbinden(false);
   }
@@ -767,7 +769,7 @@ export function erzeugeTisch(opt = {}) {
     const f = auswahl ? finde(auswahl) : null;
     if (!f) {
       auswahl = null;
-      panel.appendChild(el('p', 'bp-leer', 'Tippe ein Element an, um es zu bearbeiten. Neue Elemente legst du mit den Knöpfen über der Zeichenfläche an.'));
+      panel.appendChild(el('p', 'bp-leer', A('Tippe ein Element an, um es zu bearbeiten. Neue Elemente legst du mit den Knöpfen über der Zeichenfläche an.', 'Tippen Sie ein Element an, um es zu bearbeiten. Neue Elemente legen Sie mit den Knöpfen über der Zeichenfläche an.')));
     } else if (f.art === 'attribut') {
       panel.appendChild(formular(f.besitzer, f.besitzer.enden ? 'beziehung' : 'entitaet', f.index));
     } else {
@@ -836,7 +838,7 @@ export function erzeugeTisch(opt = {}) {
       melde('Verbinden beendet.');
     } else {
       verbinden = { erstes: null };
-      melde('Verbinden: Tippe das erste Element an – zwei Entitätstypen ergeben einen neuen Beziehungstyp, Entitätstyp und Beziehungstyp ein neues Ende.');
+      melde(A('Verbinden: Tippe das erste Element an – zwei Entitätstypen ergeben einen neuen Beziehungstyp, Entitätstyp und Beziehungstyp ein neues Ende.', 'Verbinden: Tippen Sie das erste Element an – zwei Entitätstypen ergeben einen neuen Beziehungstyp, Entitätstyp und Beziehungstyp ein neues Ende.'));
     }
     aktualisiereLeiste();
     zeichneSvg();
@@ -909,6 +911,17 @@ export function erzeugeTisch(opt = {}) {
       aktualisiereLeiste();
     }
   }
+  // touch-action wirkt in Chromium/Safari nicht an SVG-Kindelementen: Ohne diesen Riegel beginnt der Browser beim
+  // Ziehen eines Elements mit dem Finger zu scrollen und bricht den Zug ab (pointercancel). Startet die Berührung auf
+  // einem Element, wird das Scrollen hier unterbunden; Wischen auf dem leeren Papier scrollt weiter.
+  svg.addEventListener(
+    'touchstart',
+    (e) => {
+      const g = e.target.closest && e.target.closest('[data-id]');
+      if (g && inhalt.contains(g) && e.cancelable) e.preventDefault();
+    },
+    { passive: false }
+  );
   svg.addEventListener('pointerup', zugEnde);
   svg.addEventListener('pointercancel', (e) => {
     if (zug && e.pointerId === zug.pointerId) zug = null;

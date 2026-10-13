@@ -318,3 +318,32 @@ test('Diagnose: ergebnis_zu_gross → deutscher Text, Art fehler (keine Rohmeldu
   assert.equal(d.art, 'fehler');
   assert.match(d.text, /zu groß/);
 });
+
+// ---------- Sicherheits-Review Phase 8 ----------
+
+test('Speicher (Phase 8): Zwischenwerte ohne großes Ergebnis (hex(zeroblob)) → ergebnis_zu_gross, Prozess wird ersetzt', { skip: process.platform !== 'linux' && 'Speicherwächter nur unter Linux (/proc)' }, async () => {
+  // hard_heap_limit wirkt in better-sqlite3 nicht (SQLITE_DEFAULT_MEMSTATUS=0): ohne Wächter belegt diese Abfrage
+  // ~350 MB im Kindprozess, liefert aber nur eine Zahl (die 4-MB-Grenze des Ergebnisses greift nicht).
+  const sb = erzeugeSandbox({ prozesse: 1, zeitlimitMs: 5000, datenbanken: { eisdiele: datenbanken.eisdiele }, speicherMb: 100 });
+  try {
+    await bisBereit(sb);
+    const gross = await sb.fuehreAus({ db: 'eisdiele', sql: 'SELECT length(hex(zeroblob(150000000)))' });
+    assert.equal(gross.ok, false, JSON.stringify(gross).slice(0, 200));
+    assert.equal(gross.code, 'ergebnis_zu_gross');
+    const skript = await sb.fuehreSkriptAus({ skript: 'SELECT length(hex(zeroblob(150000000)));' });
+    assert.equal(skript.ok, false, JSON.stringify(skript).slice(0, 200));
+    assert.equal(skript.code, 'ergebnis_zu_gross');
+    const normal = await sb.fuehreAus({ db: 'eisdiele', sql: 'SELECT 1' });
+    assert.equal(normal.ok, true, 'Ersatzprozess arbeitet normal');
+  } finally {
+    sb.beende();
+  }
+});
+
+test('Vorprüfung (Phase 8): Hochkomma in "…"-Bezeichnern versteckt keine verbotenen Wörter', () => {
+  assert.equal(vorpruefen(`SELECT "a'" AS x, load_extension('y') AS z --'`).ok, false);
+  assert.equal(vorpruefen(`SELECT [b'] , * FROM pragma_compile_options --'`).ok, false);
+  assert.equal(vorpruefen("SELECT `c'` , 1 FROM x WHERE 1 /* ' */ AND attach").ok, false);
+  // Texte und Bezeichner ohne verbotene Wörter bleiben erlaubt
+  assert.equal(vorpruefen(`SELECT "Name" AS "Kund'in", 'pragma' FROM Kunde`).ok, true);
+});

@@ -7,6 +7,14 @@ const crypto = require('node:crypto');
 const ID_MUSTER = /^[a-z][a-z0-9-]{1,30}$/;
 const PEM_MUSTER = /-----BEGIN PUBLIC KEY-----[\s\S]*?-----END PUBLIC KEY-----/g;
 
+/**
+ * Öffentlich bekannte Entwicklungswerte (test/fixtures/dev_portal_public.pem, scripts/dev.js): im Betrieb
+ * (NODE_ENV=production) verboten – mit dem öffentlichen Gegenstück könnte jede:r SSO-Tokens bzw. Sitzungen fälschen
+ * (Sicherheits-Review Phase 8).
+ */
+const ENTWICKLUNGS_SCHLUESSEL = 'MCowBQYDK2VwAyEALWvEE6c/Ll/2VCFsYbKMLSDwHRvGUSPVXw335cVsmH8=';
+const ENTWICKLUNGS_GEHEIMNIS = 'entwicklung-unsicher-nicht-im-betrieb-verwenden';
+
 function fehler(meldung) {
   return new Error(`Konfiguration ungültig: ${meldung}`);
 }
@@ -72,6 +80,13 @@ function ladeKonfig(env = process.env) {
 
   const sessionSecret = env.SESSION_SECRET || '';
   if (sessionSecret.length < 32) throw fehler('SESSION_SECRET fehlt oder ist kürzer als 32 Zeichen.');
+
+  if (env.NODE_ENV === 'production') {
+    if (portalPublicKey.replace(/\s+/g, '').includes(ENTWICKLUNGS_SCHLUESSEL)) {
+      throw fehler('PORTAL_PUBLIC_KEY ist der öffentliche Entwicklungsschlüssel aus test/fixtures – im Betrieb nicht erlaubt.');
+    }
+    if (sessionSecret === ENTWICKLUNGS_GEHEIMNIS) throw fehler('SESSION_SECRET ist der Entwicklungswert aus scripts/dev.js – im Betrieb nicht erlaubt.');
+  }
 
   return {
     plattformId,

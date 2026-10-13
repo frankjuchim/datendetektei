@@ -57,3 +57,16 @@ test('pruefeHerkunft: POST mit Body ohne JSON → 415', async () => {
 test('pruefeHerkunft: Verbund-API ist ausgenommen (kein Browser beteiligt)', async () => {
   assert.equal((await request(app()).post('/api/verbund/loeschen').send({})).status, 200);
 });
+
+test('Sicherheits-Review Phase 8: rateLimit vergisst abgelaufene Schlüssel (IPs) nach dem Zeitfenster', async () => {
+  const { rateLimit } = require('../src/kern/sicherheit');
+  const uhr = { t: 1000000 };
+  const begrenzer = rateLimit({ fensterMs: 60000, max: 5, schluessel: (req) => req.get('x-test-ip'), jetzt: () => uhr.t });
+  const a = express();
+  a.get('/x', begrenzer, (req, res) => res.json({ ok: true }));
+  for (const ip of ['10.0.0.1', '10.0.0.2', '10.0.0.3']) assert.equal((await request(a).get('/x').set('x-test-ip', ip)).status, 200);
+  assert.equal(begrenzer.anzahlSchluessel(), 3);
+  uhr.t += 61000;
+  assert.equal((await request(a).get('/x').set('x-test-ip', '10.0.0.9')).status, 200);
+  assert.equal(begrenzer.anzahlSchluessel(), 1, 'abgelaufene IPs sind aus dem Speicher entfernt');
+});

@@ -491,3 +491,17 @@ test('ordneZu: ungarische Methode maximiert die Summe, 0 heißt nicht zugeordnet
     assert.equal(z.reduce((s, j, i) => s + (j >= 0 ? w[i][j] : 0), 0), best);
   }
 });
+
+test('Probelauf 8: Kriterientexte bei genau einem Entitäts-/Beziehungstyp in der Einzahl', () => {
+  // Muster wie A5-E2-03: Person mit rekursivem Beziehungstyp kennt (n:m)
+  const muster = graph('m_', [['Person', '_PersonNr Name']], [['kennt', 'Person:n Person:m']]);
+  const richtig = gleicheAb(graph('s_', [['Person', '_PersonNr Name']], [['kennt', 'Person:n Person:m']]), muster);
+  assert.equal(kriterium(richtig, 'entitaeten').text, 'Der Entitätstyp ist gefunden.');
+  assert.equal(kriterium(richtig, 'beziehungen').text, 'Der Beziehungstyp ist gefunden.');
+  const falsch = gleicheAb(graph('s_', [['Person', 'PersonNr Name']], [['kennt', 'Person:1 Person:1']]), muster);
+  assert.equal(kriterium(falsch, 'schluessel').text, '0 von 1 Entitätstyp mit richtigem Schlüsselattribut.');
+  assert.equal(kriterium(falsch, 'kardinalitaeten').text, '0 von 1 Beziehungstyp mit richtigen Kardinalitäten.');
+  const ohne = gleicheAb(graph('s_', [['Person', '_PersonNr Name']]), muster);
+  assert.equal(kriterium(ohne, 'beziehungen').text, '0 von 1 Beziehungstyp gefunden.');
+  for (const t of texteVon(falsch).concat(texteVon(ohne))) assert.doesNotMatch(t, /\b(Alle )?1 (Entitätstypen|Beziehungstypen)\b/, t);
+});

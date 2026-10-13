@@ -469,6 +469,8 @@ function bewerte(s, m, syn, auswahl) {
     kriterien.push(k);
   };
   const anzahl = (n, eins, mehr) => (n === 1 ? `1 ${eins}` : `${n} ${mehr}`);
+  // „x von 1 Entitätstyp“ statt „x von 1 Entitätstypen“ (Bezugsgröße bestimmt den Numerus)
+  const von = (x, n, eins, mehr) => `${x} von ${n} ${n === 1 ? eins : mehr}`;
 
   // entitaeten
   {
@@ -479,8 +481,8 @@ function bewerte(s, m, syn, auswahl) {
     const teile = entPaare.map((p) => ({ text: `Entitätstyp ${p.name} passt.`, ok: true }))
       .concat(extra.map((e) => ({ text: `${q(e.name)} passt zu keinem geforderten Entitätstyp.`, ok: false })));
     const ok = treffer === gesamt && !extra.length;
-    const text = ok ? `Alle ${gesamt} Entitätstypen gefunden.`
-      : `${treffer} von ${gesamt} Entitätstypen gefunden${extra.length ? `, ${extra.length} überzählig` : ''}.`;
+    const text = ok ? (gesamt === 1 ? 'Der Entitätstyp ist gefunden.' : `Alle ${gesamt} Entitätstypen gefunden.`)
+      : `${von(treffer, gesamt, 'Entitätstyp', 'Entitätstypen')} gefunden${extra.length ? `, ${extra.length} überzählig` : ''}.`;
     fuege('entitaeten', ok, text, teile, 'P9');
   }
   // schluessel
@@ -501,7 +503,7 @@ function bewerte(s, m, syn, auswahl) {
       });
     }
     const ok = richtig === gesamt;
-    fuege('schluessel', ok, ok ? 'Alle Schlüsselattribute richtig markiert.' : `${richtig} von ${gesamt} Entitätstypen mit richtigem Schlüsselattribut.`, teile, 'P8');
+    fuege('schluessel', ok, ok ? 'Alle Schlüsselattribute richtig markiert.' : `${von(richtig, gesamt, 'Entitätstyp', 'Entitätstypen')} mit richtigem Schlüsselattribut.`, teile, 'P8');
   }
   // attribute
   {
@@ -530,7 +532,7 @@ function bewerte(s, m, syn, auswahl) {
     }
     const gesamt = m.entitaeten.filter((e) => !e.zwischen).length;
     const ok = richtig === gesamt;
-    fuege('attribute', ok, ok ? 'Alle Attribute der Entitätstypen vollständig.' : `${richtig} von ${gesamt} Entitätstypen mit passenden Attributen.`, teile, fremdschluessel ? 'P9' : undefined);
+    fuege('attribute', ok, ok ? 'Alle Attribute der Entitätstypen vollständig.' : `${von(richtig, gesamt, 'Entitätstyp', 'Entitätstypen')} mit passenden Attributen.`, teile, fremdschluessel ? 'P9' : undefined);
   }
   // beziehungen
   {
@@ -555,8 +557,8 @@ function bewerte(s, m, syn, auswahl) {
       });
     }
     const ok = treffer === gesamt && !extra.length;
-    const text = ok ? `Alle ${gesamt} Beziehungstypen gefunden.`
-      : `${treffer} von ${gesamt} Beziehungstypen gefunden${extra.length ? `, ${extra.length} überzählig` : ''}.`;
+    const text = ok ? (gesamt === 1 ? 'Der Beziehungstyp ist gefunden.' : `Alle ${gesamt} Beziehungstypen gefunden.`)
+      : `${von(treffer, gesamt, 'Beziehungstyp', 'Beziehungstypen')} gefunden${extra.length ? `, ${extra.length} überzählig` : ''}.`;
     fuege('beziehungen', ok, text, teile, 'P9');
   }
   // kardinalitaeten
@@ -575,7 +577,7 @@ function bewerte(s, m, syn, auswahl) {
     const liste = [...einheiten.values()];
     const richtig = liste.filter((u) => gefunden(u) && u.rels.every((mb) => bezPaare.find((bp) => bp.mb === mb).enden.ok)).length;
     const ok = richtig === liste.length;
-    fuege('kardinalitaeten', ok, ok ? 'Alle Kardinalitäten richtig.' : `${richtig} von ${liste.length} Beziehungstypen mit richtigen Kardinalitäten.`, teile, 'P9');
+    fuege('kardinalitaeten', ok, ok ? 'Alle Kardinalitäten richtig.' : `${von(richtig, liste.length, 'Beziehungstyp', 'Beziehungstypen')} mit richtigen Kardinalitäten.`, teile, 'P9');
   }
   // beziehungsattribute
   {
@@ -597,7 +599,7 @@ function bewerte(s, m, syn, auswahl) {
     }
     const ok = richtig === gesamt && !teile.some((t) => !t.ok);
     const text = ok ? 'Alle Beziehungsattribute richtig platziert.'
-      : gesamt ? `${richtig} von ${gesamt} Beziehungsattributen richtig platziert.` : 'Beziehungsattribute nicht richtig platziert.';
+      : gesamt ? `${von(richtig, gesamt, 'Beziehungsattribut', 'Beziehungsattributen')} richtig platziert.` : 'Beziehungsattribute nicht richtig platziert.';
     fuege('beziehungsattribute', ok, text, teile, 'P9');
   }
 

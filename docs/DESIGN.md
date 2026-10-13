@@ -712,8 +712,8 @@ Gleiche Komponenten, Kopfzeile ohne „Ich“, stattdessen Knopf „Anmelden“.
 - Die Konsole nutzt **Container-Queries** (`container-type: inline-size`), nicht Viewport-Breakpoints – sie steckt
   je nach Seite in unterschiedlich breiten Spalten.
 - Klebende Elemente: Kopfzeile `top: env(safe-area-inset-top)`; Reiterleiste darunter.
-- **Touch-Ziele ≥ 44 × 44 px** (Knöpfe, Kacheln, Schalter, Schema-Spalten mind. 32 px Höhe mit 44 px-Trefferfläche
-  über Zeilenabstand, ER-Elemente groß genug). Hover ist nie die einzige Möglichkeit.
+- **Touch-Ziele ≥ 44 × 44 px** (Knöpfe, Kacheln, Schalter, Schema-Spalten 44 px hoch,
+  ER-Elemente groß genug). Hover ist nie die einzige Möglichkeit.
 - Getestet im Prototyp (Playwright): 1440 × 900, 1024 × 768, 375 × 812, hell und dunkel, ohne Seiten-Überlauf und
   ohne Konsolenfehler.
 

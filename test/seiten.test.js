@@ -93,7 +93,7 @@ test('Themen: Seite aus dem Seed (themen.js), Niveau-Übersicht #niveaus über /
 test('Datenschutz verweist auf das Portal und enthält Platzhalter der Schule', async () => {
   const { app } = testApp();
   const res = await request(app).get('/datenschutz');
-  assert.match(res.text, /\[Angaben der Schule\]/);
+  assert.match(res.text, /<span class="platzhalter">\[[^\]]+\]<\/span>/);
   assert.match(res.text, /data-portal-pfad="\/datenschutz"/);
   assert.match(res.text, /Freitexte/);
 });
@@ -565,7 +565,7 @@ test('Browser-Skripte schreiben nie HTML aus Zeichenketten (kein innerHTML)', ()
 });
 
 test('?v= in allen HTML-Seiten gleich der package.json-Version', () => {
-  assert.equal(VERSION, '0.7.0');
+  assert.equal(VERSION, '0.8.0');
   let anzahl = 0;
   for (const datei of htmlDateien()) {
     const html = fs.readFileSync(path.join(PUBLIC, datei), 'utf8');

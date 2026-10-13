@@ -67,9 +67,10 @@ function pruefeLokal(sql, schema, abimodus) {
  *   abimodus         'hinweis' | 'streng' | 'aus' (Randmarken)
  *   aktionen         { pruefen, tipp, loesung } – Rückrufe (Ermittlung) oder null (Verhör)
  *   beiAenderung(sql)
+ *   ruecksprung      Pfad für „Zurück“ aus der Zeitlupe (Standard: die aktuelle Seite ohne Parameter)
  * → { el, wert(), setzeWert(t), fokus(), knoepfe, setzeTippText(t), sperren(an), zeigeHinweis(text) }
  */
-export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = null, abimodus = 'hinweis', aktionen = null, beiAenderung = null } = {}) {
+export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = null, abimodus = 'hinweis', aktionen = null, beiAenderung = null, ruecksprung = null } = {}) {
   const nr = ++zaehler;
   const mitAusfuehren = !!datenbank;
   const textarea = el('textarea');
@@ -213,7 +214,7 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
   function oeffneZeitlupe() {
     if (!mitAusfuehren) return;
     if (entwurf) schreib(entwurf, editor.wert()); // Entwurf sofort sichern (Rücksprung)
-    W.oeffneWerkzeug('zeitlupe', { db: datenbank, sql: editor.wert(), zurueck: window.location.pathname });
+    W.oeffneWerkzeug('zeitlupe', { db: datenbank, sql: editor.wert(), zurueck: ruecksprung || window.location.pathname });
   }
 
   /**
@@ -229,7 +230,7 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
           db: datenbank,
           sql,
           schema,
-          zurueck: window.location.pathname,
+          zurueck: ruecksprung || window.location.pathname,
           vorher: () => entwurf && schreib(entwurf, editor.wert())
         }).filter((l) => !gezeigt.has(l.werkzeug) && gezeigt.add(l.werkzeug))
       );

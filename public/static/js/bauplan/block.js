@@ -88,7 +88,7 @@ export function erBlock(b, wahl = null) {
   const zusammenfassung = `ER-Diagramm mit ${anzahl} ${anzahl === 1 ? 'Entitätstyp' : 'Entitätstypen'} und ${anzahlB} ${anzahlB === 1 ? 'Beziehungstyp' : 'Beziehungstypen'}`;
   if (wahl) {
     svg.setAttribute('role', 'group');
-    svg.setAttribute('aria-label', `${zusammenfassung} – tippe Elemente an`);
+    svg.setAttribute('aria-label', `${zusammenfassung} – Elemente antippen`);
   } else {
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', `${zusammenfassung}. Die Liste darunter beschreibt alle Elemente.`);

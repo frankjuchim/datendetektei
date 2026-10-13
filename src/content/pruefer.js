@@ -277,7 +277,7 @@ function sqlAufgabe(ia, lo, abimodus) {
 }
 
 async function pruefeSql(ia, lo, a, opt) {
-  if (a.trim() === '') return { ok: false, rueckmeldung: { diagnose: [], zeilen: 0 } };
+  if (a.trim() === '') return { ok: false, rueckmeldung: { diagnose: [], zeilen: null } };
   if (typeof opt.sqlPruefer !== 'function') throw new Error('Kein SQL-Prüfer konfiguriert.');
   const r = await opt.sqlPruefer(sqlAufgabe(ia, lo, opt.abimodus), a);
   if (istSchreiben(ia)) {
@@ -291,7 +291,8 @@ async function pruefeSql(ia, lo, a, opt) {
     falle: d.falle ?? null,
     text: d.text
   }));
-  return { ok: !!(r && r.ok === true), rueckmeldung: { diagnose, zeilen: r && Number.isInteger(r.zeilen) ? r.zeilen : 0 } };
+  // zeilen: null, wenn die Abfrage nicht ausgeführt werden konnte (Syntax-, Regel- oder Laufzeitfehler)
+  return { ok: !!(r && r.ok === true), rueckmeldung: { diagnose, zeilen: r && Number.isInteger(r.zeilen) ? r.zeilen : null } };
 }
 
 /**

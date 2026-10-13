@@ -104,10 +104,13 @@ table.matrix td .besiegt { position: absolute; top: 1px; right: 3px; font-size: 
 /* ---------- Tabellen (Aufgabenstatistik, Verhöre) ---------- */
 .lk-tabelle { max-height: min(70vh, 720px); overflow: auto; }
 .lk-tabelle table.daten thead th { position: sticky; top: 0; z-index: 1; background: var(--flaeche); }
+/* Aufgabenstatistik: Aufgabenspalte klebt beim waagerechten Scrollen (iPad, Smartphone) */
+#au-aufgaben tbody th[scope="row"] { position: sticky; left: 0; z-index: 1; background: var(--karte); min-width: 9rem; }
+#au-aufgaben thead th:first-child { left: 0; z-index: 2; }
 .lk-tabelle table.daten td.zahl, .lk-tabelle table.daten th.zahl { text-align: right; font-family: var(--schrift-mono); white-space: nowrap; }
 .lk-tabelle table.daten .klein { font-size: var(--t-xs); color: var(--tinte-2); display: block; }
 .sortier-knopf {
-  display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 4px; border: 0; background: transparent;
+  display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 4px; border: 0; background: transparent;
   font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; cursor: pointer; white-space: nowrap;
 }
 .sortier-knopf::after { content: "↕"; color: var(--tinte-3); font-size: 0.9em; }

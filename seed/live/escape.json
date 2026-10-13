@@ -30,7 +30,7 @@
       "aufgabe": {
         "id": "K2-S2", "titel": "Die teuerste Reparatur im Lindenhof", "stufe": 3, "kategorie": "SQL Verbund", "fallen": ["P2", "P7"],
         "inhalt": [
-          { "t": "text", "md": "Gib RadID, Typ und die Kosten der teuersten Reparatur aus – nur für Räder, die an einer Station im Stadtteil **Lindenhof** stehen. Das Ergebnis ist **genau ein** Datensatz. Nutze Tabellenaliasse." },
+          { "t": "text", "md": "Gib RadID, Typ und die Kosten der teuersten Reparatur aus – nur für Räder, die an einer Station im Stadtteil **Lindenhof** stehen. Das Ergebnis ist **genau ein** Datensatz. Nutze Tabellenaliase." },
           { "t": "hinweis", "md": "**Schloss:** Der Code ist die RadID, vierstellig mit führenden Nullen (z. B. 0042)." }
         ],
         "interaktion": { "kind": "sql", "datenbank": "stadtrad" },
@@ -46,7 +46,7 @@
       "aufgabe": {
         "id": "K2-S3", "titel": "Schichten am Samstag", "stufe": 3, "kategorie": "SQL Aggregation", "fallen": ["P1", "P3"],
         "inhalt": [
-          { "t": "text", "md": "Gib für jeden Stand StandNr, Name und die Anzahl seiner Schichten am **Samstag, 2026-08-29** aus (Spalte Schichten) – nur Stände mit **mindestens 7** Schichten an diesem Tag, die meisten zuerst." },
+          { "t": "text", "md": "Gib für jeden Stand StandNr, Name und die Anzahl seiner Schichten am **Samstag, 29.08.2026** aus (Spalte Schichten) – nur Stände mit **mindestens 7** Schichten an diesem Tag, die meisten zuerst." },
           { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der Stände in eurem Ergebnis, zweite Ziffer = StandNr des Stands mit den meisten Schichten." }
         ],
         "interaktion": { "kind": "sql", "datenbank": "stadtfest", "sortierung": [{ "spalte": "Schichten", "richtung": "DESC" }] },

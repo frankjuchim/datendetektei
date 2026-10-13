@@ -14,6 +14,7 @@ const ART = { entitaet: 'Entitätstyp', beziehung: 'Beziehungstyp', attribut: 'A
 
 /** Lesen-Modus: Elemente des er-Blocks antippen (Menge) bzw. Kategorien zuordnen. */
 function teilErLesen(ia, kontext) {
+  const A = (du, sie) => (kontext && kontext.sie ? sie : du); // Verhör: Abitur-Stil
   const kategorien = Array.isArray(ia.kategorien) && ia.kategorien.length >= 2 ? ia.kategorien.filter(istObjekt) : null;
   const katText = new Map((kategorien || []).map((k) => [k.id, nurText(k.md) || k.id]));
   const gewaehlt = new Set();
@@ -45,10 +46,10 @@ function teilErLesen(ia, kontext) {
       api.sperren(gesperrt);
     }
     if (kategorien) {
-      info.textContent = `Tippe ein Element an und ordne es einer Kategorie zu. Zugeordnet: ${zuordnung.size}`;
+      info.textContent = `${A('Tippe ein Element an und ordne es einer Kategorie zu.', 'Tippen Sie ein Element an und ordnen Sie es einer Kategorie zu.')} Zugeordnet: ${zuordnung.size}`;
       zeichneWahl();
     } else {
-      info.textContent = `Tippe alle passenden Elemente im Diagramm an. Gewählt: ${gewaehlt.size}`;
+      info.textContent = `${A('Tippe alle passenden Elemente im Diagramm an.', 'Tippen Sie alle passenden Elemente im Diagramm an.')} Gewählt: ${gewaehlt.size}`;
     }
   }
 
@@ -154,7 +155,7 @@ function teilErLesen(ia, kontext) {
 
 /** Ergänzen/Entwickeln: Bauplan-Tisch. */
 function teilErTisch(ia, kontext, entwurf) {
-  const tisch = T.erzeugeTisch({ modus: ia.modus === 'ergaenzen' ? 'ergaenzen' : 'entwickeln', start: ia.start, entwurf, beiAenderung: () => kontext.geaendert() });
+  const tisch = T.erzeugeTisch({ sie: !!(kontext && kontext.sie), modus: ia.modus === 'ergaenzen' ? 'ergaenzen' : 'entwickeln', start: ia.start, entwurf, beiAenderung: () => kontext.geaendert() });
   return {
     kind: 'er',
     tisch,
@@ -178,7 +179,7 @@ export function teilEr(ia, kontext, opt = {}) {
 
 /** Interaktion `schema`: Schema-Werkbank. */
 export function teilSchema(ia, kontext, opt = {}) {
-  const wb = W.erzeugeWerkbank({ modus: ia && ia.modus, start: ia && ia.start, entwurf: opt.entwurf || null, beiAenderung: () => kontext.geaendert() });
+  const wb = W.erzeugeWerkbank({ sie: !!(kontext && kontext.sie), modus: ia && ia.modus, start: ia && ia.start, entwurf: opt.entwurf || null, beiAenderung: () => kontext.geaendert() });
   return {
     kind: 'schema',
     werkbank: wb,

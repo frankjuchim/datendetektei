@@ -146,8 +146,10 @@ function lehrkraftAuswertungRouten({ db, inhalte = null, stand = null, konfig })
     res.json(berichtSicht());
   });
 
-  router.use('/api/admin/sicherung', rateLimit({ fensterMs: 60000, max: 6, ...limits.sicherung, jetzt }));
-  router.get('/api/admin/sicherung', superadmin, keinCache, (req, res) => {
+  // Limit erst nach der Anmeldung und je Konto: anonyme Anfragen dürfen das Limit des Superadmins nicht aufbrauchen
+  // (Sicherheits-Review Phase 8).
+  const sicherungLimit = rateLimit({ fensterMs: 60000, max: 6, ...limits.sicherung, schluessel: (req) => req.sitzung.sub, jetzt });
+  router.get('/api/admin/sicherung', superadmin, sicherungLimit, keinCache, (req, res) => {
     const zeit = new Date(jetzt()).toISOString().replace(/\.\d{3}Z$/, 'Z').replace(/:/g, '-');
     const ordner = fs.mkdtempSync(path.join(os.tmpdir(), 'dd-sicherung-'));
     const datei = path.join(ordner, 'sicherung.sqlite');

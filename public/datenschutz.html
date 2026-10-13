@@ -9,12 +9,12 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
-  <script src="/static/js/kern/thema.js?v=0.7.0"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.7.0" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.8.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.8.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.8.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.8.0">
+  <script src="/static/js/kern/thema.js?v=0.8.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.8.0" defer></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -52,6 +52,14 @@
       <p>Diese Seite ergänzt die zentrale Datenschutzerklärung des Portals InfoLabs um das, was nur die Datendetektei betrifft.</p>
     </div>
     <div class="karte text">
+      <div class="notiz">
+        <svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>
+        <p class="notiz-titel">Entwurf</p>
+        <p>Diese Hinweise beschreiben, wie die Datendetektei technisch arbeitet.
+        Die Angaben in [eckigen Klammern] und die Rechtsgrundlage ergänzt bzw. bestätigt die Schule (Schulleitung,
+        Datenschutzbeauftragte bzw. Datenschutzbeauftragter).</p>
+      </div>
+
       <h2>Zentrale Datenschutzerklärung</h2>
       <p>Die Datendetektei ist eine Plattform im Verbund InfoLabs. Angemeldet wird ausschließlich über das Portal; dort
         stehen Konten, Kurscodes und persönliche Codes – die Datendetektei bekommt sie nie zu sehen.
@@ -59,40 +67,162 @@
         <span data-ohne-portal>Die zentrale Datenschutzerklärung findest du im Portal InfoLabs unter „Datenschutz“.</span></p>
 
       <h2>Verantwortlich</h2>
-      <p><span class="platzhalter">[Angaben der Schule]</span> – Name und Anschrift der Schule, Kontakt der
-        Schulleitung und der oder des Datenschutzbeauftragten.</p>
+      <p><span class="platzhalter">[Name und Anschrift der Schule, vertreten durch die Schulleitung]</span><br>
+        Datenschutz: <span class="platzhalter">[Datenschutzbeauftragte bzw. Datenschutzbeauftragter der Schule, E-Mail]</span><br>
+        Ansprechpartner für einen Kurs ist die Lehrkraft des Kurses.</p>
+
+      <h2>Wozu?</h2>
+      <p>Du übst mit automatisch geprüften Aufgaben zu Datenbanken. Deine Lehrkraft sieht den Lernstand ihres Kurses, um
+        den Unterricht zu planen.</p>
 
       <h2>Was die Datendetektei speichert</h2>
+      <p>Alles liegt in einer Datenbank auf dem Server der Datendetektei:</p>
       <ul>
-        <li>die Kennung aus dem Portal (<code>sub</code>), den Anzeigenamen und die Rolle (Schüler, Lehrkraft, Admin),</li>
-        <li>die Kurse (Kennung und Name), in denen du Mitglied bist,</li>
-        <li>den Lernstand je Kurs: Status, Fehlversuche, Tipps und Punkte je Aufgabe, Fallen-Zähler, Verhör-Versuche,
-          Warm-up- und Trainingsstand, Häkchen bei Kernpunkten,</li>
-        <li>je Kurs und Aufgabe häufige Fehlabfragen – ohne Namen oder Kennung, gezählt, höchstens 20 je Aufgabe; sie
-          werden mit dem Kurs gelöscht.</li>
+        <li id="ds-konto">Dein Konto: die Kennung aus dem Portal (<code>sub</code>, z. B. „s:1042“), dein Anzeigename,
+          deine Rolle (Schüler, Lehrkraft, Admin) und wann du dich zuletzt angemeldet hast.</li>
+        <li id="ds-kurs">Deine Kurse: Kennung und Name des Kurses, ob du Mitglied oder Lehrkraft bist, ob der Kurs
+          gesperrt ist, und die Einstellungen der Lehrkraft (freigegebene Akten, Niveau eA/gA, Verhöre, Beamer-Board mit
+          seinem geheimen Link).</li>
+        <li id="ds-lernstand">Dein Lernstand je Kurs und Aufgabe: Status (offen, gelöst, angesehen …), Fehlversuche,
+          abgerufene Tipps, Punkte und Zeitpunkt; dazu wie oft du in welche Falle (P1–P10) getappt bist, Häkchen bei
+          Kernpunkten (nur das Häkchen, nie dein Text) und deine Serie ohne Fehlversuch.</li>
+        <li id="ds-verhoer">Deine Verhör-Versuche: welche Aufgaben gezogen wurden, je Aufgabe nur richtig oder falsch
+          (nie deine Antwort), Beginn, Ende und Punkte.</li>
+        <li id="ds-warmup">Dein Warm-up- und Trainingsstand: in welchem Fach jede Warm-up-Karte liegt und wann sie wieder
+          dran ist; auf dem Trainingsplatz je Tag die Zahl der Aufgaben und Punkte.</li>
+        <li id="ds-erfolge">Deine Abzeichen und Erfolge (z. B. „Aufgabe gelöst“, „Verhör gewonnen“) mit Zeitpunkt.</li>
+        <li id="ds-fehlabfragen">Häufige Fehlabfragen je Kurs und Aufgabe: falsche SQL-Abfragen in vereinheitlichter
+          Form, gezählt – ohne Namen und ohne Kennung, höchstens 20 je Aufgabe und 500 Zeichen. Deine Lehrkraft sieht
+          daran, welche Fehler im Kurs häufig sind.</li>
+        <li id="ds-inhalte">Außerdem die Akten und Aufgaben selbst und technische Verwaltungsangaben (z. B. die Version
+          der Datenbank) – darin stehen keine Daten über dich.</li>
+      </ul>
+
+      <h2>Wer was sieht</h2>
+      <ul>
+        <li>Du siehst deinen eigenen Lernstand.</li>
+        <li>Deine Lehrkraft sieht den Lernstand aller Mitglieder ihres Kurses (auch als Tabelle zum Herunterladen, ohne
+          Kennung) und die Fehlabfragen des Kurses ohne Namen.</li>
+        <li id="ds-board">Beamer-Board: Nur wenn deine Lehrkraft es einschaltet, zeigt eine Seite ohne Anmeldung den
+          Kursnamen, die 15 besten Anzeigenamen mit Punkten und Rang, den Fortschritt des Kurses in den Akten und die
+          letzten Erfolge mit Anzeigenamen. Sehen kann das jede Person, die den geheimen Link kennt; die Lehrkraft kann
+          den Link jederzeit erneuern oder das Board ausschalten. Kennungen und Lehrkräfte erscheinen dort nie.</li>
+        <li id="ds-sicherung">Der Admin der Datendetektei kann eine Sicherungskopie der ganzen Datenbank herunterladen,
+          um sie bei einem Defekt wiederherzustellen. Aufbewahrung der Sicherungskopien:
+          <span class="platzhalter">[Sicherungskopien: z. B. keine / höchstens … Tage, Ort]</span>.</li>
+      </ul>
+
+      <h2>Was nur kurz im Arbeitsspeicher liegt</h2>
+      <ul>
+        <li id="ds-live">Live-Runden (Duell, Escape Room): Teilnehmende, Teams, Antworten und Punkte liegen nur im
+          Arbeitsspeicher des Servers, nie in der Datenbank. Festgehalten wird je Antwort nur „richtig/falsch“ und die
+          Punkte, nie die Antwort selbst. Am Beamer erscheint eine Rangliste mit Anzeigenamen. Nach dem Ende der Runde
+          werden alle Antworten und Teamstände verworfen; das Ergebnis ist noch zwei Minuten zu sehen. Danach bleibt für
+          die Lehrkraft nur eine kleine Statistik (Art der Runde, Zahl der Teilnehmenden, Datum) – auch nur im
+          Arbeitsspeicher, bis zum Neustart des Servers oder zur Löschung des Kurses.</li>
+        <li>IP-Adressen werden nur im Arbeitsspeicher gezählt, um zu viele Anfragen in kurzer Zeit zu bremsen (Zeitfenster
+          eine Minute). Sie kommen nie in die Datenbank oder in Protokolle.</li>
       </ul>
 
       <h2>Was nicht gespeichert wird</h2>
       <ul>
-        <li>keine Freitexte,</li>
-        <li>keine SQL-Entwürfe auf dem Server – sie bleiben nur im Speicher deines Geräts (<code>localStorage</code>),</li>
-        <li>keine Antworten aus Live-Runden nach Rundenende,</li>
-        <li>keine IP-Adressen (nur kurz im Arbeitsspeicher, um Missbrauch zu bremsen),</li>
-        <li>keine Kurscodes, persönlichen Codes oder Passwörter.</li>
+        <li id="ds-kuer">Kür K1 (Datenbank selbst anlegen): Dein Skript läuft in einer frischen, leeren Übungsdatenbank im
+          Arbeitsspeicher, die danach sofort weggeworfen wird – es wird nichts gespeichert außer dem Lernstand der Aufgabe.</li>
+        <li>keine Freitexte (Begründungen, Kernpunkte, Antworten im Klartext),</li>
+        <li>keine SQL-Abfragen und -Entwürfe – sie werden nur geprüft bzw. ausgeführt; Entwürfe bleiben im Speicher deines
+          Geräts (siehe unten). Einzige Ausnahme sind die anonymen Fehlabfragen oben,</li>
+        <li>nichts aus dem Gastmodus und den Werkzeugseiten (Bauplan-Tisch, Schema-Werkbank, Zeitlupe, Spurenbrett,
+          Sortierfächer),</li>
+        <li>keine Urkunden – die Druckseite wird jedes Mal neu aus dem Lernstand erzeugt,</li>
+        <li>keine Liste, wer welche Materialien heruntergeladen hat,</li>
+        <li>keine Kurscodes, persönlichen Codes, Passwörter oder E-Mail-Adressen.</li>
       </ul>
 
-      <h2>Cookies und Gerätespeicher</h2>
-      <p>Zwei technisch notwendige Cookies: <code>dd_s</code> hält die Anmeldung (Schüler 30 Tage, Lehrkräfte 8
-        Stunden), <code>dd_sso_state</code> sichert den Anmeldevorgang für höchstens 10 Minuten. Im Gerätespeicher merkt
-        sich die Seite nur die Hell/Dunkel-Wahl. Es gibt kein Tracking, keine Werbung und keine externen Dienste oder
-        Schriften.</p>
+      <h2>Empfänger</h2>
+      <p id="ds-empfaenger">Die Datendetektei gibt Daten nur an das Portal InfoLabs weiter, und nur wenn das Portal danach
+        fragt: für die Kursübersicht der Lehrkraft je Mitglied die Kennzahlen Punkte, Zahl der gelösten Aufgaben, Anteil
+        und zuletzt aktiv sowie den Fortschritt je Akte. Keine Antworten, keine Lösungen, keine Freitexte. Andere
+        Plattformen oder Dritte bekommen nichts.</p>
 
-      <h2>Löschung</h2>
-      <p>Wird ein Konto oder ein Kurs im Portal gelöscht, löscht die Datendetektei auf Anforderung des Portals das Konto
-        bzw. die Kursdaten mit dem zugehörigen Lernstand.</p>
+      <h2>Server-Protokolle</h2>
+      <p id="ds-logs">Die Datendetektei selbst schreibt keine Zugriffsprotokolle: keine Seitenaufrufe, keine IP-Adressen,
+        keine Anmeldedaten, keine Abfragen. Ins Protokoll kommen nur Start- und Fehlermeldungen des Programms ohne
+        personenbezogene Daten. Protokolle des Servers beim Hoster:
+        <span class="platzhalter">[Hoster: Protokolle des Servers – Inhalt und Aufbewahrung]</span>.</p>
+
+      <h2>Cookies</h2>
+      <section id="ds-cookies">
+        <p>Es gibt nur zwei technisch notwendige Cookies (signiert, httpOnly, SameSite=Lax, über HTTPS „secure“):</p>
+        <ul>
+          <li><code data-cookie>dd_s</code> hält deine Anmeldung: bei Schülerinnen und Schülern 30 Tage, bei Lehrkräften
+            und dem Admin 8 Stunden.</li>
+          <li><code data-cookie>dd_sso_state</code> sichert den Anmeldevorgang über das Portal, höchstens 10 Minuten.</li>
+        </ul>
+        <p>Kein Tracking, keine Werbung, keine externen Dienste, Skripte oder Schriften.</p>
+      </section>
+
+      <h2>Speicher deines Geräts</h2>
+      <section id="ds-geraet">
+        <p>Einiges merkt sich nur dein Browser auf deinem Gerät (<code>localStorage</code> bzw. bis zum Schließen des
+          Tabs <code>sessionStorage</code>). Das kommt nie auf den Server; du kannst es über die Einstellungen deines
+          Browsers löschen („Websitedaten löschen“).</p>
+        <ul>
+          <li><code data-speicher="local">dd-thema</code>: Hell oder Dunkel,</li>
+          <li><code data-speicher="local">dd-kurs</code>: welcher Kurs gerade gewählt ist,</li>
+          <li><code data-speicher="local">dd-entwurf:…</code>: Entwürfe deiner Antworten und SQL-Abfragen (Aufgaben,
+            Konsole, Gastmodus, Live-Runden),</li>
+          <li><code data-speicher="local">dd-freitext:…</code>: deine Freitexte, z. B. Kernpunkte,</li>
+          <li><code data-speicher="local">dd-verhoer:…</code>: Antwortentwürfe im laufenden Verhör,</li>
+          <li><code data-speicher="local">dd-werkzeug:bauplan</code> und <code data-speicher="local">dd-werkzeug:werkbank</code>:
+            Entwürfe im Bauplan-Tisch und in der Schema-Werkbank,</li>
+          <li><code data-speicher="local">dd-bauplan-ansicht</code>, <code data-speicher="local">dd-training-typ</code>,
+            <code data-speicher="local">dd-warmup-filter</code>: gewählte Ansicht bzw. Filter,</li>
+          <li><code data-speicher="local">dd-vorschau:…</code>: Entwürfe der Lehrkraft in der Aufgaben-Vorschau,</li>
+          <li><code data-speicher="session">dd_zeitlupe</code>, <code data-speicher="session">dd_spurenbrett</code>,
+            <code data-speicher="session">dd_sortierfaecher</code>: übergeben eine Abfrage an das jeweilige Werkzeug.</li>
+        </ul>
+      </section>
+
+      <h2>Links zu anderen Seiten</h2>
+      <p id="ds-extern">Erklärvideos sind nur als Link-Knopf zu YouTube eingebunden, nicht eingebettet. Erst wenn du
+        darauf tippst, öffnet sich YouTube in einem neuen Tab (ohne Angabe, von welcher Seite du kommst); dort gilt die
+        Datenschutzerklärung von YouTube.</p>
+
+      <h2>Speicherort, Speicherdauer und Löschung</h2>
+      <section id="ds-loeschung">
+        <p>Die Datendetektei läuft auf einem Server von <span class="platzhalter">[Hoster, Standort in der EU]</span>;
+          alle Verbindungen sind mit HTTPS verschlüsselt.</p>
+        <ul>
+          <li>Dein Lernstand bleibt gespeichert, solange dein Konto und dein Kurs im Portal bestehen – auch wenn du einen
+            Kurs verlässt.</li>
+          <li>Jeder Kurs hat im Portal ein Ablaufdatum. Läuft der Kurs ab, löscht die Lehrkraft ihn oder entfernt sie dich
+            aus dem Kurs, gibt das Portal die Löschung an die Datendetektei weiter. Die Datendetektei löscht dann sofort
+            den Kurs mit allen Lernständen, Fehlabfragen, dem Board und laufenden Live-Runden bzw. dein Konto mit deinem
+            ganzen Lernstand.</li>
+          <li>Sperrt das Portal einen Kurs, kann darin nicht mehr weitergearbeitet werden; gelöscht wird erst mit dem Kurs.</li>
+        </ul>
+      </section>
+
+      <h2>Rechtsgrundlage</h2>
+      <p><span class="platzhalter">[Rechtsgrundlage: von der Schule festzulegen, wie in der zentralen Datenschutzerklärung des Portals]</span></p>
 
       <h2>Deine Rechte und Kontakt</h2>
-      <p>Auskunft, Berichtigung und Löschung: <span class="platzhalter">[Angaben der Schule]</span>.</p>
+      <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Widerspruch sowie auf
+        Beschwerde bei der Aufsichtsbehörde (Einzelheiten in der zentralen Datenschutzerklärung). Ansprechpartner ist die
+        Lehrkraft deines Kurses bzw. <span class="platzhalter">[Datenschutzbeauftragte bzw. Datenschutzbeauftragter der Schule]</span>.</p>
+
+      <h2>Nutzungsrechte</h2>
+      <section id="lizenz">
+        <p>Unterrichtsmaterialien und Inhalte der Datendetektei (Arbeitsblätter, Präsentationen, Aufgaben, Geschichte und
+          Übungsdatenbanken) stehen unter der Lizenz
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
+          (Namensnennung: Frank Juchim, Datendetektei Weserstedt; nicht kommerziell; Weitergabe unter gleichen
+          Bedingungen). Der Programmcode ist nicht freigegeben (alle Rechte vorbehalten). Schriften und Bibliotheken
+          anderer haben ihre eigenen Lizenzen (SIL Open Font License 1.1, MIT). Aufgaben des Zentralabiturs sind nicht
+          enthalten. Stand: vorläufige Festlegung.</p>
+      </section>
+
+      <p class="hinweis-klein">Stand: Oktober 2026</p>
     </div>
   </main>
   <footer class="fuss">
@@ -103,7 +233,7 @@
       <a href="/datenschutz">Datenschutz</a>
       <a data-portal-pfad="/" href="/" hidden>Portal InfoLabs</a>
     </nav>
-    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden</p>
+    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden · Materialien: <a href="/datenschutz#lizenz">CC BY-NC-SA 4.0</a></p>
   </footer>
 </body>
 </html>
