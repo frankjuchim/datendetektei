@@ -69,7 +69,7 @@ function zeichneKopf() {
   akteLink.href = `/akte/${daten.akte.nr}`;
   pfad.append(akteLink, document.createTextNode(` › Ermittlung ${e.nr || ''}`));
   const titel = h('div', 'seiten-kopf', pfad, el('h1', null, e.titel));
-  const stand = el('p', 'ermittlung-stand zahlen', `${e.geloest} von ${e.anzahl} erledigt · ${e.punkte} von ${e.maxPunkte} Punkten`);
+  const stand = el('p', 'ermittlung-stand zahlen', e.anzahl || e.coldCase ? `${e.geloest} von ${e.anzahl} erledigt · ${e.punkte} von ${e.maxPunkte} Punkten` : 'ohne Lab-Aufgaben');
   stand.id = 'ermittlung-stand';
   titel.appendChild(stand);
   const pz = plaedoyerZeile();
@@ -739,6 +739,7 @@ async function start() {
   zeichneKacheln();
   const id = startAufgabe();
   if (id) await oeffneAufgabe(id, false);
+  else if (daten.akte.nr === 7) bereich.appendChild(A.leerKarte('Keine Lab-Aufgaben', 'Die Generalprobe schreibst du auf Papier; im Lab wartet Verhör 7.', [A.linkKnopf(`Akte ${daten.akte.nr}: ${daten.akte.titel}`, `/akte/${daten.akte.nr}`, 'knopf primaer')]));
   else bereich.appendChild(A.leerKarte('Keine Aufgaben', 'Diese Ermittlung hat noch keine Aufgaben.'));
   document.documentElement.dataset.seite = 'bereit';
 }

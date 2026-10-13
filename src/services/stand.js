@@ -167,6 +167,8 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
     const modus = verhoerModus(einst, akte.nr);
     if (modus === 'offen') return { frei: true, grund: null };
     if (modus === 'gesperrt') return { frei: false, grund: 'Die Verhöre sind in deinem Kurs noch gesperrt.' };
+    // Akte ohne Lab-Aufgaben (Akte 7, Generalprobe – Spec §10): keine Level-Punkte, die Freischaltung der Akte genügt.
+    if (!max) return { frei: true, grund: null };
     const noetig = Math.ceil(VERHOER_AUTO_ANTEIL * max);
     if (ist >= noetig) return { frei: true, grund: null };
     return { frei: false, grund: `Sammle mindestens 60 % der Punkte der Ermittlungen dieser Akte (${ist} von ${noetig} nötigen Punkten).` };
@@ -198,7 +200,8 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
         continue;
       }
       for (const akte of inhalte.akten()) {
-        if (d.id === 'akte-geschlossen' && !akte.levels.length) continue;
+        // „Akte geschlossen“ nur für Akten mit Lab-Aufgaben (Akte 7 = Generalprobe hat eine Ermittlung ohne Aufgaben)
+        if (d.id === 'akte-geschlossen' && !akte.levels.some((l) => l.aufgaben.length)) continue;
         if (d.id === 'beweisstueck' && !(akte.boss && akte.boss.pool.length)) continue;
         liste.push({ id: `${d.id}-${akte.nr}`, name: d.name, beschreibung: d.beschreibung, akte: akte.nr, akteTitel: akte.titel });
       }
