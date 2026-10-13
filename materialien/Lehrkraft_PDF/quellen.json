@@ -1,4 +1,15 @@
 {
  "_hinweis": "ERZEUGT von werkzeuge/*_pdf.py – SHA-256 der Quelle je PDF; die CI prüft damit, ob die PDFs aktuell sind.",
- "dateien": {}
+ "dateien": {
+  "DD_A1-Lehrerhinweise.pdf": {
+   "quelle": "Akte1_Fundbuero/4_Lehrerhinweise/DD_A1_Lehrerhinweise.docx",
+   "sha256": "478b127bcfa6c5cbdc6fb575eb552294c811422e07d388e0c570b38ff65cd0fd",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Praesentation_Fundbuero.pdf": {
+   "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
+   "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
+   "verfahren": "notizen"
+  }
+ }
 }

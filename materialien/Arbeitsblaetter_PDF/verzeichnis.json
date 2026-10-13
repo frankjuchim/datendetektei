@@ -1,4 +1,92 @@
 {
  "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Schülerfassungen (nur angemeldet, Spec §12.4/E13) – nie Lösungen.",
- "dateien": []
+ "dateien": [
+  {
+   "datei": "DD_A1-AB1_Der_erste_Auftrag.pdf",
+   "titel": "AB 1.1 · Der erste Auftrag",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-AB2_Das_verschwundene_Fundstueck.pdf",
+   "titel": "AB 1.2 · Das verschwundene Fundstück",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E2",
+   "ds": [
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Praesentation_Fundbuero_Handout.pdf",
+   "titel": "Präsentation Das Fundbüro (Handout)",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "handout",
+   "fassung": "handout",
+   "niveau": "beide",
+   "ds": [
+    1,
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Unplugged_Karteikarten.pdf",
+   "titel": "Unplugged: Karteikarten-Filter",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-Unplugged_Detektei-Ausweise.pdf",
+   "titel": "Detektei-Ausweise (Kick-off)",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-Unplugged_Platzhalter-Fahndung.pdf",
+   "titel": "Unplugged: Fahndung mit Platzhaltern",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A1-E2",
+   "ds": [
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Warm-up-Karten.pdf",
+   "titel": "Warm-up-Karten Akte 1",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
+  }
+ ]
 }

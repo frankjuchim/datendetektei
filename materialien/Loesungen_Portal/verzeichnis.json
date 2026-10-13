@@ -1,4 +1,40 @@
 {
  "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Lösungen und Erwartungshorizonte – nur Lehrkraft.",
- "dateien": []
+ "dateien": [
+  {
+   "datei": "DD_A1-AB1_Der_erste_Auftrag_Loesung.pdf",
+   "titel": "AB 1.1 · Der erste Auftrag – Lösung",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A1-E1",
+   "ds": [
+    1
+   ]
+  },
+  {
+   "datei": "DD_A1-AB2_Das_verschwundene_Fundstueck_Loesung.pdf",
+   "titel": "AB 1.2 · Das verschwundene Fundstück – Lösung",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A1-E2",
+   "ds": [
+    2
+   ]
+  },
+  {
+   "datei": "DD_A1-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 1 – mit Lösungen",
+   "akte": 1,
+   "gruppe": "A1",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
+  }
+ ]
 }
