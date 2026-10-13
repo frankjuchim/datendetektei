@@ -43,7 +43,8 @@ function akteDaten(nr, plan) {
   const niveau = stand.kurs.niveau;
   const sichtbar = !plan || plan.niveaus.includes(niveau);
   if (!s) return { nr, titel: plan ? plan.titel : `Akte ${nr}`, sichtbar, frei: false, geladen: false, anteil: 0, ermittlungen: [], verhoer: null, geschlossen: false, punkte: 0 };
-  const geschlossen = s.ermittlungen.length > 0 && s.ermittlungen.every((e) => e.geloest >= e.anzahl);
+  const mitAufgaben = s.ermittlungen.filter((e) => e.anzahl > 0); // Akte 7: Ermittlung ohne Lab-Aufgaben
+  const geschlossen = mitAufgaben.length > 0 && mitAufgaben.every((e) => e.geloest >= e.anzahl);
   return { ...s, sichtbar, geladen: true, geschlossen };
 }
 

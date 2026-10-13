@@ -27,6 +27,8 @@ const Database = require('better-sqlite3');
 const LEVEL_ID = /^A(\d)-E(\d)$/;
 const AUFGABE_ID = /^A(\d)-(E\d-(\d{2}|CC)|V-\d{2})$/;
 const BOSS_ID = /^A(\d)-V$/;
+/** Akte ohne Lab-Aufgaben: die Generalprobe (Spec §10) – ihre Ermittlung trägt nur Briefing/Intro, geprüft wird im Verhör 7. */
+const AKTE_OHNE_LAB = 7;
 const KARTE_ID = /^W-A(\d)-(\d{2})$/;
 const KOMPETENZ = /^(DB-)?K(\d{2})$/;
 const FARBE = /^#[0-9A-Fa-f]{6}$/;
@@ -193,7 +195,9 @@ function pruefeAkteStruktur(data, datei, kontext) {
         h
       });
     }
-    if (!Array.isArray(l.aufgaben) || !l.aufgaben.length) fl('aufgaben (Liste der Aufgaben-ids) fehlt oder ist leer.');
+    // Akte 7 (Generalprobe) ist ein Level ohne Lab-Aufgaben – nur Verhör 7 (Spec §10): dort ist aufgaben: [] erlaubt.
+    if (!Array.isArray(l.aufgaben)) fl('aufgaben (Liste der Aufgaben-ids) fehlt.');
+    else if (!l.aufgaben.length && welt !== AKTE_OHNE_LAB) fl('aufgaben (Liste der Aufgaben-ids) ist leer (nur in Akte 7, der Generalprobe, erlaubt).');
     for (const aid of Array.isArray(l.aufgaben) ? l.aufgaben : []) {
       if (!aufgaben.has(aid)) {
         fl(`verweist auf unbekannte Aufgabe „${aid}“.`);

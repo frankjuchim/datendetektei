@@ -43,7 +43,9 @@ function ermittlungKarte(e) {
   kopf.appendChild(titel);
   if (e.anzahl > 0 && e.geloest >= e.anzahl) kopf.appendChild(R.stempel('Gelöst', 'geloest'));
   innen.appendChild(kopf);
-  const info = [`${e.geloest} von ${e.anzahl} erledigt`, `${e.punkte} von ${e.maxPunkte} Punkten`];
+  // Ermittlung ohne Lab-Aufgaben (Akte 7, Generalprobe): nur Briefing und Ermittler-Notiz, geprüft wird im Verhör
+  const ohneAufgaben = e.anzahl === 0 && !e.coldCase;
+  const info = ohneAufgaben ? ['ohne Lab-Aufgaben – die Generalprobe ist das Verhör'] : [`${e.geloest} von ${e.anzahl} erledigt`, `${e.punkte} von ${e.maxPunkte} Punkten`];
   if (Array.isArray(e.ds) && e.ds.length) info.push(`DS ${e.ds.join(', ')}`);
   if (e.niveau === 'eA') info.push('nur eA');
   innen.appendChild(el('p', 'etikett zahlen', info.join(' · ')));
@@ -54,7 +56,8 @@ function ermittlungKarte(e) {
   if (e.coldCase) liste.appendChild(kachel(e.coldCase, e.id, true));
   innen.appendChild(liste);
   const reihe = el('div', 'knopf-reihe');
-  reihe.appendChild(A.linkKnopf(e.geloest === 0 ? 'Ermittlung beginnen' : e.geloest >= e.anzahl ? 'Ermittlung ansehen' : 'Weiter ermitteln', `/ermittlung/${e.id}`, e.geloest >= e.anzahl ? 'knopf' : 'knopf primaer'));
+  if (ohneAufgaben) reihe.appendChild(A.linkKnopf('Ermittler-Notiz lesen', `/ermittlung/${e.id}`, 'knopf'));
+  else reihe.appendChild(A.linkKnopf(e.geloest === 0 ? 'Ermittlung beginnen' : e.geloest >= e.anzahl ? 'Ermittlung ansehen' : 'Weiter ermitteln', `/ermittlung/${e.id}`, e.geloest >= e.anzahl ? 'knopf' : 'knopf primaer'));
   innen.appendChild(reihe);
   karte.appendChild(innen);
   return karte;
@@ -137,13 +140,14 @@ async function start() {
     );
     return;
   }
-  const geschlossen = akte.ermittlungen.length > 0 && akte.ermittlungen.every((e) => e.geloest >= e.anzahl);
+  const mitAufgaben = akte.ermittlungen.filter((e) => e.anzahl > 0);
+  const geschlossen = mitAufgaben.length > 0 && mitAufgaben.every((e) => e.geloest >= e.anzahl);
   const kopf = el('section', 'aktendeckel akte-kopf-karte');
   kopf.appendChild(el('span', 'reiter rot', `Akte ${nr}`));
   const innen = el('div', 'aktendeckel-innen');
   const zeile = el('div', 'akte-detail-kopf');
   zeile.appendChild(R.ring(akte.anteil, { geschlossen, label: `${Math.round(akte.anteil * 100)} Prozent der Punkte` }));
-  const titel = h('div', 'seiten-kopf', el('p', 'etikett', `${ort} · ${stadtteil}`), el('h1', null, akte.titel), el('p', 'zahlen', `${akte.punkte} von ${akte.maxPunkte} Punkten`));
+  const titel = h('div', 'seiten-kopf', el('p', 'etikett', `${ort} · ${stadtteil}`), el('h1', null, akte.titel), el('p', 'zahlen', akte.maxPunkte ? `${akte.punkte} von ${akte.maxPunkte} Punkten` : 'ohne Lab-Punkte – es zählt das Verhör'));
   zeile.appendChild(titel);
   if (geschlossen) zeile.appendChild(R.stempel('Akte geschlossen', 'geloest'));
   innen.appendChild(zeile);

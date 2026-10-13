@@ -102,6 +102,7 @@ function erzeugeAuswertung({ db, inhalte, stand }) {
       if (!stand.akteSichtbar(akte, einst.niveau)) continue;
       const freigeschaltet = stand.istFreigeschaltet(einst, akte.nr);
       for (const sl of stand.sichtbareLevels(akte, einst.niveau)) {
+        if (!sl.aufgaben.length) continue; // Ermittlung ohne Lab-Aufgaben (Akte 7): keine leere Spalte
         spalten.push({
           typ: 'ermittlung',
           id: sl.level.id,

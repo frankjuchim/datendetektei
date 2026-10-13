@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "karten": [
+    {
+      "akte": 7,
+      "id": "W-A7-01",
+      "kategorie": "SQL Aggregation",
+      "titel": "Fallen-Check P1",
+      "aufgabe": "Die Abfrage soll alle Stände mit mehr als 100 Bons ausgeben, ist aber fehlerhaft. Korrigiere sie.",
+      "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Bons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\n  AND COUNT(*) > 100\nGROUP BY Stand.StandNr, Stand.Name",
+      "datenbank": "stadtfest",
+      "loesung": "Eine Aggregatfunktion darf nicht in WHERE stehen: WHERE filtert einzelne Datensätze **vor** dem Gruppieren. Die Bedingung über die Gruppe gehört in `HAVING COUNT(*) > 100`. Ergebnis: Kaffeemobil (177), Bierwagen (103).",
+      "loesungSql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Bons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.StandNr, Stand.Name\nHAVING COUNT(*) > 100",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K27"
+      ],
+      "falle": [
+        "P1"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-02",
+      "kategorie": "Abfrage analysieren",
+      "titel": "Fallen-Check P2",
+      "aufgabe": "Die Abfrage soll den Umsatz des Crêpes-Stands (StandNr 6) liefern. Sie ergibt 1280,50 €, richtig wären 534,00 €. Erkläre, warum die Summe zu hoch ist, und korrigiere die Abfrage.",
+      "sql": "SELECT SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Bon, Position, Produkt, Schicht\nWHERE Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\n  AND Schicht.HelferNr = Bon.HelferNr\n  AND Bon.StandNr = 6",
+      "datenbank": "stadtfest",
+      "loesung": "Die Tabelle Schicht wird für den Umsatz nicht gebraucht. Weil eine Helferin bzw. ein Helfer mehrere Schichten hat, wird jede Position so oft gezählt, wie die Person Schichten hat – der Verbund **vervielfacht** die Zeilen. Lösung: Schicht (samt Bedingung) weglassen.",
+      "loesungSql": "SELECT SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Bon, Position, Produkt\nWHERE Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\n  AND Bon.StandNr = 6",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K31",
+        "DB-K24"
+      ],
+      "falle": [
+        "P2"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-03",
+      "kategorie": "SQL Aggregation",
+      "titel": "Fallen-Check P3",
+      "aufgabe": "Die Abfrage soll für jede Helferin und jeden Helfer die Zahl der Bons liefern. Ergänze sie so, dass sie die GROUP-BY-Regel erfüllt und die beiden Helferinnen namens Lotta Bödeker getrennt zählt.",
+      "sql": "SELECT Helfer.Vorname, Helfer.Nachname, COUNT(*) AS Bons\nFROM Helfer, Bon\nWHERE Helfer.HelferNr = Bon.HelferNr\nGROUP BY Helfer.Nachname",
+      "datenbank": "stadtfest",
+      "loesung": "`Helfer.Vorname` ist weder gruppiert noch aggregiert – Verstoß gegen die GROUP-BY-Regel. Gruppiert man nur nach Namen, fallen Gleichnamige in eine Gruppe. Richtig: nach dem Schlüssel `Helfer.HelferNr` **und** Vor- und Nachname gruppieren (HelferNr auch ausgeben): Lotta Bödeker Nr. 26 mit 10 und Nr. 30 mit 8 Bons.",
+      "loesungSql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS Bons\nFROM Helfer, Bon\nWHERE Helfer.HelferNr = Bon.HelferNr\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K26"
+      ],
+      "falle": [
+        "P3"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-04",
+      "kategorie": "SQL Aggregation",
+      "titel": "Fallen-Check P4",
+      "aufgabe": "Die Theater-AG speichert ihren Kartenverkauf in `Verkauf(VerkaufNr, Datum, Anzahl)` – ein Verkauf kann mehrere Tickets umfassen. Entscheide: Liefert `COUNT(*)` oder `SUM(Anzahl)` die „Anzahl verkaufter Tickets“? Begründe.",
+      "loesung": "`SUM(Anzahl)`: Gefragt sind Tickets, nicht Verkäufe. `COUNT(*)` zählt die Zeilen, also die Verkäufe – ein Verkauf mit 4 Tickets würde nur einmal gezählt.",
+      "minuten": 1,
+      "kompetenz": [
+        "DB-K25"
+      ],
+      "falle": [
+        "P4"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-05",
+      "kategorie": "SQL eine Tabelle",
+      "titel": "Fallen-Check P5",
+      "aufgabe": "Gesucht sind alle Schlüssel-Fundsachen (Kategorie Schlüssel), die ab dem 1. August 2026 gefunden und noch nicht abgeholt wurden. Die Abfrage enthält drei Fehler bei Literalen bzw. NULL. Korrigiere sie.",
+      "sql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Kategorie = Schlüssel\n  AND Funddatum >= '01.08.2026'\n  AND AbgeholtAm = NULL",
+      "datenbank": "fundbuero",
+      "loesung": "(1) Text in Hochkommata: `'Schlüssel'`. (2) Datum im Format `'2026-08-01'` (JJJJ-MM-TT). (3) Fehlende Werte mit `IS NULL` prüfen – `= NULL` ist nie wahr. Ergebnis: Autoschlüssel, Briefkastenschlüssel, Schlüsselbund.",
+      "loesungSql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Kategorie = 'Schlüssel'\n  AND Funddatum >= '2026-08-01'\n  AND AbgeholtAm IS NULL",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K32",
+        "DB-K18"
+      ],
+      "falle": [
+        "P5"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-06",
+      "kategorie": "SQL Verbund",
+      "titel": "Fallen-Check P6/P7",
+      "aufgabe": "Gesucht sind alle E-Bikes und Lastenräder mit dem Namen ihrer Station. Setze die fehlenden Klammern und ergänze die fehlenden Tabellennamen.",
+      "sql": "SELECT Name, Typ\nFROM Station, Rad\nWHERE StationID = StationID\n  AND Typ = 'E-Bike' OR Typ = 'Lastenrad'",
+      "datenbank": "stadtrad",
+      "loesung": "`StationID` gibt es in beiden Tabellen – ohne Tabellennamen ist die Verbundbedingung mehrdeutig: `Station.StationID = Rad.StationID` (P7). AND bindet stärker als OR: Ohne Klammern kämen alle Lastenräder mit **jeder** Station (Kreuzprodukt) dazu. Richtig: `AND (Rad.Typ = 'E-Bike' OR Rad.Typ = 'Lastenrad')` (P6) – 9 Zeilen statt 125.",
+      "loesungSql": "SELECT Station.Name, Rad.Typ\nFROM Station, Rad\nWHERE Station.StationID = Rad.StationID\n  AND (Rad.Typ = 'E-Bike' OR Rad.Typ = 'Lastenrad')",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K17",
+        "DB-K16"
+      ],
+      "falle": [
+        "P6",
+        "P7"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-07",
+      "kategorie": "Schlüssel",
+      "titel": "Fallen-Check P8",
+      "aufgabe": "In einem Ausschnitt der Tabelle `Ausleihe` (zehn Zeilen) kommt jede Kombination aus RadID und KundenID nur einmal vor. Juri folgert: „(RadID, KundenID) ist als Primärschlüssel geeignet.“ Begründe, warum der Ausschnitt das nicht beweist.",
+      "loesung": "Ein Primärschlüssel muss für **alle** zulässigen Daten eindeutig sein. Ein Ausschnitt kann Eindeutigkeit nur widerlegen, nie beweisen: Dieselbe Kundin kann dasselbe Rad an einem anderen Tag wieder ausleihen – dann gibt es zwei Ausleihen mit derselben Kombination. Entscheidend ist der Sachzusammenhang.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K02"
+      ],
+      "falle": [
+        "P8"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-08",
+      "kategorie": "Überführung",
+      "titel": "Fallen-Check P9",
+      "aufgabe": "ER-Modell: Trainer —1— *leitet* —n— Abteilung. Juri überführt: `Trainer(TrainerNr, Name, ↑AbteilungNr)` und `Abteilung(AbteilungNr, Name)` (Primärschlüssel jeweils das erste Attribut). Finde den Fehler und korrigiere ihn.",
+      "loesung": "Der Fremdschlüssel steht auf der falschen Seite: Ein Trainer leitet mehrere Abteilungen, in Trainer hätte er also mehrere AbteilungNr – das geht nicht. Bei 1:n kommt der Fremdschlüssel auf die **n-Seite**: `Trainer(TrainerNr, Name)`, `Abteilung(AbteilungNr, Name, ↑TrainerNr)`.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K41"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-09",
+      "kategorie": "Abfrage analysieren",
+      "titel": "Fallen-Check P10",
+      "aufgabe": "Juri analysiert die Abfrage so: „Sie verbindet Stand und Bon, filtert Zahlart = Karte, gruppiert nach StandNr und Name, sortiert absteigend nach COUNT und gibt die erste Zeile aus.“ Schreibe seine Analyse in **einen** Satz im Sachzusammenhang um.",
+      "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Bons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.Zahlart = 'Karte'\nGROUP BY Stand.StandNr, Stand.Name\nORDER BY Bons DESC\nLIMIT 1",
+      "datenbank": "stadtfest",
+      "loesung": "Die Abfrage ermittelt den Stand des Stadtfests, an dem die meisten Bons mit Karte bezahlt wurden, und gibt seine Nummer, seinen Namen und die Zahl dieser Kartenzahlungen aus (hier: Kaffeemobil mit 55 Bons). Juris Text beschreibt nur die Technik – „analysieren“ verlangt den Sachzusammenhang.",
+      "loesungSql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Bons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.Zahlart = 'Karte'\nGROUP BY Stand.StandNr, Stand.Name\nORDER BY Bons DESC\nLIMIT 1",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K28"
+      ],
+      "falle": [
+        "P10"
+      ]
+    },
+    {
+      "akte": 7,
+      "id": "W-A7-10",
+      "kategorie": "Abfrage analysieren",
+      "titel": "Zeitbudget und Operatoren",
+      "aufgabe": "Eine Prüfungsaufgabe hat 30 BE in sieben Teilen (4, 5, 6, 3, 3, 5, 4 BE). Erstelle ein Zeitbudget (≈ 2 Minuten je BE) und unterscheide die Operatoren „analysieren“, „erläutern“ und „beurteilen“.",
+      "loesung": "Zeitbudget: 8, 10, 12, 6, 6, 10 und 8 Minuten – zusammen 60 Minuten, dazu etwa 10 Minuten Lesen und Kontrolle. **Analysieren:** Information einer Abfrage bzw. eines Materials im Sachzusammenhang herausarbeiten. **Erläutern:** einen Sachverhalt mit Beispiel bzw. Zusatzinformation nachvollziehbar machen. **Beurteilen:** zu einem begründeten Urteil kommen (Kriterien nennen, abwägen, Ergebnis).",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K47"
+      ],
+      "falle": [
+        "P10"
+      ]
+    }
+  ]
+}
