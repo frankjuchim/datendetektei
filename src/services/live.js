@@ -690,6 +690,12 @@ function erzeugeLive({ lernen, inhalte, pruefer = null, jetzt = Date.now, zufall
     if (r.modus === 'duell') {
       const d = r.duell;
       if (aktion === 'naechste') {
+        // nach (optional) = Nummer der Aufgabe, die die Steuerung gesehen hat (0 = noch keine): ein Doppelklick
+        // schaltet so nicht zwei Aufgaben weiter.
+        if (b.nach !== undefined) {
+          if (!Number.isInteger(b.nach) || b.nach < 0) throw new HttpFehler(400, 'Ungültige Angabe.');
+          if (b.nach !== d.index + 1) throw new HttpFehler(409, 'Die nächste Aufgabe ist schon freigeschaltet.');
+        }
         if (d.index + 1 >= d.liste.length) throw new HttpFehler(409, 'Es gibt keine weitere Aufgabe.');
         if (d.frage) d.frage.offen = false;
         d.index += 1;

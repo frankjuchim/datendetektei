@@ -227,11 +227,14 @@ export async function zeigeLiveSteuerung(container, { kursId, kursName = '' }) {
 
   const STATUS = { wartet: 'wartet auf den Start', laeuft: 'läuft', abgelaufen: 'Zeit abgelaufen', beendet: 'beendet' };
 
-  async function aktion(z, body, meldung) {
+  // Knopf während der Anfrage gesperrt (Doppelklick); der neue Zustand kommt per SSE und zeichnet die Knöpfe neu.
+  async function aktion(z, body, meldung, knopfEl = null) {
+    if (knopfEl) knopfEl.disabled = true;
     try {
       await A.senden(G.rundeApi(z.id, '/steuerung'), body);
     } catch (err) {
       if (meldung) meldung.textContent = err.message;
+      if (knopfEl) knopfEl.disabled = false;
     }
   }
 
@@ -265,13 +268,13 @@ export async function zeigeLiveSteuerung(container, { kursId, kursName = '' }) {
       if (d.weitere) {
         const k = knopf(f ? 'Nächste Aufgabe' : 'Erste Aufgabe freischalten', 'knopf primaer', 'i-vor');
         k.id = 'k-naechste';
-        k.addEventListener('click', () => aktion(z, { aktion: 'naechste' }, meldung));
+        k.addEventListener('click', () => aktion(z, { aktion: 'naechste', nach: f ? f.nr : 0 }, meldung, k));
         reihe.appendChild(k);
       }
       if (f && f.offen) {
         const k = knopf('Aufgabe schließen', 'knopf', 'i-stopp');
         k.id = 'k-schliessen';
-        k.addEventListener('click', () => aktion(z, { aktion: 'schliessen' }, meldung));
+        k.addEventListener('click', () => aktion(z, { aktion: 'schliessen' }, meldung, k));
         reihe.appendChild(k);
       }
     } else {
@@ -279,16 +282,16 @@ export async function zeigeLiveSteuerung(container, { kursId, kursName = '' }) {
       if (z.status === 'wartet') {
         const k = knopf('Los – Countdown starten', 'knopf primaer', 'i-play');
         k.id = 'k-los';
-        k.addEventListener('click', () => aktion(z, { aktion: 'los' }, meldung));
+        k.addEventListener('click', () => aktion(z, { aktion: 'los' }, meldung, k));
         reihe.appendChild(k);
       } else {
         const tipps = knopf(e.tippsFrei ? 'Tipp-Umschläge sperren' : 'Tipp-Umschläge freigeben', 'knopf', 'i-tipp');
         tipps.id = 'k-tipps';
         tipps.setAttribute('aria-pressed', String(e.tippsFrei));
-        tipps.addEventListener('click', () => aktion(z, { aktion: 'tippsFrei', an: !e.tippsFrei }, meldung));
+        tipps.addEventListener('click', () => aktion(z, { aktion: 'tippsFrei', an: !e.tippsFrei }, meldung, tipps));
         const mehr = knopf('+5 Minuten', 'knopf', 'i-uhr');
         mehr.id = 'k-verlaengern';
-        mehr.addEventListener('click', () => aktion(z, { aktion: 'verlaengern', min: 5 }, meldung));
+        mehr.addEventListener('click', () => aktion(z, { aktion: 'verlaengern', min: 5 }, meldung, mehr));
         reihe.append(tipps, mehr);
       }
       const codes = el('table', 'daten live-codes');

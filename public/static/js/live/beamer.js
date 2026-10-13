@@ -87,10 +87,47 @@ function zeigeEnde(z) {
 if (!rundeId) {
   haupt.replaceChildren(el('p', null, 'Diese Live-Runde gibt es nicht.'));
 } else {
+  verbinden();
+}
+
+function verbinden() {
   G.verbinde(rundeId, {
     sicht: 'beamer',
     zustand: zeichne,
-    ende: (d) => zeigeEnde(d),
+    ende: (d) => (d ? zeigeEnde(d) : nachAbbruch()),
     verbindung: (ok) => verbindung.setze(ok)
   });
+}
+
+/**
+ * Der Ereignisstrom wurde abgelehnt (z. B. 502 vom Proxy während eines Neustarts): erst nachfragen, ob es die Runde
+ * noch gibt – nur bei 404 ist sie wirklich vorbei; sonst den Stand zeigen und neu verbinden.
+ */
+async function nachAbbruch() {
+  verbindung.setze(false);
+  let antwort = null;
+  try {
+    antwort = await fetch(`/api/live/${encodeURIComponent(rundeId)}?sicht=beamer`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+  } catch {
+    antwort = null;
+  }
+  if (antwort && antwort.status === 404) return zeigeEnde(null);
+  if (antwort && (antwort.status === 401 || antwort.status === 403)) {
+    uhr.stopp();
+    haupt.replaceChildren(el('p', null, 'Sie sind nicht mehr angemeldet. Bitte öffnen Sie die Beamer-Ansicht nach der Anmeldung erneut aus der Live-Steuerung.'));
+    return;
+  }
+  if (antwort && antwort.ok) {
+    let z = null;
+    try {
+      z = await antwort.json();
+    } catch {
+      z = null;
+    }
+    if (z && z.status === 'beendet') return zeigeEnde(z);
+    if (z) zeichne(z);
+    setTimeout(verbinden, 2000);
+    return;
+  }
+  setTimeout(nachAbbruch, 5000);
 }

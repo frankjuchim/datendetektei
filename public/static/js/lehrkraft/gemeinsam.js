@@ -21,7 +21,7 @@ export async function ersetzen(pfad, body) {
       body: JSON.stringify(body)
     });
   } catch {
-    throw new A.ApiFehler(0, 'Keine Verbindung zum Server. Bitte prüfen Sie das Netz und versuchen Sie es erneut.');
+    throw new A.ApiFehler(0, A.standardText(0));
   }
   let daten = null;
   try {
@@ -30,7 +30,8 @@ export async function ersetzen(pfad, body) {
     daten = null;
   }
   if (!antwort.ok) {
-    const text = daten && typeof daten.error === 'string' ? daten.error : 'Speichern fehlgeschlagen – bitte erneut versuchen.';
+    const text = antwort.status === 401 || antwort.status === 429 ? A.standardText(antwort.status)
+      : daten && typeof daten.error === 'string' ? daten.error : 'Speichern fehlgeschlagen – bitte erneut versuchen.';
     throw new A.ApiFehler(antwort.status, text, daten || {});
   }
   return daten;

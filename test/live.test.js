@@ -504,3 +504,22 @@ test('Sicherheits-Review Phase 8: Team-Wechsel umgeht die Code-Bremse nicht (5 f
   e.uhr.t += 61000;
   assert.equal((await e.s1.post(R(r.id, '/code'), { code: CODES.S1 })).body.ok, true);
 });
+
+test('Probelauf 8: Doppelklick auf „Nächste Aufgabe“ überspringt keine Aufgabe (nach = gesehene Nummer, sonst 409)', async () => {
+  const e = await start();
+  const r = await runde(e, { modus: 'duell', aufgaben: ['K2-L-01', 'K2-L-04', 'K2-L-09'] });
+  // Doppelklick auf „Erste Aufgabe freischalten“: beide Anfragen tragen nach = 0
+  assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 0 })).status, 200);
+  const doppelt = await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 0 });
+  assert.equal(doppelt.status, 409);
+  assert.match(doppelt.body.error, /schon/);
+  let z = (await e.l.get(R(r.id))).body;
+  assert.equal(z.duell.frage.nr, 1);
+  assert.equal(z.duell.frage.offen, true, 'Aufgabe 1 bleibt offen');
+  // regulär weiter mit der gesehenen Nummer
+  assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 1 })).status, 200);
+  assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach: 1 })).status, 409);
+  z = (await e.l.get(R(r.id))).body;
+  assert.equal(z.duell.frage.nr, 2);
+  for (const nach of ['x', -1, 1.5]) assert.equal((await e.l.post(R(r.id, '/steuerung'), { aktion: 'naechste', nach })).status, 400, String(nach));
+});
