@@ -26,7 +26,7 @@ Schüler:innen öffnen danach im Portal *Meine Plattformen → Weiter zur Datend
 | **Niveau** | eA (Leistungskurs) oder gA (Grundkurs): gA blendet Akte 5 (komplett eA), eA-Ermittlungen und -Videos, Trainings T4/T6 und die Kür K1 aus. | eA |
 | **Verhöre** | *automatisch*: frei, sobald eine Schülerin 60 % der Ermittlungspunkte einer Akte hat · *offen* · *gesperrt*. Je Akte abweichend einstellbar (z. B. Verhör erst in der nächsten Stunde). | automatisch |
 | **Beamer-Board** | Erzeugt einen geheimen Link für die Beamer-Rangliste. Wer den Link kennt, sieht Kursname und Anzeigenamen. Link erneuern macht den alten ungültig. | aus |
-| **Scoreboard** | wird gespeichert, hat derzeit keine Wirkung (offene Frage, Spec §18). | aus |
+| **Scoreboard** | Rangliste des Kurses für Ihre Schüler:innen auf dem Stadtplan (Karte „Rangliste deines Kurses“): die besten 10 und zusätzlich der eigene Platz, jeweils Anzeigename, Rang und Punkte; gleiche Punkte – gleicher Platz. Sichtbar nur für Mitglieder dieses Kurses (angemeldet), Lehrkräfte erscheinen nicht. Sie selbst sehen auf dem Stadtplan die Vorschau. Ausschalten blendet die Karte sofort aus. | aus |
 
 Änderungen wirken sofort; Schüler:innen sehen sie beim nächsten Seitenaufruf.
 

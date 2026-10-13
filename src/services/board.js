@@ -3,11 +3,15 @@
 // Board-Schlüssel, nur wenn im Kurs eingeschaltet (Einstellung beamer) und der Kurs aktiv ist.
 // Inhalt: Top 15 (Anzeigename, Punkte, Rang, Platz), Akten-Fortschritt des Kurses, letzte Erfolge (Tabelle erfolge).
 // Keine sub, keine Kurs-ID; nur Schüler (Lehrkräfte und Superadmin erscheinen nie).
+// Dieselbe Rangliste (Platz, Gleichstand, gA/eA) liefert rangliste() als Scoreboard für Kursmitglieder (Vertrag §4,
+// Kurseinstellung scoreboard): Top 10 und zusätzlich der eigene Platz.
 
 const crypto = require('node:crypto');
 const { ABZEICHEN } = require('../domain');
 
 const TOP = 15;
+/** Scoreboard für Kursmitglieder: die besten 10, dazu der eigene Platz. */
+const TOP_KURS = 10;
 const ERFOLGE = 12;
 /** 24 Byte = 192 Bit, base64url → 32 Zeichen. */
 const SCHLUESSEL_BYTES = 24;
@@ -27,6 +31,10 @@ function erzeugeBoard({ db, inhalte, stand, auswertung, jetzt = Date.now }) {
     if (!k || !k.aktiv || k.einstellungen.beamer !== true) return null;
     return k;
   }
+
+  /** Rangliste aus auswertung.sammle: nach Platz (Gleichstand → gleicher Platz), dann wie die Auswertung. */
+  const sortiert = (d) => [...d.zeilen].sort((a, b) => a.platz - b.platz || a.nr - b.nr);
+  const zeilenSicht = (z) => ({ platz: z.platz, name: z.name, rang: z.rang, punkte: z.punkte.gesamt });
 
   function erfolgSicht(e, name) {
     const [art, wert] = String(e.art).split(/:(.*)/s);
@@ -55,10 +63,7 @@ function erzeugeBoard({ db, inhalte, stand, auswertung, jetzt = Date.now }) {
     if (!k) return null;
     const d = auswertung.sammle(k.id);
     const namen = new Map(d.zeilen.map((z) => [z._sub, z.name]));
-    const rangliste = [...d.zeilen]
-      .sort((a, b) => a.platz - b.platz || a.nr - b.nr)
-      .slice(0, TOP)
-      .map((z) => ({ platz: z.platz, name: z.name, rang: z.rang, punkte: z.punkte.gesamt }));
+    const rangliste = sortiert(d).slice(0, TOP).map(zeilenSicht);
     const welten = new Map(d.kz.welten.map((w) => [w.nr, w.anteil]));
     const akten = inhalte
       .akten()
@@ -75,7 +80,27 @@ function erzeugeBoard({ db, inhalte, stand, auswertung, jetzt = Date.now }) {
     return { kurs: { name: k.name }, zeit: new Date(jetzt()).toISOString().replace(/\.\d{3}Z$/, 'Z'), rangliste, akten, erfolge };
   }
 
-  return { daten, kursFuer };
+  /**
+   * Scoreboard eines Kurses (Zugang prüft der Aufrufer): Top 10, die eigene Zeile mit ich: true markiert; liegt sie
+   * außerhalb der Top 10, steht sie zusätzlich in eigene. sub = eigenes Konto (Lehrkraft/Superadmin: keine Zeile).
+   * → { kurs: { name }, aktiv, teilnehmende, rangliste, eigene } oder null (unbekannter Kurs)
+   */
+  function rangliste(kursId, sub) {
+    const d = auswertung.sammle(kursId);
+    if (!d) return null;
+    const alle = sortiert(d);
+    const sicht = (z) => (z._sub === sub ? { ...zeilenSicht(z), ich: true } : zeilenSicht(z));
+    const i = alle.findIndex((z) => z._sub === sub);
+    return {
+      kurs: { name: d.k.name },
+      aktiv: d.einst.scoreboard === true,
+      teilnehmende: alle.length,
+      rangliste: alle.slice(0, TOP_KURS).map(sicht),
+      eigene: i >= TOP_KURS ? sicht(alle[i]) : null
+    };
+  }
+
+  return { daten, kursFuer, rangliste };
 }
 
-module.exports = { erzeugeBoard, neuerBoardSchluessel, istBoardSchluessel, SCHLUESSEL_MUSTER };
+module.exports = { erzeugeBoard, neuerBoardSchluessel, istBoardSchluessel, SCHLUESSEL_MUSTER, TOP_KURS };

@@ -28,6 +28,7 @@ const { schuelerRouten } = require('./routes/schueler');
 const { kuerRouten } = require('./routes/kuer');
 const { lehrkraftRouten } = require('./routes/lehrkraft');
 const { lehrkraftAuswertungRouten } = require('./routes/lehrkraft_auswertung');
+const { ranglisteRouten } = require('./routes/rangliste');
 const { lehrkraftSeitenRouten } = require('./routes/lehrkraft_seiten');
 const { gastRouten } = require('./routes/gast');
 const { themenRouten } = require('./routes/themen');
@@ -147,6 +148,8 @@ function erzeugeApp(
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
   if (fallebene) app.use(fallebeneRouten({ fallebene }));
+  // Scoreboard: Rangliste des Kurses für Mitglieder, nur wenn die Lehrkraft es einschaltet (Vertrag §4).
+  if (lernen) app.use(ranglisteRouten({ db, inhalte, stand, lernen }));
   if (live) app.use(liveRouten({ live, konfig, sperre: sandboxSperre }));
   // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
   // Materialien (Whitelists verzeichnis.json, Zugriff nach Rolle, Spec §12.4) – eine Instanz für Gast, Themen, Downloads.
