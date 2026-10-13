@@ -26,9 +26,10 @@ test('Laden: Akte 7 mit einer Ermittlung ohne Aufgaben und Verhör 7 (15 Aufgabe
   assert.equal(a.boss.pool.length, 15);
   assert.equal(a.boss.dauerMin, 30);
   const umfang = u.inhalte.umfang();
-  assert.equal(umfang.welten, 2);
-  assert.equal(umfang.level, 3, 'A9-E1, A9-E2 und A7-E1');
-  assert.equal(umfang.bosse, 2);
+  // Manifest zählt nur Akten des Plans (1–7, welten fest 7); die Beispielakte (welt 9) zählt nicht.
+  assert.equal(umfang.welten, 7);
+  assert.equal(umfang.level, 1, 'nur A7-E1');
+  assert.equal(umfang.bosse, 1);
 });
 
 test('Stand: Ermittlung 7.1 mit Briefing und 0 Aufgaben; Verhör 7 frei, sobald Akte 7 freigeschaltet ist', async () => {
