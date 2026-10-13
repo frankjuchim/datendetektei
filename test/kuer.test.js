@@ -255,7 +255,7 @@ test('Kür ohne Rangwirkung: Punkte zählen zu den Gesamtpunkten, nicht zum Rang
 test('Manifest-umfang und Verbund-Welten ohne Kür', async () => {
   const { u } = await start();
   const umfang = u.inhalte.umfang();
-  assert.equal(umfang.welten, 1, 'nur die Beispielakte zählt');
+  assert.equal(umfang.welten, 7, 'Manifest zählt nur die Plan-Akten 1–7 (hier Standardwerte), nie die Kür');
   assert.ok(!u.inhalte.akten().filter((a) => !a.kuer).some((a) => a.nr === 8));
   const m = (await request(u.app).get('/api/plattform')).body;
   assert.ok(!m.welten.some((w) => w.nr === 8));

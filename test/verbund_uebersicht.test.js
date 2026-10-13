@@ -146,7 +146,7 @@ test('Manifest umfang wird aus seed/akten berechnet (Lab-Aufgaben ohne Cold Case
   // Cold Cases sind nicht dabei
   const cc = inhalte.akten().flatMap((a) => a.levels.map((l) => l.coldCase).filter(Boolean));
   assert.ok(cc.length > 0);
-  const lab = inhalte.akten().flatMap((a) => a.levels.flatMap((l) => l.aufgaben));
+  const lab = inhalte.akten().filter((a) => !a.kuer).flatMap((a) => a.levels.flatMap((l) => l.aufgaben));
   assert.equal(lab.length, soll.aufgaben);
   for (const id of cc) assert.ok(!lab.includes(id), id);
 });
