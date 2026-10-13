@@ -20,47 +20,6 @@
           "name": "fundbuero"
         },
         {
-          "t": "schema",
-          "relationen": [
-            {
-              "name": "Fundsache",
-              "attribute": [
-                {
-                  "name": "FundNr",
-                  "pk": true
-                },
-                {
-                  "name": "Bezeichnung"
-                },
-                {
-                  "name": "Kategorie"
-                },
-                {
-                  "name": "Farbe"
-                },
-                {
-                  "name": "Fundort"
-                },
-                {
-                  "name": "Stadtteil"
-                },
-                {
-                  "name": "Funddatum"
-                },
-                {
-                  "name": "Wert"
-                },
-                {
-                  "name": "Finder"
-                },
-                {
-                  "name": "AbgeholtAm"
-                }
-              ]
-            }
-          ]
-        },
-        {
           "t": "tabelle",
           "kopf": [
             "Fachbegriff",

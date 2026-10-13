@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "karten": [
+    {
+      "id": "W-A5-01",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Notation benennen",
+      "aufgabe": "Im Bauplan steht: `[Ermittler]` —1— `<leitet>` —n— `[Fall]`, an Ermittler die Ellipsen *ErmittlerNr* (unterstrichen) und *Name*. Benenne die Elemente mit den Fachbegriffen der EH: Rechteck, Raute, unterstrichene Ellipse, Ellipse, 1 und n.",
+      "loesung": "Rechteck **Ermittler**, **Fall** = Entitätstyp · Raute **leitet** = Beziehungstyp · unterstrichene Ellipse **ErmittlerNr** = Schlüsselattribut · Ellipse **Name** = Attribut · **1** und **n** an den Kanten = Kardinalität. Nicht „Entitätsmenge“.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K33",
+        "DB-K47"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A5-02",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Mengenbild",
+      "aufgabe": "Mengendiagramm: Station A ist mit den Rädern 1, 2, 3 verbunden, Station B mit Rad 4 und 5; jedes Rad hat genau eine Linie. Bestimme die Kardinalität von *steht an* zwischen Station und Rad und formuliere sie in **beiden** Richtungen.",
+      "loesung": "Station **1** : **n** Rad. „An einer Station können mehrere Räder stehen; jedes Rad steht an genau einer Station.“ Das n gehört an die Kante zu Rad.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K34"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-03",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Aus den Daten",
+      "aufgabe": "Tabelle `Leihe(LeserNr, BuchNr)` mit den Zeilen (1, 10), (1, 11), (2, 10), (3, 12). Leite die Kardinalität zwischen Leser und Buch ab und begründe.",
+      "loesung": "Leser 1 leiht die Bücher 10 und 11 (ein Leser – mehrere Bücher), Buch 10 wurde von Leser 1 und 2 geliehen (ein Buch – mehrere Leser) → **n:m**. Wer nur eine Richtung prüft, kommt auf 1:n. Daten stützen die Kardinalität nur; begründet wird sie im Sachzusammenhang (ein Buch wird im Lauf der Zeit von vielen gelesen).",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K34"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-04",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Wohin mit der Note?",
+      "aufgabe": "Im Modell Schueler —n— `<belegt>` —m— Kurs soll die Note gespeichert werden. Begründe, an welches Element die Note gehört.",
+      "loesung": "An den Beziehungstyp **belegt**: Die Note hängt vom Paar Schüler–Kurs ab. Am Schüler wäre sie falsch (er hat in jedem Kurs eine andere Note), am Kurs ebenso (jeder Teilnehmende hat eine eigene).",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K36"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-05",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Rekursiv lesen",
+      "aufgabe": "Ein Bauplan zeigt `[Schueler]` mit der Raute *istPateVon*, an deren Kanten „Pate 1“ und „Patenkind n“ stehen. Formuliere die Beziehung in **beiden** Richtungen im Sachzusammenhang.",
+      "loesung": "„Ein Schüler kann Pate von mehreren Patenkindern sein; jedes Patenkind hat höchstens einen Paten.“ Beide Kanten führen zu Schueler (rekursiv 1:n); die Rollen Pate/Patenkind stehen an den Kanten.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K37",
+        "DB-K33"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-06",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Ternär lesen",
+      "aufgabe": "Erläutere, welche Information die ternäre Beziehung *sagtAus* (Person, Fall, Ort) speichert, die drei binäre Beziehungen Person–Fall, Fall–Ort und Person–Ort **nicht** speichern.",
+      "loesung": "Nur die ternäre Beziehung hält fest, **welche Person in welchem Fall an welchem Ort** ausgesagt hat. Aus drei binären Beziehungen lässt sich das nicht eindeutig zurückgewinnen: Sagt Gesa in Fall 1 und 3 aus, und wurde in beiden Fällen im Fundbüro und auf dem Festplatz ausgesagt, bleibt offen, wo Gesa zu welchem Fall aussagte.",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K38"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-07",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Text → Mini-ER",
+      "aufgabe": "Skizziere ein Mini-ER zu: „Ein Kurs wird von genau einer Lehrkraft geleitet. Schüler belegen mehrere Kurse.“ (Entitätstypen mit Schlüsselattribut, Beziehungstypen, Kardinalitäten)",
+      "loesung": "Lehrkraft (LehrkraftNr) —1— *leitet* —n— Kurs (KursNr) · Schueler (SchuelerNr) —n— *belegt* —m— Kurs. „Mehrere Kurse“ je Schüler und viele Schüler je Kurs → n:m; „genau eine Lehrkraft“ → 1 an der Lehrkraft-Kante.",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K35"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-08",
+      "akte": 5,
+      "kategorie": "ER-Modell",
+      "titel": "Grenzen",
+      "aufgabe": "Begründe, warum „Jede Band hat **genau vier** Mitglieder“ mit den Kardinalitäten 1/n/m nicht darstellbar ist.",
+      "loesung": "1/n/m unterscheiden nur „eins“ und „viele“. Eine konkrete Anzahl wie vier lässt sich so nicht notieren – sie wird als **Anmerkung zum Modell** festgehalten (Band 1 : n Mitglied bzw. n:m bleibt die Kardinalität).",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K40"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A5-09",
+      "akte": 5,
+      "kategorie": "Überführung",
+      "titel": "1:n überführen",
+      "aufgabe": "Überführe Ermittler —1— *leitet* —n— Fall in die Kurzschreibweise und begründe, in welcher Relation der Fremdschlüssel steht.",
+      "loesung": "Ermittler(ErmittlerNr, Name, Dienstgrad) · Fall(FallNr, Titel, Eroeffnet, Status, **↑LeiterNr**) – Primärschlüssel unterstrichen. Der Fremdschlüssel gehört auf die **n-Seite**: Jeder Fall hat genau eine Leitung, also steht in jeder Fall-Zeile genau ein Wert. In Ermittler bräuchte eine Ermittlerin mit drei Fällen drei Werte in einer Zelle.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K41",
+        "DB-K42"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-10",
+      "akte": 5,
+      "kategorie": "Überführung",
+      "titel": "n:m überführen",
+      "aufgabe": "Überführe Schueler —n— *belegt* —m— Kurs mit dem Attribut Note in die Kurzschreibweise.",
+      "loesung": "Schueler(SchuelerNr, Name) · Kurs(KursNr, Titel) · **belegt(↑SchuelerNr, ↑KursNr, Note)** – eigene Relation, Primärschlüssel aus beiden Fremdschlüsseln (beide unterstrichen), die Note als Beziehungsattribut in diese Relation. Ein Fremdschlüssel in Schueler oder Kurs reicht bei n:m nicht.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K41"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-11",
+      "akte": 5,
+      "kategorie": "Überführung",
+      "titel": "Rückwärts",
+      "aufgabe": "Skizziere aus `Spiel(SpielNr, Datum, ↑HeimNr, ↑GastNr)` und `Team(TeamNr, Name)` das ER-Diagramm (beide Fremdschlüssel verweisen auf Team).",
+      "loesung": "Entitätstypen **Team** (TeamNr unterstrichen, Name) und **Spiel** (SpielNr unterstrichen, Datum). Zwei Fremdschlüssel auf Team → **zwei** Beziehungstypen: Team 1 — *spieltHeim* — n Spiel und Team 1 — *spieltGast* — n Spiel. HeimNr und GastNr werden im ER-Diagramm keine Attribute.",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K43",
+        "DB-K38"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-12",
+      "akte": 5,
+      "kategorie": "SQL Verbund",
+      "titel": "Self-Join",
+      "aufgabe": "Notiere eine Abfrage, die zu jedem Ermittler den Namen seines Mentors ausgibt (`Ermittler(ErmittlerNr, Name, Dienstgrad, ↑MentorNr)`).",
+      "loesung": "Die Tabelle Ermittler wird zweimal mit verschiedenen Aliasen verwendet und über `e.MentorNr = m.ErmittlerNr` verbunden. Ohne Aliase wäre `Name` mehrdeutig. Edda Lorenz und Ulf Witte erscheinen nicht – sie haben keinen Mentor (NULL).",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K24",
+        "DB-K16"
+      ],
+      "falle": [
+        "P7"
+      ],
+      "datenbank": "detektei",
+      "loesungSql": "SELECT e.Name AS Ermittler, m.Name AS Mentor\nFROM Ermittler e, Ermittler m\nWHERE e.MentorNr = m.ErmittlerNr\nORDER BY m.Name"
+    }
+  ]
+}

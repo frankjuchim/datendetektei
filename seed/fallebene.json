@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "beweisstuecke": [
+    {
+      "akte": 1,
+      "titel": "Fundbuch-Seite",
+      "bild": "fundbuch",
+      "text": "Ein Ausdruck der Fundbuch-Seite. Die Zeile „Messing-Kompass · 450 € · Finder: N. Falter · abgeholt 14.09.“ ist gelb markiert, am Rand ist mit Bleistift ein kleiner Nachtfalter gezeichnet.",
+      "notiz": "Wer war am Schalter?"
+    },
+    {
+      "akte": 2,
+      "titel": "Schloss-Code",
+      "bild": "schloss",
+      "text": "Das Display am Ausleih-Terminal Hafenkante bei Nacht: „Rad entsperrt · Konto 77 · N. Falter“. Auf dem Gehäuse klebt ein Nachtfalter-Sticker, im Hintergrund leuchten unscharf die Laternen am Kai."
+    },
+    {
+      "akte": 3,
+      "titel": "Kassenbon",
+      "bild": "bon",
+      "text": "Ein zerknitterter Bon: „Kaffeemobil · 29.08. · 22:41 · Kaffee 0 × 2,50 € · Summe 0,00 € · bar · Bediener 23“. Auf der Rückseite ist halb ein gestempelter Nachtfalter zu sehen."
+    },
+    {
+      "akte": 4,
+      "titel": "Vereinsausweis",
+      "bild": "ausweis",
+      "text": "Ein laminierter Mitgliedsausweis: „TuS Weserstedt · Nora Falter · Abteilung Tischtennis · Beitrag: 0,00 €“. Wo das Foto sein sollte, ist ein Nachtfalter gezeichnet."
+    },
+    {
+      "akte": 5,
+      "titel": "Ermittlungsnetz",
+      "bild": "netz",
+      "text": "Die Pinnwand von schräg oben: Von vier Fallkarten führt je ein roter Faden zu einer Karteikarte mit „N. F.?“. Daneben liegt ein ER-Diagramm mit der Raute *kennt*, die sich an *Person* zurückschlingt."
+    },
+    {
+      "akte": 6,
+      "titel": "Steckbrief",
+      "bild": "steckbrief",
+      "text": "Der vollständig ausgefüllte Steckbrief, im Namensfeld „Merle Falkenrath“. Am Rand klebt der braune Umschlag mit dem Nachtfalter.",
+      "notiz": "Und was sagt das über uns?"
+    },
+    {
+      "akte": 7,
+      "titel": "Detektei-Lizenz",
+      "bild": "lizenz",
+      "text": "Die Lizenz liegt auf Eddas Schreibtisch, daneben der Stempel „GELÖST“ und eine leere Teetasse."
+    }
+  ],
+  "steckbrief": {
+    "felder": [
+      { "id": "signatur", "titel": "Signatur / Initialen" },
+      { "id": "tarnname", "titel": "Tarnname" },
+      { "id": "jahrgang", "titel": "Jahrgang" },
+      { "id": "wohnort", "titel": "Wohnort" },
+      { "id": "gewohnheiten", "titel": "Gewohnheiten / Fähigkeiten" },
+      { "id": "netzwerk", "titel": "Netzwerk" },
+      { "id": "name", "titel": "Name / Motiv" }
+    ],
+    "hinweise": [
+      {
+        "akte": 1,
+        "eintraege": [
+          { "feld": "signatur", "text": "Nachtfalter, Initialen „N. F.“" },
+          { "feld": "gewohnheiten", "text": "hat Zugriff auf städtische Datenbestände" }
+        ]
+      },
+      {
+        "akte": 2,
+        "eintraege": [
+          { "feld": "tarnname", "text": "„Nora Falter“" },
+          { "feld": "jahrgang", "text": "1988 (unbestätigt)" },
+          { "feld": "wohnort", "text": "Hafenviertel (unbestätigt)" },
+          { "feld": "gewohnheiten", "text": "nachts unterwegs" }
+        ]
+      },
+      {
+        "akte": 3,
+        "eintraege": [
+          { "feld": "jahrgang", "text": "1988 (bestätigt)", "ersetzt": true },
+          { "feld": "gewohnheiten", "text": "arbeitet spät, kennt Kassensysteme" },
+          { "feld": "netzwerk", "text": "Verbindung zum TuS Weserstedt" }
+        ]
+      },
+      {
+        "akte": 4,
+        "eintraege": [
+          { "feld": "tarnname", "text": "bestätigt: im Verein kennt sie niemand" },
+          { "feld": "gewohnheiten", "text": "spielt Tischtennis, nutzt Schwächen schlecht gebauter Listen" },
+          { "feld": "netzwerk", "text": "Tischtennis-Abteilung des TuS" }
+        ]
+      },
+      {
+        "akte": 5,
+        "eintraege": [
+          { "feld": "tarnname", "text": "in Weserstedt nicht gemeldet" },
+          { "feld": "netzwerk", "text": "einzige Verdächtige in allen vier Fällen, kennt Menschen an jedem Tatort, Insiderin der Stadtverwaltung" }
+        ]
+      },
+      {
+        "akte": 6,
+        "auchNachPlaedoyer": "A6-E1",
+        "stempel": "Enttarnt",
+        "eintraege": [
+          { "feld": "wohnort", "text": "Hafenviertel (bestätigt)", "ersetzt": true },
+          { "feld": "name", "text": "Merle Falkenrath, ehemalige Datenschutzbeauftragte der Stadt – Motiv: zeigen, wie gläsern die Stadt ihre Bürger macht" }
+        ]
+      },
+      {
+        "akte": 7,
+        "stempel": "Fall abgeschlossen",
+        "eintraege": []
+      }
+    ]
+  }
+}

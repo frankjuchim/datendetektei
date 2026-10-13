@@ -276,6 +276,7 @@ const SANDBOX = {
   mehrere_anweisungen: { code: 'MEHRERE_ANWEISUNGEN', art: 'fehler' },
   leer: { code: 'LEER', art: 'fehler' },
   nicht_lesend: { code: 'NICHT_LESEND', art: 'fehler' },
+  ergebnis_zu_gross: { code: 'ERGEBNIS_ZU_GROSS', art: 'fehler' },
   ueberlastet: { code: 'UEBERLASTET', art: 'technisch' },
   absturz: { code: 'ABSTURZ', art: 'technisch' },
   beendet: { code: 'BEENDET', art: 'technisch' },

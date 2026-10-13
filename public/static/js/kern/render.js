@@ -1,6 +1,7 @@
 // Renderer der Aufgabenblöcke (docs/AUFGABENFORMAT.md §5, DESIGN.md §4): text/hinweis (Mini-Markdown), code, sql (mit
 // Zeilennummern und Hervorhebung über window.DD_SQL_PARSER.hebeHervor), tabelle, dbtabelle (PK unterstrichen, ↑FK,
-// NULL grau, Markierungen), schema (Kurzschreibweise), datenbank (Kachel). Dazu kleine Bausteine: Sterne, Ring,
+// NULL grau, Markierungen), schema (Kurzschreibweise), datenbank (Kachel), zeitlupe/spurenbrett/sortierfaecher
+// (eingebettete Verstehenshilfen, Phase 4), er/mengen (Modellierung, Phase 5: bauplan/block.js). Dazu kleine Bausteine: Sterne, Ring,
 // Stempel, Fallen-Plakette. Alle Texte als Textknoten – nie HTML aus Zeichenketten.
 //
 // ctx (optional) verbindet die Blöcke mit den Interaktionen:
@@ -474,6 +475,334 @@ function blockHinweis(b, ctx) {
   return box;
 }
 
+/* ---------- Verstehenshilfen als Blöcke (Phase 4): zeitlupe, spurenbrett, sortierfaecher ---------- */
+// Kompakte eingebettete Fassung des Werkzeugs: gerechnet im Browser (sql.js-Worker, öffentliche Übungs-DB) über
+// src/sql/visual.js – Zeitlupe als Schrittliste mit Zählern, Spurenbrett mit Karteikarten und Fäden, Sortierfächer mit
+// Fächern und Aggregaten – plus Knopf ins volle Werkzeug (Übergabe per sessionStorage, konsole/werkzeuge.js).
+// Ein Block zeigt nur seine eigene Abfrage bzw. Tabelle; Lösungsdaten erreichen den Browser hierüber nie.
+
+const V = new URL(import.meta.url).search;
+const WERKZEUG = Object.freeze({
+  zeitlupe: { titel: 'Zeitlupe', icon: 'i-zeitlupe', knopf: 'In der Zeitlupe öffnen' },
+  spurenbrett: { titel: 'Spurenbrett', icon: 'i-faden', knopf: 'Im Spurenbrett öffnen' },
+  sortierfaecher: { titel: 'Sortierfächer', icon: 'i-karte', knopf: 'In den Sortierfächern öffnen' }
+});
+const SKRIPTE = [
+  ['DD_SQL_PARSER', '/static/js/sql/parser.js'],
+  ['DD_SQL_FEHLERTEXTE', '/static/js/sql/fehlertexte.js'],
+  ['DD_SQL_VISUAL', '/static/js/sql/visual.js']
+];
+const TEXT_WB_LAEDT = 'Wird vorbereitet …';
+const TEXT_WB_LADEFEHLER = 'Die Datenbank konnte nicht geladen werden. Lade die Seite neu.';
+const ausfuehrerJeDb = new Map(); // db → Promise<{ fuehreAus, schema } | { fehler }>
+
+/* ---------- Modellierung (Phase 5): Blöcke er und mengen aus bauplan/block.js (SVG nach DESIGN §4.14) ---------- */
+// ctx.erAuswahl(blockIndex) → { klick(id), registriere(api) } für die Interaktion er im Lesen-Modus (oder null).
+const BAUPLAN = await import('../bauplan/block.js' + V);
+
+function blockEr(b, ctx, index) {
+  const wahl = ctx && typeof ctx.erAuswahl === 'function' ? ctx.erAuswahl(index) : null;
+  return BAUPLAN.erBlock(b, wahl);
+}
+let skripteGeladen = null;
+
+/** Klassische Skripte (Parser, Fehlertexte, Rechenschicht) nachladen, falls die Seite sie nicht schon hat. */
+function ladeSkripte() {
+  if (!skripteGeladen) {
+    skripteGeladen = SKRIPTE.reduce(
+      (kette, [global, pfad]) =>
+        kette.then(
+          () =>
+            window[global] ||
+            new Promise((resolve, reject) => {
+              const s = document.createElement('script');
+              s.src = pfad + V;
+              s.addEventListener('load', resolve);
+              s.addEventListener('error', () => reject(new Error(pfad)));
+              document.head.appendChild(s);
+            })
+        ),
+      Promise.resolve()
+    );
+  }
+  return skripteGeladen;
+}
+
+/** Ein Ausführer je DB und Seite (alle Blöcke teilen ihn), dazu das Schema. */
+function rechnerFuer(db) {
+  if (!ausfuehrerJeDb.has(db)) {
+    const p = (async () => {
+      try {
+        await ladeSkripte();
+        const { erzeugeAusfuehrer, werkzeugBereit } = await import('../konsole/ausfuehren.js' + V);
+        const ausfuehrer = erzeugeAusfuehrer({ dbUrl: `/db/${encodeURIComponent(db)}.sqlite` });
+        const f = await werkzeugBereit(ausfuehrer);
+        if (f) return { fehler: f.art === 'wasm' ? f.text : TEXT_WB_LADEFEHLER };
+        const schema = await fetch(`/api/db/${encodeURIComponent(db)}/schema`, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null);
+        return { fuehreAus: (sql) => ausfuehrer.fuehreAus(sql), schema: Array.isArray(schema) ? schema : null };
+      } catch {
+        return { fehler: TEXT_WB_LADEFEHLER };
+      }
+    })();
+    ausfuehrerJeDb.set(db, p);
+  }
+  return ausfuehrerJeDb.get(db);
+}
+
+/** Zahl wie in visual.js: Tausender mit geschütztem Leerzeichen (33 240). */
+const wbZahl = (n) => String(n).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
+function wbWert(w) {
+  if (w === null || w === undefined) return el('span', 'null', 'NULL');
+  if (typeof w === 'number') return document.createTextNode(String(w).replace('.', ','));
+  return document.createTextNode(String(w));
+}
+
+/** Rahmen eines Werkzeug-Blocks: Kopf, Inhalt (zunächst „wird vorbereitet“), Knopf ins Werkzeug. */
+function werkzeugRahmen(b, art, uebergabe) {
+  const w = WERKZEUG[art];
+  const db = String(b.datenbank || '');
+  const box = el('figure', `werkzeug-block wb-${art}`);
+  box.setAttribute('aria-label', `${w.titel}: ${DATENBANK_TITEL[db] || db}`);
+  const kopf = el('figcaption', 'wb-kopf');
+  kopf.appendChild(icon(w.icon));
+  kopf.appendChild(el('span', 'wb-titel', w.titel));
+  kopf.appendChild(el('span', 'wb-db', `${DATENBANK_TITEL[db] || db} · Übungs-DB`));
+  box.appendChild(kopf);
+  const inhalt = el('div', 'wb-inhalt');
+  box.appendChild(inhalt);
+  const status = el('p', 'wb-status', TEXT_WB_LAEDT);
+  status.setAttribute('role', 'status');
+  box.appendChild(status);
+  const reihe = el('div', 'knopf-reihe wb-knoepfe');
+  const oeffnen = knopf(w.knopf, 'knopf', w.icon);
+  oeffnen.dataset.werkzeug = art;
+  oeffnen.addEventListener('click', async () => {
+    const W = await import('../konsole/werkzeuge.js' + V);
+    W.oeffneWerkzeug(art, { db, ...uebergabe });
+  });
+  reihe.appendChild(oeffnen);
+  box.appendChild(reihe);
+  return {
+    box,
+    inhalt,
+    reihe,
+    status(text, art2 = '') {
+      status.className = 'wb-status' + (art2 ? ' ' + art2 : '');
+      status.textContent = text || '';
+      status.hidden = !text;
+    }
+  };
+}
+
+function blockZeitlupe(b) {
+  const r = werkzeugRahmen(b, 'zeitlupe', { sql: String(b.sql || ''), zurueck: window.location.pathname, start: b.start || null });
+  r.inhalt.appendChild(block({ t: 'sql', sql: String(b.sql || ''), nummern: false }));
+  const liste = el('ol', 'wb-schritte');
+  r.inhalt.appendChild(liste);
+  rechnerFuer(b.datenbank).then(async (rechner) => {
+    if (rechner.fehler) return r.status(rechner.fehler, 'fehler');
+    let erg;
+    try {
+      erg = await window.DD_SQL_VISUAL.zeitlupe(String(b.sql || ''), rechner.fuehreAus);
+    } catch {
+      erg = { fehler: 'Diese Abfrage kann hier nicht Schritt für Schritt gezeigt werden.' };
+    }
+    if (erg.fehler || !erg.schritte || !erg.schritte.length) return r.status(erg.fehler || erg.hinweis, 'fehler');
+    r.status('');
+    for (const s of erg.schritte) {
+      const li = el('li', 'wb-schritt' + (b.start && s.klausel === b.start ? ' aktiv' : ''));
+      li.appendChild(el('span', 'wb-nr', s.nummer));
+      const kopf = el('p', 'wb-schritt-kopf');
+      kopf.appendChild(el('strong', 'wb-klausel', s.klausel));
+      const z = s.zaehler || {};
+      const zahlText = (z.rechnung ? `${z.rechnung} = ` : '') + `${wbZahl(z.wert)} ${z.einheit || ''}`.trim();
+      kopf.appendChild(el('span', 'wb-zaehler', zahlText));
+      li.appendChild(kopf);
+      li.appendChild(el('p', 'wb-schritt-text', s.text));
+      if (b.start && s.klausel === b.start) li.setAttribute('aria-current', 'step');
+      liste.appendChild(li);
+    }
+  });
+  return r.box;
+}
+
+function blockSortierfaecher(b) {
+  const r = werkzeugRahmen(b, 'sortierfaecher', { sql: String(b.sql || '') });
+  r.inhalt.appendChild(block({ t: 'sql', sql: String(b.sql || ''), nummern: false }));
+  const korb = el('p', 'wb-korb');
+  korb.hidden = true;
+  const faecher = el('ul', 'wb-faecher');
+  const hinweis = el('p', 'wb-hinweis');
+  hinweis.hidden = true;
+  r.inhalt.append(korb, faecher, hinweis);
+  rechnerFuer(b.datenbank).then(async (rechner) => {
+    if (rechner.fehler) return r.status(rechner.fehler, 'fehler');
+    let erg;
+    try {
+      erg = await window.DD_SQL_VISUAL.sortierfaecher(String(b.sql || ''), rechner.fuehreAus);
+    } catch {
+      erg = { fehler: 'Diese Abfrage kann hier nicht einsortiert werden.' };
+    }
+    if (erg.fehler || !erg.faecher || !erg.faecher.length) return r.status(erg.fehler || erg.hinweis, 'fehler');
+    r.status('');
+    if (erg.korb && erg.korb.anzahl > 0) {
+      korb.hidden = false;
+      korb.appendChild(el('strong', null, 'Korb (WHERE): '));
+      korb.appendChild(document.createTextNode(`${wbZahl(erg.korb.anzahl)} ${erg.korb.anzahl === 1 ? 'Zeile fällt' : 'Zeilen fallen'} schon vor dem Gruppieren heraus.`));
+    }
+    for (const f of erg.faecher) {
+      const li = el('li', 'wb-fach' + (f.farbe ? ` g${f.farbe}` : ' g-ohne') + (f.havingRaus ? ' raus' : ''));
+      const kopf = el('p', 'wb-fach-kopf');
+      if (f.farbe) {
+        const marke = el('span', 'wb-marke', '');
+        marke.setAttribute('aria-hidden', 'true');
+        kopf.appendChild(marke);
+      }
+      kopf.appendChild(el('strong', 'wb-fach-name', f.name || 'alle Zeilen'));
+      kopf.appendChild(el('span', 'wb-fach-zahl', `${wbZahl(f.anzahl)} ${f.anzahl === 1 ? 'Karte' : 'Karten'}`));
+      li.appendChild(kopf);
+      const dl = el('dl', 'wb-aggregate');
+      (erg.aggregate || []).forEach((name, i) => {
+        dl.appendChild(el('dt', null, name));
+        const dd = el('dd');
+        dd.appendChild(wbWert(f.aggregate ? f.aggregate[i] : null));
+        dl.appendChild(dd);
+      });
+      li.appendChild(dl);
+      if (f.havingRaus) li.appendChild(el('p', 'wb-raus', 'fällt durch HAVING heraus'));
+      faecher.appendChild(li);
+    }
+    if (erg.hinweis) {
+      hinweis.hidden = false;
+      hinweis.textContent = erg.hinweis;
+    }
+  });
+  return r.box;
+}
+
+/** Spalten einer Karteikarte: Primärschlüssel, Fremdschlüssel zu den anderen Tabellen, eine weitere Spalte (≤ 3). */
+function kartenSpalten(t, alle, schema) {
+  const eintrag = Array.isArray(schema) ? schema.find((x) => String(x.tabelle).toLowerCase() === t.name.toLowerCase()) : null;
+  const andere = new Set(alle.filter((x) => x !== t).map((x) => x.name.toLowerCase()));
+  const fk = new Set();
+  if (eintrag) {
+    for (const s of eintrag.spalten || []) if (s.fk && andere.has(String(s.fk.tabelle).toLowerCase())) fk.add(s.name);
+  }
+  const wahl = [...t.pk];
+  t.spalten.forEach((s, i) => {
+    if (fk.has(s) && !wahl.includes(i)) wahl.push(i);
+  });
+  const weitere = t.spalten.findIndex((s, i) => !wahl.includes(i) && !/(id|nr)$/i.test(s));
+  if (weitere >= 0) wahl.splice(Math.min(wahl.length, t.pk.length), 0, weitere);
+  return wahl.slice(0, 3);
+}
+
+function blockSpurenbrett(b) {
+  const tabellen = Array.isArray(b.tabellen) ? b.tabellen : [];
+  const r = werkzeugRahmen(b, 'spurenbrett', {
+    tabellen: tabellen.map((t) => ({ name: t.name, limit: Array.isArray(t.zeilen) ? Math.min(50, t.zeilen.length) : t.limit || 5 })),
+    bedingung: typeof b.bedingung === 'string' ? b.bedingung : ''
+  });
+  if (typeof b.bedingung === 'string' && b.bedingung.trim()) {
+    r.inhalt.appendChild(block({ t: 'sql', sql: 'WHERE ' + b.bedingung.trim(), nummern: false }));
+  }
+  const zaehler = el('p', 'wb-zaehler-zeile');
+  zaehler.hidden = true;
+  const brett = el('div', 'wb-brett');
+  const ohne = el('p', 'wb-hinweis');
+  ohne.hidden = true;
+  r.inhalt.append(zaehler, brett, ohne);
+  rechnerFuer(b.datenbank).then(async (rechner) => {
+    if (rechner.fehler) return r.status(rechner.fehler, 'fehler');
+    let erg;
+    try {
+      erg = await window.DD_SQL_VISUAL.spurenbrett({ tabellen: tabellen.map((t) => ({ ...t })), bedingung: b.bedingung }, rechner.fuehreAus);
+    } catch {
+      erg = { fehler: 'Das Spurenbrett kann hier nicht gezeigt werden.' };
+    }
+    if (erg.fehler) return r.status(erg.fehler, 'fehler');
+    r.status('');
+    zaehler.hidden = false;
+    zaehler.textContent = erg.text;
+    if (erg.zusammengefasst) {
+      ohne.hidden = false;
+      ohne.textContent = erg.hinweis;
+      return;
+    }
+    // Karteikarten je Tabelle in einer Spalte
+    brett.classList.add(`spalten-${erg.tabellen.length}`);
+    const karten = erg.tabellen.map((t, ti) => {
+      const stapel = el('div', 'wb-stapel');
+      stapel.appendChild(el('p', 'wb-stapel-titel', t.name));
+      const spalten = kartenSpalten(t, erg.tabellen, rechner.schema);
+      const els = t.zeilen.map((z, zi) => {
+        const karte = el('div', 'wb-karte');
+        const dl = el('dl');
+        for (const i of spalten) {
+          dl.appendChild(el('dt', null, t.spalten[i]));
+          const dd = el('dd');
+          dd.appendChild(wbWert(z[i]));
+          dl.appendChild(dd);
+        }
+        karte.appendChild(dl);
+        if (erg.ohneFaden.some((o) => o.tabelle === ti && o.zeile === zi)) {
+          karte.classList.add('ohne-faden');
+          karte.appendChild(el('span', 'wb-kein-faden', 'kein Faden'));
+        }
+        stapel.appendChild(karte);
+        return karte;
+      });
+      brett.appendChild(stapel);
+      return els;
+    });
+    // Fäden als SVG über dem Brett (Segmente zwischen benachbarten Spalten)
+    const flaeche = svg('svg', { 'aria-hidden': 'true', focusable: 'false' }, 'wb-faeden');
+    brett.appendChild(flaeche);
+    const segmente = new Map(); // 'k:i:j' → passt?
+    const passend = new Set((erg.passend || []).map((p) => p.join(',')));
+    for (const f of erg.faeden) {
+      const passt = !erg.passend || passend.has(f.join(','));
+      for (let k = 0; k + 1 < f.length; k++) {
+        const key = `${k}:${f[k]}:${f[k + 1]}`;
+        segmente.set(key, segmente.get(key) || passt);
+      }
+    }
+    function zeichne() {
+      if (!brett.isConnected) return;
+      const basis = brett.getBoundingClientRect();
+      flaeche.setAttribute('width', String(Math.round(basis.width)));
+      flaeche.setAttribute('height', String(Math.round(basis.height)));
+      flaeche.setAttribute('viewBox', `0 0 ${Math.round(basis.width)} ${Math.round(basis.height)}`);
+      flaeche.replaceChildren();
+      for (const [key, passt] of segmente) {
+        const [k, i, j] = key.split(':').map(Number);
+        const a = karten[k][i].getBoundingClientRect();
+        const c = karten[k + 1][j].getBoundingClientRect();
+        const linie = svg('line', {
+          x1: (a.right - basis.left).toFixed(1),
+          y1: (a.top + a.height / 2 - basis.top).toFixed(1),
+          x2: (c.left - basis.left).toFixed(1),
+          y2: (c.top + c.height / 2 - basis.top).toFixed(1)
+        }, 'wb-faden' + (erg.passend ? (passt ? ' passt' : ' weg') : ''));
+        flaeche.appendChild(linie);
+      }
+    }
+    if (typeof ResizeObserver === 'function') new ResizeObserver(() => zeichne()).observe(brett);
+    window.requestAnimationFrame(zeichne);
+    if (erg.ohneFaden.length && erg.passend) {
+      ohne.hidden = false;
+      const namen = erg.ohneFaden.map((o) => {
+        const t = erg.tabellen[o.tabelle];
+        return `${t.name} ${t.pk.map((p) => (t.zeilen[o.zeile][p] === null ? 'NULL' : String(t.zeilen[o.zeile][p]))).join('/')}`;
+      });
+      ohne.textContent = `Ohne Faden: ${namen.join(', ')}. Für diese Karten erfüllt keine Kombination die Bedingung – ein Vergleich mit NULL ist nie wahr.`;
+    }
+  });
+  return r.box;
+}
+
 /** Einen Block rendern. */
 export function block(b, ctx, index) {
   if (!b || typeof b !== 'object') return el('div');
@@ -494,6 +823,16 @@ export function block(b, ctx, index) {
       return blockSchema(b, ctx);
     case 'datenbank':
       return blockDatenbank(b);
+    case 'zeitlupe':
+      return blockZeitlupe(b);
+    case 'spurenbrett':
+      return blockSpurenbrett(b);
+    case 'sortierfaecher':
+      return blockSortierfaecher(b);
+    case 'er':
+      return blockEr(b, ctx, index);
+    case 'mengen':
+      return BAUPLAN.mengenBlock(b);
     default:
       return el('p', 'leise', 'Dieser Baustein kann hier noch nicht angezeigt werden.');
   }

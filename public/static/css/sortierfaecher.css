@@ -1,0 +1,232 @@
+/* Werkzeug „Sortierfächer“ (DESIGN.md §5.6, §2.4 Gruppenfarben, §4.5 Karteikarte, §6, §7). Nur Tokens.
+   Zustände des Tischs über Klassen: zeige-karten (Fächer gefüllt), zeige-aggregate, zeige-having, stufe-<art>. */
+
+.sf-seite { gap: var(--a-5); }
+
+/* ---------- Eingabe ---------- */
+.sf-eingabe {
+  display: grid; grid-template-columns: minmax(180px, 240px) minmax(0, 1fr); gap: var(--a-3) var(--a-5);
+  align-items: start;
+}
+.sf-feld { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.sf-auswahl {
+  min-height: 44px; padding: 0 var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); font-weight: 500;
+}
+.sf-textfeld {
+  width: 100%; min-height: 9.5em; padding: var(--a-3); resize: vertical;
+  border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--konsole); color: var(--konsole-text); caret-color: var(--sql-schluessel);
+  font-family: var(--schrift-mono); font-size: 0.9375rem; line-height: 1.5; tab-size: 2;
+  white-space: pre; overflow-x: auto;
+}
+.sf-tipp { font-size: var(--t-xs); color: var(--tinte-3); }
+.sf-eingabe-knoepfe { grid-column: 2; }
+.sf-meldung { grid-column: 1 / -1; }
+.sf-meldung:empty { display: none; }
+.sf-meldung-text {
+  padding: var(--a-3) var(--a-4); border-left: 3px solid var(--siegelrot); border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--rot-flaeche); font-size: var(--t-s);
+}
+.sf-meldung-text.hinweis { border-left-color: var(--blau); background: var(--blau-flaeche); }
+.sf-meldung-text.laeuft { border-left-color: var(--messing-grafik); background: var(--messing-flaeche); }
+
+/* ---------- Bühne: Abfrage + Erklärung ---------- */
+.sf-buehne { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.sf-oben { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+
+.sf-konsole {
+  background: var(--konsole); color: var(--konsole-text); border-radius: var(--radius-gross);
+  box-shadow: var(--schatten-2); overflow: hidden; min-width: 0;
+}
+.sf-konsole-kopf {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--a-3); flex-wrap: wrap;
+  padding: var(--a-2) var(--a-4); background: var(--konsole-flaeche); border-bottom: 1px solid var(--konsole-rand);
+}
+.sf-konsole-kopf .etikett { color: var(--konsole-leise); }
+.sf-konsole-db {
+  font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--konsole-text);
+  border: 1px solid var(--konsole-rand); border-radius: var(--radius-pille); padding: 2px 10px;
+}
+.sf-abfrage {
+  margin: 0; padding: var(--a-4); overflow-x: auto; min-height: 7.5em;
+  font-family: var(--schrift-mono); font-size: 0.9375rem; line-height: 1.6; white-space: pre;
+}
+.sf-abfrage .sql-kw { font-weight: 600; }
+.sf-klausel { border-radius: var(--radius-klein); transition: background var(--dauer) var(--kurve); }
+.sf-klausel.aktiv {
+  background: var(--konsole-hover); box-shadow: -3px 0 0 var(--konsole-ausfuehren);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.sf-steuerung {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2) var(--a-3);
+  padding: var(--a-3) var(--a-4); background: var(--konsole-flaeche); border-top: 1px solid var(--konsole-rand);
+}
+.sf-schritte { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--a-1); }
+.sf-schritt {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--a-3);
+  border: 1px solid var(--konsole-knopf-rand); border-radius: var(--radius); background: transparent;
+  color: var(--konsole-leise); font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 500;
+  letter-spacing: 0.04em; cursor: pointer;
+}
+.sf-schritt:hover { background: var(--konsole-hover); color: var(--konsole-text); }
+.sf-schritt.erledigt { color: var(--konsole-text); }
+.sf-schritt[aria-current="step"] { border-color: var(--konsole-ausfuehren); color: var(--konsole-text); background: var(--konsole-hover); }
+.sf-schritt-nr {
+  display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%;
+  border: 1px solid currentColor; font-size: 0.6875rem;
+}
+.sf-schritt:focus-visible, .sf-knoepfe .knopf:focus-visible { outline: 3px solid var(--konsole-leise); outline-offset: 2px; }
+.sf-knoepfe { display: flex; gap: var(--a-2); }
+.sf-knoepfe .knopf { background: transparent; color: var(--konsole-text); border-color: var(--konsole-knopf-rand); padding: 0 var(--a-3); min-width: 44px; }
+.sf-knoepfe .knopf:hover { background: var(--konsole-hover); color: var(--konsole-text); }
+.sf-knoepfe .knopf.leise { border-color: transparent; }
+.sf-knoepfe .knopf[aria-pressed="true"] { border-color: var(--konsole-ausfuehren); }
+
+.sf-erklaerung { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.sf-zaehler { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--a-1) var(--a-3); }
+.sf-zahl { font-family: var(--schrift-titel); font-weight: 600; font-size: var(--t-xxl); line-height: 1; }
+.sf-einheit { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-3); }
+.sf-schritt-titel { font-size: var(--t-l); }
+.sf-schritt-text { color: var(--tinte-2); max-width: 60ch; }
+.sf-umschalter { display: flex; flex-direction: column; gap: var(--a-2); }
+.sf-umschalter .segment-knopf { font-family: var(--schrift-mono); }
+.sf-umschalter-text { font-size: var(--t-s); color: var(--tinte-2); }
+.sf-hinweise { display: flex; flex-direction: column; gap: var(--a-2); }
+.sf-hinweise:empty { display: none; }
+.sf-hinweis {
+  padding: var(--a-2) var(--a-3); border-left: 3px solid var(--blau); background: var(--blau-flaeche);
+  border-radius: 0 var(--radius) var(--radius) 0; font-size: var(--t-s);
+}
+
+/* ---------- Tisch: Korb + Fächer ---------- */
+.sf-tisch { display: grid; grid-template-columns: minmax(220px, 280px) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+.sf-buehne.leer .sf-tisch { display: none; }
+
+.sf-korb {
+  min-width: 0; background: var(--rot-flaeche); border: 2px dashed var(--siegelrot);
+  border-radius: var(--radius); padding: 0 var(--a-4) var(--a-3);
+}
+.sf-tisch.stufe-where .sf-korb { border-style: solid; box-shadow: var(--schatten-1); }
+.sf-korb-kopf {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--a-2); flex-wrap: wrap;
+  min-height: 44px; cursor: pointer; list-style: none;
+}
+.sf-korb-kopf::-webkit-details-marker { display: none; }
+.sf-korb-kopf::before { content: "▸"; color: var(--siegelrot-text); transition: transform var(--dauer) var(--kurve); }
+.sf-korb[open] .sf-korb-kopf::before { transform: rotate(90deg); }
+.sf-korb-titel { flex: 1; font-family: var(--schrift-titel); font-weight: 600; font-size: var(--t-l); color: var(--siegelrot-text); }
+.sf-korb-zaehler { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; color: var(--siegelrot-text); }
+.sf-korb-inhalt { display: flex; flex-direction: column; gap: var(--a-2); }
+.sf-korb-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); }
+.sf-korb-karte {
+  display: flex; gap: var(--a-2); align-items: baseline; padding: 4px var(--a-2);
+  background: var(--karte); border-radius: var(--radius-klein); opacity: .8;
+  font-family: var(--schrift-mono); font-size: 0.75rem; color: var(--tinte-2);
+}
+.sf-korb-werte { min-width: 0; overflow-wrap: anywhere; text-decoration: line-through; text-decoration-color: var(--siegelrot); text-decoration-thickness: 1px; }
+.sf-korb-spalte { color: var(--tinte-3); }
+.sf-weg { color: var(--siegelrot-text); font-weight: 600; flex: none; }
+.sf-korb-leer { font-size: var(--t-s); color: var(--tinte-2); }
+.sf-mehr { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-3); }
+
+.sf-faecher-bereich { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.sf-legende { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--a-1) var(--a-4); font-size: var(--t-s); }
+.sf-legende:empty { display: none; }
+.sf-legende-eintrag { display: inline-flex; align-items: center; gap: 6px; }
+.sf-legende-eintrag.ohne-farbe { color: var(--tinte-3); font-size: var(--t-xs); }
+.sf-faecher { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--a-4); align-items: start; }
+
+/* Gruppenfarben: höchstens 3, ab Fach 4 nur Name (DESIGN.md §2.4) */
+.sf-marke { display: inline-block; width: 12px; height: 12px; border-radius: 2px; flex: none; background: var(--gruppe, transparent); border: 1px solid var(--rand-stark); }
+.g1 { --gruppe: var(--gruppe-1); }
+.g2 { --gruppe: var(--gruppe-2); }
+.g3 { --gruppe: var(--gruppe-3); }
+.g1 .sf-marke, .g2 .sf-marke, .g3 .sf-marke { border-color: var(--gruppe); }
+.ohne-farbe .sf-marke { display: none; }
+
+.sf-fach {
+  display: flex; flex-direction: column; gap: var(--a-2); min-width: 0;
+  padding: var(--a-3); background: var(--flaeche); border: 1px solid var(--rand-stark);
+  border-top: 5px solid var(--gruppe, var(--rand-stark)); border-radius: var(--radius);
+  transition: opacity var(--dauer) var(--kurve), filter var(--dauer) var(--kurve);
+}
+.sf-fach-kopf { display: flex; align-items: center; gap: var(--a-2); flex-wrap: wrap; }
+.sf-fach-titel { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.1; }
+.sf-fach-name { font-family: var(--schrift-titel); font-weight: 600; font-size: var(--t-l); overflow-wrap: anywhere; }
+.sf-fach-anzahl { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+.sf-fach-leer { font-size: var(--t-s); color: var(--tinte-3); font-style: italic; }
+.sf-karten { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-2); }
+
+/* Karteikarte (4.5): Mono, rote Linie unter dem Kopf, leichte Drehung, Schatten */
+.sf-karte {
+  background: var(--karte); border-radius: var(--radius-klein); box-shadow: var(--schatten-1);
+  font-family: var(--schrift-mono); font-size: 0.8125rem; transform: rotate(-0.6deg);
+}
+.sf-karte:nth-child(even) { transform: rotate(0.6deg); }
+.sf-karte-kopf {
+  display: flex; align-items: center; gap: 6px; padding: 3px var(--a-2);
+  border-top: 4px solid var(--gruppe, var(--rand-stark)); border-bottom: 1px solid var(--siegelrot);
+  font-weight: 600; overflow-wrap: anywhere;
+}
+.sf-karte-werte, .sf-aggregate { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1px var(--a-2); }
+.sf-karte-werte { padding: 3px var(--a-2) 5px; }
+.sf-paar { display: contents; }
+.sf-karte-werte dt { color: var(--tinte-3); }
+.sf-karte-werte dd, .sf-aggregate dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.null { color: var(--tinte-3); font-style: italic; text-transform: uppercase; font-family: var(--schrift-mono); }
+
+.sf-aggregate {
+  padding: var(--a-2) 0 0; border-top: 2px solid var(--tinte);
+  font-family: var(--schrift-mono); font-size: var(--t-s); font-weight: 600;
+}
+.sf-aggregate dt { color: var(--tinte-2); font-weight: 500; overflow-wrap: anywhere; }
+.sf-vergleich {
+  display: flex; justify-content: space-between; gap: var(--a-2); padding: 4px var(--a-2);
+  background: var(--messing-flaeche); border-radius: var(--radius-klein);
+  font-family: var(--schrift-mono); font-size: var(--t-s);
+}
+.sf-vergleich-links { display: flex; flex-direction: column; min-width: 0; }
+.sf-vergleich-etikett { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--messing-text); }
+.sf-vergleich-name { overflow-wrap: anywhere; min-width: 0; }
+.sf-having { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; color: var(--gruen); }
+.sf-fach.raus .sf-having { color: var(--siegelrot-text); }
+
+/* Zustände je Schritt */
+.sf-tisch:not(.zeige-karten) .sf-karten,
+.sf-tisch:not(.zeige-karten) .sf-mehr,
+.sf-tisch:not(.zeige-karten) .sf-fach-anzahl,
+.sf-tisch.zeige-karten .sf-fach-leer,
+.sf-tisch:not(.zeige-aggregate) .sf-aggregate,
+.sf-tisch:not(.zeige-aggregate) .sf-vergleich,
+.sf-tisch:not(.zeige-having) .sf-having { display: none; }
+.sf-korb .sf-mehr { display: block; }
+.sf-tisch.zeige-having .sf-fach.raus { opacity: .5; filter: grayscale(1); }
+.sf-tisch.zeige-having .sf-fach.raus .sf-fach-name { text-decoration: line-through; text-decoration-color: var(--siegelrot); }
+.sf-tisch.stufe-faecher .sf-karte { animation: sf-fallen 420ms var(--kurve) both; animation-delay: calc(var(--i, 0) * 40ms); }
+@keyframes sf-fallen {
+  from { opacity: 0; translate: 0 -18px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+.sf-notiz { max-width: 80ch; }
+
+/* ---------- Responsive (DESIGN.md §6) ---------- */
+@media (max-width: 1023px) {
+  .sf-oben { grid-template-columns: minmax(0, 1fr); }
+  .sf-tisch { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 699px) {
+  .sf-eingabe { grid-template-columns: minmax(0, 1fr); }
+  .sf-eingabe-knoepfe { grid-column: 1; }
+  .sf-eingabe-knoepfe .knopf { flex: 1 1 auto; }
+  .sf-faecher { grid-template-columns: minmax(0, 1fr); }
+  .sf-steuerung { flex-direction: column; align-items: stretch; }
+  .sf-knoepfe .knopf.leise { flex: 1; }
+  .sf-zahl { font-size: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-tisch.stufe-faecher .sf-karte { animation: none; }
+  .sf-fach, .sf-klausel { transition: none; }
+}

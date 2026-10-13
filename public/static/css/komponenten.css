@@ -20,6 +20,10 @@
 .knopf.leise:hover { background: var(--flaeche); color: var(--tinte); }
 .knopf.gross { min-height: 52px; padding: 0 var(--a-5); font-size: var(--t-m); }
 .knopf-reihe { display: flex; flex-wrap: wrap; gap: var(--a-3); align-items: center; }
+/* Erklärvideos (Spec §13): Link-Knopf zu YouTube, lange Titel umbrechen statt horizontal scrollen. */
+.video-reihe { margin-top: var(--a-3); }
+.video-knopf { max-width: 100%; justify-content: flex-start; text-align: left; padding-block: var(--a-2); }
+.video-knopf .icon { flex: none; }
 
 /* ---------- Karten und Aktendeckel (4.1) ---------- */
 .karte {

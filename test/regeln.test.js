@@ -357,7 +357,11 @@ const ERWARTET_FEHLABFRAGE = {
   datenspuren: ['AND_OR_MISCH'],
   'verhoer/bibliothek': [],
   'verhoer/buergerbus': ['KEIN_VERBUND'],
-  'verhoer/kiosk': []
+  'verhoer/kiosk': [],
+  'verhoer/fitness': ['WHERE_MIT_AGG'],
+  'verhoer/mensa': [],
+  'pruefung/sanitaetsdienst': [],
+  'pruefung/kostuemverleih': []
 };
 
 for (const a of ABFRAGEN.filter((x) => !x.fehlabfrage)) {
@@ -386,7 +390,7 @@ for (const a of ABFRAGEN.filter((x) => x.fehlabfrage)) {
 
 test('Liste der nur am Ergebnis erkennbaren Fehlabfragen ist vollständig und aktuell', () => {
   const fehl = ABFRAGEN.filter((x) => x.fehlabfrage);
-  assert.equal(fehl.length, 11);
+  assert.equal(fehl.length, 18);
   const ohneDiagnose = fehl
     .filter((a) => pruefe(a.sql, { abimodus: 'streng', schema: schemaVon(a.db) }).length === 0)
     .map((a) => a.db)

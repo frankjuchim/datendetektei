@@ -1,0 +1,10 @@
+{
+  "dateien": [
+    { "datei": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB1_Der_erste_Auftrag.docx", "titel": "AB 1.1 Der erste Auftrag", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbüro.pptx", "titel": "Präsentation Akte 1", "akte": 1, "niveau": "beide", "art": "praesentation" },
+    { "datei": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB1_Der_rote_Faden.docx", "titel": "AB 2.1 Der rote Faden", "akte": 2, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "00_Gesamt/DD_Gesamtuebersicht.docx", "titel": "Gesamtübersicht", "akte": 0, "niveau": "beide", "art": "gesamt" },
+    { "datei": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB2_Fehlt.docx", "titel": "AB 2.2 (Datei fehlt)", "akte": 2, "niveau": "beide", "art": "arbeitsblatt" },
+    { "datei": "Arbeitsblaetter_PDF/Akte1/DD_A1-AB1_Der_erste_Auftrag.pdf", "titel": "PDF unter Originale (falsche Endung)", "akte": 1, "niveau": "beide", "art": "arbeitsblatt" }
+  ]
+}

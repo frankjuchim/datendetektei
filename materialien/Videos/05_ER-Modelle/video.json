@@ -1,0 +1,792 @@
+{
+ "nr": 5,
+ "kurz": "ER-Modelle",
+ "akte": 5,
+ "aktenname": "Akte 5 · Der Bauplan (eA)",
+ "titel": "ER-Modelle nach den Ergänzenden Hinweisen",
+ "untertitel": "Chen-Notation, Kardinalitäten 1/n/m, Schlüssel- und Beziehungsattribute, rekursive und ternäre Beziehungstypen",
+ "einsatz_kurz": "Akte 5 · DS 9–10 · eA",
+ "einsatz": "Akte 5 (eA), DS 9–10 · Ermittlungen 5.1 „Baupläne lesen“ und 5.2 „Der Architekturwettbewerb“ (Bauplan-Tisch) · AB 5.1, AB 5.2",
+ "laenge": "10–12 min",
+ "zielgruppe": "Informatik eA (Datenbanken), Akte 5; Wiederholung vor Verhör 5, Klausur und Abitur",
+ "beispieldaten": "eigenes Beispiel „Tierheim“ (Tier, Gehege, Chip, Helfer, Interessent, Futtersorte, Lieferant) – nicht die Detektei des Labs, keine AB-, Verhör- oder Klausuraufgabe; Diagramme mit dem Bauplan-Tisch der Plattform",
+ "lernziele": [
+  "Entitätstypen, Attribute, Schlüsselattribute und Beziehungstypen in Chen-Notation nach EH §7 darstellen",
+  "Kardinalitäten 1:1, 1:n und n:m aus einem Sachtext bestimmen und begründen",
+  "Beziehungsattribute richtig platzieren (am Beziehungstyp, wenn sie zum Paar gehören)",
+  "Rekursive Beziehungstypen mit Rollen und ternäre Beziehungstypen (n, m, p) modellieren",
+  "Die Falle P9 (Kardinalität vertauscht, Schlüssel fehlt, Attribut falsch platziert) vermeiden"
+ ],
+ "hinweise": [
+  "Beispiel „Tierheim“ ist eigens für das Video gewählt; die Detektei-Modelle (Lab, AB 5.x), das Schulbeispiel der Lab-Intro und die Kletterhalle (Verhör 5) kommen nicht vor.",
+  "Alle Diagramme sind mit dem Bauplan-Tisch der Plattform gerendert (scripts/video_bilder.js, Werkzeugseite /werkzeug/bauplan, ohne Prüfung).",
+  "Notation EH §7: Rechteck = Entitätstyp (Singular), Ellipse = Attribut, Schlüsselattribut unterstrichen, Raute = Beziehungstyp (Verb, lowerCamelCase), Kardinalitäten nur 1, n, m (ternär p); keine (min,max)- oder Krähenfuß-Notation."
+ ],
+ "youtube": {
+  "titel": "ER-Modell in Chen-Notation: Kardinalitäten, Beziehungsattribute, rekursiv, ternär (Informatik-Abitur Niedersachsen) | Datendetektei #5",
+  "beschreibung": "So zeichnest du ER-Modelle, wie es die Ergänzenden Hinweise für das Informatik-Abitur in Niedersachsen verlangen: Chen-Notation mit Entitätstypen, Attributen, Schlüsselattributen und Beziehungstypen, Kardinalitäten 1, n und m, Beziehungsattribute am richtigen Ort, rekursive Beziehungen mit Rollen und ternäre Beziehungen. Dazu die Falle P9 und ein Lesetrick für Kardinalitäten.\n\nTeil der Unterrichtsreihe „Datendetektei Weserstedt – Ermitteln mit Datenbanken“ (Informatik eA, Abitur ab 2027).\nSelbst zeichnen: Bauplan-Tisch https://datendetektei.frankjuchim.de/werkzeug/bauplan",
+  "tags": [
+   "Informatik Abitur",
+   "Niedersachsen",
+   "ER-Modell",
+   "Entity-Relationship",
+   "Chen-Notation",
+   "Kardinalität",
+   "Beziehungstyp",
+   "rekursive Beziehung",
+   "ternäre Beziehung",
+   "Datenbanken",
+   "Datendetektei"
+  ]
+ },
+ "bilder": {
+  "er_basis": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       },
+       {
+        "name": "Art",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Gehege",
+      "attribute": [
+       {
+        "name": "GehegeNr",
+        "schluessel": true
+       },
+       {
+        "name": "Bereich",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "lebtIn",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "1"
+       }
+      ],
+      "attribute": []
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 200,
+     "y": 220
+    },
+    "e2": {
+     "x": 760,
+     "y": 220
+    },
+    "b1": {
+     "x": 480,
+     "y": 220
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_eins": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Gehege",
+      "attribute": [
+       {
+        "name": "GehegeNr",
+        "schluessel": true
+       },
+       {
+        "name": "Bereich",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e3",
+      "name": "Chip",
+      "attribute": [
+       {
+        "name": "ChipNr",
+        "schluessel": true
+       },
+       {
+        "name": "Hersteller",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "lebtIn",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "1"
+       }
+      ],
+      "attribute": []
+     },
+     {
+      "id": "b2",
+      "name": "traegt",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "1"
+       },
+       {
+        "entitaet": "e3",
+        "kard": "1"
+       }
+      ],
+      "attribute": []
+     }
+    ]
+   },
+   "layout": {
+    "e2": {
+     "x": 160,
+     "y": 240
+    },
+    "b1": {
+     "x": 420,
+     "y": 240
+    },
+    "e1": {
+     "x": 680,
+     "y": 240
+    },
+    "b2": {
+     "x": 940,
+     "y": 240
+    },
+    "e3": {
+     "x": 1200,
+     "y": 240
+    }
+   },
+   "breite": 1500,
+   "hoehe": 760
+  },
+  "er_nm": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Helfer",
+      "attribute": [
+       {
+        "name": "HelferNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "betreut",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "m"
+       }
+      ],
+      "attribute": [
+       {
+        "name": "Seit"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 200,
+     "y": 240
+    },
+    "e2": {
+     "x": 760,
+     "y": 240
+    },
+    "b1": {
+     "x": 480,
+     "y": 240
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_rek": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       },
+       {
+        "name": "Geburtsjahr",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "stammtAb",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "1",
+        "rolle": "Mutter"
+       },
+       {
+        "entitaet": "e1",
+        "kard": "n",
+        "rolle": "Jungtier"
+       }
+      ],
+      "attribute": []
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 360,
+     "y": 180
+    },
+    "b1": {
+     "x": 360,
+     "y": 430
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_ter": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Interessent",
+      "attribute": [
+       {
+        "name": "InteressentNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e3",
+      "name": "Helfer",
+      "attribute": [
+       {
+        "name": "HelferNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "lerntKennen",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "m"
+       },
+       {
+        "entitaet": "e3",
+        "kard": "p"
+       }
+      ],
+      "attribute": [
+       {
+        "name": "Datum"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 200,
+     "y": 220
+    },
+    "e2": {
+     "x": 800,
+     "y": 220
+    },
+    "b1": {
+     "x": 500,
+     "y": 220
+    },
+    "e3": {
+     "x": 500,
+     "y": 520
+    }
+   },
+   "breite": 1280,
+   "hoehe": 760
+  },
+  "er_pause": {
+   "werkzeug": "bauplan",
+   "graph": {
+    "entitaeten": [
+     {
+      "id": "e1",
+      "name": "Lieferant",
+      "attribute": [
+       {
+        "name": "LieferantNr",
+        "schluessel": true
+       },
+       {
+        "name": "Firma",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e2",
+      "name": "Futtersorte",
+      "attribute": [
+       {
+        "name": "SorteNr",
+        "schluessel": true
+       },
+       {
+        "name": "Bezeichnung",
+        "schluessel": false
+       }
+      ]
+     },
+     {
+      "id": "e3",
+      "name": "Tier",
+      "attribute": [
+       {
+        "name": "TierNr",
+        "schluessel": true
+       },
+       {
+        "name": "Name",
+        "schluessel": false
+       }
+      ]
+     }
+    ],
+    "beziehungen": [
+     {
+      "id": "b1",
+      "name": "liefert",
+      "enden": [
+       {
+        "entitaet": "e1",
+        "kard": "1"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "n"
+       }
+      ],
+      "attribute": []
+     },
+     {
+      "id": "b2",
+      "name": "frisst",
+      "enden": [
+       {
+        "entitaet": "e3",
+        "kard": "n"
+       },
+       {
+        "entitaet": "e2",
+        "kard": "m"
+       }
+      ],
+      "attribute": [
+       {
+        "name": "Tagesmenge"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "e1": {
+     "x": 160,
+     "y": 240
+    },
+    "b1": {
+     "x": 430,
+     "y": 240
+    },
+    "e2": {
+     "x": 720,
+     "y": 240
+    },
+    "b2": {
+     "x": 1010,
+     "y": 240
+    },
+    "e3": {
+     "x": 1280,
+     "y": 240
+    }
+   },
+   "breite": 1600,
+   "hoehe": 760
+  }
+ },
+ "folien": [
+  {
+   "typ": "titel",
+   "kapitel": "Einstieg",
+   "regie": "Kamera unten rechts, Titelfolie im Hintergrund.",
+   "sprechertext": "Bevor eine Datenbank gebaut wird, wird sie geplant – mit einem Bauplan, dem ER-Modell. Im Abitur zeichnest du solche Modelle selbst oder liest sie. Nach diesem Video kennst du alle Bausteine der Chen-Notation, bestimmst Kardinalitäten sicher und modellierst auch rekursive und ternäre Beziehungen."
+  },
+  {
+   "titel": "Die Bausteine der Chen-Notation",
+   "kapitel": "Bausteine",
+   "oben": [
+    {
+     "bild": "er_basis"
+    }
+   ],
+   "links": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Notation (EH §7)",
+      "text": [
+       "- Rechteck: **Entitätstyp**, Singular",
+       "- Ellipse: Attribut, **Schlüsselattribut unterstrichen**",
+       "- Raute: **Beziehungstyp**, Verb in lowerCamelCase",
+       "- Kanten mit Kardinalität **1**, **n**, **m**"
+      ]
+     }
+    }
+   ],
+   "teilung": 8.0,
+   "sprechertext": "Unser Beispiel ist ein Tierheim. Ein Entitätstyp ist eine Art von Dingen, über die wir Daten speichern – hier Tier und Gehege. Er steht in einem Rechteck und heißt immer im Singular. Seine Attribute stehen in Ellipsen. Das Attribut, das jedes Tier eindeutig kennzeichnet, ist das Schlüsselattribut – es wird unterstrichen, hier die TierNr. Die Raute ist der Beziehungstyp: ein Verb in lowerCamelCase, hier lebtIn. An die Kanten schreibst du die Kardinalitäten – nur 1, n und m, keine Krähenfüße und keine Min-Max-Paare."
+  },
+  {
+   "titel": "Kardinalitäten bestimmen: 1:n und 1:1",
+   "kapitel": "Kardinalitäten",
+   "oben": [
+    {
+     "bild": "er_eins"
+    }
+   ],
+   "links": [
+    {
+     "kasten": {
+      "farbe": "gold",
+      "titel": "Lesetrick: zwei Fragen",
+      "text": [
+       "In wie vielen Gehegen lebt **ein** Tier? → 1",
+       "Wie viele Tiere leben in **einem** Gehege? → n",
+       "Die Zahl steht beim Entitätstyp, der „gezählt“ wird."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.0,
+   "sprechertext": "Kardinalitäten bestimmst du mit zwei Fragen, immer aus Sicht eines einzelnen Objekts. Erstens: In wie vielen Gehegen lebt ein Tier? In genau einem – also steht die 1 am Gehege. Zweitens: Wie viele Tiere leben in einem Gehege? Viele – also steht n am Tier. Das ist eine 1-zu-n-Beziehung. Unten eine 1-zu-1-Beziehung: Ein Tier trägt genau einen Chip, und ein Chip gehört zu genau einem Tier. Stell dir die beiden Fragen bei jeder Raute – laut, auch in der Klausur im Kopf."
+  },
+  {
+   "titel": "n:m mit Beziehungsattribut",
+   "oben": [
+    {
+     "bild": "er_nm"
+    }
+   ],
+   "links": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Wohin gehört „Seit“?",
+      "text": [
+       "Ein Helfer betreut viele Tiere, ein Tier wird von vielen Helfern betreut → **n:m**.",
+       "„Seit“ beschreibt das **Paar** Helfer–Tier, nicht den Helfer und nicht das Tier → Attribut **an der Raute**."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.0,
+   "sprechertext": "Ehrenamtliche Helferinnen und Helfer betreuen die Tiere. Ein Helfer betreut mehrere Tiere, und ein Tier wird von mehreren Helfern betreut – auf beiden Seiten viele, also n zu m. Jetzt soll gespeichert werden, seit wann jemand ein Tier betreut. Wohin gehört dieses Attribut? Nicht zum Helfer, denn er betreut jedes Tier unterschiedlich lange. Nicht zum Tier, aus demselben Grund. Seit gehört zum Paar aus Helfer und Tier – also an die Raute. Das nennt man ein Beziehungsattribut."
+  },
+  {
+   "titel": "Rekursiv: ein Entitätstyp, zwei Rollen",
+   "kapitel": "Rekursiv und ternär",
+   "links": [
+    {
+     "bild": "er_rek"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Rollen",
+      "text": [
+       "Beide Kanten führen zu **Tier**.",
+       "Rollen klären, wer wer ist: **Mutter** (1) und **Jungtier** (n).",
+       "Eine Mutter hat viele Jungtiere, jedes Jungtier hat eine Mutter."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.0,
+   "sprechertext": "Manchmal steht ein Entitätstyp mit sich selbst in Beziehung. Im Tierheim kommen Jungtiere zur Welt, und wir wollen wissen, welches Tier die Mutter ist. Beide Kanten der Raute stammtAb führen zu Tier. Damit klar ist, wer wer ist, schreibst du Rollen an die Kanten: Mutter und Jungtier. Die Kardinalitäten liest du wie gewohnt: Eine Mutter hat viele Jungtiere, jedes Jungtier hat genau eine Mutter. Rekursive Beziehungen stehen neu im Beispiel der Ergänzenden Hinweise – rechne damit."
+  },
+  {
+   "titel": "Ternär: drei Entitätstypen an einer Raute",
+   "links": [
+    {
+     "bild": "er_ter"
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Kennenlerntermin",
+      "text": [
+       "Ein Interessent lernt ein Tier kennen – begleitet von einem Helfer, an einem Datum.",
+       "Nur alle drei zusammen beschreiben den Termin → **ternär**, Kardinalitäten **n, m, p**."
+      ]
+     }
+    }
+   ],
+   "teilung": 8.0,
+   "sprechertext": "Und wenn drei Dinge zusammengehören? Bevor jemand ein Tier adoptiert, gibt es Kennenlerntermine: Ein Interessent lernt ein Tier kennen, begleitet von einem Helfer, an einem bestimmten Datum. Diese Information hängt an allen dreien gleichzeitig – keine zwei reichen. Deshalb gibt es eine Raute mit drei Kanten, eine ternäre Beziehung. Die Kardinalitäten heißen dann n, m und p. Das Datum ist wieder ein Beziehungsattribut."
+  },
+  {
+   "typ": "pause",
+   "kapitel": "Jetzt du",
+   "links": [
+    {
+     "text": "Modelliere in Chen-Notation:"
+    },
+    {
+     "punkte": [
+      "Jede **Futtersorte** (SorteNr, Bezeichnung) wird von genau **einem Lieferanten** (LieferantNr, Firma) geliefert; ein Lieferant liefert mehrere Sorten.",
+      "Jedes **Tier** bekommt mehrere Futtersorten, eine Sorte wird an mehrere Tiere verfüttert – jeweils mit einer **Tagesmenge**."
+     ]
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "gold",
+      "titel": "Tipp",
+      "text": [
+       "Zwei Fragen je Raute.",
+       "Zu wem gehört die Tagesmenge?"
+      ]
+     }
+    }
+   ],
+   "pause_s": 45,
+   "sprechertext": "Jetzt du. Modelliere: Jede Futtersorte wird von genau einem Lieferanten geliefert, ein Lieferant liefert mehrere Sorten. Jedes Tier bekommt mehrere Futtersorten, und eine Sorte wird an mehrere Tiere verfüttert – jeweils mit einer Tagesmenge. Zeichne das ER-Modell mit Schlüsselattributen und Kardinalitäten. Halte das Video an – oder zeichne es direkt im Bauplan-Tisch."
+  },
+  {
+   "titel": "Auflösung",
+   "oben": [
+    {
+     "bild": "er_pause"
+    }
+   ],
+   "links": [
+    {
+     "kasten": {
+      "farbe": "rot",
+      "titel": "Typische Fehler",
+      "text": [
+       "- 1 und n vertauscht (P9)",
+       "- Tagesmenge an Tier oder Futtersorte (P9)",
+       "- Schlüsselattribut nicht unterstrichen (P9)",
+       "- Plural „Tiere“ statt Entitätstyp Tier"
+      ]
+     }
+    }
+   ],
+   "teilung": 8.0,
+   "sprechertext": "Die Auflösung: Lieferant und Futtersorte sind über liefert verbunden – eine Futtersorte hat genau einen Lieferanten, also steht die 1 beim Lieferanten und das n bei der Futtersorte. Tier und Futtersorte sind n zu m verbunden, und die Tagesmenge gehört zum Paar aus Tier und Sorte, also an die Raute frisst. Typische Fehler: 1 und n vertauscht, die Tagesmenge am Tier, ein vergessenes Schlüsselattribut."
+  },
+  {
+   "titel": "Die Falle P9 im ER-Modell",
+   "kapitel": "Fallen",
+   "links": [
+    {
+     "falle": "P9",
+     "titel": "Kardinalität vertauscht oder fehlt",
+     "text": "Immer die zwei Fragen stellen – die Zahl steht bei dem Entitätstyp, dessen Anzahl gefragt ist."
+    },
+    {
+     "falle": "P9",
+     "titel": "Schlüsselattribut nicht markiert",
+     "text": "Jeder Entitätstyp braucht ein unterstrichenes Schlüsselattribut."
+    },
+    {
+     "falle": "P9",
+     "titel": "Beziehungsattribut falsch platziert",
+     "text": "Gehört ein Wert zu einem Paar oder Tripel, steht er an der Raute."
+    },
+    {
+     "falle": "P10",
+     "titel": "Kardinalität nicht begründet",
+     "text": "„Begründen“ heißt: beide Richtungen im Sachzusammenhang formulieren."
+    }
+   ],
+   "sprechertext": "Die Falle im ER-Modell heißt P9. Kardinalitäten werden vertauscht oder vergessen – stell immer die zwei Fragen. Ein Entitätstyp ohne unterstrichenes Schlüsselattribut. Und ein Beziehungsattribut am falschen Ort. Wenn im Abitur verlangt wird, eine Kardinalität zu begründen, schreib beide Richtungen im Sachzusammenhang auf – ein Satz pro Richtung. Sonst droht P10."
+  },
+  {
+   "typ": "merke",
+   "kapitel": "Merksätze",
+   "punkte": [
+    "Rechteck = Entitätstyp (Singular), Ellipse = Attribut, Raute = Beziehungstyp (Verb).",
+    "Schlüsselattribute werden unterstrichen.",
+    "Kardinalität: „Mit wie vielen B ist **ein** A verbunden?“ – beide Richtungen.",
+    "Attribute eines Paars oder Tripels gehören an die Raute.",
+    "Rekursiv: Rollen an die Kanten; ternär: n, m, p."
+   ],
+   "sprechertext": "Das nimmst du mit: Rechteck, Ellipse, Raute – Entitätstyp im Singular, Attribut, Beziehungstyp als Verb. Schlüsselattribute werden unterstrichen. Kardinalitäten bestimmst du mit zwei Fragen, in beide Richtungen. Attribute eines Paars gehören an die Raute. Und bei rekursiven Beziehungen schreibst du Rollen an die Kanten, bei ternären n, m und p."
+  },
+  {
+   "typ": "ende",
+   "lab": [
+    {
+     "ermittlung": "5.1",
+     "titel": "Baupläne lesen",
+     "aufgaben": "A5-E1-01 … 08",
+     "werkzeug": "Bauplan-Tisch"
+    },
+    {
+     "ermittlung": "5.2",
+     "titel": "Der Architekturwettbewerb",
+     "aufgaben": "A5-E2-01 … 08",
+     "werkzeug": "Bauplan-Tisch"
+    }
+   ],
+   "material": [
+    "AB 5.1 „Baupläne lesen“ und AB 5.2 „Der Architekturwettbewerb“",
+    "Bauplan-Tisch frei zum Üben: /werkzeug/bauplan"
+   ],
+   "naechstes": "Video 6 – Vom ER-Modell zum Relationenschema in 5 Regeln",
+   "sprechertext": "Ab ins Lab! In Akte 5 liest und zeichnest du den Bauplan der Detektei auf dem Bauplan-Tisch. Im nächsten Video machen wir aus einem ER-Modell eine Datenbank: vom ER-Modell zum Relationenschema in fünf Regeln."
+  }
+ ]
+}

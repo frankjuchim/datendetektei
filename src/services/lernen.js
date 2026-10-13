@@ -10,10 +10,13 @@
 // - Lösung, Erklärung, nicht abgerufene Tipps und Kernpunkte verlassen den Server erst nach Lösen/Aufdecken.
 // - Cold Cases: prüfbar, 0 Punkte, zählen nicht für Rang, Freischaltung, Serie, Abzeichen.
 // - Verhör-Aufgaben sind hier nie erreichbar (404; nur über die Verhör-Engine).
+// - Kür K1 (Schreib-Skripte, sql mit schreiben: true): keine Fehlabfragen – das Skript wird nirgends gespeichert (E7);
+//   schreibStart liefert der Ausführen-Route (src/routes/kuer.js) den Start der Aufgabe nach derselben Zugangsprüfung.
 
 const F = require('../content/format');
-const { pruefeAntwort, AntwortFehler } = require('../content/pruefer');
+const { pruefeAntwort, bereinige, AntwortFehler } = require('../content/pruefer');
 const { punkteFuer } = require('../domain');
+const PL = require('../content/plaedoyer');
 
 class HttpFehler extends Error {
   constructor(status, message) {
@@ -68,7 +71,7 @@ function oeffentlicheBloecke(bloecke) {
  * @param {{ db, inhalte, stand, pruefer?: { pruefeSql }, jetzt?: () => number }} opt
  *   pruefer = erzeugePruefer(…) aus src/sql/pruefer.js (ohne ihn sind sql-Aufgaben nicht prüfbar → 503).
  */
-function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now }) {
+function erzeugeLernen({ db, inhalte, stand, pruefer = null, videos = null, jetzt = Date.now }) {
   const iso = () => new Date(jetzt()).toISOString();
   const sqlPruefer = pruefer ? (aufgabe, sql) => pruefer.pruefeSql({ sql, aufgabe }) : null;
 
@@ -172,13 +175,31 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const liste = l.aufgaben;
     const i = liste.indexOf(a.id);
     return {
-      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe },
+      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe, kuer: !!akte.kuer },
       ermittlung: { id: l.id, nr: l.nr, titel: l.titel },
       index: i,
       anzahl: liste.length,
       vorher: i > 0 ? liste[i - 1] : null,
       nachher: i >= 0 && i < liste.length - 1 ? liste[i + 1] : null
     };
+  }
+
+  /* ---------- Schlussplädoyer (Phase 6, AUFGABENFORMAT §2.1) ---------- */
+
+  /** Abfragen für die Indizienkette eines Kontos (Status je Aufgabe, Titel, Sichtbarkeit im Kurs-Niveau). */
+  function ketteFragen(z, fm = stand.fortschritt(z.sub, z.kurs.id)) {
+    return {
+      status: (id) => (fm.has(id) ? fm.get(id).status : 'offen'),
+      titel: (id) => (inhalte.aufgabe(id) || {}).titel || id,
+      sichtbar: (id) => stand.aufgabeSichtbar(inhalte.aufgabe(id), z.einst.niveau)
+    };
+  }
+
+  /** Plädoyer-Angaben zu einer Aufgabe (Schritt n von m, Indiz nach dem Lösen, Auflösung nach dem letzten Schritt). */
+  function plaedoyerSchritt(z, a) {
+    const l = a.ermittlung ? inhalte.ermittlung(a.ermittlung) : null;
+    if (!l || !l.plaedoyer) return null;
+    return PL.schritt(l.plaedoyer, a.id, ketteFragen(z));
   }
 
   /* ---------- Öffentliche Funktionen ---------- */
@@ -196,8 +217,14 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const levels = stand.sichtbareLevels(akte, z.einst.niveau);
     const i = levels.findIndex((x) => x.level.id === sl.level.id);
     return {
-      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe },
-      ermittlung: { ...kurz, intro: oeffentlicheBloecke(sl.level.intro) },
+      akte: { nr: akte.nr, titel: akte.titel, farbe: akte.farbe, kuer: !!akte.kuer },
+      ermittlung: {
+        ...kurz,
+        intro: oeffentlicheBloecke(sl.level.intro),
+        plaedoyer: sl.level.plaedoyer ? PL.kette(sl.level.plaedoyer, ketteFragen(z, fm)) : null,
+        // Erklärvideos zur Doppelstunde (nur mit YouTube-Link; Spec §13) – { nr, titel, url }
+        videos: videos ? videos.fuerDs(kurz.ds, { niveau: z.einst.niveau }).map((v) => ({ nr: v.nr, titel: v.titel, url: v.url })) : []
+      },
       vorher: i > 0 ? { id: levels[i - 1].level.id, titel: levels[i - 1].level.titel } : null,
       nachher: i >= 0 && i < levels.length - 1 ? { id: levels[i + 1].level.id, titel: levels[i + 1].level.titel } : null
     };
@@ -209,6 +236,8 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const zs = zustand(z, a);
     const out = { aufgabe: inhalte.aufgabeOeffentlich(a.id), coldCase: a.art === 'cc', zustand: zs, ort: ort(a) };
     if (zs.status !== 'offen') out.loesung = loesungsteil(a);
+    const pl = plaedoyerSchritt(z, a);
+    if (pl) out.plaedoyer = pl;
     return out;
   }
 
@@ -241,36 +270,49 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     if (a.art === 'lab') stand.serieFortschreiben(z.sub, z.kurs.id, false);
     if (!teilweise && z.rolle === 'schueler') {
       teileVon(a).forEach((t, i) => {
-        if (F.artVon(t.interaktion) === 'sql' && typeof antworten[i] === 'string') fehlabfrageSpeichern(z, a, antworten[i]);
+        if (F.artVon(t.interaktion) === 'sql' && t.interaktion.schreiben !== true && typeof antworten[i] === 'string') fehlabfrageSpeichern(z, a, antworten[i]);
       });
     }
   }
 
-  /** Kernpunkte-Aufgabe: nur die Häkchen-Anzahl (E7), Status bearbeitet, 0 Punkte. */
+  /**
+   * Selbstkontrolle der kernpunkte-Teile: nur die Häkchen-Anzahl (E7). Body { haken: n } oder (mehrere kernpunkte-Teile)
+   * { haken: [n je kernpunkte-Teil] }; gespeichert wird die Summe.
+   * Reine kernpunkte-Aufgabe: Status bearbeitet, 0 Punkte. Mehrteilige Aufgabe mit weiteren Teilen (AUFGABENFORMAT
+   * §6.10): erst nach dem Lösen bzw. „Lösung zeigen“ (vorher sind die Kernpunkte nicht aufgedeckt); Status bleibt.
+   */
   async function kernpunkte(sitzung, kursId, id, body) {
     const z = zugang(sitzung, kursId, { schreiben: true });
     const a = aufgabeFuer(z, id);
-    if (!nurKernpunkte(a) || Array.isArray(a.interaktion)) throw new HttpFehler(400, 'Diese Aufgabe hat keine Kernpunkte.');
+    const ts = teileVon(a);
+    const kp = ts.filter((t) => F.artVon(t.interaktion) === 'kernpunkte');
+    if (!kp.length) throw new HttpFehler(400, 'Diese Aufgabe hat keine Kernpunkte.');
     const b = body && typeof body === 'object' ? body : {};
     if (Object.keys(b).some((k) => k !== 'haken')) throw new HttpFehler(400, 'Nur die Anzahl der Häkchen wird gesendet.');
-    let erg;
+    const roh = Array.isArray(b.haken) ? b.haken : [b.haken];
+    if (roh.length !== kp.length) throw new HttpFehler(400, 'Ungültige Anzahl an Häkchen.');
+    let anzahlen;
     try {
-      erg = await pruefeAntwort(a, { haken: b.haken });
+      anzahlen = kp.map((t, i) => bereinige(t.interaktion, roh[i], a));
     } catch (e) {
       if (e instanceof AntwortFehler) throw new HttpFehler(400, e.message);
       throw e;
     }
-    const haken = erg.antworten[0];
-    let neueAbzeichen = [];
+    const haken = anzahlen.reduce((x, y) => x + y, 0);
+    const nurKern = nurKernpunkte(a);
+    if (!nurKern) {
+      const r = zeile(z, a.id);
+      if (!r || r.status === 'offen') throw new HttpFehler(400, 'Löse zuerst die übrigen Teile – danach siehst du die Kernpunkte.');
+    }
     db.transaction(() => {
       const r = sichereZeile(z, a.id);
       db.prepare(
         'INSERT INTO kernpunkte (sub, kurs_id, aufgabe, haken) VALUES (?, ?, ?, ?) ON CONFLICT (sub, kurs_id, aufgabe) DO UPDATE SET haken = excluded.haken'
       ).run(z.sub, z.kurs.id, a.id, haken);
-      if (r.status === 'offen') setze(z, a.id, { status: 'bearbeitet', punkte: 0 });
+      if (nurKern && r.status === 'offen') setze(z, a.id, { status: 'bearbeitet', punkte: 0 });
     })();
-    neueAbzeichen = stand.pruefeAbzeichen(z.sub, z.kurs.id);
-    return { ok: true, rueckmeldung: erg.rueckmeldung, zustand: zustand(z, a), neueAbzeichen, loesung: loesungsteil(a) };
+    const neueAbzeichen = nurKern ? stand.pruefeAbzeichen(z.sub, z.kurs.id) : [];
+    return { ok: true, rueckmeldung: { bearbeitet: true, haken }, zustand: zustand(z, a), neueAbzeichen, loesung: loesungsteil(a) };
   }
 
   /** Antwort prüfen. Body: { antwort, teilweise?, teil? }. */
@@ -278,7 +320,7 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const z = zugang(sitzung, kursId, { schreiben: true });
     const a = aufgabeFuer(z, id);
     const b = body && typeof body === 'object' ? body : {};
-    if (nurKernpunkte(a) && !Array.isArray(a.interaktion)) return kernpunkte(sitzung, kursId, id, { haken: b.antwort });
+    if (nurKernpunkte(a)) return kernpunkte(sitzung, kursId, id, { haken: b.antwort });
     if (hatSql(a) && !sqlPruefer) throw new HttpFehler(503, 'Die SQL-Prüfung ist gerade nicht verfügbar.');
     const teilweise = b.teilweise === true;
     let erg;
@@ -315,6 +357,8 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const out = { ok: erg.ok, rueckmeldung: erg.rueckmeldung, zustand: zs, geloest: neu.geloest, punkteErhalten: neu.punkte, neueAbzeichen };
     if (teilweise) Object.assign(out, { teilweise: true, teil: erg.teil });
     if (zs.status !== 'offen' && fertig) out.loesung = loesungsteil(a);
+    const pl = plaedoyerSchritt(z, a);
+    if (pl) out.plaedoyer = pl;
     return out;
   }
 
@@ -343,7 +387,25 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
         }
       })();
     }
-    return { zustand: zustand(z, a), loesung: loesungsteil(a) };
+    const out = { zustand: zustand(z, a), loesung: loesungsteil(a) };
+    const pl = plaedoyerSchritt(z, a);
+    if (pl) out.plaedoyer = pl;
+    return out;
+  }
+
+  /**
+   * Kür K1: Start der Schreib-Konsole einer Aufgabe (Zugang, Niveau und Freischaltung wie GET …/aufgaben/:id; auch im
+   * gesperrten Kurs lesend, denn Ausführen speichert nichts). → { start: null | { datenbank } | { skript } }
+   */
+  function schreibStart(sitzung, kursId, id) {
+    const z = zugang(sitzung, kursId);
+    const a = aufgabeFuer(z, id);
+    const t = teileVon(a).find((x) => F.artVon(x.interaktion) === 'sql' && x.interaktion.schreiben === true);
+    if (!t) throw new HttpFehler(404, 'Aufgabe nicht gefunden.');
+    const st = t.interaktion.start;
+    if (st && typeof st.datenbank === 'string') return { start: { datenbank: st.datenbank } };
+    if (st && typeof st.skript === 'string') return { start: { skript: st.skript } };
+    return { start: null };
   }
 
   /** Für das Rate-Limit: hat die Aufgabe (falls vorhanden) einen sql-Teil? */
@@ -352,7 +414,7 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     return !!a && hatSql(a);
   }
 
-  return { zugang, stand: standFuer, ermittlung, aufgabe, pruefen, tipp, loesungZeigen, kernpunkte, istSqlAufgabe };
+  return { zugang, stand: standFuer, ermittlung, aufgabe, pruefen, tipp, loesungZeigen, kernpunkte, istSqlAufgabe, schreibStart };
 }
 
 module.exports = { erzeugeLernen, normalisiereSql, HttpFehler, MAX_FEHLABFRAGEN };

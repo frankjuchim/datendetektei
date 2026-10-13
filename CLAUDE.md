@@ -40,21 +40,26 @@ Widersprechen sich Dateien: Spec > DS_PLANUNG > STORY > übrige. Widerspruch mel
 src/kern/      gemeinsamer Kern (später lab-kern): jwt.js (UNVERÄNDERT aus frankjuchim/labs), konfig, sitzung,
                sicherheit, sso, verbund, manifest, punkte – keine Abhängigkeit von src/sql oder src/er
 src/sql/       EH-§8-Parser (isomorph), Regeln, Sandbox (Kindprozesse + better-sqlite3), Prüfer, Diagnose, Fehlertexte
-src/er/        ER-Graph-Abgleich, Schema-Prüfer, Zerlegung (funktionale Abhängigkeiten)
+src/er/        Modellierungs-Kern (reine Funktionen): namen (Normalisierung, Synonyme), abgleich (ER-Graph gegen
+               Musterlösungen), zuordnung, schema (Relationenschema-Abgleich), zerlegung (FA, Hülle, Chase)
 src/content/   Prüfer je Interaktion, Validator, Trainings-Generatoren
 src/services/  inhalte, lernen, verhoer, warmup, training, live, auswertung, material, gast, stand
 src/routes/    schueler, lehrkraft, admin, gast, live, sso, verbund
-public/        Seiten + static/{css,fonts,img,js,vendor}; sql.js vendort (sql-wasm.js/.wasm, sql-asm.js)
-seed/          akten/*.json, datenbanken/<name>/{schema,pflicht}.sql + varianten/*.sql, warmup/, gast/, arbeitsblaetter.json
+public/        Seiten + static/{css,fonts,img,js,vendor}; sql.js vendort (sql-wasm.js/.wasm, sql-asm.js);
+               Werkzeuge static/js/{zeitlupe,spurenbrett,sortierfaecher,bauplan,werkbank}
+seed/          akten/*.json, datenbanken/<name>/{schema,pflicht}.sql + varianten/*.sql, warmup/, gast/, live/,
+               fallebene.json, arbeitsblaetter.json (Material ↔ Ermittlung), videos.json (YouTube-Links)
 materialien/   docx/pptx je Akte (maßgeblich) + erzeugte PDFs: Arbeitsblaetter_PDF = Schülerfassungen (nur angemeldet; öffentlich nur Gast-Auswahl Gast_PDF, E13; auch
                Präsentations-Handouts), Loesungen_Portal + Lehrkraft_PDF nur Lehrkraft, Originale (docx/pptx) nur
                Superadmin – jeweils Whitelist verzeichnis.json (Spec §12.4)
-werkzeuge/     Python: *_pdf.py, material_sql_pruefen.py, materialien_pruefen.py, video_folien.py, fonts/
+werkzeuge/     Python: akten_design.py, *_pdf.py, material_sql_pruefen.py, materialien_pruefen.py, kompetenz_abdeckung.py,
+               video_folien.py, fonts/, tests/
+quellen/       material/*.py – Erstellungshilfen der Materialien (danach sind die docx/pptx maßgeblich)
 scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen.js
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 3; spätere Phasen ergänzen hier)
+## Befehle (Stand Phase 7)
 
 ```
 npm install
@@ -69,9 +74,49 @@ npm run sqljs            # sql.js-Vendor-Dateien nach public/static/vendor/sqljs
 npm run validate         # seed/akten, seed/warmup, seed/gast: Format + jede SQL-Lösung auf allen Varianten, EH-konform
 AKTEN_DATEIEN=test/fixtures/akte_beispiel.json npm run dev   # zusätzlich die Beispielakte (welt 9) laden
 npm run e2e              # Playwright (test/e2e/*.e2e.js); Chromium aus /opt/pw-browsers bzw. CHROMIUM_PFAD; SCREENSHOTS=1 für Fotos
-npm run pruefen          # alles: test, validate, Material-SQL, Materialien
+                         # (Phase 5: test/e2e/modellierung.e2e.js mit echten Akten 4/5 → docs/screenshots/phase5/)
+                         # (Phase 6: test/e2e/probelauf.e2e.js – Testkurs mit Lehrkraft + 3 Schüler:innen über alle
+                         #  Akten, Live-Duell, Board, Urkunden, Kür → docs/screenshots/phase6/probelauf_*)
+npm run pruefen          # alles: test, validate, material:tests, material:vollstaendig, material:sql, material:pruefen,
+                         # material:kompetenzen (streng; begründete Ausnahmen in werkzeuge/kompetenz_abdeckung.py)
+
+# Materialien (Phase 7; LibreOffice + python-docx/-pptx, pypdf, Pillow; Details docs/MATERIALIEN.md)
+npm run arbeitsblaetter  # Schülerfassungen → materialien/Arbeitsblaetter_PDF (Warm-up ohne Lösungsteil)
+npm run loesungen        # Lösungen → materialien/Loesungen_Portal
+npm run praesentationen  # Handouts (Arbeitsblaetter_PDF) + Fassungen mit Notizen (Lehrkraft_PDF)
+npm run lehrkraft        # Lehrerhinweise, Gesamt, Generalprobe, Klausuren, Video-Folien → materialien/Lehrkraft_PDF
+npm run originale        # materialien/Originale/verzeichnis.json (docx/pptx, nur Superadmin)
+npm run material:pdf     # alle fünf in dieser Reihenfolge (nur fehlende/veraltete; --alle erzwingt alles)
+npm run material:vollstaendig  # --pruefen aller Pipeline-Skripte (Vollständigkeit, SHA-256-Aktualität; ohne LibreOffice)
+npm run material:sql     # jede SQL-Anweisung in docx/pptx gegen ihre DB (EH §8, Ergebnistabellen)
+npm run material:pruefen # Begriffe, `<>`/JOIN, Klarnamen (werkzeuge/klarnamen.txt), PDF-Namen, Schülerfassungen ohne Lösung
+npm run material:kompetenzen   # KOMPETENZMATRIX × Akten × Warm-up × Material (--streng)
+npm run material:tests   # Python-Tests werkzeuge/tests (u. a. Schüler-PDFs ohne Lösung/Story-Auflösung)
+npm run videos           # Videos: video.json → Folien (pptx) + Drehbuch (md); npm run videos:bilder rendert vorher die
+                         # Plattform-Bilder (Playwright); npm run videos:pruefen; npm run db:video baut video/schachturnier
 ```
 docx/pptx rendern: `soffice --headless --convert-to pdf --outdir <scratch> <datei>`.
+
+**Materialien (Phase 7):** `quellen/material/akte<n>.py`, `gesamt.py`, `kuer.py` sind nur **Erstellungshilfen** – danach
+sind die docx/pptx in `materialien/` maßgeblich und werden direkt bearbeitet. Ein Skript nie „nebenbei“ neu laufen
+lassen: es überschreibt alle seine Dateien (nicht byte-reproduzierbar). Muss es laufen (z. B. `gesamt.py` für die
+Materialliste nach neuen Einträgen in `seed/arbeitsblaetter.json`), danach unveränderte Dateien per `git checkout`
+zurückholen, `npm run material:pdf` laufen lassen, die geänderten Seiten rendern und ansehen und PDFs + `quellen.json` +
+Verzeichnisse mitcommitten. Neue Materialien immer über `seed/arbeitsblaetter.json` eintragen (die Whitelists
+`verzeichnis.json` erzeugt die Pipeline – nie von Hand). Erklärvideos: Links nur in `seed/videos.json` (nur YouTube,
+Link-Knopf, kein Embed). Sichtprüfung der Phase 7: `docs/screenshots/phase7/`.
+
+Seiten (Phase 6): `/pinnwand` (Beweisstücke, Indizienkette des Schlussplädoyers, Steckbrief nach Regel E10),
+`/live` (Live-Runde beitreten), `/lehrkraft` (Reiter Übersicht, Einstellungen, Auswertung, Vorschau, Live, Board,
+Urkunden, Materialien; Superadmin zusätzlich System), `/lehrkraft/live` + `/live/<runde>/beamer` (Steuerung, Beamer),
+`/lehrkraft/urkunden` (Druckseite), `/board/<schlüssel>` (Beamer-Board ohne Anmeldung, immer dunkel, nur Anzeigenamen).
+Fallebene in `seed/fallebene.json`, Live-Inhalte in `seed/live/`, Kür K1 in `seed/akten/kuer.json` (Welt 8, `kuer: true`,
+nur eA, keine Verbund-Welt). Neue Tabellen müssen vom Verbund-Löschauftrag erfasst werden
+(`test/verbund_loeschen_alles.test.js` durchsucht alle Tabellen).
+
+Werkzeugseiten (ohne Anmeldung, ohne Prüfung, Entwurf im `localStorage`): `/werkzeug/bauplan` (Bauplan-Tisch, ER in
+Chen-Notation, Zeichnen + Liste), `/werkzeug/werkbank` (Schema-Werkbank); angemeldet bzw. mit `?db=eisdiele`:
+`/werkzeug/zeitlupe`, `/werkzeug/spurenbrett`, `/werkzeug/sortierfaecher`. ER-Layouts in Akten: `test/chen_layout.test.js` prüft Überlappungen.
 
 ## Konventionen
 
@@ -118,7 +163,7 @@ P10 Operator verfehlt.
   `test/fixtures/akte_beispiel.json` + Tests (Vertrag §9).
 - Nach Änderungen an `public/static/**`: `?v=`-Version in `public/*.html` und `package.json` erhöhen.
 - docx/pptx in `materialien/` sind maßgeblich → direkt bearbeiten, danach rendern und ansehen; PDFs neu erzeugen
-  (`npm run arbeitsblaetter|loesungen|lehrkraft`) und mitcommitten. SQL in docx im Absatzformat „SQL-Code“.
+  (`npm run material:pdf`) und mitcommitten; `npm run pruefen` grün. SQL in docx im Absatzformat „SQL-Code“.
 
 ## Datenschutz und Sicherheit (Vertrag §9/§10, Spec §7.14)
 - **Lösungen, Erklärungen, nicht abgerufene Tipps verlassen den Server nie vor dem Lösen/Aufdecken**; Verhör-Aufgaben
@@ -126,6 +171,11 @@ P10 Operator verfehlt.
 - Gespeichert nur: `sub`, Anzeigename, Rolle, Kurs-IDs, Lernstand. **Freitexte nie** (E7), SQL-Entwürfe nur im
   `localStorage` des Geräts, Live-Antworten nach Rundenende verwerfen, IPs nur im RAM.
 - Schüler-SQL nur in der Sandbox (eigener Kindprozess, Abbruch per SIGKILL, In-Memory-Kopie, nur lesend, 1,5 s, 5 000 Zeilen, verbotene Tokens).
+  **Einzige Ausnahme: Schreibmodus der Kür K1** (`fuehreSkriptAus`, `POST /api/kurse/:kurs/aufgaben/:id/skript`): je
+  Anfrage eine frische In-Memory-DB (leer oder Startschema), CREATE/INSERT erlaubt, FK an, 1,5 s, ≤ 200 Anweisungen,
+  ≤ 20 Tabellen, ≤ 500 Zeilen je Tabelle, ≤ 1 MB, Skript ≤ 10 000 Zeichen, TEMP/TRIGGER/VIEW/VIRTUAL verboten; nie
+  Akten-DBs oder die Plattform-DB, nichts wird gespeichert.
+- Live-Modus nur im RAM (Antworten, Teams, Statistik); Board und CSV ohne `sub`.
 - CSP: `default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self' data:;
   style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'` – keine Inline-
   Skripte/-Styles, keine CDNs, Ausgaben nur als Textknoten. `X-Robots-Tag: noindex`.

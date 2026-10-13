@@ -8,7 +8,7 @@
 //   POST /api/kurse/:kurs/aufgaben/:id/pruefen         { antwort, teilweise?, teil? }
 //   POST /api/kurse/:kurs/aufgaben/:id/tipp            {}
 //   POST /api/kurse/:kurs/aufgaben/:id/loesung-zeigen  {}
-//   POST /api/kurse/:kurs/aufgaben/:id/kernpunkte      { haken: n }
+//   POST /api/kurse/:kurs/aufgaben/:id/kernpunkte      { haken: n | [n je kernpunkte-Teil] }
 //
 // Rate-Limits je Konto (Spec §7.14): sql-Prüfungen 30/min (konfig.rateLimits.pruefenSql), alle POSTs 120/min
 // (konfig.rateLimits.lernen). Fehler als JSON { error } mit deutschem Text ohne Details.

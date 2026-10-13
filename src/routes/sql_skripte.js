@@ -8,7 +8,7 @@ const crypto = require('node:crypto');
 const express = require('express');
 
 const SQL_DIR = path.join(__dirname, '..', 'sql');
-const WHITELIST = ['parser.js', 'regeln.js', 'fehlertexte.js'];
+const WHITELIST = ['parser.js', 'regeln.js', 'fehlertexte.js', 'visual.js'];
 
 function sqlSkriptRouten() {
   const dateien = new Map();

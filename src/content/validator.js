@@ -17,18 +17,33 @@
 
 const F = require('./format');
 const P = require('./pruefer');
+const M = require('./modellierung');
+const PL = require('./plaedoyer');
 const parser = require('../sql/parser');
 const regeln = require('../sql/regeln');
 const { OEFFENTLICHE_DATENBANKEN } = require('../sql/datenbanken');
+const visual = require('../sql/visual');
+const { vorpruefenSkript, MAX_SKRIPT } = require('../sql/skript');
+const Database = require('better-sqlite3');
 
 const LEVEL_ID = /^A(\d)-E(\d)$/;
 const AUFGABE_ID = /^A(\d)-(E\d-(\d{2}|CC)|V-\d{2})$/;
 const BOSS_ID = /^A(\d)-V$/;
+/** Akte ohne Lab-Aufgaben: die Generalprobe (Spec §10) – ihre Ermittlung trägt nur Briefing/Intro, geprüft wird im Verhör 7. */
+const AKTE_OHNE_LAB = 7;
+/** Kür K1 (Phase 6 Task 7): eigene Welt 8 mit kuer: true, ids K1-E<k> bzw. K1-E<k>-<nn> (DS_PLANUNG). */
+const KUER_WELT = 8;
+const KUER_LEVEL_ID = /^K1-E(\d)$/;
+const KUER_AUFGABE_ID = /^K1-E(\d)-(\d{2}|CC)$/;
+const SCHREIB_PRUEFARTEN = ['abfrage', 'gleich', 'daten', 'ergebnis', 'zeilen', 'skript'];
+const MAX_PRUEFPUNKTE = 30;
 const KARTE_ID = /^W-A(\d)-(\d{2})$/;
 const KOMPETENZ = /^(DB-)?K(\d{2})$/;
 const FARBE = /^#[0-9A-Fa-f]{6}$/;
 const STUFEN_PUNKTE = { 1: 10, 2: 20, 3: 30 };
 const PARALLEL = 4;
+const MAX_BLOCK_SQL = 10000;
+const MAX_ZEILEN_SPURENBRETT = 50;
 
 function istObjekt(x) {
   return x !== null && typeof x === 'object' && !Array.isArray(x);
@@ -114,7 +129,7 @@ function mixErfuellbar(pool, mix, maxJeKind = {}) {
  */
 function pruefeAkteStruktur(data, datei, kontext) {
   const { f, h, dbs } = kontext;
-  const ergebnis = { welt: null, ids: [], aufgaben: 0, sqlJobs: [] };
+  const ergebnis = { welt: null, ids: [], aufgaben: 0, sqlJobs: [], werkzeugSql: [] };
   const fd = (text) => f({ datei, text });
   if (!istObjekt(data)) {
     fd('Die Datei muss ein JSON-Objekt { "version": 2, "welt": …, "levels": […], "aufgaben": […] } enthalten.');
@@ -122,8 +137,14 @@ function pruefeAkteStruktur(data, datei, kontext) {
   }
   if (data.version !== 2) fd(`version muss 2 sein (gefunden: ${JSON.stringify(data.version)}).`);
   const welt = data.welt;
-  if (!Number.isInteger(welt) || !((welt >= 1 && welt <= 7) || welt === 9)) fd('welt muss die Aktennummer 1–7 sein (9 nur für die Test-Beispielakte).');
-  else ergebnis.welt = welt;
+  const kuer = data.kuer === true;
+  if (data.kuer !== undefined && typeof data.kuer !== 'boolean') fd('kuer muss true sein (oder fehlen).');
+  if (kuer && welt !== KUER_WELT) fd(`Die Kür hat welt ${KUER_WELT} (kuer: true).`);
+  if (!kuer && welt === KUER_WELT) fd(`welt ${KUER_WELT} ist die Kür: kuer: true angeben (Akten 1–7 sind die Kern-Akten).`);
+  if (!Number.isInteger(welt) || !((welt >= 1 && welt <= 7) || welt === 9 || (kuer && welt === KUER_WELT))) {
+    fd('welt muss die Aktennummer 1–7 sein (8 nur für die Kür mit kuer: true, 9 nur für die Test-Beispielakte).');
+  } else ergebnis.welt = welt;
+  if (kuer && data.boss !== undefined && data.boss !== null) fd('Die Kür hat kein Verhör (boss weglassen).');
   if (welt === 9) h({ datei, text: 'welt 9 ist die Test-Beispielakte – nicht in seed/akten ablegen.' });
   if (!istText(data.titel)) fd('titel (Name der Akte) fehlt.');
   if (data.farbe !== undefined && !FARBE.test(String(data.farbe))) fd('farbe muss im Format #RRGGBB angegeben werden.');
@@ -132,7 +153,9 @@ function pruefeAkteStruktur(data, datei, kontext) {
   if (!Array.isArray(data.aufgaben)) fd('aufgaben muss eine Liste sein.');
   if (!Array.isArray(data.levels) || !Array.isArray(data.aufgaben)) return ergebnis;
 
-  const eA = welt === 5; // Akte 5 komplett eA (Spec §3)
+  // Akte 5 komplett eA (Spec §3); die Kür K1 entfällt im gA-Pfad (Spec §3.4, §18) – ebenfalls komplett eA
+  const eA = welt === 5 || kuer;
+  const eaText = kuer ? 'Die Kür K1 entfällt im gA-Pfad (Spec §3.4)' : 'Akte 5 ist komplett eA';
 
   /* ---------- Aufgaben einsammeln ---------- */
   const aufgaben = new Map();
@@ -153,9 +176,9 @@ function pruefeAkteStruktur(data, datei, kontext) {
     if (!istObjekt(l)) return fd(`${o} ist kein Objekt.`);
     const lid = typeof l.id === 'string' ? l.id : '';
     const fl = (text) => fd(`Ermittlung ${lid || o}: ${text}`);
-    const m = LEVEL_ID.exec(lid);
-    if (!m) fl(`id „${lid}“ hat nicht das Format A<n>-E<k> (z. B. A1-E2).`);
-    else if (Number(m[1]) !== welt) fl(`id „${lid}“ passt nicht zu welt ${welt}.`);
+    const m = (kuer ? KUER_LEVEL_ID : LEVEL_ID).exec(lid);
+    if (!m) fl(kuer ? `id „${lid}“ hat nicht das Format K1-E<k> (Kür).` : `id „${lid}“ hat nicht das Format A<n>-E<k> (z. B. A1-E2).`);
+    else if (!kuer && Number(m[1]) !== welt) fl(`id „${lid}“ passt nicht zu welt ${welt}.`);
     if (levelIds.has(lid)) fl(`id „${lid}“ kommt doppelt vor.`);
     levelIds.add(lid);
     if (!istText(l.titel)) fl('titel fehlt.');
@@ -164,7 +187,7 @@ function pruefeAkteStruktur(data, datei, kontext) {
     if (l.ab !== undefined && typeof l.ab !== 'string') fl('ab muss Text sein.');
     if (l.niveau !== undefined && !F.NIVEAUS.includes(l.niveau)) fl(`niveau muss ${F.NIVEAUS.join(' | ')} sein.`);
     const niveau = l.niveau || 'alle';
-    if (eA && niveau !== 'eA') fl('Akte 5 ist komplett eA: niveau "eA" angeben.');
+    if (eA && niveau !== 'eA') fl(`${eaText}: niveau "eA" angeben.`);
     if (l.briefing !== undefined) {
       if (typeof l.briefing !== 'string') fl('briefing muss Text sein.');
       else {
@@ -175,9 +198,22 @@ function pruefeAkteStruktur(data, datei, kontext) {
       }
     }
     if (l.intro !== undefined) {
-      pruefeBloecke(l.intro, { ort: `Ermittlung ${lid} › intro`, fe: fl, lueckenVerboten: true, verhoer: false, dbs, sqlJobs: ergebnis.sqlJobs, datei, f, h });
+      pruefeBloecke(l.intro, {
+        ort: `Ermittlung ${lid} › intro`,
+        fe: fl,
+        lueckenVerboten: true,
+        verhoer: false,
+        dbs,
+        sqlJobs: ergebnis.sqlJobs,
+        werkzeugSql: ergebnis.werkzeugSql,
+        datei,
+        f,
+        h
+      });
     }
-    if (!Array.isArray(l.aufgaben) || !l.aufgaben.length) fl('aufgaben (Liste der Aufgaben-ids) fehlt oder ist leer.');
+    // Akte 7 (Generalprobe) ist ein Level ohne Lab-Aufgaben – nur Verhör 7 (Spec §10): dort ist aufgaben: [] erlaubt.
+    if (!Array.isArray(l.aufgaben)) fl('aufgaben (Liste der Aufgaben-ids) fehlt.');
+    else if (!l.aufgaben.length && welt !== AKTE_OHNE_LAB) fl('aufgaben (Liste der Aufgaben-ids) ist leer (nur in Akte 7, der Generalprobe, erlaubt).');
     for (const aid of Array.isArray(l.aufgaben) ? l.aufgaben : []) {
       if (!aufgaben.has(aid)) {
         fl(`verweist auf unbekannte Aufgabe „${aid}“.`);
@@ -196,6 +232,8 @@ function pruefeAkteStruktur(data, datei, kontext) {
       else if (rolle.has(cc)) fl(`coldCase „${cc}“ wird mehrfach verwendet.`);
       else rolle.set(cc, { art: 'cc', level: lid, niveau });
     }
+    // Schlussplädoyer (AUFGABENFORMAT §2.1, Phase 6)
+    if (l.plaedoyer !== undefined) for (const t of PL.pruefePlaedoyer(l.plaedoyer, l, aufgaben)) fl(t);
   });
 
   /* ---------- Verhör ---------- */
@@ -274,9 +312,26 @@ function pruefeAkteStruktur(data, datei, kontext) {
   for (const [id, a] of aufgaben) {
     const r = rolle.get(id) || { art: /-V-/.test(id) ? 'verhoer' : /-CC$/.test(id) ? 'cc' : 'lab', niveau: 'alle', unbenutzt: true };
     if (r.unbenutzt) h({ datei, id, text: `Aufgabe „${id}“ wird in keiner Ermittlung, keinem coldCase und keinem Verhör-Pool verwendet.` });
-    pruefeAufgabe(a, id, { welt, eA, rolle: r, kontextDb, datei, f, h, dbs, sqlJobs: ergebnis.sqlJobs });
+    pruefeAufgabe(a, id, { welt, eA, eaText, kuer, rolle: r, kontextDb, datei, f, h, dbs, sqlJobs: ergebnis.sqlJobs, werkzeugSql: ergebnis.werkzeugSql });
+  }
+
+  /* ---------- Verstehenshilfen zeigen nie eine Musterlösung (Review Focus 4 Phase 4) ---------- */
+  const muster = new Map(); // normalisierte Musterlösung → Aufgaben-id
+  for (const [id, a] of aufgaben) {
+    for (const t of F.teile(a)) {
+      if (istObjekt(t.interaktion) && t.interaktion.kind === 'sql' && istObjekt(t.loesung) && istText(t.loesung.sql)) muster.set(normSql(t.loesung.sql), id);
+    }
+  }
+  for (const w of ergebnis.werkzeugSql) {
+    const id = muster.get(normSql(w.sql));
+    if (id) w.fb(`sql ist die Musterlösung der Aufgabe ${id} – Blöcke der Verstehenshilfen zeigen nie eine Musterlösung.`);
   }
   return ergebnis;
+}
+
+/** SQL für den Vergleich mit Musterlösungen: ohne Leerraum, Groß/Klein und abschließendes Semikolon. */
+function normSql(sql) {
+  return F.normText(sql, 'code').toLowerCase().replace(/;+$/, '');
 }
 
 /* ======================================================================================================== */
@@ -293,14 +348,14 @@ function pruefeAufgabe(a, id, k) {
   const ha = (text) => h({ datei, id, text });
   const verhoer = rolle.art === 'verhoer';
 
-  const m = AUFGABE_ID.exec(id);
-  if (!m) fa(`id „${id}“ hat nicht das Format A<n>-E<k>-<nn>, A<n>-E<k>-CC bzw. A<n>-V-<nn>.`);
-  else if (Number(m[1]) !== welt) fa(`id „${id}“ passt nicht zu welt ${welt}.`);
+  const m = (k.kuer ? KUER_AUFGABE_ID : AUFGABE_ID).exec(id);
+  if (!m) fa(k.kuer ? `id „${id}“ hat nicht das Format K1-E<k>-<nn> (Kür).` : `id „${id}“ hat nicht das Format A<n>-E<k>-<nn>, A<n>-E<k>-CC bzw. A<n>-V-<nn>.`);
+  else if (!k.kuer && Number(m[1]) !== welt) fa(`id „${id}“ passt nicht zu welt ${welt}.`);
   if (!istText(a.titel)) fa('titel fehlt.');
   if (![1, 2, 3].includes(a.stufe)) fa('stufe muss 1, 2 oder 3 sein.');
   if (!F.KATEGORIEN.includes(a.kategorie)) fa(`unbekannte kategorie „${a.kategorie}“ (erlaubt: ${F.KATEGORIEN.join(' | ')}).`);
   if (a.niveau !== undefined && !F.NIVEAUS.includes(a.niveau)) fa(`niveau muss ${F.NIVEAUS.join(' | ')} sein.`);
-  if (k.eA && a.niveau !== undefined && a.niveau !== 'eA') fa('Akte 5 ist komplett eA: niveau "alle" ist hier nicht erlaubt.');
+  if (k.eA && a.niveau !== undefined && a.niveau !== 'eA') fa(`${k.eaText || 'Akte 5 ist komplett eA'}: niveau "alle" ist hier nicht erlaubt.`);
   if (a.fallen !== undefined) {
     if (!Array.isArray(a.fallen)) fa('fallen muss eine Liste sein (z. B. ["P1"]).');
     else for (const p of a.fallen) if (!F.FALLEN.includes(p)) fa(`unbekannte Falle „${p}“ (erlaubt: P1–P10).`);
@@ -319,7 +374,7 @@ function pruefeAufgabe(a, id, k) {
     ha(`punkte ${a.punkte} weicht vom Standard der Stufe ${a.stufe} (${STUFEN_PUNKTE[a.stufe]}) ab.`);
   }
 
-  const blockKontext = { fe: fa, verhoer, kontextDb: k.kontextDb, dbs: k.dbs, sqlJobs: k.sqlJobs, datei, id, f, h };
+  const blockKontext = { fe: fa, verhoer, kontextDb: k.kontextDb, dbs: k.dbs, sqlJobs: k.sqlJobs, werkzeugSql: k.werkzeugSql, datei, id, f, h };
   if (!Array.isArray(a.inhalt) || !a.inhalt.length) fa('inhalt (Liste von Blöcken) fehlt oder ist leer.');
   else pruefeBloecke(a.inhalt, { ...blockKontext, ort: 'inhalt' });
   if (a.tipps !== undefined) {
@@ -345,7 +400,7 @@ function pruefeAufgabe(a, id, k) {
   const felderBesitzer = new Map();
   teile.forEach((t, i) => {
     const ort = teile.length > 1 ? `interaktion[${i}]` : 'interaktion';
-    pruefeInteraktion(t.interaktion, t.loesung, a, ort, { ...k, fa, ha, verhoer });
+    pruefeInteraktion(t.interaktion, t.loesung, a, ort, { ...k, fa, ha, verhoer, id });
     const it = t.interaktion;
     if (F.artVon(it) === 'gaps' && istObjekt(it.felder)) {
       for (const fid of Object.keys(it.felder)) {
@@ -568,6 +623,8 @@ function pruefeInteraktion(ia, lo, aufgabe, ort, k) {
       pruefeSqlInteraktion(ia, lo, ort, lort, k);
       break;
     default:
+      // Phase 5: zellen, anomalie, zerlegen, schema, er (src/content/modellierung.js; im Verhör alle erlaubt)
+      if (M.NEUE_INTERAKTIONEN.includes(art)) M.pruefeInteraktion(ia, lo, aufgabe, ort, lort, { fa, ha });
       break;
   }
 }
@@ -599,6 +656,11 @@ function pruefeDbErlaubt(db, ort, k) {
 
 function pruefeSqlInteraktion(ia, lo, ort, lort, k) {
   const { fa, ha, dbs } = k;
+  if (ia.schreiben !== undefined) {
+    if (ia.schreiben !== true) return fa(`${ort}: schreiben muss true sein (oder fehlen).`);
+    return pruefeSchreibInteraktion(ia, lo, ort, lort, k);
+  }
+  if (k.kuer) ha(`${ort}: In der Kür sind sql-Aufgaben normalerweise Schreib-Aufgaben (schreiben: true).`);
   const dbOk = pruefeDbErlaubt(ia.datenbank, `${ort}.datenbank`, k);
   const varianten = ia.varianten === undefined ? [] : ia.varianten;
   let variantenOk = true;
@@ -664,6 +726,94 @@ function pruefeSqlInteraktion(ia, lo, ort, lort, k) {
       const meldungen = await pruefeLimit(ast, lo.sql, ia.datenbank, varianten, u.sandbox);
       for (const m of meldungen) (m.hinweis ? ha : fa)(`${lort}: ${m.text}`);
     }
+  });
+}
+
+/* ---------- sql mit schreiben: true (Kür K1, AUFGABENFORMAT §6.6.1) ---------- */
+
+function pruefeSchreibInteraktion(ia, lo, ort, lort, k) {
+  const { fa } = k;
+  if (!(k.kuer || k.welt === 9)) fa(`${ort}: schreiben (Kür-Sandbox) gibt es nur in der Kür-Akte (welt ${KUER_WELT}, kuer: true).`);
+  if (k.verhoer) fa(`${ort}: Im Verhör gibt es keine Schreib-Aufgaben.`);
+  if (ia.abimodus !== 'aus') fa(`${ort}: Schreib-Aufgaben haben abimodus "aus" (Kür, nicht im Abitur).`);
+  for (const feld of ['datenbank', 'varianten', 'sortierung', 'aliasPflicht']) {
+    if (ia[feld] !== undefined) fa(`${ort}: ${feld} gibt es bei schreiben nicht (Startdatenbank über start).`);
+  }
+  let startOk = true;
+  if (ia.start !== undefined) {
+    const st = ia.start;
+    if (!istObjekt(st)) {
+      fa(`${ort}: start muss ein Objekt { titel, datenbank } oder { titel, skript } sein.`);
+      startOk = false;
+    } else {
+      const hatDb = st.datenbank !== undefined;
+      const hatSkript = st.skript !== undefined;
+      if (hatDb && hatSkript) {
+        fa(`${ort}: start hat entweder datenbank (öffentliche Übungs-DB) oder skript (Startskript) – ohne beides beginnt die Sandbox leer.`);
+        startOk = false;
+      }
+      if (hatDb && (!istText(st.datenbank) || !OEFFENTLICHE_DATENBANKEN.includes(st.datenbank) || !k.dbs.namen.includes(st.datenbank))) {
+        fa(`${ort}: start.datenbank muss eine öffentliche Übungs-DB sein (${OEFFENTLICHE_DATENBANKEN.join(', ')}).`);
+        startOk = false;
+      }
+      if (hatSkript && (!istText(st.skript) || st.skript.length > 2 * MAX_SKRIPT)) {
+        fa(`${ort}: start.skript muss ein SQL-Text (höchstens ${2 * MAX_SKRIPT} Zeichen) sein.`);
+        startOk = false;
+      }
+      if (!istText(st.titel)) fa(`${ort}: start.titel (Anzeige in der Konsole, z. B. „Detektei-light“) fehlt.`);
+      for (const key of Object.keys(st)) if (!['titel', 'datenbank', 'skript'].includes(key)) fa(`${ort}: start enthält das unbekannte Feld „${key}“.`);
+    }
+  }
+  if (!istText(lo.sql)) return fa(`${lort}: sql (Musterskript) fehlt.`);
+  const vor = vorpruefenSkript(lo.sql);
+  if (!vor.ok) fa(`${lort}: Musterskript nicht zulässig (${vor.code}${vor.wort ? ': ' + vor.wort : ''}).`);
+  const pr = lo.pruefung;
+  if (!Array.isArray(pr) || !pr.length) return fa(`${lort}: pruefung (Liste der Prüfpunkte) fehlt oder ist leer.`);
+  if (pr.length > MAX_PRUEFPUNKTE) fa(`${lort}: höchstens ${MAX_PRUEFPUNKTE} Prüfpunkte.`);
+  let pruefungOk = true;
+  pr.forEach((p, i) => {
+    const o = `${lort}.pruefung[${i}]`;
+    const fp = (t) => {
+      pruefungOk = false;
+      fa(`${o}: ${t}`);
+    };
+    if (!istObjekt(p)) return fp('Prüfpunkt muss ein Objekt sein.');
+    const art = p.art === undefined ? 'abfrage' : p.art;
+    if (!SCHREIB_PRUEFARTEN.includes(art)) return fp(`unbekannte art „${p.art}“ (erlaubt: ${SCHREIB_PRUEFARTEN.join(', ')}).`);
+    if (!istText(p.text)) fp('text (Rückmeldung an die Schülerin/den Schüler) fehlt.');
+    else F.pruefeMarkdown(p.text).forEach((x) => fp(`text: ${x}`));
+    const erlaubt = { abfrage: ['sql'], gleich: ['sql'], daten: ['min'], ergebnis: [], zeilen: ['min'], skript: ['muster'] }[art];
+    for (const key of Object.keys(p)) if (!['art', 'text', ...erlaubt].includes(key)) fp(`Feld „${key}“ passt nicht zu art „${art}“.`);
+    if (erlaubt.includes('sql') && !istText(p.sql)) fp('sql (Prüfabfrage) fehlt.');
+    if (erlaubt.includes('min') && (!Number.isInteger(p.min) || p.min < 1 || p.min > 500)) fp('min muss eine ganze Zahl 1–500 sein.');
+    if (art === 'skript') {
+      if (!istText(p.muster)) fp('muster (regulärer Ausdruck) fehlt.');
+      else {
+        try {
+          new RegExp(p.muster, 'i');
+        } catch {
+          fp('muster ist kein gültiger regulärer Ausdruck.');
+        }
+      }
+    }
+  });
+  if (!vor.ok || !startOk || !pruefungOk) return;
+
+  const aufgabe = P.sqlAufgabe(ia, lo);
+  aufgabe.id = `${k.id || ''}:${ort}`;
+  k.sqlJobs.push(async (u) => {
+    try {
+      await u.sqlPruefer.musterErgebnisse(aufgabe);
+    } catch (e) {
+      return fa(`${lort}: ${e.message}`);
+    }
+    const r = await u.sqlPruefer.pruefeSql({ sql: lo.sql, aufgabe });
+    (r.pruefpunkte || []).forEach((p, i) => {
+      if (!p.ok) fa(`${lort}.pruefung[${i}]: Die Musterlösung erfüllt den Prüfpunkt „${p.text}“ nicht.`);
+    });
+    // Gegenprobe: ein Skript ohne eigene Arbeit darf nicht alle Prüfpunkte erfüllen
+    const leer = await u.sqlPruefer.pruefeSql({ sql: 'SELECT 1;', aufgabe });
+    if (leer.ok) fa(`${lort}: Die Prüfpunkte sind schon ohne eigenes Skript erfüllt (Gegenprobe mit „SELECT 1;“).`);
   });
 }
 
@@ -799,11 +949,164 @@ function pruefeBloecke(bloecke, k) {
         if (k.verhoer) fb('Im Verhör gibt es keinen datenbank-Block (Verhör-DBs sind nie öffentlich).');
         else if (!F.UEBUNGS_DBS.includes(b.name)) fb(`name muss eine öffentliche Übungs-DB sein (${F.UEBUNGS_DBS.join(', ')}).`);
         break;
+      case 'zeitlupe':
+      case 'spurenbrett':
+      case 'sortierfaecher':
+        pruefeWerkzeugBlock(b, fb, k);
+        break;
+      case 'er':
+        M.pruefeErBlock(b).forEach(fb);
+        break;
+      case 'mengen':
+        M.pruefeMengenBlock(b).forEach(fb);
+        break;
       default:
         break;
     }
     if (k.lueckenVerboten && F.luecken([b]).length) fb('Lücken [[…]] sind hier nicht erlaubt.');
   });
+  pruefeDoppeltesSchema(bloecke, k);
+}
+
+/**
+ * Die datenbank-Kachel zeigt das Schema der Übungs-DB schon (Schema-Browser). Ein schema-Block in derselben Blockliste,
+ * dessen Relationen alle Tabellen dieser DB sind, erschiene doppelt (Phase 5 Task 9) → Fehler.
+ */
+function pruefeDoppeltesSchema(bloecke, k) {
+  if (!k.dbs || typeof k.dbs.schema !== 'function') return;
+  const namen = bloecke.filter((b) => istObjekt(b) && b.t === 'datenbank' && F.UEBUNGS_DBS.includes(b.name)).map((b) => b.name);
+  if (!namen.length) return;
+  bloecke.forEach((b, i) => {
+    if (!istObjekt(b) || b.t !== 'schema' || !Array.isArray(b.relationen) || !b.relationen.length) return;
+    for (const db of namen) {
+      let tabellen;
+      try {
+        tabellen = new Set((k.dbs.schema(db) || []).map((t) => t.tabelle));
+      } catch {
+        continue;
+      }
+      if (b.relationen.every((r) => istObjekt(r) && tabellen.has(r.name))) {
+        k.fe(`${k.ort}[${i}] (schema): wiederholt das Schema der Datenbank „${db}“, das die datenbank-Kachel schon zeigt – es stünde doppelt da. Block entfernen.`);
+        return;
+      }
+    }
+  });
+}
+
+/* ---------- Verstehenshilfen: zeitlupe, spurenbrett, sortierfaecher (Phase 4) ---------- */
+
+/**
+ * Blöcke zeitlupe { datenbank, sql, start? }, sortierfaecher { datenbank, sql }, spurenbrett { datenbank,
+ * tabellen: [{ name, zeilen? | limit? }], bedingung? }: nur öffentliche Akten-DBs, nie im Verhör, keine Lücken; die
+ * Abfrage ist EH-konform und läuft über src/sql/visual.js (better-sqlite3 auf der Haupt-DB) – wie später im Browser.
+ * Dass die Abfrage keine Musterlösung zeigt, prüft pruefeAkteStruktur über k.werkzeugSql.
+ */
+function pruefeWerkzeugBlock(b, fb, k) {
+  if (k.verhoer) return fb('Im Verhör gibt es keine Verstehenshilfen (Zeitlupe, Spurenbrett, Sortierfächer).');
+  if (!istText(b.datenbank) || !OEFFENTLICHE_DATENBANKEN.includes(b.datenbank)) {
+    return fb(`datenbank muss eine öffentliche Akten-DB sein (${OEFFENTLICHE_DATENBANKEN.join(', ')}), nicht ${JSON.stringify(b.datenbank)}.`);
+  }
+  if (F.luecken([b]).length) return fb('Lücken [[…]] sind in Verstehenshilfen nicht erlaubt.');
+  if (b.t === 'spurenbrett') return pruefeSpurenbrettBlock(b, fb, k);
+
+  if (!istText(b.sql)) return fb('sql (die Abfrage des Blocks) fehlt.');
+  if (b.sql.length > MAX_BLOCK_SQL) return fb(`sql ist zu lang (höchstens ${MAX_BLOCK_SQL} Zeichen).`);
+  if (b.start !== undefined) {
+    if (b.t !== 'zeitlupe') fb('start gibt es nur beim Block zeitlupe.');
+    else if (!F.ZEITLUPE_KLAUSELN.includes(b.start)) fb(`start muss eine Klausel sein (${F.ZEITLUPE_KLAUSELN.join(', ')}), nicht ${JSON.stringify(b.start)}.`);
+  }
+  if (!pruefeEh(b.sql, 'sql', fb, k.dbs.schema(b.datenbank))) return;
+  if (Array.isArray(k.werkzeugSql)) k.werkzeugSql.push({ sql: b.sql, fb });
+  const db = b.datenbank;
+  k.sqlJobs.push(async (u) => {
+    const fuehreAus = u.visual(db);
+    if (b.t === 'zeitlupe') {
+      const r = await visual.zeitlupe(b.sql, fuehreAus);
+      if (r.fehler) return fb(`Die Abfrage ist auf ${db} nicht ausführbar: ${r.fehler}`);
+      if (!r.schritte.length) return fb(r.hinweis || 'Die Zeitlupe kann diese Abfrage nicht zeigen.');
+      if (typeof b.start === 'string' && F.ZEITLUPE_KLAUSELN.includes(b.start) && !r.schritte.some((x) => x.klausel === b.start)) {
+        fb(`start „${b.start}“: Diese Klausel kommt in der Abfrage nicht vor.`);
+      }
+    } else {
+      const r = await visual.sortierfaecher(b.sql, fuehreAus);
+      if (r.fehler) return fb(`Die Abfrage ist auf ${db} nicht ausführbar: ${r.fehler}`);
+      if (!r.faecher.length) fb(r.hinweis || 'Die Sortierfächer brauchen eine Abfrage mit GROUP BY oder einer Aggregatfunktion.');
+    }
+  });
+}
+
+function istPkWert(w) {
+  return (typeof w === 'number' && Number.isFinite(w)) || typeof w === 'string';
+}
+
+function pruefeSpurenbrettBlock(b, fb, k) {
+  if (!Array.isArray(b.tabellen) || b.tabellen.length < 2 || b.tabellen.length > 3) {
+    return fb('tabellen: zwei oder drei Tabellen angeben ([{ name, zeilen? | limit? }]).');
+  }
+  let ok = true;
+  const fehler = (text) => {
+    ok = false;
+    fb(text);
+  };
+  b.tabellen.forEach((t, i) => {
+    const o = `tabellen[${i}]`;
+    if (!istObjekt(t) || !istText(t.name)) return fehler(`${o}: name fehlt.`);
+    for (const key of Object.keys(t)) if (!['name', 'zeilen', 'limit'].includes(key)) fehler(`${o}: unbekanntes Feld „${key}“ (erlaubt: name, zeilen, limit).`);
+    if (t.zeilen !== undefined && t.limit !== undefined) return fehler(`${o}: zeilen oder limit angeben – nicht beides.`);
+    if (t.zeilen !== undefined) {
+      const gut =
+        Array.isArray(t.zeilen) &&
+        t.zeilen.length >= 1 &&
+        t.zeilen.length <= MAX_ZEILEN_SPURENBRETT &&
+        t.zeilen.every((w) => istPkWert(w) || (Array.isArray(w) && w.length >= 1 && w.every(istPkWert)));
+      if (!gut) fehler(`${o}: zeilen muss eine Liste von 1–${MAX_ZEILEN_SPURENBRETT} Primärschlüsselwerten sein.`);
+    }
+    if (t.limit !== undefined && (!Number.isInteger(t.limit) || t.limit < 1 || t.limit > MAX_ZEILEN_SPURENBRETT)) {
+      fehler(`${o}: limit muss eine ganze Zahl 1–${MAX_ZEILEN_SPURENBRETT} sein.`);
+    }
+  });
+  if (b.bedingung !== undefined && (typeof b.bedingung !== 'string' || b.bedingung.length > 2000)) fehler('bedingung muss Text sein (höchstens 2 000 Zeichen).');
+  if (!ok) return;
+  const db = b.datenbank;
+  const eingabe = { tabellen: b.tabellen.map((t) => ({ ...t })), bedingung: b.bedingung };
+  k.sqlJobs.push(async (u) => {
+    const r = await visual.spurenbrett(eingabe, u.visual(db));
+    if (r.fehler) return fb(`Auf ${db} nicht darstellbar: ${r.fehler}`);
+    b.tabellen.forEach((t, i) => {
+      if (!Array.isArray(t.zeilen)) return;
+      const da = r.tabellen[i].zeilen.length;
+      if (da !== t.zeilen.length) fb(`tabellen[${i}].zeilen: ${t.zeilen.length - da} der Primärschlüsselwerte gibt es in ${t.name} nicht.`);
+    });
+    if (r.zusammengefasst) fb(`${r.text}: zu viele Fäden für das Brett (höchstens ${visual.GRENZEN.faeden}) – weniger Zeilen wählen.`);
+  });
+}
+
+/**
+ * Ausführung für visual.js im Validator: je öffentlicher DB eine schreibgeschützte better-sqlite3-Kopie der Haupt-DB
+ * (nie Varianten). → { visual(name) → fuehreAus, schliessen() }
+ */
+function visualAusfuehrung(datenbanken) {
+  const offen = new Map();
+  return {
+    visual(name) {
+      if (!offen.has(name)) offen.set(name, new Database(datenbanken.haupt(name), { readonly: true }));
+      const d = offen.get(name);
+      return async (sql) => {
+        try {
+          const stmt = d.prepare(sql);
+          if (!stmt.reader) return { fehler: 'Nur Abfragen.' };
+          const alle = stmt.raw(true).all();
+          return { spalten: stmt.columns().map((c) => c.name), zeilen: alle.slice(0, 300), gesamt: alle.length };
+        } catch (e) {
+          return { fehler: e.message };
+        }
+      };
+    },
+    schliessen() {
+      for (const d of offen.values()) d.close();
+      offen.clear();
+    }
+  };
 }
 
 function pruefeDbTabelle(b, fb, k) {
@@ -992,7 +1295,12 @@ async function validiereAkten(dateien, umgebung = {}) {
     }
   }
 
-  await parallel(jobs, { sandbox, sqlPruefer });
+  const ausfuehrung = visualAusfuehrung(datenbanken);
+  try {
+    await parallel(jobs, { sandbox, sqlPruefer, visual: ausfuehrung.visual });
+  } finally {
+    ausfuehrung.schliessen();
+  }
   return { fehler, hinweise, aufgaben, karten };
 }
 
@@ -1026,10 +1334,12 @@ function dbVerweise(a) {
     for (const b of Array.isArray(liste) ? liste : []) {
       if (!istObjekt(b)) continue;
       if (b.t === 'datenbank') out.push(b.name);
+      if (F.WERKZEUG_BLOECKE.includes(b.t)) out.push(b.datenbank);
       if (b.t === 'dbtabelle' && istObjekt(b.quelle)) out.push(b.quelle.datenbank);
     }
   };
   bloecke(a.inhalt);
+  bloecke(a.erklaerung);
   for (const t of F.teile(a)) {
     if (!istObjekt(t.interaktion)) continue;
     if (t.interaktion.kind === 'sql') out.push(t.interaktion.datenbank);

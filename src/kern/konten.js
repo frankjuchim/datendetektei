@@ -103,7 +103,7 @@ function aendereKurs(db, kursId, { name, aktiv } = {}) {
 
 /**
  * Kennzahlen für das Portal (Vertrag §6) – nur sub und Zahlen, keine Namen; nur Schüler (Rolle mitglied).
- * kennzahlen(kursId, subs) → { schueler: Map sub → { punkte, geloest, anteil }, welten: [{ nr, titel, anteil }] }
+ * kennzahlen(kursId, subs) → { schueler: Map sub → { punkte, geloest, anteil, zuletzt? }, welten: [{ nr, titel, anteil }] }
  * wird injiziert (src/services/stand.js), damit src/kern nicht von src/services abhängt; ohne sie: alle Werte 0.
  */
 function kursUebersicht(db, kursId, jetzt = Date.now, kennzahlen = null) {
@@ -117,7 +117,9 @@ function kursUebersicht(db, kursId, jetzt = Date.now, kennzahlen = null) {
   const kz = typeof kennzahlen === 'function' ? kennzahlen(kursId, zeilen.map((z) => z.sub)) : null;
   const schueler = zeilen.map((z) => {
     const w = (kz && kz.schueler.get(z.sub)) || { punkte: 0, geloest: 0, anteil: 0 };
-    return { sub: z.sub, punkte: w.punkte, geloest: w.geloest, anteil: w.anteil, zuletzt: z.zuletzt };
+    // zuletzt: letzte Aktivität aus den Kennzahlen (Lernstand), sonst die letzte Anmeldung; leer → null
+    const zuletzt = w.zuletzt !== undefined ? w.zuletzt : z.zuletzt || null;
+    return { sub: z.sub, punkte: w.punkte, geloest: w.geloest, anteil: w.anteil, zuletzt };
   });
   return {
     kurs: kursId,

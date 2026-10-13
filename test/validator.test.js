@@ -275,6 +275,20 @@ test('kernpunkte: Punkte ≠ 0 → Fehler; kernpunkte im Verhör → Fehler', as
   await erwarteFehler(k, /kernpunkte/, 'A9-V-05');
 });
 
+test('intro: schema-Block, der das Schema des datenbank-Blocks wiederholt → Fehler (Briefing ohne doppeltes Schema)', async () => {
+  const j = akte();
+  j.levels[0].intro.splice(1, 0, {
+    t: 'schema',
+    relationen: [{ name: 'Fundsache', attribute: [{ name: 'FundNr', pk: true }, { name: 'Bezeichnung' }] }]
+  });
+  await erwarteFehler(j, /doppelt/);
+  // Ein schema-Block mit anderen Relationen (z. B. Entwurf) bleibt erlaubt.
+  const k = akte();
+  k.levels[0].intro.splice(1, 0, { t: 'schema', relationen: [{ name: 'Entwurf', attribute: [{ name: 'Nr', pk: true }] }] });
+  const r = await validiere(k);
+  assert.deepEqual(r.fehler.filter((f) => /doppelt/.test(f.text)), []);
+});
+
 /* ---------- Verhör ---------- */
 
 test('Verhör-Mix nicht erfüllbar (Stufe fehlt, maxJeKind, Summe ≠ anzahl) → Fehler', async () => {
@@ -338,6 +352,26 @@ test('Lab-Aufgabe auf einer Verhör-DB → Fehler (nur öffentliche Akten-DBs)',
   await erwarteFehler(k, /datenbank/);
 });
 
+/* ---------- Akte 7: Level ohne Lab-Aufgaben (Spec §10) ---------- */
+
+test('Ermittlung ohne Aufgaben: nur in Akte 7 (Generalprobe) erlaubt, sonst Fehler', async () => {
+  const j = akte();
+  j.levels[0].aufgaben = [];
+  await erwarteFehler(j, /aufgaben.*leer/);
+  // Akte 7: eine Ermittlung nur mit Briefing/Intro, die Aufgaben stehen nur im Verhör-Pool
+  const g = JSON.parse(AKTE_TEXT.replace(/A9-/g, 'A7-'));
+  g.welt = 7;
+  g.levels = [{ id: 'A7-E1', nr: '7.1', titel: 'Die Ermittlerprüfung', ds: [13], briefing: 'Heute ist Ermittlerprüfung.', aufgaben: [] }];
+  const pool = new Set(g.boss.pool);
+  g.aufgaben = g.aufgaben.filter((a) => pool.has(a.id));
+  const r = await validiere(g, 'akte7.json');
+  assert.deepEqual(r.fehler.filter((f) => /aufgaben/.test(f.text)), []);
+  // fehlt aufgaben ganz, bleibt es ein Fehler
+  delete g.levels[0].aufgaben;
+  const r2 = await validiere(g, 'akte7.json');
+  assert.ok(r2.fehler.some((f) => /aufgaben.*fehlt/.test(f.text)), JSON.stringify(r2.fehler));
+});
+
 /* ---------- Niveau, Punkte, Markdown ---------- */
 
 test('Niveau: Akte 5 komplett eA', async () => {
@@ -373,13 +407,260 @@ test('Hinweise: abweichende Punkte, fehlende Erklärung, Aufgabe nirgends verwen
   assert.ok(r.hinweise.some((h) => h.id === 'A9-E1-12' && /verwendet/.test(h.text)));
 });
 
-test('Phase-5-Elemente werden abgelehnt (Block er, Interaktion zerlegen)', async () => {
+/* ---------- Phase 5: Blöcke er/mengen, Interaktionen zellen, anomalie, zerlegen, schema, er ---------- */
+
+/** Erwartet je Manipulation einen Fehler an Aufgabe id, dessen Text auf muster passt. */
+async function fehlerJe(id, faelle) {
+  for (const [muster, manipuliere] of faelle) {
+    const j = akte();
+    manipuliere(aufgabe(j, id), j);
+    await erwarteFehler(j, muster, id);
+  }
+}
+
+test('Block er: Graph wohlgeformt, Layout für jedes Element (Attribute <id>.<i>), markiert, Ids; auch in Erklärung', async () => {
+  await fehlerJe('A9-E2-08', [
+    [/layout für „e1\.1“ fehlt/, (a) => delete a.inhalt[1].layout['e1.1']],
+    [/unbekannte Element „e9“/, (a) => (a.inhalt[1].layout.e9 = { x: 1, y: 1 })],
+    [/außerhalb/, (a) => (a.inhalt[1].layout.e1 = { x: -5, y: 1 })],
+    [/layout .*fehlt/, (a) => delete a.inhalt[1].layout],
+    [/markiert: unbekanntes Element/, (a) => (a.inhalt[1].markiert = ['e1', 'x'])],
+    [/graph: .*Entitätstyp/, (a) => (a.inhalt[1].graph.beziehungen[0].enden[1].entitaet = 'e7')],
+    [/id .*erlaubt sind/, (a) => {
+      const b = a.inhalt[1];
+      b.graph.entitaeten[0].id = 'e.1';
+      b.graph.beziehungen[0].enden[0].entitaet = 'e.1';
+    }],
+    [/unbekanntes Feld „farbe“/, (a) => (a.inhalt[1].farbe = 'rot')],
+    [/layout/, (a) => a.erklaerung.push({ t: 'er', graph: a.inhalt[1].graph, layout: {} })]
+  ]);
+});
+
+test('Block mengen: Seiten mit Namen und 1–30 Elementen, Linien-Indizes gültig und eindeutig', async () => {
+  await fehlerJe('A9-E2-07', [
+    [/linien\[1\]/, (a) => (a.inhalt[1].linien[1] = [0, 3])],
+    [/linien\[2\]: Linie doppelt/, (a) => (a.inhalt[1].linien[2] = [0, 0])],
+    [/rechts\.elemente/, (a) => (a.inhalt[1].rechts.elemente = [])],
+    [/links\.name/, (a) => delete a.inhalt[1].links.name],
+    [/linien muss/, (a) => (a.inhalt[1].linien = 'x')]
+  ]);
+});
+
+test('zellen: block ist dbtabelle, Zellen existieren, mehrfach false braucht genau eine Zelle', async () => {
+  await fehlerJe('A9-E2-03', [
+    [/zellen\[1\] liegt nicht in der Tabelle/, (a) => (a.loesung.zellen[1] = [4, 4])],
+    [/zellen\[0\] liegt nicht/, (a) => (a.loesung.zellen[0] = [0, 5])],
+    [/dbtabelle-Blocks/, (a) => (a.interaktion.block = 0)],
+    [/genau eine Zelle/, (a) => (a.interaktion.mehrfach = false)],
+    [/mehrfach/, (a) => a.loesung.zellen.push([1, 4])],
+    [/reihenfolge muss/, (a) => (a.interaktion.reihenfolge = 'ja')]
+  ]);
+});
+
+test('anomalie: Art aus der Liste, Operation, Simulation passt zur Tabelle, Zellen existieren (neue Zeile nur beim Einfügen)', async () => {
+  await fehlerJe('A9-E2-04', [
+    [/art muss/, (a) => (a.loesung.art = 'aenderungsanomalie')],
+    [/operation muss/, (a) => (a.interaktion.operation = 'update')],
+    [/auftrag/, (a) => delete a.interaktion.auftrag],
+    [/alt kommt in der Spalte TrainerTelefon nicht vor/, (a) => (a.interaktion.simulation.alt = '0421-77')],
+    [/simulation\.spalte/, (a) => (a.interaktion.simulation.spalte = 9)],
+    [/zellen\[0\] liegt nicht/, (a) => (a.loesung.zellen[0] = [4, 4])],
+    [/simulation\.zeilen/, (a) => {
+      a.interaktion.operation = 'loeschen';
+      a.interaktion.simulation = { zeilen: [7] };
+    }],
+    [/simulation\.werte/, (a) => {
+      a.interaktion.operation = 'einfuegen';
+      a.interaktion.simulation = { werte: [null] };
+    }]
+  ]);
   const j = akte();
-  aufgabe(j, 'A9-E1-01').inhalt.push({ t: 'er', graph: {} });
-  await erwarteFehler(j, /Phase 5/, 'A9-E1-01');
+  const a = aufgabe(j, 'A9-E2-04');
+  a.interaktion.operation = 'einfuegen';
+  a.interaktion.simulation = { werte: [null, null, 'Bouldern', 'Kruse', null] };
+  a.loesung = { art: 'einfuegung', zellen: [[4, 0], [4, 1]] };
+  const r = await validiere(j);
+  assert.deepEqual(r.fehler, []);
+  a.loesung.art = 'loeschung';
+  const r2 = await validiere(j);
+  assert.ok(r2.hinweise.some((h) => h.id === 'A9-E2-04' && /passt nicht zur operation/.test(h.text)));
+});
+
+test('zerlegen: FA-Spalten ⊆ attribute, Musterzerlegung gelöst, Schlüssel ist Kandidat, ohne muster berechnete Zerlegung', async () => {
+  await fehlerJe('A9-E2-05', [
+    [/fa\[1\] nennt „Telefon“/, (a) => (a.loesung.fa[1].rechts = ['Telefon'])],
+    [/muster\[0\] ist nach den fa nicht gelöst/, (a) => a.loesung.muster[0].tabellen[0].attribute.push('TrainerTelefon')],
+    [/muster\[0\] ist nach den fa nicht gelöst/, (a) => (a.loesung.muster[0].tabellen[1].schluessel = ['TrainerTelefon'])],
+    [/schluessel ist kein Schlüsselkandidat/, (a) => (a.loesung.schluessel = ['Trainer'])],
+    [/tabellenMax ist 1/, (a) => (a.interaktion.tabellenMax = 1)],
+    [/attribute muss/, (a) => (a.interaktion.attribute = ['Abteilung'])],
+    [/fa \(Liste/, (a) => delete a.loesung.fa],
+    [/unbekanntes Feld „fa“/, (a) => (a.interaktion.fa = a.loesung.fa)]
+  ]);
+  const j = akte();
+  delete aufgabe(j, 'A9-E2-05').loesung.muster;
+  assert.deepEqual((await validiere(j)).fehler, []);
+});
+
+test('schema: Musterschemata wohlgeformt und gelöst, Modus schluessel mit festem Gerüst, PK je Relation, keine Umlaute', async () => {
+  await fehlerJe('A9-E2-06', [
+    [/keinen Primärschlüssel/, (a) => delete a.loesung.muster[0][0].attribute[0].pk],
+    [/dieselben Relationen und Attribute wie start/, (a) => a.loesung.muster[0][0].attribute.push({ name: 'Preis' })],
+    [/ohne Umlaute/, (a) => {
+      a.loesung.muster[0][0].attribute[1].name = 'Größe';
+      a.interaktion.start[0].attribute[1].name = 'Größe';
+    }],
+    [/Zielrelation/, (a) => (a.loesung.muster[0][1].attribute[2].fk = 'Eissorte')],
+    [/braucht start/, (a) => delete a.interaktion.start],
+    [/modus muss/, (a) => (a.interaktion.modus = 'werkbank')],
+    [/muster \(Liste/, (a) => (a.loesung.muster = [])],
+    [/synonyme/, (a) => (a.loesung.synonyme = { Sorte: 'Eissorte' })]
+  ]);
+});
+
+test('er: Muster vollständig und Chen-konform, gelöst, Startgraph Teil jedes Musters, Modi, Lesen-Lösung', async () => {
+  await fehlerJe('A9-E2-07', [
+    [/Entitätstyp „fall“ – Name/, (a) => (a.loesung.muster[0].entitaeten[1].name = 'fall')],
+    [/Beziehungstyp „Leitet“ – Verb in lowerCamelCase/, (a) => (a.loesung.muster[0].beziehungen[0].name = 'Leitet')],
+    [/braucht ein Schlüsselattribut/, (a) => (a.loesung.muster[0].entitaeten[1].attribute[0].schluessel = false)],
+    [/Kardinalität/, (a) => delete a.loesung.muster[0].beziehungen[0].enden[1].kard],
+    [/p nur bei ternären/, (a) => (a.loesung.muster[0].beziehungen[0].enden[1].kard = 'p')],
+    [/Attribut „Größe“ ohne Umlaute/, (a) => a.loesung.muster[0].entitaeten[1].attribute.push({ name: 'Größe' })],
+    [/Startdiagramm ist kein Teil dieses Musters/, (a) => {
+      a.interaktion.start.graph.entitaeten[1].attribute.push({ name: 'Datum' });
+      a.interaktion.start.layout['e2.2'] = { x: 600, y: 40 };
+    }],
+    [/Startdiagramm ist kein Teil dieses Musters/, (a) => {
+      a.interaktion.start.graph.beziehungen.push({ id: 'b1', name: 'leitet', enden: [{ entitaet: 'e1', kard: 'n' }, { entitaet: 'e2', kard: '1' }], attribute: [] });
+      a.interaktion.start.layout.b1 = { x: 300, y: 120 };
+    }],
+    [/start\.layout/, (a) => delete a.interaktion.start.layout['e2.1']],
+    [/braucht start/, (a) => delete a.interaktion.start],
+    [/entwickeln beginnt leer/, (a) => (a.interaktion.modus = 'entwickeln')],
+    [/modus muss/, (a) => (a.interaktion.modus = 'zeichnen')],
+    [/aequivalenzen/, (a) => (a.loesung.aequivalenzen = ['alles'])],
+    [/kriterien/, (a) => (a.loesung.kriterien = [])],
+    [/unbekanntes Feld „muster“/, (a) => (a.interaktion.muster = a.loesung.muster)]
+  ]);
+  // Startdiagramm ohne Kardinalitäten (werden ergänzt) ist erlaubt
+  const j = akte();
+  const a = aufgabe(j, 'A9-E2-07');
+  a.interaktion.start.graph.beziehungen.push({ id: 'b1', name: 'leitet', enden: [{ entitaet: 'e1' }, { entitaet: 'e2' }], attribute: [] });
+  a.interaktion.start.layout.b1 = { x: 300, y: 120 };
+  assert.deepEqual((await validiere(j)).fehler, []);
+  await fehlerJe('A9-E2-08', [
+    [/elemente: unbekanntes Element „e1\.5“/, (a) => a.loesung.elemente.push('e1.5')],
+    [/er-Blocks/, (a) => (a.interaktion.block = 0)],
+    [/zuordnung/, (a) => (a.interaktion.kategorien = [{ id: 'a', md: 'A' }, { id: 'b', md: 'B' }])],
+    [/unbekannte Kategorie/, (a) => {
+      a.interaktion.kategorien = [{ id: 'a', md: 'A' }, { id: 'b', md: 'B' }];
+      a.loesung = { zuordnung: { e1: 'c' } };
+    }]
+  ]);
+});
+
+test('Verhör: alle fünf neuen Interaktionen und die Blöcke er/mengen sind erlaubt (kernpunkte weiterhin nicht)', async () => {
+  const j = akte();
+  const neu = ['A9-E2-03', 'A9-E2-04', 'A9-E2-05', 'A9-E2-06', 'A9-E2-07', 'A9-E2-08'];
+  neu.forEach((id, i) => {
+    const kopie = structuredClone(aufgabe(j, id));
+    kopie.id = `A9-V-${String(5 + i).padStart(2, '0')}`;
+    j.aufgaben.push(kopie);
+    j.boss.pool.push(kopie.id);
+  });
+  const r = await validiere(j);
+  assert.deepEqual(r.fehler, []);
+});
+
+/* ---------- Verstehenshilfen als Blöcke (Phase 4 Task 5) ---------- */
+
+const blockVon = (liste, t) => liste.find((b) => b && b.t === t);
+
+test('Beispielakte enthält je einen Block zeitlupe, spurenbrett und sortierfaecher (gültig)', async () => {
+  const j = akte();
+  const e2 = j.levels.find((l) => l.id === 'A9-E2');
+  assert.ok(blockVon(e2.intro, 'zeitlupe'), 'zeitlupe im Intro von A9-E2');
+  assert.ok(blockVon(aufgabe(j, 'A9-E2-01').inhalt, 'spurenbrett'), 'spurenbrett in A9-E2-01');
+  assert.ok(blockVon(aufgabe(j, 'A9-E2-02').erklaerung, 'sortierfaecher'), 'sortierfaecher in der Erklärung von A9-E2-02');
+  const r = await validiere(j);
+  assert.deepEqual(r.fehler, []);
+});
+
+test('Block zeitlupe: Abfrage muss laufen, EH-konform sein, start nur eine vorhandene Klausel', async () => {
+  const intro = (j) => blockVon(j.levels.find((l) => l.id === 'A9-E2').intro, 'zeitlupe');
+  const a = akte();
+  intro(a).sql = 'SELECT Gibtsnicht\nFROM Sorte';
+  await erwarteFehler(a, /zeitlupe.*(nicht ausführbar|Gibtsnicht)/);
+  const b = akte();
+  intro(b).sql = 'SELECT Sorte.Name\nFROM Sorte JOIN Verkauf ON Sorte.SorteNr = Verkauf.SorteNr';
+  await erwarteFehler(b, /zeitlupe.*EH/);
+  const c = akte();
+  intro(c).start = 'HAVING';
+  intro(c).sql = 'SELECT Name\nFROM Sorte\nWHERE Preis > 1';
+  await erwarteFehler(c, /start.*HAVING/);
+  const d = akte();
+  intro(d).start = 'JOIN';
+  await erwarteFehler(d, /start/);
+  const e = akte();
+  delete intro(e).sql;
+  await erwarteFehler(e, /sql/);
+});
+
+test('Blöcke der Verstehenshilfen: nur öffentliche Akten-DBs, nie im Verhör', async () => {
+  const a = akte();
+  blockVon(a.levels.find((l) => l.id === 'A9-E2').intro, 'zeitlupe').datenbank = 'verhoer/kiosk';
+  await erwarteFehler(a, /öffentlich/);
+  const b = akte();
+  blockVon(aufgabe(b, 'A9-E2-01').inhalt, 'spurenbrett').datenbank = 'gibtsnicht';
+  await erwarteFehler(b, /öffentlich/, 'A9-E2-01');
+  const c = akte();
+  aufgabe(c, 'A9-V-01').inhalt.push({ t: 'sortierfaecher', datenbank: 'eisdiele', sql: 'SELECT Vegan, COUNT(*) AS Sorten\nFROM Sorte\nGROUP BY Vegan' });
+  await erwarteFehler(c, /Verhör/, 'A9-V-01');
+  const d = akte();
+  aufgabe(d, 'A9-V-02').erklaerung.push({ t: 'zeitlupe', datenbank: 'eisdiele', sql: 'SELECT Name\nFROM Sorte' });
+  await erwarteFehler(d, /Verhör/, 'A9-V-02');
+});
+
+test('Block-SQL darf nicht die Musterlösung einer sql-Aufgabe derselben Akte sein (normalisiert)', async () => {
+  const j = akte();
+  const muster = aufgabe(j, 'A9-E2-01').loesung.sql;
+  // andere Leerzeichen, Groß/Klein, Semikolon – trotzdem dieselbe Abfrage
+  blockVon(j.levels.find((l) => l.id === 'A9-E2').intro, 'zeitlupe').sql = muster.replace(/\n/g, '\n  ').toLowerCase().replace('as kugeln', 'AS Kugeln') + ';';
+  await erwarteFehler(j, /Musterlösung.*A9-E2-01/);
   const k = akte();
-  aufgabe(k, 'A9-E1-12').interaktion = { kind: 'zerlegen' };
-  await erwarteFehler(k, /Phase 5/, 'A9-E1-12');
+  blockVon(aufgabe(k, 'A9-E2-02').erklaerung, 'sortierfaecher').sql = aufgabe(k, 'A9-E2-01').loesung.sql;
+  await erwarteFehler(k, /Musterlösung/, 'A9-E2-02');
+});
+
+test('Block sortierfaecher: Abfrage braucht GROUP BY oder eine Aggregatfunktion und muss laufen', async () => {
+  const a = akte();
+  blockVon(aufgabe(a, 'A9-E2-02').erklaerung, 'sortierfaecher').sql = 'SELECT Name\nFROM Sorte';
+  await erwarteFehler(a, /GROUP BY/, 'A9-E2-02');
+  const b = akte();
+  blockVon(aufgabe(b, 'A9-E2-02').erklaerung, 'sortierfaecher').sql = 'SELECT Vegan, COUNT(*) AS Sorten\nFROM Eis\nGROUP BY Vegan';
+  await erwarteFehler(b, /sortierfaecher/, 'A9-E2-02');
+});
+
+test('Block spurenbrett: 2–3 Tabellen, zeilen (Primärschlüssel) vorhanden oder limit 1–50, Bedingung gültig', async () => {
+  const sb = (j) => blockVon(aufgabe(j, 'A9-E2-01').inhalt, 'spurenbrett');
+  const a = akte();
+  sb(a).tabellen = [{ name: 'Sorte' }];
+  await erwarteFehler(a, /zwei oder drei Tabellen/, 'A9-E2-01');
+  const b = akte();
+  sb(b).tabellen[0].name = 'Eis';
+  await erwarteFehler(b, /Eis/, 'A9-E2-01');
+  const c = akte();
+  sb(c).tabellen[1] = { name: 'Verkauf', zeilen: [1, 2, 999999] };
+  await erwarteFehler(c, /999999|zeilen/, 'A9-E2-01');
+  const d = akte();
+  sb(d).tabellen[0] = { name: 'Sorte', limit: 80 };
+  await erwarteFehler(d, /limit/, 'A9-E2-01');
+  const e = akte();
+  sb(e).tabellen[0] = { name: 'Sorte', limit: 3, zeilen: [1] };
+  await erwarteFehler(e, /zeilen.*limit|limit.*zeilen/, 'A9-E2-01');
+  const f = akte();
+  sb(f).bedingung = 'Sorte.SorteNr = Kunde.SorteNr';
+  await erwarteFehler(f, /spurenbrett/, 'A9-E2-01');
 });
 
 /* ---------- Warm-up-Karten ---------- */

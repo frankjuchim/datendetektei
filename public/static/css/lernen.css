@@ -289,6 +289,8 @@ span.md { display: inline; }
 /* Schema in Kurzschreibweise, Tabellen */
 .schema-block { display: flex; flex-direction: column; gap: var(--a-1); padding: var(--a-3) var(--a-4); background: var(--flaeche); border-radius: var(--radius); overflow-x: auto; }
 .schema-block .relation { background: none; padding: 0; white-space: nowrap; font-size: 0.9375rem; }
+/* In der schmalen Lösungskarte umbrechen statt seitlich scrollen */
+.loesung-karte .schema-block .relation { white-space: normal; overflow-wrap: break-word; }
 .relation-name { font-weight: 600; }
 .relation .pk, .dbtabelle .pk, table.daten th .pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
 .fk-pfeil { color: var(--siegelrot-text); font-weight: 600; margin-right: 1px; }
@@ -327,6 +329,90 @@ table.daten .null { font-family: var(--schrift-mono); font-style: italic; text-t
 .db-kachel-tabellen li { display: flex; flex-wrap: wrap; gap: var(--a-1) var(--a-3); align-items: baseline; }
 .db-kachel-tabellen .relation { background: none; padding: 0; }
 .db-zeilen { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-3); }
+
+/* Verstehenshilfen als Blöcke (Phase 4): zeitlupe, spurenbrett, sortierfaecher */
+.werkzeug-block {
+  container-type: inline-size;
+  margin: 0; display: flex; flex-direction: column; gap: var(--a-3); min-width: 0;
+  padding: var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--flaeche);
+}
+.wb-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-3); }
+.wb-kopf .icon { color: var(--blau); width: 24px; height: 24px; flex: none; }
+.wb-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: var(--t-m); }
+.wb-db { font-size: var(--t-xs); color: var(--tinte-3); }
+.wb-inhalt { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.wb-status { margin: 0; font-size: var(--t-s); color: var(--tinte-2); }
+.wb-status.fehler { padding: var(--a-2) var(--a-3); border-left: 3px solid var(--siegelrot); background: var(--rot-flaeche); color: var(--tinte); }
+.wb-hinweis { margin: 0; font-size: var(--t-s); color: var(--tinte-2); }
+.wb-knoepfe .knopf .icon { width: 18px; height: 18px; }
+
+.wb-schritte { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-2); }
+.wb-schritt { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 2px var(--a-3); padding: var(--a-2) var(--a-3); border-radius: var(--radius); background: var(--karte); border: 1px solid var(--rand); }
+.wb-schritt.aktiv { border-color: var(--messing-grafik); box-shadow: inset 3px 0 0 var(--messing-grafik); }
+.wb-nr {
+  grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--tinte); color: var(--papier); font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 700;
+}
+.wb-schritt-kopf { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--a-1) var(--a-3); }
+.wb-klausel { font-family: var(--schrift-mono); font-size: var(--t-s); }
+.wb-zaehler { font-family: var(--schrift-mono); font-size: var(--t-s); color: var(--siegelrot-text); font-variant-numeric: tabular-nums; }
+.wb-schritt-text { margin: 0; font-size: var(--t-s); color: var(--tinte-2); overflow-wrap: anywhere; }
+
+.wb-korb { margin: 0; font-size: var(--t-s); }
+.wb-faecher { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: var(--a-2); }
+.wb-fach { padding: var(--a-2) var(--a-3); border: 1px solid var(--rand); border-top: 4px solid var(--rand-stark); border-radius: var(--radius); background: var(--karte); min-width: 0; }
+.wb-fach.g1 { border-top-color: var(--gruppe-1); }
+.wb-fach.g2 { border-top-color: var(--gruppe-2); }
+.wb-fach.g3 { border-top-color: var(--gruppe-3); }
+.wb-fach.raus { opacity: .55; }
+.wb-fach.raus .wb-fach-name { text-decoration: line-through; }
+.wb-fach-kopf { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--a-2); }
+.wb-marke { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--rand-stark); }
+.wb-fach.g1 .wb-marke { background: var(--gruppe-1); }
+.wb-fach.g2 .wb-marke { background: var(--gruppe-2); }
+.wb-fach.g3 .wb-marke { background: var(--gruppe-3); }
+.wb-fach-name { font-family: var(--schrift-mono); font-size: var(--t-s); overflow-wrap: anywhere; }
+.wb-fach-zahl { font-size: var(--t-xs); color: var(--tinte-3); }
+.wb-aggregate { margin: var(--a-1) 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 var(--a-2); font-family: var(--schrift-mono); font-size: var(--t-xs); }
+.wb-aggregate dt { color: var(--tinte-3); }
+.wb-aggregate dd { margin: 0; font-weight: 600; }
+.wb-raus { margin: var(--a-1) 0 0; font-size: var(--t-xs); color: var(--siegelrot-text); }
+
+.wb-zaehler-zeile { margin: 0; font-family: var(--schrift-mono); font-weight: 600; font-size: var(--t-m); color: var(--siegelrot-text); }
+.wb-brett {
+  position: relative; display: grid; gap: var(--a-3) clamp(36px, 10vw, 96px); align-items: start; min-width: 0;
+  padding: var(--a-3); border-radius: var(--radius); background-color: var(--kork);
+  background-image: radial-gradient(var(--kork-punkt) 1px, transparent 1.5px); background-size: 14px 14px;
+}
+.wb-brett.spalten-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.wb-brett.spalten-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.wb-stapel { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; position: relative; z-index: 1; }
+.wb-stapel-titel { margin: 0; font-family: var(--schrift-mono); font-weight: 700; font-size: var(--t-s); color: var(--tinte); }
+.wb-karte {
+  position: relative; padding: 4px var(--a-2); border-radius: var(--radius-klein); background: var(--polaroid); color: var(--polaroid-text);
+  box-shadow: 0 1px 2px var(--schatten-farbe); font-family: var(--schrift-mono); font-size: var(--t-xs); min-width: 0;
+}
+.wb-karte dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 6px; }
+.wb-karte dt { opacity: .7; }
+.wb-karte dt, .wb-karte dd { min-width: 0; overflow-wrap: break-word; }
+.wb-karte dd { margin: 0; font-weight: 600; }
+.wb-karte .null { opacity: .7; font-style: italic; }
+.wb-karte.ohne-faden { outline: 2px dashed var(--siegelrot); outline-offset: 1px; }
+.wb-kein-faden { display: inline-block; margin-top: 2px; font-family: var(--schrift-text); font-size: var(--t-xs); color: var(--siegelrot-text); }
+.wb-faeden { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; overflow: visible; }
+.wb-faden { stroke: var(--siegelrot); stroke-width: 1.5; stroke-linecap: round; opacity: .8; transition: opacity 900ms ease, stroke-width var(--dauer); }
+.wb-faden.passt { stroke-width: 3; opacity: 1; }
+.wb-faden.weg { opacity: .12; stroke-dasharray: 3 4; }
+/* schmal (Handy, aber auch eine schmale Spalte auf dem Laptop): Karten mit Name über Wert */
+@container (max-width: 560px) {
+  .wb-brett { padding: var(--a-2); gap: var(--a-2) 28px; }
+  .wb-brett.spalten-3 { gap: var(--a-2) 18px; }
+  .wb-karte dl { grid-template-columns: minmax(0, 1fr); }
+  .wb-karte dt { font-size: 0.7rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wb-faden { transition: none; }
+}
 
 /* ---------- Interaktionen ---------- */
 .teil { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); min-width: 0; }
@@ -557,3 +643,7 @@ button.puzzle-teil:hover { background: var(--flaeche); }
 
 /* Unsichtbare Screenreader-Texte (.nur-sr, position: absolute) bleiben in ihrem scrollenden Container */
 .schema-block, .db-kachel-tabellen, .tabelle-rahmen, .code-huelle, .relation { position: relative; }
+
+/* ---------- Kür auf dem Stadtplan (Plan Phase 6 Task 7) ---------- */
+.kuer-karte .kuer-kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2) var(--a-3); }
+.kuer-karte .kuer-kopf h2 { margin: 0; }

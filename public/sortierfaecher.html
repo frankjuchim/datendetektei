@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <title>Sortierfächer – Datendetektei</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/sortierfaecher.css?v=0.7.0">
+  <script src="/static/js/kern/thema.js?v=0.7.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/parser.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/fehlertexte.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/visual.js?v=0.7.0" defer></script>
+  <script type="module" src="/static/js/sortierfaecher/sortierfaecher.js?v=0.7.0"></script>
+</head>
+<body>
+  <a class="springen" href="#sf-eingabe">Zur Abfrage springen</a>
+  <header class="kopf">
+    <a class="marke" href="/" aria-label="Datendetektei Weserstedt – zur Startseite">
+      <svg class="marke-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <span class="marke-text"><span class="marke-name">Datendetektei</span><span class="marke-ort">Weserstedt</span></span>
+    </a>
+    <div class="kopf-mitte"><span class="kopf-kurs" id="kopf-kurs"></span></div>
+    <div class="kopf-rechts">
+      <a class="portal-link" id="portal-link" href="/" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-haus"/></svg><span class="portal-text">Portal</span></a>
+      <button class="knopf-icon" id="thema-knopf" type="button" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-mond"/></svg></button>
+      <a class="knopf kopf-anmelden" id="kopf-anmelden" href="/sso/start" hidden>Anmelden</a>
+      <details class="ich" id="ich" hidden>
+        <summary class="ich-knopf"><span class="ich-initialen" id="ich-initialen" aria-hidden="true"></span><span class="ich-name" id="ich-name"></span></summary>
+        <div class="ich-menue">
+          <p class="etikett" id="ich-rolle"></p>
+          <a href="/lehrkraft" id="ich-lehrkraft" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Lehrkraft-Bereich</a>
+          <div class="trenner"></div>
+          <a href="/abmelden"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Abmelden</a>
+          <a href="/abmelden/ueberall"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Überall abmelden</a>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main class="inhalt sf-seite" id="inhalt" tabindex="-1">
+    <div class="seiten-kopf">
+      <span class="etikett">Werkzeug · <span id="sf-db-name">Übungs-DB</span></span>
+      <h1>Sortierfächer</h1>
+      <p>Sieh zu, wie GROUP BY Karteikarten in Fächer sortiert: WHERE wirft einzelne Zeilen vorher in den Korb,
+        die Aggregatfunktionen rechnen je Fach, HAVING graut danach ganze Fächer aus.</p>
+    </div>
+
+    <section class="karte sf-eingabe" aria-labelledby="sf-eingabe-titel">
+      <h2 class="nur-sr" id="sf-eingabe-titel">Abfrage wählen</h2>
+      <div class="sf-feld sf-feld-db">
+        <label class="etikett" for="sf-db">Datenbank</label>
+        <select class="sf-auswahl" id="sf-db">
+          <option value="fundbuero">Fundbüro</option>
+          <option value="stadtrad">StadtRad</option>
+          <option value="stadtfest">Stadtfest</option>
+          <option value="tus">TuS Weserstedt</option>
+          <option value="detektei">Detektei</option>
+          <option value="datenspuren">Datenspuren</option>
+          <option value="eisdiele">Eisdiele (Probefall)</option>
+        </select>
+      </div>
+      <div class="sf-feld sf-feld-sql">
+        <label class="etikett" for="sf-eingabe">Abfrage mit GROUP BY</label>
+        <textarea class="sf-textfeld" id="sf-eingabe" rows="7" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="sf-eingabe-tipp"></textarea>
+        <p class="sf-tipp" id="sf-eingabe-tipp">Strg oder Cmd und Enter sortiert ein. Gerechnet wird auf der Übungs-DB in deinem Browser.</p>
+      </div>
+      <div class="knopf-reihe sf-eingabe-knoepfe">
+        <button class="knopf primaer" id="sf-einsortieren" type="button"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-play"/></svg>Einsortieren</button>
+        <button class="knopf leise" id="sf-beispiel" type="button">Beispielabfrage</button>
+      </div>
+      <div class="sf-meldung" id="sf-meldung" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="sf-buehne" id="sf-buehne" aria-labelledby="sf-buehne-titel">
+      <h2 class="nur-sr" id="sf-buehne-titel">Sortierfächer</h2>
+      <div class="sf-oben">
+        <div class="sf-konsole">
+          <div class="sf-konsole-kopf">
+            <span class="etikett">Abfrage</span>
+            <span class="sf-konsole-db" id="sf-konsole-db">Übungs-DB</span>
+          </div>
+          <pre class="sf-abfrage" id="sf-abfrage" aria-label="Abfrage mit hervorgehobener Klausel"></pre>
+          <div class="sf-steuerung">
+            <ol class="sf-schritte" id="sf-schritte" aria-label="Schritte"></ol>
+            <div class="sf-knoepfe">
+              <button class="knopf sf-knopf" id="sf-zurueck" type="button" aria-label="Zurück" title="Zurück (Pfeiltaste links)"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-zurueck"/></svg></button>
+              <button class="knopf sf-knopf" id="sf-weiter" type="button" aria-label="Weiter" title="Weiter (Pfeiltaste rechts)"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-vor"/></svg></button>
+              <button class="knopf leise sf-knopf" id="sf-abspielen" type="button" aria-pressed="false"><svg class="icon" aria-hidden="true"><use id="sf-abspielen-icon" href="/static/img/icons.svg#i-play"/></svg><span id="sf-abspielen-text">Abspielen</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="sf-erklaerung">
+          <p class="sf-zaehler" id="sf-zaehler" aria-live="polite"><span class="sf-zahl" id="sf-zahl">–</span> <span class="sf-einheit" id="sf-einheit">Noch nichts einsortiert</span></p>
+          <h3 class="sf-schritt-titel" id="sf-schritt-titel">Sortierfächer</h3>
+          <p class="sf-schritt-text" id="sf-schritt-text">Wähle eine Abfrage mit GROUP BY und tippe auf „Einsortieren“.</p>
+          <div class="sf-umschalter" id="sf-umschalter" hidden>
+            <span class="etikett" id="sf-umschalter-titel">Vergleich (P4)</span>
+            <div class="segment" role="group" aria-labelledby="sf-umschalter-titel">
+              <button class="segment-knopf" id="sf-count" type="button" aria-pressed="true">COUNT(*)</button>
+              <button class="segment-knopf" id="sf-sum" type="button" aria-pressed="false">SUM(…)</button>
+            </div>
+            <p class="sf-umschalter-text" id="sf-umschalter-text"></p>
+          </div>
+          <div class="sf-hinweise" id="sf-hinweise"></div>
+        </div>
+      </div>
+
+      <div class="sf-tisch">
+        <details class="sf-korb" id="sf-korb" open>
+          <summary class="sf-korb-kopf"><span class="sf-korb-titel">WHERE-Korb</span> <span class="sf-korb-zaehler" id="sf-korb-zaehler">0 Zeilen</span></summary>
+          <div class="sf-korb-inhalt" id="sf-korb-inhalt"></div>
+        </details>
+        <div class="sf-faecher-bereich">
+          <ul class="sf-legende" id="sf-legende" aria-label="Legende der Fächer"></ul>
+          <div class="sf-faecher" id="sf-faecher"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="notiz sf-notiz" aria-labelledby="sf-notiz-titel">
+      <svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>
+      <p class="notiz-titel" id="sf-notiz-titel">Ermittler-Notiz</p>
+      <p>WHERE filtert <strong>Zeilen vor</strong> dem Gruppieren, HAVING filtert <strong>Fächer danach</strong>.
+        COUNT(*) zählt die Karteikarten eines Fachs, SUM(Spalte) addiert ihre Werte – das ist nicht dasselbe (P4).</p>
+    </aside>
+  </main>
+  <footer class="fuss">
+    <nav aria-label="Weitere Seiten">
+      <a href="/">Start</a>
+      <a href="/themen">Themen</a>
+      <a href="/gast">Gastmodus</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a data-portal-pfad="/" href="/" hidden>Portal InfoLabs</a>
+    </nav>
+    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden</p>
+  </footer>
+</body>
+</html>

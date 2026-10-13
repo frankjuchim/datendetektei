@@ -5,7 +5,11 @@
 // nicht). inhalte = erzeugeInhalte(db) aus src/services/inhalte.js (optional; ohne sie meldet das Manifest den Standard-umfang
 // und es gibt keine Lern-API). pruefer = erzeugePruefer({ sandbox, schemata }) aus src/sql/pruefer.js (optional; ohne ihn
 // sind sql-Aufgaben nicht prüfbar). warmupKarten = ladeWarmupKarten() aus src/services/warmup.js (optional; ohne sie
-// gibt es keinen Warm-up-Trainer). gastOptionen gehen an erzeugeGast (src/services/gast.js, z. B. materialVerzeichnis).
+// gibt es keinen Warm-up-Trainer). gastOptionen gehen an erzeugeGast (src/services/gast.js). materialVerzeichnis =
+// Wurzel der Materialien (Standard: materialien/; früher gastOptionen.materialVerzeichnis), materialOptionen gehen an
+// erzeugeMaterial (src/services/material.js, z. B. zipLimitBytes).
+// liveInhalte = ladeLiveInhalte() aus src/content/live.js (optional; ohne sie gibt es keinen Live-Modus).
+// videos = geprüfter Inhalt von seed/videos.json (Standard: ladeVideos(); null = keine Video-Knöpfe, Spec §13).
 // Die Dienste stand und lernen liegen in app.locals (Tests).
 
 const path = require('node:path');
@@ -15,12 +19,20 @@ const { ssoRouten } = require('./routes/sso');
 const { verbundRouten } = require('./routes/verbund');
 const { manifestRoute } = require('./kern/manifest');
 const { seitenRouten } = require('./routes/seiten');
+const { sortierfaecherRouten } = require('./routes/sortierfaecher');
+const { spurenbrettRouten } = require('./routes/spurenbrett');
+const { modellWerkzeugRouten } = require('./routes/modellwerkzeuge');
 const { sqlSkriptRouten } = require('./routes/sql_skripte');
 const { sqlRouten, sqlAusfuehrenRoute } = require('./routes/sql');
 const { schuelerRouten } = require('./routes/schueler');
+const { kuerRouten } = require('./routes/kuer');
 const { lehrkraftRouten } = require('./routes/lehrkraft');
+const { lehrkraftAuswertungRouten } = require('./routes/lehrkraft_auswertung');
+const { lehrkraftSeitenRouten } = require('./routes/lehrkraft_seiten');
 const { gastRouten } = require('./routes/gast');
 const { themenRouten } = require('./routes/themen');
+const { materialRouten } = require('./routes/material');
+const { erzeugeMaterial, STANDARD_VERZEICHNIS } = require('./services/material');
 const { erzeugeGast } = require('./services/gast');
 const { erzeugeThemen } = require('./services/themen');
 const { erzeugeStand } = require('./services/stand');
@@ -31,6 +43,11 @@ const { warmupRouten } = require('./routes/warmup');
 const { trainingRouten } = require('./routes/training');
 const { erzeugeWarmup } = require('./services/warmup');
 const { erzeugeTraining } = require('./services/training');
+const { erzeugeFallebene, ladeFallebene } = require('./services/fallebene');
+const { fallebeneRouten } = require('./routes/fallebene');
+const { erzeugeLive } = require('./services/live');
+const { erzeugeVideos, ladeVideos } = require('./services/videos');
+const { liveRouten } = require('./routes/live');
 const { version: VERSION } = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -38,7 +55,19 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 function erzeugeApp(
   konfig,
   db,
-  { datenbanken = null, sandbox = null, inhalte = null, pruefer = null, warmupKarten = null, gastOptionen = {} } = {}
+  {
+    datenbanken = null,
+    sandbox = null,
+    inhalte = null,
+    pruefer = null,
+    warmupKarten = null,
+    gastOptionen = {},
+    materialVerzeichnis = gastOptionen.materialVerzeichnis || STANDARD_VERZEICHNIS,
+    materialOptionen = {},
+    fallebene: fallebeneDaten,
+    liveInhalte = null,
+    videos: videoDaten
+  } = {}
 ) {
   const app = express();
   app.disable('x-powered-by');
@@ -48,8 +77,11 @@ function erzeugeApp(
   app.locals.datenbanken = datenbanken;
   app.locals.inhalte = inhalte;
   const uhr = konfig.jetzt || Date.now;
+  // Erklärvideos als Link-Knöpfe (nur Einträge mit YouTube-Link; Spec §13).
+  const videos = erzeugeVideos(videoDaten !== undefined ? videoDaten : ladeVideos(undefined, { log: (z) => console.log(z) }));
+  app.locals.videos = videos;
   const stand = inhalte ? erzeugeStand({ db, inhalte, jetzt: uhr }) : null;
-  const lernen = inhalte ? erzeugeLernen({ db, inhalte, stand, pruefer, jetzt: uhr }) : null;
+  const lernen = inhalte ? erzeugeLernen({ db, inhalte, stand, pruefer, videos, jetzt: uhr }) : null;
   app.locals.stand = stand;
   app.locals.lernen = lernen;
   const verhoer = lernen ? erzeugeVerhoer({ db, inhalte, stand, lernen, pruefer, jetzt: uhr }) : null;
@@ -58,6 +90,20 @@ function erzeugeApp(
   // Warm-up-Trainer (nur mit Karten) und Trainingsplatz T1–T3 (Plan Phase 3 Task 8).
   const warmup = lernen && warmupKarten ? erzeugeWarmup({ db, lernen, stand, inhalte, karten: warmupKarten, jetzt: uhr }) : null;
   const training = lernen ? erzeugeTraining({ db, lernen, geheimnis: konfig.sessionSecret, jetzt: uhr }) : null;
+  // Fallebene (Plan Phase 6 Task 2): Pinnwand, Steckbrief, Plädoyer; Daten aus seed/fallebene.json (Option fallebene).
+  const fallebene = lernen
+    ? erzeugeFallebene({
+        db,
+        inhalte,
+        stand,
+        lernen,
+        daten: fallebeneDaten !== undefined ? fallebeneDaten : ladeFallebene(undefined, { log: (z) => console.log(z) }),
+        aufraeumen: verhoer ? verhoer.raeumeKursAuf : null
+      })
+    : null;
+  // Live-Modus (Duell, Escape Room): Runden nur im RAM (Plan Phase 6 Task 6).
+  const live = lernen && liveInhalte ? erzeugeLive({ lernen, inhalte: liveInhalte, pruefer, jetzt: uhr }) : null;
+  app.locals.live = live;
 
   app.use(sicherheitsHeader());
   // Rate-Limits (Spec §7.13/§7.14): /sso/* je IP, Verbund-API gesamt; per konfig.rateLimits überschreibbar.
@@ -67,7 +113,7 @@ function erzeugeApp(
   app.use('/api/verbund', rateLimit({ fensterMs: 60000, max: 120, ...limits.verbund, jetzt }));
 
   // Verbund-API vor dem allgemeinen JSON-Parser: JSON wird erst nach der Token-Prüfung gelesen.
-  app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null }));
+  app.use(verbundRouten(konfig, db, { kennzahlen: stand ? stand.kennzahlen : null, nachLoeschen: live ? live.verbundLoeschung : null }));
 
   app.use(pruefeHerkunft(konfig));
   app.use(express.json({ limit: '100kb' }));
@@ -79,17 +125,32 @@ function erzeugeApp(
   app.get('/api/plattform', manifestRoute(konfig, inhalte ? inhalte.umfang : undefined));
   app.use(ssoRouten(konfig, db));
   app.use(seitenRouten());
+  app.use(sortierfaecherRouten());
+  app.use(spurenbrettRouten());
+  app.use(modellWerkzeugRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
   if (lernen) app.use(schuelerRouten({ lernen, konfig }));
+  // Kür K1: Ausführen in der Schreib-Konsole (Sandbox, frische In-Memory-DB je Anfrage, nichts gespeichert).
+  if (lernen && sandbox && typeof sandbox.fuehreSkriptAus === 'function') app.use(kuerRouten({ lernen, sandbox, konfig }));
   // Kurs-Einstellungen für Lehrkräfte (Akten, Niveau, Verhör); Kennzahlen nur mit geladenen Inhalten.
   app.use(lehrkraftRouten({ db, stand }));
+  // Auswertung, CSV, Vorschau, Beamer-Board-API und Superadmin-Funktionen (Phase 6 Task 3).
+  app.use(lehrkraftAuswertungRouten({ db, inhalte, stand, konfig }));
+  // Seiten: Urkunden-Druckseite und Beamer-Board (Phase 6 Task 4).
+  app.use(lehrkraftSeitenRouten({ db, stand, konfig }));
   // Verhöre (Status, Start, Versuch, Antwort, Abgabe).
   if (verhoer) app.use(verhoerRouten({ verhoer, konfig }));
   if (warmup) app.use(warmupRouten({ warmup, konfig }));
   if (training) app.use(trainingRouten({ training, konfig }));
+  if (fallebene) app.use(fallebeneRouten({ fallebene }));
+  if (live) app.use(liveRouten({ live, konfig }));
   // Gastmodus (Probefall Eisdiele, Lehrkraft-Demo, Gast-PDFs) und Themenübersicht aus dem Seed – ohne Anmeldung.
-  app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen }), pruefer, konfig }));
-  app.use(themenRouten({ themen: erzeugeThemen({ inhalte }) }));
+  // Materialien (Whitelists verzeichnis.json, Zugriff nach Rolle, Spec §12.4) – eine Instanz für Gast, Themen, Downloads.
+  const material = erzeugeMaterial({ verzeichnis: materialVerzeichnis, log: (z) => console.log(z), ...materialOptionen });
+  app.locals.material = material;
+  app.use(gastRouten({ gast: erzeugeGast({ inhalte, log: (z) => console.log(z), ...gastOptionen, material }), pruefer, konfig }));
+  app.use(themenRouten({ themen: erzeugeThemen({ inhalte, material, videos }) }));
+  app.use(materialRouten({ material, videos }));
 
   // Isomorphe SQL-Module (Parser, Regeln, Fehlertexte) aus src/sql – vor dem statischen Verzeichnis.
   app.use(sqlSkriptRouten());
