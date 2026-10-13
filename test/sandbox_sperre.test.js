@@ -68,7 +68,7 @@ async function start() {
       return { ok: false, code: 'absturz', text: 'egal' };
     }
   };
-  const u = H.umgebung({ pruefer, optionen: { sandbox, liveInhalte: LIVE }, konfig: { rateLimits: { pruefenSql: { max: 1000 } } } });
+  const u = H.umgebung({ pruefer, optionen: { sandbox, liveInhalte: LIVE }, konfig: { rateLimits: { pruefenSql: { max: 1000 } }, sandboxAuftraegeJeIp: 1 } });
   const lena = await H.client(u, H.SCHUELERIN);
   const mika = await H.client(u, H.SCHUELER2);
   H.einstellen(u.db, 'k:17', { akten: [9], niveau: 'eA', verhoer: 'offen' });
@@ -185,7 +185,7 @@ test('Routen: ein Auftrag je Konto über alle Sandbox-Routen; andere Konten und 
   assert.equal((await lena.post(A('A9-E1-02') + '/pruefen', { antwort: 'SELECT 1' })).status, 200, 'nach dem Ende frei');
 });
 
-test('Routen: ohne Anmeldung je IP (Gast-Prüfen und Eisdiele-Ausführen teilen sich die Sperre)', async () => {
+test('Routen: ohne Anmeldung je IP (Gast-Prüfen und Eisdiele-Ausführen teilen sich die Sperre; Grenze hier 1, Standard 4)', async () => {
   const { u, s, lena } = await start();
   const anonym = (pfad, body) => request(u.app).post(pfad).set('Origin', u.konfig.plattformUrl).send(body);
   s.halteNaechsten();

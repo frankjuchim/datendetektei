@@ -131,7 +131,8 @@ function erzeugeApp(
   app.use(modellWerkzeugRouten());
   // Lern-API (Stand, Aufgaben, Prüfen, Tipp, Lösung zeigen, Kernpunkte) – nur mit geladenen Inhalten.
   // Höchstens ein Sandbox-Auftrag je Konto (ohne Anmeldung je IP) – eine Sperre für alle Sandbox-Routen (F3, Phase 8).
-  const sandboxSperre = auftragsSperre();
+  // je Konto ein Auftrag; ohne Anmeldung bis zu 4 je IP (Schul-NAT im Gastmodus), in Tests einstellbar
+  const sandboxSperre = auftragsSperre({ maxJeIp: konfig.sandboxAuftraegeJeIp || 4 });
   if (lernen) app.use(schuelerRouten({ lernen, konfig, sperre: sandboxSperre }));
   // Kür K1: Ausführen in der Schreib-Konsole (Sandbox, frische In-Memory-DB je Anfrage, nichts gespeichert).
   if (lernen && sandbox && typeof sandbox.fuehreSkriptAus === 'function') app.use(kuerRouten({ lernen, sandbox, konfig, sperre: sandboxSperre }));

@@ -109,18 +109,21 @@ const kontoOderIp = (req) => (req.sitzung && req.sitzung.sub ? 'konto:' + req.si
  * Freigabe, sobald die Route antwortet (res.end – auch nach Fehler oder Zeitlimit, weil dann der Fehler-Handler
  * antwortet). Bricht der Client die Verbindung ab, bleibt die Sperre bis zum Ende des Auftrags (sonst ließe sie sich
  * durch Abbrechen umgehen); Sicherung: spätestens nach haltMs. Zustand nur im RAM.
+ * Ohne Anmeldung (Schlüssel `ip:`) sind bis zu maxJeIp Aufträge gleichzeitig erlaubt: Eine Klasse im Gastmodus teilt
+ * sich hinter einer Schul-NAT eine IP-Adresse und soll sich nicht gegenseitig sperren.
  */
-function auftragsSperre({ haltMs = 120000 } = {}) {
-  const belegt = new Set();
+function auftragsSperre({ haltMs = 120000, maxJeIp = 4 } = {}) {
+  const belegt = new Map(); // Schlüssel → Anzahl laufender Aufträge
   function middleware({ schluessel = kontoOderIp, text } = {}) {
     return function einAuftrag(req, res, next) {
       const k = String(schluessel(req));
-      if (belegt.has(k)) {
+      const grenze = k.startsWith('ip:') ? maxJeIp : 1;
+      if ((belegt.get(k) || 0) >= grenze) {
         res.set('Retry-After', '1');
         const t = text || (k.startsWith('ip:') ? TEXT_LAEUFT_NOCH_IP : TEXT_LAEUFT_NOCH);
         return res.status(429).json({ error: t, code: 'LAEUFT_NOCH' });
       }
-      belegt.add(k);
+      belegt.set(k, (belegt.get(k) || 0) + 1);
       let frei = false;
       const sicherung = setTimeout(() => freigeben(), haltMs);
       if (typeof sicherung.unref === 'function') sicherung.unref();
@@ -128,7 +131,9 @@ function auftragsSperre({ haltMs = 120000 } = {}) {
         if (frei) return;
         frei = true;
         clearTimeout(sicherung);
-        belegt.delete(k);
+        const rest = (belegt.get(k) || 1) - 1;
+        if (rest > 0) belegt.set(k, rest);
+        else belegt.delete(k);
       }
       const ende = res.end;
       res.end = function (...args) {
