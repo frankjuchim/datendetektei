@@ -1,5 +1,5 @@
 'use strict';
-// Trainingsplatz T1–T3 (Plan Phase 3 Task 8, Spec §7.8). Alle Routen unter /api/kurse/:kurs/training, nur angemeldet.
+// Trainingsplatz T1–T7 (Plan Phase 3 Task 8, Phase 5 Task 5, Spec §7.8). Alle Routen unter /api/kurse/:kurs/training, nur angemeldet.
 // Die Aufgabe wird nicht gespeichert: der Client bekommt { typ, seed, signatur, aufgabe } und schickt
 // { typ, seed, signatur, antwort } zurück (src/services/training.js).
 //

@@ -1,0 +1,785 @@
+{
+ "_hinweis": "Zuordnung aller Unterrichtsmaterialien (Spec §12, docs/MATERIALIEN.md): Quelle der PDF-Pipeline (werkzeuge/*_pdf.py), der Whitelists materialien/*/verzeichnis.json und der Themenseite. Pfade 'quelle'/'loesung' relativ zu materialien/, 'datei' = PDF-Name ohne Umlaute. Arten: ab, praesentation, warmup, unplugged, handbuch, lehrerhinweise, gesamt, generalprobe (freigabe: lehrkraft|schueler), klausur, kuer, video.",
+ "version": 1,
+ "gruppen": [
+  {
+   "gruppe": "Gesamt",
+   "akte": 0,
+   "ordner": "00_Gesamt",
+   "titel": "Gesamtmaterial",
+   "materialien": [
+    {
+     "art": "gesamt",
+     "titel": "Gesamtübersicht",
+     "quelle": "00_Gesamt/DD_Gesamtuebersicht.docx",
+     "datei": "DD_Gesamtuebersicht.pdf"
+    },
+    {
+     "art": "gesamt",
+     "titel": "Abi-Kompass",
+     "quelle": "00_Gesamt/DD_Abi-Kompass.docx",
+     "datei": "DD_Abi-Kompass.pdf"
+    },
+    {
+     "art": "handbuch",
+     "niveau": "beide",
+     "titel": "Ermittler-Handbuch (8 Werkzeugkarten)",
+     "quelle": "00_Gesamt/DD_Ermittler-Handbuch.docx",
+     "datei": "DD_Ermittler-Handbuch.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "A1",
+   "akte": 1,
+   "ordner": "Akte1_Fundbuero",
+   "titel": "Akte 1 · Das Fundbüro",
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "1.1",
+     "ermittlung": "A1-E1",
+     "ds": [
+      1
+     ],
+     "niveau": "beide",
+     "titel": "Der erste Auftrag",
+     "quelle": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB1_Der_erste_Auftrag.docx",
+     "loesung": "Akte1_Fundbuero/5_Loesungen/DD_A1_AB1_Der_erste_Auftrag_LSG.docx",
+     "datei": "DD_A1-AB1_Der_erste_Auftrag.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "1.2",
+     "ermittlung": "A1-E2",
+     "ds": [
+      2
+     ],
+     "niveau": "beide",
+     "titel": "Das verschwundene Fundstück",
+     "quelle": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB2_Das_verschwundene_Fundstueck.docx",
+     "loesung": "Akte1_Fundbuero/5_Loesungen/DD_A1_AB2_Das_verschwundene_Fundstueck_LSG.docx",
+     "datei": "DD_A1-AB2_Das_verschwundene_Fundstueck.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      1,
+      2
+     ],
+     "niveau": "beide",
+     "titel": "Präsentation Das Fundbüro",
+     "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
+     "datei": "DD_A1-Praesentation_Fundbuero.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A1-E1",
+     "ds": [
+      1
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Karteikarten-Filter",
+     "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Karteikarten.docx",
+     "datei": "DD_A1-Unplugged_Karteikarten.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A1-E1",
+     "ds": [
+      1
+     ],
+     "niveau": "beide",
+     "titel": "Detektei-Ausweise (Kick-off)",
+     "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Detektei-Ausweise.docx",
+     "datei": "DD_A1-Unplugged_Detektei-Ausweise.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A1-E2",
+     "ds": [
+      2
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Fahndung mit Platzhaltern",
+     "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Platzhalter-Fahndung.docx",
+     "datei": "DD_A1-Unplugged_Platzhalter-Fahndung.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      1,
+      2
+     ],
+     "niveau": "beide",
+     "titel": "Lehrerhinweise Akte 1",
+     "quelle": "Akte1_Fundbuero/4_Lehrerhinweise/DD_A1_Lehrerhinweise.docx",
+     "datei": "DD_A1-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "beide",
+     "titel": "Warm-up-Karten Akte 1",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A1.docx",
+     "datei": "DD_A1-Warm-up-Karten.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "A2",
+   "akte": 2,
+   "ordner": "Akte2_Raeder",
+   "titel": "Akte 2 · Spur der Räder",
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "2.1",
+     "ermittlung": "A2-E1",
+     "ds": [
+      3
+     ],
+     "niveau": "beide",
+     "titel": "Der rote Faden",
+     "quelle": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB1_Der_rote_Faden.docx",
+     "loesung": "Akte2_Raeder/5_Loesungen/DD_A2_AB1_Der_rote_Faden_LSG.docx",
+     "datei": "DD_A2-AB1_Der_rote_Faden.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "2.2",
+     "ermittlung": "A2-E2",
+     "ds": [
+      4
+     ],
+     "niveau": "beide",
+     "titel": "Nachtfahrten",
+     "quelle": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB2_Nachtfahrten.docx",
+     "loesung": "Akte2_Raeder/5_Loesungen/DD_A2_AB2_Nachtfahrten_LSG.docx",
+     "datei": "DD_A2-AB2_Nachtfahrten.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      3,
+      4
+     ],
+     "titel": "Spur der Räder",
+     "quelle": "Akte2_Raeder/1_Praesentation/DD_A2_Raeder.pptx",
+     "datei": "DD_A2-Praesentation_Raeder.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A2-E1",
+     "ds": [
+      3
+     ],
+     "titel": "Unplugged: Roter Faden (Kopiervorlage)",
+     "quelle": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Roter_Faden.docx",
+     "datei": "DD_A2-Unplugged_Roter_Faden.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A2-E2",
+     "ds": [
+      4
+     ],
+     "titel": "Unplugged: Ermittlungsweg durchs Schema (Kopiervorlage)",
+     "quelle": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Ermittlungsweg.docx",
+     "datei": "DD_A2-Unplugged_Ermittlungsweg.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      3,
+      4
+     ],
+     "titel": "Lehrerhinweise Akte 2",
+     "quelle": "Akte2_Raeder/4_Lehrerhinweise/DD_A2_Lehrerhinweise.docx",
+     "datei": "DD_A2-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "titel": "Warm-up-Karten Akte 2",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A2.docx",
+     "datei": "DD_A2-Warm-up-Karten.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "A3",
+   "akte": 3,
+   "ordner": "Akte3_Stadtfest",
+   "titel": "Akte 3 · Die Stadtfest-Kasse",
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "3.1",
+     "ermittlung": "A3-E1",
+     "ds": [
+      5
+     ],
+     "niveau": "beide",
+     "titel": "Kassensturz",
+     "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB1_Kassensturz.docx",
+     "loesung": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB1_Kassensturz_LSG.docx",
+     "datei": "DD_A3-AB1_Kassensturz.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "3.2",
+     "ermittlung": "A3-E2",
+     "ds": [
+      6
+     ],
+     "niveau": "beide",
+     "titel": "Die Statistik lügt nicht",
+     "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB2_Die_Statistik_luegt_nicht.docx",
+     "loesung": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB2_Die_Statistik_luegt_nicht_LSG.docx",
+     "datei": "DD_A3-AB2_Die_Statistik_luegt_nicht.pdf"
+    },
+    {
+     "art": "praesentation",
+     "titel": "Die Stadtfest-Kasse",
+     "quelle": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
+     "datei": "DD_A3-Praesentation_Stadtfest.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A3-E1",
+     "ds": [
+      5
+     ],
+     "titel": "Unplugged: Menschliches GROUP BY (Bon-Karten, Fächerschilder)",
+     "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten.docx",
+     "loesung": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten_LSG.docx",
+     "datei": "DD_A3-Unplugged_GROUP_BY_Karten.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A3-E2",
+     "ds": [
+      6
+     ],
+     "titel": "Unplugged: Menschliche Zeitlupe (Klausel- und Bedingungskarten)",
+     "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten.docx",
+     "loesung": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten_LSG.docx",
+     "datei": "DD_A3-Unplugged_Zeitlupe_Karten.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "titel": "Lehrerhinweise Akte 3",
+     "quelle": "Akte3_Stadtfest/4_Lehrerhinweise/DD_A3_Lehrerhinweise.docx",
+     "datei": "DD_A3-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "titel": "Warm-up-Karten Akte 3",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
+     "datei": "DD_A3-Warm-up-Karten.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "A4",
+   "akte": 4,
+   "ordner": "Akte4_Vereinsarchiv",
+   "titel": "Akte 4 · Chaos im Vereinsarchiv",
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "4.1",
+     "ermittlung": "A4-E1",
+     "ds": [
+      7
+     ],
+     "niveau": "beide",
+     "titel": "Die Excel-Liste",
+     "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB1_Die_Excel-Liste.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB1_Die_Excel-Liste_LSG.docx",
+     "datei": "DD_A4-AB1_Die_Excel-Liste.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "4.2",
+     "ermittlung": "A4-E2",
+     "ds": [
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Ordnung ins Archiv",
+     "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB2_Ordnung_ins_Archiv.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB2_Ordnung_ins_Archiv_LSG.docx",
+     "datei": "DD_A4-AB2_Ordnung_ins_Archiv.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      7,
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Präsentation Chaos im Vereinsarchiv",
+     "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+     "datei": "DD_A4-Praesentation_Vereinsarchiv.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A4-E1",
+     "ds": [
+      7
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Anomalie-Rennen",
+     "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Anomalie-Rennen.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Anomalie-Rennen_LSG.docx",
+     "datei": "DD_A4-Unplugged_Anomalie-Rennen.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A4-E2",
+     "ds": [
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Schlüssel-Detektiv",
+     "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Schluessel-Detektiv.docx",
+     "loesung": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_Unplugged_Schluessel-Detektiv_LSG.docx",
+     "datei": "DD_A4-Unplugged_Schluessel-Detektiv.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      7,
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Lehrerhinweise Akte 4",
+     "quelle": "Akte4_Vereinsarchiv/4_Lehrerhinweise/DD_A4_Lehrerhinweise.docx",
+     "datei": "DD_A4-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "beide",
+     "titel": "Warm-up-Karten Akte 4",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
+     "datei": "DD_A4-Warm-up-Karten.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "A5",
+   "akte": 5,
+   "ordner": "Akte5_Bauplan",
+   "titel": "Akte 5 · Der Bauplan",
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "5.1",
+     "ermittlung": "A5-E1",
+     "ds": [
+      9
+     ],
+     "niveau": "eA",
+     "titel": "Baupläne lesen",
+     "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB1_Bauplaene_lesen.docx",
+     "loesung": "Akte5_Bauplan/5_Loesungen/DD_A5_AB1_Bauplaene_lesen_LSG.docx",
+     "datei": "DD_A5-AB1_Bauplaene_lesen.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "5.2",
+     "ermittlung": "A5-E2",
+     "ds": [
+      10
+     ],
+     "niveau": "eA",
+     "titel": "Der Architekturwettbewerb",
+     "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB2_Der_Architekturwettbewerb.docx",
+     "loesung": "Akte5_Bauplan/5_Loesungen/DD_A5_AB2_Der_Architekturwettbewerb_LSG.docx",
+     "datei": "DD_A5-AB2_Der_Architekturwettbewerb.pdf"
+    },
+    {
+     "art": "ab",
+     "nr": "5.3",
+     "ermittlung": "A5-E3",
+     "ds": [
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Vom Plan zur Datenbank",
+     "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB3_Vom_Plan_zur_Datenbank.docx",
+     "loesung": "Akte5_Bauplan/5_Loesungen/DD_A5_AB3_Vom_Plan_zur_Datenbank_LSG.docx",
+     "datei": "DD_A5-AB3_Vom_Plan_zur_Datenbank.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      9,
+      10,
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Präsentation Der Bauplan",
+     "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
+     "datei": "DD_A5-Praesentation_Bauplan.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A5-E1",
+     "ds": [
+      9
+     ],
+     "niveau": "eA",
+     "titel": "Unplugged: Fäden-Kardinalitäten (Rollenkarten)",
+     "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Faeden-Kardinalitaeten.docx",
+     "datei": "DD_A5-Unplugged_Faeden-Kardinalitaeten.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A5-E2",
+     "ds": [
+      10
+     ],
+     "niveau": "eA",
+     "titel": "Unplugged: Architekturwettbewerb (Bewertungsbogen)",
+     "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Architekturwettbewerb.docx",
+     "datei": "DD_A5-Unplugged_Architekturwettbewerb.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A5-E3",
+     "ds": [
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Unplugged: Regelkarten-Umzug",
+     "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Regelkarten.docx",
+     "datei": "DD_A5-Unplugged_Regelkarten.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      9,
+      10,
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Lehrerhinweise Akte 5",
+     "quelle": "Akte5_Bauplan/4_Lehrerhinweise/DD_A5_Lehrerhinweise.docx",
+     "datei": "DD_A5-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "eA",
+     "titel": "Warm-up-Karten Akte 5",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A5.docx",
+     "datei": "DD_A5-Warm-up-Karten.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "A6",
+   "akte": 6,
+   "ordner": "Akte6_Datenspuren",
+   "titel": "Akte 6 · Datenspuren",
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "6.1",
+     "ermittlung": "A6-E1",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Das Phantom",
+     "quelle": "Akte6_Datenspuren/2_Arbeitsblaetter/DD_A6_AB1_Das_Phantom.docx",
+     "loesung": "Akte6_Datenspuren/5_Loesungen/DD_A6_AB1_Das_Phantom_LSG.docx",
+     "datei": "DD_A6-AB1_Das_Phantom.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Präsentation Datenspuren",
+     "quelle": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
+     "datei": "DD_A6-Praesentation_Datenspuren.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A6-E1",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Steh auf, wenn …",
+     "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Steh_auf_wenn.docx",
+     "loesung": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Steh_auf_wenn_LSG.docx",
+     "datei": "DD_A6-Unplugged_Steh_auf_wenn.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A6-E1",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Rollenkarten-Debatte „Durfte die Detektei das?“",
+     "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Rollenkarten-Debatte.docx",
+     "loesung": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Rollenkarten-Debatte_LSG.docx",
+     "datei": "DD_A6-Unplugged_Rollenkarten-Debatte.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Lehrerhinweise Akte 6",
+     "quelle": "Akte6_Datenspuren/4_Lehrerhinweise/DD_A6_Lehrerhinweise.docx",
+     "datei": "DD_A6-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "beide",
+     "titel": "Warm-up-Karten Akte 6",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
+     "datei": "DD_A6-Warm-up-Karten.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "A7",
+   "akte": 7,
+   "ordner": "Akte7_Generalprobe",
+   "titel": "Akte 7 · Die Ermittlerprüfung",
+   "materialien": [
+    {
+     "art": "generalprobe",
+     "ermittlung": "A7-E1",
+     "ds": [
+      13
+     ],
+     "niveau": "eA",
+     "freigabe": "lehrkraft",
+     "titel": "Generalprobe Datenbanken (eA)",
+     "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_eA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_eA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Generalprobe_eA.pdf"
+    },
+    {
+     "art": "generalprobe",
+     "ermittlung": "A7-E1",
+     "ds": [
+      13
+     ],
+     "niveau": "gA",
+     "freigabe": "lehrkraft",
+     "titel": "Generalprobe Datenbanken (gA)",
+     "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_gA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_gA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Generalprobe_gA.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A7-E1",
+     "ds": [
+      13
+     ],
+     "niveau": "beide",
+     "titel": "Kopiervorlage: Fallen-Checkliste P1–P10",
+     "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Fallen-Checkliste.docx",
+     "datei": "DD_A7-Fallen-Checkliste.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      13
+     ],
+     "niveau": "beide",
+     "titel": "Präsentation Die Ermittlerprüfung",
+     "quelle": "Akte7_Generalprobe/1_Praesentation/DD_A7_Generalprobe.pptx",
+     "datei": "DD_A7-Praesentation_Generalprobe.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "eA",
+     "titel": "Klausur Datenbanken (eA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_eA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_eA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Klausur_eA.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "gA",
+     "titel": "Klausur Datenbanken (gA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_gA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_gA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Klausur_gA.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "eA",
+     "titel": "Nachschreibklausur Datenbanken (eA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_eA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_eA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Nachschreibklausur_eA.pdf"
+    },
+    {
+     "art": "klausur",
+     "niveau": "gA",
+     "titel": "Nachschreibklausur Datenbanken (gA)",
+     "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_gA.docx",
+     "loesung": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_gA_Erwartungshorizont.docx",
+     "datei": "DD_A7-Nachschreibklausur_gA.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      13
+     ],
+     "niveau": "beide",
+     "titel": "Lehrerhinweise Akte 7",
+     "quelle": "Akte7_Generalprobe/4_Lehrerhinweise/DD_A7_Lehrerhinweise.docx",
+     "datei": "DD_A7-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "beide",
+     "titel": "Warm-up-Karten Akte 7",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A7.docx",
+     "datei": "DD_A7-Warm-up-Karten.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "Kuer",
+   "akte": "kuer",
+   "ordner": "Kuer",
+   "titel": "Kür (nicht im Abitur)",
+   "materialien": [
+    {
+     "art": "kuer",
+     "nr": "K1",
+     "ermittlung": "K1-E1",
+     "niveau": "eA",
+     "titel": "K1 · Eigene Datenbank bauen",
+     "quelle": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank.docx",
+     "loesung": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank_LSG.docx",
+     "datei": "DD_K1-Eigene_Datenbank.pdf"
+    },
+    {
+     "art": "kuer",
+     "nr": "K2",
+     "niveau": "beide",
+     "titel": "K2 · Escape Room Weserstedt (Stationsumschläge)",
+     "quelle": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Stationen.docx",
+     "loesung": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Lehrkraft.docx",
+     "datei": "DD_K2-Escape_Room_Stationen.pdf"
+    }
+   ]
+  },
+  {
+   "gruppe": "Videos",
+   "akte": null,
+   "ordner": "Videos",
+   "titel": "Erklärvideos (Folien)",
+   "materialien": [
+    {
+     "art": "video",
+     "nr": "0",
+     "ds": [
+      1
+     ],
+     "niveau": "beide",
+     "titel": "Video 0 · So ermittelst du in der Datendetektei (Folien)",
+     "quelle": "Videos/00_So_ermittelst_du/DD_Video00_So_ermittelst_du_Folien.pptx",
+     "datei": "DD_Video00-So_ermittelst_du_Folien.pdf"
+    },
+    {
+     "art": "video",
+     "nr": "1",
+     "ds": [
+      1,
+      2
+     ],
+     "niveau": "beide",
+     "titel": "Video 1 · SQL-Grundlagen: SELECT, WHERE und die Bedingungsfallen (Folien)",
+     "quelle": "Videos/01_SQL-Grundlagen/DD_Video01_SQL-Grundlagen_Folien.pptx",
+     "datei": "DD_Video01-SQL-Grundlagen_Folien.pdf"
+    },
+    {
+     "art": "video",
+     "nr": "2",
+     "ds": [
+      3,
+      4
+     ],
+     "niveau": "beide",
+     "titel": "Video 2 · Verbund ohne JOIN: Wie FROM a, b WHERE funktioniert (Folien)",
+     "quelle": "Videos/02_Verbund_ohne_JOIN/DD_Video02_Verbund_ohne_JOIN_Folien.pptx",
+     "datei": "DD_Video02-Verbund_ohne_JOIN_Folien.pdf"
+    },
+    {
+     "art": "video",
+     "nr": "3",
+     "ds": [
+      5,
+      6
+     ],
+     "niveau": "beide",
+     "titel": "Video 3 · GROUP BY und HAVING – so wie im Abitur (Folien)",
+     "quelle": "Videos/03_GROUP_BY_und_HAVING/DD_Video03_GROUP_BY_und_HAVING_Folien.pptx",
+     "datei": "DD_Video03-GROUP_BY_und_HAVING_Folien.pdf"
+    },
+    {
+     "art": "video",
+     "nr": "4",
+     "ds": [
+      7,
+      8
+     ],
+     "niveau": "beide",
+     "titel": "Video 4 · Redundanz, Anomalien und gute Schlüssel (Folien)",
+     "quelle": "Videos/04_Redundanz_und_Schluessel/DD_Video04_Redundanz_und_Schluessel_Folien.pptx",
+     "datei": "DD_Video04-Redundanz_und_Schluessel_Folien.pdf"
+    },
+    {
+     "art": "video",
+     "nr": "5",
+     "ds": [
+      9,
+      10
+     ],
+     "niveau": "eA",
+     "titel": "Video 5 · ER-Modelle nach den Ergänzenden Hinweisen (Folien)",
+     "quelle": "Videos/05_ER-Modelle/DD_Video05_ER-Modelle_Folien.pptx",
+     "datei": "DD_Video05-ER-Modelle_Folien.pdf"
+    },
+    {
+     "art": "video",
+     "nr": "6",
+     "ds": [
+      11
+     ],
+     "niveau": "eA",
+     "titel": "Video 6 · Vom ER-Modell zum Relationenschema in 5 Regeln (Folien)",
+     "quelle": "Videos/06_ER_zu_Relationenschema/DD_Video06_ER_zu_Relationenschema_Folien.pptx",
+     "datei": "DD_Video06-ER_zu_Relationenschema_Folien.pdf"
+    },
+    {
+     "art": "video",
+     "nr": "7",
+     "ds": [
+      13
+     ],
+     "niveau": "beide",
+     "titel": "Video 7 · Abi-Check Datenbanken: 10 Fallen und die Operatoren (Folien)",
+     "quelle": "Videos/07_Abi-Check/DD_Video07_Abi-Check_Folien.pptx",
+     "datei": "DD_Video07-Abi-Check_Folien.pdf"
+    }
+   ]
+  }
+ ]
+}

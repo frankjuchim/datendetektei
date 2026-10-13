@@ -7,7 +7,8 @@
 //  - Lehrkraft-Demo: erfundener Kurs „Demo-Kurs Inf 12“ mit Fantasienamen und erfundenen Kennzahlen, nur lesend,
 //    deterministisch (gleiche Werte bei jedem Aufruf).
 //  - Gast-PDF-Whitelist materialien/Gast_PDF/verzeichnis.json: nur dort gelistete Schüler-/Lehrkraft-PDFs sind
-//    öffentlich (Standard: leer, bis Frank auswählt). Lösungs-Ordner sind nie erlaubt.
+//    öffentlich (Standard: leer, bis Frank auswählt). Lösungen, Erwartungshorizonte und Klausuren nur mit
+//    "ausdruecklich": true. Laden und Prüfen der Whitelist: src/services/material.js (Stufe „gast“).
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -16,16 +17,13 @@ const { pruefeAntwort, AntwortFehler } = require('../content/pruefer');
 const { oeffentlicherBlock, oeffentlicheInteraktion } = require('./inhalte');
 const { HttpFehler } = require('./lernen');
 const { FALLEN, rangFuer } = require('../domain');
+const { erzeugeMaterial, GAST_ORDNER, STANDARD_VERZEICHNIS } = require('./material');
 
 const WURZEL = path.join(__dirname, '..', '..');
 const STANDARD_DATEI = path.join(WURZEL, 'seed', 'gast', 'probefall.json');
-const STANDARD_MATERIAL = path.join(WURZEL, 'materialien');
 const PROBEFALL_ID = /^G-\d{2}$/;
 const STUFEN_PUNKTE = { 1: 10, 2: 20, 3: 30 };
 
-/** Ordner, aus denen die Gast-Whitelist Dateien freigeben darf (nie Loesungen_Portal, nie Originale). */
-const GAST_ORDNER = Object.freeze(['Arbeitsblaetter_PDF', 'Lehrkraft_PDF']);
-const PDF_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,120}\.pdf$/;
 
 /** Fantasienamen der Lehrkraft-Demo (keine Klarnamen). */
 const DEMO_NAMEN = Object.freeze(['Lena K.', 'Mika R.', 'Noa T.', 'Jule P.', 'Ben S.', 'Ida M.', 'Tom W.', 'Emma F.']);
@@ -63,40 +61,15 @@ function ladeProbefall(datei, log) {
   }
 }
 
-/** Gast-Whitelist laden: nur gültige Einträge aus erlaubten Ordnern. */
-function ladeWhitelist(verzeichnis, log) {
-  const datei = path.join(verzeichnis, 'Gast_PDF', 'verzeichnis.json');
-  let roh;
-  try {
-    roh = JSON.parse(fs.readFileSync(datei, 'utf8'));
-  } catch (e) {
-    if (e.code !== 'ENOENT') log(`Gastmodus: Gast-PDF-Verzeichnis nicht lesbar (${e.message}).`);
-    return new Map();
-  }
-  const liste = new Map();
-  for (const e of istObjekt(roh) && Array.isArray(roh.dateien) ? roh.dateien : []) {
-    if (!istObjekt(e) || typeof e.datei !== 'string' || !PDF_NAME.test(e.datei) || !GAST_ORDNER.includes(e.ordner)) {
-      log(`Gastmodus: Gast-PDF-Eintrag übersprungen (${JSON.stringify(e && e.datei)}).`);
-      continue;
-    }
-    if (liste.has(e.datei)) continue;
-    liste.set(e.datei, {
-      datei: e.datei,
-      ordner: e.ordner,
-      titel: typeof e.titel === 'string' && e.titel.trim() ? e.titel.trim() : e.datei,
-      fassung: e.fassung === 'lehrkraft' ? 'lehrkraft' : 'schueler'
-    });
-  }
-  return liste;
-}
-
 /**
- * @param {{ datei?, materialVerzeichnis?, inhalte?, log? }} opt
+ * @param {{ datei?, material?, materialVerzeichnis?, inhalte?, log? }} opt
  *   inhalte = erzeugeInhalte(db) (optional; nur für die Ermittlungen der Lehrkraft-Demo)
+ *   material = erzeugeMaterial() aus src/services/material.js (Stufe „gast“); sonst eine eigene Instanz für
+ *   materialVerzeichnis
  */
-function erzeugeGast({ datei = STANDARD_DATEI, materialVerzeichnis = STANDARD_MATERIAL, inhalte = null, log = () => {} } = {}) {
+function erzeugeGast({ datei = STANDARD_DATEI, material = null, materialVerzeichnis = STANDARD_VERZEICHNIS, inhalte = null, log = () => {} } = {}) {
   const fall = ladeProbefall(datei, log);
-  const whitelist = ladeWhitelist(materialVerzeichnis, log);
+  const mat = material || erzeugeMaterial({ verzeichnis: materialVerzeichnis, log });
 
   function demoAufgabe(id) {
     const a = fall && fall.aufgaben.get(String(id));
@@ -224,29 +197,14 @@ function erzeugeGast({ datei = STANDARD_DATEI, materialVerzeichnis = STANDARD_MA
 
   /* ---------- Gast-PDFs (E13) ---------- */
 
+  /** Gast-PDF-Whitelist (nur vorhandene Dateien): Titel, Fassung, Link. */
   function materialListe() {
-    return {
-      dateien: [...whitelist.values()].filter((e) => materialPfad(e.datei)).map((e) => ({
-        datei: e.datei,
-        titel: e.titel,
-        fassung: e.fassung,
-        url: `/gast/material/${encodeURIComponent(e.datei)}`
-      }))
-    };
+    return { dateien: mat.liste('gast') };
   }
 
-  /** Absoluter Pfad einer freigegebenen Datei oder null (nicht gelistet, nicht vorhanden). */
+  /** Datei der Gast-Auswahl zum Ausliefern ({ root, rel, name, typ }) oder null (nicht gelistet, nicht vorhanden). */
   function materialPfad(datei) {
-    const e = whitelist.get(String(datei));
-    if (!e) return null;
-    const ordner = path.join(materialVerzeichnis, e.ordner);
-    const pfad = path.join(ordner, e.datei);
-    if (path.dirname(pfad) !== ordner) return null;
-    try {
-      return fs.statSync(pfad).isFile() ? { root: ordner, datei: e.datei } : null;
-    } catch {
-      return null;
-    }
+    return mat.datei('gast', String(datei));
   }
 
   return {

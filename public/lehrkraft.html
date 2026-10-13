@@ -9,13 +9,24 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.4.0">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.4.0">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.4.0">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.4.0">
-  <script src="/static/js/kern/thema.js?v=0.4.0"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.4.0" defer></script>
-  <script src="/static/js/lehrkraft.js?v=0.4.0" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/konsole.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/lernen.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/modellierung.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/bauplan.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/werkbank.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/live.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/lehrkraft.css?v=0.7.0">
+  <script src="/static/js/kern/thema.js?v=0.7.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/parser.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/regeln.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/fehlertexte.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/visual.js?v=0.7.0" defer></script>
+  <script type="module" src="/static/js/lehrkraft/seite.js?v=0.7.0"></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -46,31 +57,43 @@
       </details>
     </div>
   </header>
-  <main class="inhalt" id="inhalt" tabindex="-1">
-    <div class="seiten-kopf">
-      <span class="etikett">Lehrkraft-Bereich</span>
-      <h1>Guten Tag, <span id="lk-name">…</span></h1>
-      <p>Hier legen Sie für Ihre Kurse fest, welche Akten freigeschaltet sind, auf welchem Niveau gearbeitet wird und
-        wann die Verhöre offen sind. Kurse, Freischaltungen und Konten verwalten Sie im Portal InfoLabs.</p>
-    </div>
-    <section class="lk-kurse" aria-labelledby="kurse-titel">
-      <h2 id="kurse-titel">Ihre Kurse</h2>
-      <p id="kurse-laden" class="leise" aria-live="polite">Kurse werden geladen …</p>
-      <p id="kurse-fehler" class="leise" role="alert" hidden>Die Kurse konnten nicht geladen werden. Bitte laden Sie die
-        Seite neu.</p>
-      <p id="kurse-leer" class="leise" hidden>Ihnen ist noch kein Kurs zugeordnet. Kurse legen Sie im Portal an und
-        schalten dort die Datendetektei frei.</p>
-      <div class="kurs-karten" id="kurs-karten" hidden></div>
-    </section>
-    <section class="karte abschnitt" aria-labelledby="folgt-titel">
-      <h2 id="folgt-titel">Auswertung folgt in Phase 6</h2>
-      <div class="notiz">
-        <svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>
-        <p class="notiz-titel">Was hier noch entsteht</p>
-        <p>Lernstand je Ermittlung, Fallen-Profil des Kurses, Scoreboard, Beamer-Board und Materialien.</p>
+  <main class="inhalt lk-seite" id="inhalt" tabindex="-1">
+    <div class="lk-kopf-zeile">
+      <div class="seiten-kopf">
+        <span class="etikett" id="lk-etikett">Lehrkraft-Bereich</span>
+        <h1>Guten Tag, <span id="lk-name">…</span></h1>
+        <p>Hier steuern Sie Ihre Kurse: Akten freischalten, Lernstand auswerten, Aufgaben samt Lösungen ansehen,
+          Live-Runden starten, das Beamer-Board zeigen und Urkunden drucken. Kurse und Konten verwalten Sie im Portal InfoLabs.</p>
       </div>
-      <p><a class="link-ziel" href="/themen#niveaus">Niveau-Übersicht eA/gA ansehen</a></p>
-    </section>
+      <div class="lk-kurswahl" id="lk-kurswahl" hidden>
+        <label for="lk-kurs">Kurs</label>
+        <select class="lk-auswahl" id="lk-kurs"></select>
+      </div>
+    </div>
+    <p id="lk-status" class="leise" aria-live="polite">Kurse werden geladen …</p>
+    <p class="lk-kennzahlen" id="lk-kennzahlen" hidden></p>
+    <div class="lk-reiter-huelle" id="lk-reiter-huelle" hidden>
+      <div class="lk-reiter" role="tablist" aria-label="Bereiche des Lehrkraft-Bereichs" id="lk-reiter">
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-uebersicht" aria-controls="panel-uebersicht" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-plan"/></svg>Übersicht</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-einstellungen" aria-controls="panel-einstellungen" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-stift"/></svg>Einstellungen</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-auswertung" aria-controls="panel-auswertung" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Auswertung</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-vorschau" aria-controls="panel-vorschau" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-auge"/></svg>Vorschau</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-live" aria-controls="panel-live" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-play"/></svg>Live</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-board" aria-controls="panel-board" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-karte"/></svg>Board</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-urkunden" aria-controls="panel-urkunden" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-stern"/></svg>Urkunden</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-materialien" aria-controls="panel-materialien" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-liste"/></svg>Materialien</button>
+          <button class="lk-reiter-knopf" type="button" role="tab" id="reiter-system" aria-controls="panel-system" aria-selected="false" tabindex="-1" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-hantel"/></svg>System</button>
+      </div>
+    </div>
+    <section class="lk-panel" role="tabpanel" id="panel-uebersicht" aria-labelledby="reiter-uebersicht" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-einstellungen" aria-labelledby="reiter-einstellungen" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-auswertung" aria-labelledby="reiter-auswertung" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-vorschau" aria-labelledby="reiter-vorschau" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-live" aria-labelledby="reiter-live" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-board" aria-labelledby="reiter-board" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-urkunden" aria-labelledby="reiter-urkunden" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-materialien" aria-labelledby="reiter-materialien" tabindex="0" hidden></section>
+    <section class="lk-panel" role="tabpanel" id="panel-system" aria-labelledby="reiter-system" tabindex="0" hidden></section>
   </main>
   <footer class="fuss">
     <nav aria-label="Weitere Seiten">

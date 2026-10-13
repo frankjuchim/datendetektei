@@ -10,6 +10,7 @@ const { erzeugeSandbox } = require('./sql/sandbox');
 const { erzeugeInhalte } = require('./services/inhalte');
 const { erzeugePruefer } = require('./sql/pruefer');
 const { ladeWarmupKarten } = require('./services/warmup');
+const { ladeLiveInhalte } = require('./content/live');
 
 let konfig;
 try {
@@ -70,7 +71,15 @@ try {
   console.error(`Warm-up-Karten konnten nicht geladen werden: ${err.message}`);
 }
 
-const app = erzeugeApp(konfig, db, { datenbanken, sandbox, inhalte, pruefer, warmupKarten });
+// Live-Modus (Duell, Escape Room) aus seed/live; Codes der Stationen werden hier aus den Lösungen berechnet.
+let liveInhalte = null;
+try {
+  liveInhalte = ladeLiveInhalte({ datenbanken, log: (zeile) => console.log(zeile) });
+} catch (err) {
+  console.error(`Live-Inhalte konnten nicht geladen werden: ${err.message}`);
+}
+
+const app = erzeugeApp(konfig, db, { datenbanken, sandbox, inhalte, pruefer, warmupKarten, liveInhalte });
 const server = app.listen(konfig.port, () => {
   console.log(`Datendetektei läuft auf Port ${konfig.port}`);
 });

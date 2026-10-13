@@ -1,0 +1,356 @@
+{
+ "nr": 7,
+ "kurz": "Abi-Check",
+ "akte": 7,
+ "aktenname": "Akte 7 · Die Ermittlerprüfung",
+ "titel": "Abi-Check Datenbanken: 10 Fallen und die Operatoren",
+ "untertitel": "Die Fallen P1–P10 auf einen Blick, was die Operatoren verlangen und wie du deine Zeit einteilst",
+ "einsatz_kurz": "Akte 7 · DS 13 · optional",
+ "einsatz": "Akte 7, DS 13 (optional) · vor Generalprobe, Verhör 7 (Lab-Generalprobe) und Klausur · Ermittler-Handbuch Werkzeugkarten 7 und 8",
+ "laenge": "10 min",
+ "zielgruppe": "Informatik eA und gA (Datenbanken); Wiederholung vor Klausur und Abitur",
+ "datenbank": "video/schachturnier",
+ "beispieldaten": "eigene Video-DB `video/schachturnier` – keine Lab-, AB-, Verhör-, Generalprobe- oder Klausuraufgabe; keine Originaltexte von Abituraufgaben",
+ "lernziele": [
+  "Die Fallen P1–P10 benennen und in eigenen Lösungen wiederfinden",
+  "Die Operatoren nennen, beschreiben, erläutern, analysieren, begründen, beurteilen und entwerfen/erstellen unterscheiden und sachgerecht anwenden",
+  "Eine fehlerhafte Abfrage systematisch auf Fallen untersuchen und verbessern",
+  "Das Zeitbudget einer Prüfungsaufgabe planen (≈ 2 min je BE)"
+ ],
+ "hinweise": [
+  "Alle Beispiele laufen auf der eigenen Video-DB `video/schachturnier`; Abituraufgaben werden nicht zitiert (nur Fallen, die dort typisch sind – Spec §5 nennt Belege als Verweise).",
+  "Geprüfte Werte: je Turnier 12/12 bzw. 6/5 Partien (COUNT(*) gegen COUNT(Ergebnis)); Vereine mit mindestens drei Mitgliedern: SK Weserspringer und Turm Lindenhof (je 3).",
+  "Zeitbudget nach DS_PLANUNG DS 13: ≈ 2 min je BE; die Operatoren-Beschreibungen sind eigene Kurzfassungen (Werkzeugkarte 7), keine Zitate der Operatorenliste."
+ ],
+ "youtube": {
+  "titel": "Abi-Check Datenbanken: 10 typische Fehler (P1–P10) und die Operatoren (Informatik-Abitur Niedersachsen) | Datendetektei #7",
+  "beschreibung": "Kurz vor der Klausur oder dem Abitur: Die zehn typischen Fallen bei Datenbank-Aufgaben im Informatik-Abitur Niedersachsen – von WHERE gegen HAVING über die GROUP-BY-Regel und NULL bis zu Schlüsseln, ER-Modellen und verfehlten Operatoren. Dazu, was „erläutern“, „analysieren“, „begründen“ und „beurteilen“ wirklich verlangen, eine Fehlersuche zum Mitmachen und eine Faustregel fürs Zeitbudget.\n\nTeil der Unterrichtsreihe „Datendetektei Weserstedt – Ermitteln mit Datenbanken“ (Informatik eA/gA, Abitur ab 2027).",
+  "tags": [
+   "Informatik Abitur",
+   "Niedersachsen",
+   "Datenbanken",
+   "SQL",
+   "typische Fehler",
+   "Operatoren",
+   "Abitur 2027",
+   "GROUP BY",
+   "ER-Modell",
+   "Prüfungsvorbereitung",
+   "Datendetektei"
+  ]
+ },
+ "bilder": {},
+ "folien": [
+  {
+   "typ": "titel",
+   "kapitel": "Einstieg",
+   "regie": "Kamera unten rechts, Titelfolie im Hintergrund.",
+   "sprechertext": "Die meisten Punkte im Abitur gehen nicht verloren, weil jemand etwas gar nicht kann – sondern durch immer dieselben zehn Fallen. In diesem Video gehen wir sie alle durch, klären, was die Operatoren verlangen, und planen deine Zeit. Danach machst du den Check an deinen eigenen Lösungen."
+  },
+  {
+   "titel": "So sieht eine Datenbank-Aufgabe aus",
+   "kapitel": "Aufbau und Zeit",
+   "links": [
+    {
+     "punkte": [
+      "Material: Szenario, Relationenschema oder ER-Modell, oft ein Datenausschnitt",
+      "viele kleine Teilaufgaben (2–8 BE), je ein Operator",
+      "SQL nach EH §8: Verbund nur mit `FROM a, b WHERE`, GROUP-BY-Regel, kein Alias im HAVING",
+      "Zeitbudget: **≈ 2 Minuten je BE**"
+     ]
+    }
+   ],
+   "rechts": [
+    {
+     "tabelle": {
+      "titel": "BEISPIEL: 30 BE",
+      "kopf": [
+       "Teil",
+       "BE",
+       "Zeit"
+      ],
+      "groesse": 14,
+      "zeilen": [
+       [
+        "a–c",
+        "10",
+        "≈ 20 min"
+       ],
+       [
+        "d–e",
+        "12",
+        "≈ 24 min"
+       ],
+       [
+        "f–g",
+        "8",
+        "≈ 16 min"
+       ],
+       [
+        "Kontrolle",
+        "–",
+        "≈ 10 min"
+       ]
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Eine Datenbank-Aufgabe beginnt mit Material: einem Szenario, einem Relationenschema oder ER-Modell und oft einem Datenausschnitt. Dann folgen viele kleine Teilaufgaben mit je zwei bis acht Bewertungseinheiten und jeweils einem Operator. SQL schreibst du im Stil der Ergänzenden Hinweise. Als Faustregel für die Zeit: etwa zwei Minuten je BE. Bei dreißig BE sind das rund sechzig Minuten – plus ein paar Minuten zum Kontrollieren. Bleib nicht an einer Teilaufgabe hängen."
+  },
+  {
+   "titel": "Was die Operatoren verlangen",
+   "kapitel": "Operatoren",
+   "links": [
+    {
+     "tabelle": {
+      "kopf": [
+       "Operator",
+       "Was du lieferst"
+      ],
+      "groesse": 15,
+      "zeilen": [
+       [
+        "nennen, angeben",
+        "Fakten ohne Begründung"
+       ],
+       [
+        "beschreiben",
+        "Sachverhalt in eigenen Worten, geordnet"
+       ],
+       [
+        "erläutern",
+        "beschreiben **und** am Beispiel/Datensatz verständlich machen"
+       ],
+       [
+        "analysieren, untersuchen",
+        "Merkmale gezielt herausarbeiten, im Sachzusammenhang"
+       ],
+       [
+        "begründen",
+        "Aussage auf Gründe zurückführen („…, weil …“)"
+       ],
+       [
+        "beurteilen",
+        "Urteil **mit Kriterien** und Begründung"
+       ],
+       [
+        "entwerfen, erstellen",
+        "SQL, ER-Modell oder Schema selbst anlegen"
+       ]
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Jeder Operator verlangt etwas anderes. Nennen heißt: Fakten, ohne Begründung. Beschreiben: den Sachverhalt geordnet in eigenen Worten. Erläutern geht weiter: Du beschreibst und machst es an einem Beispiel verständlich – bei Anomalien am Datensatz. Analysieren heißt, Merkmale gezielt herauszuarbeiten, immer im Sachzusammenhang. Begründen verlangt ein Weil. Beurteilen verlangt ein Urteil mit Kriterien. Und entwerfen oder erstellen heißt: Du schreibst die Abfrage, zeichnest das Modell oder legst das Schema an."
+  },
+  {
+   "titel": "SQL-Fallen I: P1 bis P4",
+   "kapitel": "SQL-Fallen",
+   "links": [
+    {
+     "falle": "P1",
+     "titel": "WHERE ↔ HAVING",
+     "text": "Aggregat im WHERE; Zeilenbedingung im HAVING; Alias im HAVING."
+    },
+    {
+     "falle": "P2",
+     "titel": "Verbund fehlt oder vervielfacht",
+     "text": "Verbundbedingung vergessen, falscher FK-Pfad, Zeilen durch zwei 1:n-Verbünde vervielfacht."
+    },
+    {
+     "falle": "P3",
+     "titel": "GROUP-BY-Regel",
+     "text": "SELECT-Spalte weder aggregiert noch gruppiert; nach Name statt Schlüssel gruppiert."
+    },
+    {
+     "falle": "P4",
+     "titel": "COUNT ↔ SUM",
+     "text": "Anzahl Zeilen gegen Summe eines Werts; `COUNT(Spalte)` zählt NULL nicht."
+    }
+   ],
+   "sprechertext": "Die SQL-Fallen, Teil eins. P1, WHERE gegen HAVING: Aggregatfunktionen gehören ins HAVING, Zeilenbedingungen ins WHERE, und im HAVING steht kein Alias. P2: Der Verbund fehlt, geht über den falschen Fremdschlüssel oder vervielfacht Zeilen. P3: die GROUP-BY-Regel – jede Spalte im SELECT aggregiert oder gruppiert, gruppiert wird nach dem Schlüssel. P4: COUNT gegen SUM – zählst du Zeilen oder addierst du Werte?"
+  },
+  {
+   "titel": "P4 im Beispiel: COUNT(*) gegen COUNT(Spalte)",
+   "links": [
+    {
+     "sql": "SELECT Turnier.TurnierNr, Turnier.Bezeichnung, COUNT(*) AS Partien,\n       COUNT(Partie.Ergebnis) AS Beendet\nFROM Turnier, Partie\nWHERE Turnier.TurnierNr = Partie.TurnierNr\nGROUP BY Turnier.TurnierNr, Turnier.Bezeichnung",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "gold",
+      "titel": "Warum 6 und 5?",
+      "text": [
+       "Eine Pokal-Partie hat noch kein Ergebnis (NULL).",
+       "`COUNT(*)` zählt sie mit, `COUNT(Partie.Ergebnis)` nicht."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Ein kleines Beispiel aus unserem Schachturnier. Pro Turnier zählen wir einmal mit COUNT Stern und einmal mit COUNT von Ergebnis. Beim Frühjahrsblitz kommt beide Male zwölf heraus. Beim Pokal aber sechs und fünf – eine Partie ist noch nicht beendet, ihr Ergebnis ist NULL. COUNT Stern zählt Zeilen, COUNT einer Spalte zählt nur Werte, die nicht NULL sind. Lies deshalb genau, was gezählt werden soll."
+  },
+  {
+   "titel": "SQL-Fallen II: P5 bis P7",
+   "links": [
+    {
+     "falle": "P5",
+     "titel": "NULL und Literale",
+     "text": "`= NULL` statt `IS NULL`; Text ohne Hochkommata; Datum nicht als `'JJJJ-MM-TT'`."
+    },
+    {
+     "falle": "P6",
+     "titel": "Bedingungslogik",
+     "text": "AND/OR ohne Klammern; `>` statt `>=`; BETWEEN schließt Grenzen ein; LIKE-Platzhalter falsch."
+    },
+    {
+     "falle": "P7",
+     "titel": "Mehrdeutig oder falsch benannt",
+     "text": "Präfix fehlt bei gleichnamigen Spalten; FK heißt anders als der PK; Alias falsch verwendet."
+    }
+   ],
+   "sprechertext": "Teil zwei. P5: NULL und Literale – mit NULL vergleichst du nur über IS NULL, Texte stehen in Hochkommata, ein Datum im Format Jahr-Monat-Tag. P6: Bedingungslogik – AND bindet stärker als OR, Grenzen genau lesen, LIKE mit Prozent und Unterstrich. P7: mehrdeutige oder falsch benannte Spalten – Präfix bei gleichnamigen Spalten, und ein Fremdschlüssel darf anders heißen als der Primärschlüssel, auf den er zeigt."
+  },
+  {
+   "titel": "Modellierungs-Fallen: P8 und P9",
+   "kapitel": "Modellierung",
+   "links": [
+    {
+     "falle": "P8",
+     "titel": "Schlüssel falsch beurteilt",
+     "text": "Eindeutigkeit aus dem Datenausschnitt geschlossen; NULL im Schlüssel; nicht minimal; Mehrfachvorkommen übersehen."
+    },
+    {
+     "falle": "P9",
+     "titel": "ER oder Überführung fehlerhaft",
+     "text": "Kardinalität vertauscht, Schlüsselattribut nicht markiert, Beziehungsattribut falsch platziert, FK auf der falschen Seite, n:m ohne eigene Relation."
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "blau",
+      "titel": "Gegenmittel",
+      "text": [
+       "- Schlüssel: „Kann es das in der Realität zweimal geben?“",
+       "- Kardinalität: zwei Fragen je Raute",
+       "- 1:n → FK auf die n-Seite"
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Bei Modellierung und Schlüsseln gibt es zwei Fallen. P8: Der Schlüssel wird falsch beurteilt – am häufigsten, weil aus einem Datenausschnitt auf Eindeutigkeit geschlossen wird. Frag dich immer: Kann es das in der Realität zweimal geben? P9: Fehler im ER-Modell oder bei der Überführung – vertauschte Kardinalitäten, fehlende Schlüsselattribute, falsch platzierte Beziehungsattribute, der Fremdschlüssel auf der falschen Seite. Gegenmittel: zwei Fragen je Raute und die Überführungsregeln."
+  },
+  {
+   "titel": "P10: Operator verfehlt",
+   "links": [
+    {
+     "text": "**Beurteilen** Sie, ob (Vorname, Nachname) als Primärschlüssel der Relation Spieler geeignet ist."
+    },
+    {
+     "kasten": {
+      "farbe": "rot",
+      "titel": "✘ Ohne Kriterium (P10)",
+      "text": [
+       "„Nein, das ist nicht geeignet.“"
+      ]
+     }
+    },
+    {
+     "kasten": {
+      "farbe": "gruen",
+      "titel": "✔ Mit Kriterien beurteilt",
+      "text": [
+       "Ein Primärschlüssel muss für alle denkbaren Daten eindeutig und möglichst unveränderlich sein. Zwei Personen können gleich heißen (es gibt schon zwei Bargmanns, gleiche Vornamen sind möglich), Namen können sich ändern. (Vorname, Nachname) ist daher **nicht geeignet**; SpielerNr erfüllt beide Kriterien."
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Und die zehnte Falle betrifft nicht den Inhalt, sondern den Operator. Die Aufgabe lautet: Beurteilen Sie, ob Vor- und Nachname als Primärschlüssel geeignet sind. Die obere Antwort sagt nur Nein – das ist ein Urteil ohne Kriterium und bringt kaum Punkte. Die untere nennt die Kriterien, wendet sie auf die Situation an und kommt dann zum Urteil. So sieht beurteilen aus. Genauso verlangt erläutern ein Beispiel und begründen ein Weil."
+  },
+  {
+   "typ": "pause",
+   "kapitel": "Fehlersuche",
+   "links": [
+    {
+     "text": "Gesucht: Vereine mit **mindestens drei** Mitgliedern – mit Name, Ort und Anzahl. **Finde alle Fallen** in dieser Abfrage:"
+    },
+    {
+     "sql": "SELECT Name, Ort, COUNT(*) AS Mitglieder\nFROM Spieler, Verein\nWHERE Spieler.VereinNr = Verein.VereinNr\n  AND COUNT(*) >= 3\nGROUP BY VereinNr",
+     "label": "✘ ENTHÄLT DREI FALLEN",
+     "art": "falsch",
+     "pruefung": "fehlerhaft"
+    }
+   ],
+   "rechts": [
+    {
+     "schema": [
+      "Verein(<u>VereinNr</u>, Name, Ort)",
+      "Spieler(<u>SpielerNr</u>, Vorname, Nachname, Jahrgang, Wertung, ↑VereinNr)"
+     ],
+     "titel": "SCHEMA",
+     "groesse": 15
+    }
+   ],
+   "pause_s": 40,
+   "sprechertext": "Fehlersuche! Gesucht sind Vereine mit mindestens drei Mitgliedern, mit Name, Ort und Anzahl. In der Abfrage stecken drei verschiedene Fallen. Halte das Video an und finde sie – mit Nummer."
+  },
+  {
+   "titel": "Auflösung",
+   "links": [
+    {
+     "sql": "SELECT Verein.VereinNr, Verein.Name, Verein.Ort, COUNT(*) AS Mitglieder\nFROM Spieler, Verein\nWHERE Spieler.VereinNr = Verein.VereinNr\nGROUP BY Verein.VereinNr, Verein.Name, Verein.Ort\nHAVING COUNT(*) >= 3",
+     "label": "✔ VERBESSERT",
+     "art": "richtig",
+     "ergebnis": true
+    }
+   ],
+   "rechts": [
+    {
+     "kasten": {
+      "farbe": "rot",
+      "titel": "Die drei Fallen",
+      "text": [
+       "- **P1**: `COUNT(*)` im WHERE → HAVING",
+       "- **P3**: Name, Ort weder gruppiert noch aggregiert",
+       "- **P7**: `VereinNr` ohne Präfix – mehrdeutig"
+      ]
+     }
+    }
+   ],
+   "sprechertext": "Die Auflösung. Erstens P1: COUNT Stern im WHERE geht nicht, die Bedingung gehört ins HAVING. Zweitens P3: Name und Ort stehen im SELECT, aber nicht im GROUP BY. Drittens P7: VereinNr gibt es in beiden Tabellen, also braucht sie ein Präfix. Verbessert gruppieren wir nach Verein.VereinNr, Name und Ort und filtern mit HAVING. Ergebnis: zwei Vereine mit je drei Mitgliedern."
+  },
+  {
+   "typ": "merke",
+   "kapitel": "Checkliste",
+   "titel": "Checkliste vor der Abgabe",
+   "punkte": [
+    "Operator gelesen? Erläutern = am Beispiel, begründen = weil, beurteilen = Kriterien + Urteil.",
+    "Jede Tabelle im FROM verbunden (n − 1 Bedingungen), Präfixe gesetzt?",
+    "WHERE für Zeilen, HAVING für Gruppen; GROUP-BY-Regel erfüllt?",
+    "NULL mit IS NULL, Texte in Hochkommata, Klammern bei AND/OR?",
+    "Schlüssel und Kardinalitäten begründet – nicht aus dem Ausschnitt geschlossen?"
+   ],
+   "sprechertext": "Zum Schluss deine Checkliste vor der Abgabe: Hast du den Operator gelesen und erfüllt? Ist jede Tabelle im FROM verbunden, mit Präfixen? WHERE für Zeilen, HAVING für Gruppen, GROUP-BY-Regel erfüllt? NULL mit IS NULL, Texte in Hochkommata, Klammern bei AND und OR? Und sind Schlüssel und Kardinalitäten begründet statt aus dem Ausschnitt geraten?"
+  },
+  {
+   "typ": "ende",
+   "lab": [
+    {
+     "text": "**Verhör 7 · Mensa** – die Lab-Generalprobe unter Zeitdruck (nach Freischaltung)"
+    },
+    {
+     "text": "**Trainingsplatz** und **Warm-up-Karten** – gezielt die eigenen Fallen üben („Deine Fallen“ im Profil)"
+    }
+   ],
+   "material": [
+    "Generalprobe eA/gA (DS 13) mit Peer-Korrektur",
+    "Ermittler-Handbuch: Werkzeugkarte 7 (Operatoren) und 8 (Abi-Check P1–P10)"
+   ],
+   "naechstes": "Alle Videos der Playlist „Datendetektei“ – zum Wiederholen vor der Klausur",
+   "sprechertext": "Und jetzt: ab zur Generalprobe! Im Lab wartet Verhör 7 in der Mensa unter Zeitdruck. Im Trainingsplatz und mit den Warm-up-Karten übst du gezielt deine eigenen Fallen – welche das sind, zeigt dir dein Profil. Viel Erfolg in der Klausur und im Abitur!"
+  }
+ ]
+}

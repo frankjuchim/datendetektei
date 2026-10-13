@@ -1,5 +1,6 @@
 // Interaktionen der Aufgaben (docs/AUFGABENFORMAT.md §6; Muster Algo Quest public/static/js/interact.js): gaps,
-// choice, order, lines, match, zeilen, ergebnis, kernpunkte, sql (über eine Fabrik der Seite), mehrteilige Aufgaben
+// choice, order, lines, match, zeilen, ergebnis, kernpunkte, sql (über eine Fabrik der Seite), er und schema
+// (Bauplan-Tisch und Schema-Werkbank, bauplan/interaktion.js), mehrteilige Aufgaben
 // und der gestufte Bug-Hunt. Geprüft wird NUR auf dem Server; hier entstehen Antworten und die Anzeige von
 // Rückmeldung und Lösung. choice-Optionen, order-Teile, match-Elemente und Klapplisten (ab drei Optionen) werden bei
 // jedem Anzeigen neu gemischt. Freitext (kernpunkte) bleibt im Browser – gesendet wird nur die Häkchen-Anzahl.
@@ -7,6 +8,10 @@
 const V = new URL(import.meta.url).search;
 const R = await import('./render.js' + V);
 const { el, h, knopf, mische } = R;
+// Modellierung (Phase 5): zellen, anomalie, zerlegen
+const M = await import('./modell_interaktionen.js' + V);
+// Modellierung (Phase 5): Bauplan-Tisch (er) und Schema-Werkbank (schema) – eigene Module unter bauplan/ und werkbank/
+const MODELL = await import('../bauplan/interaktion.js' + V);
 
 const ART_SQL = 'sql';
 
@@ -718,6 +723,7 @@ export function erzeugeAufgabe(a, opt = {}) {
   const mehrteilig = Array.isArray(a.interaktion);
   const ias = mehrteilig ? a.interaktion : [a.interaktion];
   const kontext = { geaendert: () => opt.onChange && opt.onChange(), speicher: opt.speicher || null };
+  const entwurfBasis = opt.speicher || `dd-entwurf:aufgabe:${a.id}`;
   const teile = ias.map((ia, i) => {
     switch (ia && ia.kind) {
       case 'gaps':
@@ -738,6 +744,16 @@ export function erzeugeAufgabe(a, opt = {}) {
         return teilKernpunkte(ia, kontext, i);
       case 'sql':
         return opt.sqlTeil ? opt.sqlTeil(ia, kontext, i) : teilSqlEinfach(ia, kontext);
+      case 'zellen':
+        return M.teilZellen(ia, kontext, i, a);
+      case 'anomalie':
+        return M.teilAnomalie(ia, kontext, i, a);
+      case 'zerlegen':
+        return M.teilZerlegen(ia, kontext, i, a);
+      case 'er':
+        return MODELL.teilEr(ia, kontext, { entwurf: `${entwurfBasis}:er:${i}` });
+      case 'schema':
+        return MODELL.teilSchema(ia, kontext, { entwurf: `${entwurfBasis}:schema:${i}` });
       default:
         return { kind: '?', ui: el('p', 'leise', 'Diese Interaktion kann hier noch nicht angezeigt werden.'), antwort: () => null, leer: () => true, setze() {}, feedback() {}, loesung() {}, sperren() {} };
     }
@@ -754,9 +770,15 @@ export function erzeugeAufgabe(a, opt = {}) {
     zeilenAuswahl(index) {
       const t = teile.find((x) => x.kind === 'zeilen' && x.block === index);
       return t ? { klick: (i) => t.klick(i), registriere: (els) => t.registriere(els) } : null;
+    },
+    erAuswahl(index) {
+      const t = teile.find((x) => x.kind === 'er' && x.lesen && x.block === index);
+      return t ? { klick: (id) => t.klick(id), registriere: (api) => t.registriere(api) } : null;
     }
   };
   const inhaltEl = R.bloecke(a.inhalt, ctx);
+  // Teile, die Blöcke der Aufgabe bedienen (zellen: Zellen antippen; anomalie: Rohtabelle im Simulator)
+  teile.forEach((t) => typeof t.anbinden === 'function' && t.anbinden(inhaltEl));
   const box = h('div', 'aufgabe-inhalt', inhaltEl);
   const teilEls = [];
   ias.forEach((ia, i) => {

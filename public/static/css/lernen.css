@@ -289,6 +289,8 @@ span.md { display: inline; }
 /* Schema in Kurzschreibweise, Tabellen */
 .schema-block { display: flex; flex-direction: column; gap: var(--a-1); padding: var(--a-3) var(--a-4); background: var(--flaeche); border-radius: var(--radius); overflow-x: auto; }
 .schema-block .relation { background: none; padding: 0; white-space: nowrap; font-size: 0.9375rem; }
+/* In der schmalen Lösungskarte umbrechen statt seitlich scrollen */
+.loesung-karte .schema-block .relation { white-space: normal; overflow-wrap: break-word; }
 .relation-name { font-weight: 600; }
 .relation .pk, .dbtabelle .pk, table.daten th .pk { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
 .fk-pfeil { color: var(--siegelrot-text); font-weight: 600; margin-right: 1px; }
@@ -641,3 +643,7 @@ button.puzzle-teil:hover { background: var(--flaeche); }
 
 /* Unsichtbare Screenreader-Texte (.nur-sr, position: absolute) bleiben in ihrem scrollenden Container */
 .schema-block, .db-kachel-tabellen, .tabelle-rahmen, .code-huelle, .relation { position: relative; }
+
+/* ---------- Kür auf dem Stadtplan (Plan Phase 6 Task 7) ---------- */
+.kuer-karte .kuer-kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2) var(--a-3); }
+.kuer-karte .kuer-kopf h2 { margin: 0; }

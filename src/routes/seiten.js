@@ -18,11 +18,12 @@ const PUBLIC_DIR = path.join(__dirname, '..', '..', 'public');
 
 /** [Pfad, Muster für :wert (oder null), Datei] der Schülerseiten. */
 const SCHUELER_SEITEN = [
-  ['/akte/:wert', /^[1-7]$/, 'akte.html'],
-  ['/ermittlung/:wert', /^A[1-9]\d?-E[1-9]\d?$/, 'ermittlung.html'],
+  ['/akte/:wert', /^[1-8]$/, 'akte.html'], // 8 = Kür K1 (Phase 6 Task 7)
+  ['/ermittlung/:wert', /^(?:A[1-9]\d?|K1)-E[1-9]\d?$/, 'ermittlung.html'],
   ['/verhoer/:wert', /^[1-7]$/, 'verhoer.html'],
   ['/warmup', null, 'warmup.html'],
-  ['/training', null, 'training.html']
+  ['/training', null, 'training.html'],
+  ['/pinnwand', null, 'pinnwand.html']
 ];
 
 const OEFFENTLICH = {

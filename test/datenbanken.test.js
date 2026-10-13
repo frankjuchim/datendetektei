@@ -214,3 +214,20 @@ test('GET /api/db/<name>/schema: unbekannt, Variante, Pfadtricks → 404 JSON', 
     assert.deepEqual(res.body, { error: 'Nicht gefunden.' }, pfad);
   }
 });
+
+test('Verhör-Kontexte Musikschule, Kletterhalle, Fitness-App und Mensa: geladen, aber nie öffentlich unter /db/ oder /api/db/', async () => {
+  const a = app();
+  for (const kontext of ['musikschule', 'kletterhalle', 'fitness', 'mensa']) {
+    const name = `verhoer/${kontext}`;
+    assert.ok(VERHOER_DATENBANKEN.includes(name), name);
+    assert.ok(!OEFFENTLICHE_DATENBANKEN.includes(name), name);
+    assert.ok(Buffer.isBuffer(datenbanken.haupt(name)), name);
+    for (const pfad of [`/db/${kontext}.sqlite`, `/db/verhoer/${kontext}.sqlite`, `/db/verhoer%2F${kontext}.sqlite`,
+      `/db/verhoer_${kontext}.sqlite`, `/api/db/${kontext}/schema`, `/api/db/verhoer%2F${kontext}/schema`,
+      `/api/db/verhoer/${kontext}/schema`]) {
+      const res = await request(a).get(pfad);
+      assert.equal(res.status, 404, pfad);
+      assert.doesNotMatch(res.headers['content-type'] || '', /sqlite/, pfad);
+    }
+  }
+});

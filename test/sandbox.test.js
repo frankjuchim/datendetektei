@@ -292,3 +292,29 @@ test('Kindprozess startet ohne SESSION_SECRET (nur NODE_ENV), ohne execArgv, mit
     if (sb) sb.beende();
   }
 });
+
+test('Speicher: riesige Werte (zeroblob, Verdopplung per rekursiver CTE) → ergebnis_zu_gross, kein Absturz', async () => {
+  const blob = await sandbox.fuehreAus({ db: 'stadtrad', sql: 'SELECT zeroblob(900000000)' });
+  assert.equal(blob.ok, false, JSON.stringify(blob).slice(0, 200));
+  assert.equal(blob.code, 'ergebnis_zu_gross');
+  const verdoppelt = await sandbox.fuehreAus({
+    db: 'stadtrad',
+    sql: "WITH RECURSIVE t(n, s) AS (SELECT 1, 'x' UNION ALL SELECT n + 1, s || s FROM t WHERE n < 40) SELECT n, s FROM t"
+  });
+  assert.equal(verdoppelt.ok, false);
+  assert.equal(verdoppelt.code, 'ergebnis_zu_gross');
+  // viele mittelgroße Werte: Zeilenzahl klein, Bytes groß
+  const breit = await sandbox.fuehreAus({ db: 'stadtrad', sql: 'SELECT zeroblob(1000000) FROM Station, Station' });
+  assert.equal(breit.ok, false);
+  assert.equal(breit.code, 'ergebnis_zu_gross');
+  const normal = await sandbox.fuehreAus({ db: 'stadtrad', sql: 'SELECT COUNT(*) FROM Station' });
+  assert.equal(normal.ok, true, 'Prozess arbeitet danach normal weiter');
+});
+
+test('Diagnose: ergebnis_zu_gross → deutscher Text, Art fehler (keine Rohmeldung)', () => {
+  const { ausSandboxFehler } = require('../src/sql/diagnose');
+  const d = ausSandboxFehler({ ok: false, code: 'ergebnis_zu_gross', text: 'Ergebnis zu groß' });
+  assert.equal(d.code, 'ERGEBNIS_ZU_GROSS');
+  assert.equal(d.art, 'fehler');
+  assert.match(d.text, /zu groß/);
+});

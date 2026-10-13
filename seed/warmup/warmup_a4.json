@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "karten": [
+    {
+      "id": "W-A4-01",
+      "akte": 4,
+      "kategorie": "Anomalien",
+      "titel": "Redundanz finden",
+      "aufgabe": "Ausschnitt einer Kursliste der Volkshochschule: `(Kurs: Yoga, Leitung: Frau Brede, Telefon: 0000-111)`, `(Kurs: Pilates, Leitung: Frau Brede, Telefon: 0000-111)`, `(Kurs: Töpfern, Leitung: Herr Kamp, Telefon: 0000-222)`. Benenne die Information, die mehrfach gespeichert ist.",
+      "loesung": "Die Telefonnummer von Frau Brede (0000-111) steht zweimal – sie hängt von der Leitung ab, nicht vom Kurs. Der Name „Frau Brede“ selbst zeigt nur, wer leitet; die Telefonnummer ist die wiederholte Information.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K07"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A4-02",
+      "akte": 4,
+      "kategorie": "Anomalien",
+      "titel": "Anomalie benennen",
+      "aufgabe": "Ordne zu: (1) In der Kursliste kann ein neuer Kursleiter erst eingetragen werden, wenn er einen Kurs hat. (2) Frau Brede bekommt eine neue Nummer; in einer Zeile bleibt die alte stehen. (3) Der einzige Töpferkurs wird gestrichen – mit ihm verschwindet Herrn Kamps Telefonnummer.",
+      "loesung": "(1) Einfügeanomalie · (2) Änderungsanomalie · (3) Löschanomalie.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K08"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A4-03",
+      "akte": 4,
+      "kategorie": "Anomalien",
+      "titel": "Am Datensatz erläutern",
+      "aufgabe": "Erläutere in zwei Sätzen eine Änderungsanomalie an der Rohliste des TuS: Jens Meyers Telefonnummer steht in jeder Fußball- und Tennis-Zeile. Nenne Art, Datensatz und Folge.",
+      "sql": "SELECT rowid AS Zeile, Mitglied, Trainer, TrainerTelefon\nFROM MitgliederlisteRoh\nWHERE Trainer = 'Jens Meyer'",
+      "datenbank": "tus",
+      "loesung": "Ändert sich Jens Meyers Telefonnummer, muss sie in jeder seiner Zeilen geändert werden (Änderungsanomalie). Wird eine Zeile vergessen, hat derselbe Trainer zwei Nummern – in der Rohliste ist das schon passiert: In Zeile 27 (Arne Kuhlmann) steht 0000-31451 statt 0000-31415.",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K08",
+        "DB-K10"
+      ],
+      "falle": [
+        "P10"
+      ]
+    },
+    {
+      "id": "W-A4-04",
+      "akte": 4,
+      "kategorie": "Anomalien",
+      "titel": "Ein Feld, zwei Werte",
+      "aufgabe": "Erkläre, welches Problem diese Abfrage bei der Zelle „Fußball, Tennis“ (Lina Weerts) hat – und wie man im bereinigten Archiv richtig nach Tennis-Mitgliedern fragt.",
+      "sql": "SELECT Mitglied\nFROM MitgliederlisteRoh\nWHERE Abteilungen = 'Tennis'",
+      "datenbank": "tus",
+      "loesung": "`=` vergleicht den ganzen Zellinhalt: „Fußball, Tennis“ ist nicht gleich 'Tennis', Lina Weerts fehlt. `LIKE '%Tennis%'` fände sie, aber auch „Tischtennis“. Erst atomare Werte (eine Zeile je Mitglied und Abteilung) machen die Suche zuverlässig.",
+      "loesungSql": "SELECT Mitglied.Vorname, Mitglied.Nachname\nFROM Mitglied, Mitgliedschaft, Abteilung\nWHERE Mitglied.MitgliedNr = Mitgliedschaft.MitgliedNr\n  AND Mitgliedschaft.AbteilungNr = Abteilung.AbteilungNr\n  AND Abteilung.Name = 'Tennis'",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K14"
+      ],
+      "falle": [
+        "P6"
+      ]
+    },
+    {
+      "id": "W-A4-05",
+      "akte": 4,
+      "kategorie": "Schlüssel",
+      "titel": "Schlüsselkriterien",
+      "aufgabe": "Nenne die drei Kriterien für einen Primärschlüssel und erläutere eines am Beispiel `(MitgliedNr, Nachname)` in der Tabelle Mitglied.",
+      "loesung": "Eindeutig (für alle möglichen Daten) · nie NULL · minimal. `(MitgliedNr, Nachname)` ist eindeutig, aber **nicht minimal**: MitgliedNr allein bestimmt jedes Mitglied schon eindeutig, Nachname ist überflüssig.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K02"
+      ],
+      "falle": [
+        "P8"
+      ]
+    },
+    {
+      "id": "W-A4-06",
+      "akte": 4,
+      "kategorie": "Schlüssel",
+      "titel": "Ausschnitt-Falle",
+      "aufgabe": "In einem Ausschnitt von zehn Mitgliedern sind alle Nachnamen verschieden. Begründe, warum daraus nicht folgt, dass Nachname Primärschlüssel sein kann.",
+      "loesung": "Ein Ausschnitt kann Eindeutigkeit nur widerlegen, nie beweisen. Ob zwei Mitglieder gleich heißen können, ist eine Frage der Bedeutung – und das ist möglich (im TuS gibt es zwei Lukas Behrens). Künftige Daten können jederzeit einen doppelten Nachnamen bringen.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K02"
+      ],
+      "falle": [
+        "P8"
+      ]
+    },
+    {
+      "id": "W-A4-07",
+      "akte": 4,
+      "kategorie": "Relationales Modell",
+      "titel": "Verlustfrei?",
+      "aufgabe": "Juri zerlegt so: `Mitglied(MitgliedNr, Vorname, Nachname, Geburtsjahr, Eintritt)` und `Beitragsgruppe(Gruppe, Monatsbeitrag)` (Primärschlüssel jeweils das erste Attribut). Prüfe, ob die Zerlegung verlustfrei ist, und korrigiere sie.",
+      "loesung": "Nicht verlustfrei: Niemand weiß mehr, welches Mitglied zu welcher Beitragsgruppe gehört – der Verweis fehlt. Korrektur: `Mitglied(MitgliedNr, Vorname, Nachname, Geburtsjahr, ↑Beitragsgruppe, Eintritt)` mit Fremdschlüssel Beitragsgruppe → Beitragsgruppe.Gruppe (anderer Name als der Primärschlüssel ist erlaubt).",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K11",
+        "DB-K03"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A4-08",
+      "akte": 4,
+      "kategorie": "Anomalien",
+      "titel": "Zusammengelegt",
+      "aufgabe": "Untersuche, ob in der Tabelle `Halle(HalleNr, Name, Adresse)` (Primärschlüssel HalleNr) Anomalien möglich sind. Begründe.",
+      "loesung": "Keine Anomalie möglich: Name und Adresse hängen nur vom Primärschlüssel HalleNr ab, jede Halle steht genau einmal in der Tabelle. Eine Adressänderung betrifft eine Zeile, eine neue Halle lässt sich ohne weitere Angaben eintragen, und beim Löschen einer Halle geht nur diese Halle verloren.",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K09"
+      ],
+      "falle": [
+        "P10"
+      ]
+    }
+  ]
+}

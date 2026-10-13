@@ -1,0 +1,4664 @@
+{
+  "version": 2,
+  "welt": 4,
+  "titel": "Chaos im Vereinsarchiv",
+  "farbe": "#5E4A8C",
+  "levels": [
+    {
+      "id": "A4-E1",
+      "nr": "4.1",
+      "titel": "Die Excel-Liste",
+      "ds": [
+        7
+      ],
+      "ab": "AB 4.1 Die Excel-Liste",
+      "niveau": "alle",
+      "briefing": "Der TuS Weserstedt führt alle Mitglieder in einer einzigen großen Liste – und genau dort hat sich das Phantom versteckt. Suche Redundanzen und zeige Einfüge-, Änderungs- und Löschanomalie immer an einem konkreten Datensatz. Im Anomalie-Simulator führst du Änderungen genau so aus, wie die Liste es zulässt.",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "tus"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:** **Redundanz** = dieselbe Information ist mehrfach gespeichert – z. B. Birte Haschkes Telefonnummer in jeder Tischtennis-Zeile der Rohliste `MitgliederlisteRoh`.\n\n- **Änderungsanomalie:** Eine Information muss an vielen Stellen geändert werden; wird eine vergessen, widerspricht sich die Liste.\n- **Löschanomalie:** Beim Löschen einer Zeile geht ungewollt weitere Information verloren.\n- **Einfügeanomalie:** Etwas lässt sich nicht eintragen, weil eine andere Angabe (noch) fehlt.\n- **nicht-atomarer Wert:** mehrere Werte in einer Zelle („Fußball, Tennis“) – `=` übersieht sie, `LIKE` findet auch Teilwörter.\n\nRedundanz ist die Ursache der Änderungsanomalie; Einfüge- und Löschanomalie entstehen, weil **mehrere Sachverhalte** (Mitglied, Abteilung, Trainer, Halle, Beitrag) in **einer** Tabelle stehen. Operator **erläutern** = Anomalieart + konkreter Datensatz + Folge."
+        }
+      ],
+      "coldCase": "A4-E1-CC",
+      "aufgaben": [
+        "A4-E1-01",
+        "A4-E1-02",
+        "A4-E1-03",
+        "A4-E1-04",
+        "A4-E1-05",
+        "A4-E1-06",
+        "A4-E1-07",
+        "A4-E1-08"
+      ]
+    },
+    {
+      "id": "A4-E2",
+      "nr": "4.2",
+      "titel": "Ordnung ins Archiv",
+      "ds": [
+        8
+      ],
+      "ab": "AB 4.2 Ordnung ins Archiv",
+      "niveau": "alle",
+      "briefing": "Jetzt räumst du das Vereinsarchiv auf: Beurteile Schlüssel und zerlege die Rohliste verlustfrei in redundanzfreie Tabellen. Schließe nie aus einem kleinen Datenausschnitt, dass ein Attribut eindeutig ist. Im Zerlegungs-Puzzle siehst du sofort, wo noch Redundanz steckt.",
+      "intro": [
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz – Schlüssel-Check:** eindeutig für alle *möglichen* Daten (ein Ausschnitt kann das nur widerlegen) · nie NULL · minimal (kein Attribut weglassbar) · künstlicher Schlüssel (z. B. eine Nummer), wenn kein natürlicher sicher ist · zusammengesetzt, wenn erst die Kombination eindeutig ist – Achtung bei Mehrfachvorkommen.\n\n**Zusammengelegte Tabelle untersuchen:** Hängt ein Nicht-Schlüssel-Attribut nur von einem *Teil* des Schlüssels oder von einem anderen Nicht-Schlüssel-Attribut ab (Monatsbeitrag ← Beitragsgruppe)? → dieselbe Information steht mehrfach → Anomalien. Hängt jedes Attribut vom ganzen Schlüssel und nur von ihm ab → **keine Anomalie möglich**.\n\n**Zerlegen:** *verlustfrei* = der Verbund der Teiltabellen ergibt wieder die Rohliste · *redundanzfrei* = jede Information steht genau einmal; Begründung: jedes Nicht-Schlüssel-Attribut hängt nur vom Schlüssel seiner Tabelle ab."
+        }
+      ],
+      "coldCase": "A4-E2-CC",
+      "aufgaben": [
+        "A4-E2-01",
+        "A4-E2-02",
+        "A4-E2-03",
+        "A4-E2-04",
+        "A4-E2-05",
+        "A4-E2-06",
+        "A4-E2-07",
+        "A4-E2-08"
+      ]
+    }
+  ],
+  "boss": {
+    "id": "A4-V",
+    "titel": "Verhör 4 · Musikschule",
+    "kontextDb": "verhoer/musikschule",
+    "rahmensatz": "Listen wie die vom TuS gibt es überall – zeig mir, dass du ihre Schwachstellen findest.",
+    "abimodus": "streng",
+    "dauerMin": 20,
+    "anzahl": 6,
+    "mix": {
+      "1": 2,
+      "2": 3,
+      "3": 1
+    },
+    "maxJeKind": {
+      "choice": 3
+    },
+    "pool": [
+      "A4-V-01",
+      "A4-V-02",
+      "A4-V-03",
+      "A4-V-04",
+      "A4-V-05",
+      "A4-V-06",
+      "A4-V-07",
+      "A4-V-08",
+      "A4-V-09",
+      "A4-V-10",
+      "A4-V-11",
+      "A4-V-12"
+    ]
+  },
+  "aufgaben": [
+    {
+      "id": "A4-E1-01",
+      "titel": "Doppelte Spuren",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K07"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wiebke Lüttjohann hat dir einen Ausschnitt der Vereinsliste ausgedruckt. Die erste Nennung einer Telefonnummer bzw. einer Hallenadresse ist nötig – jede weitere wiederholt nur, was schon dasteht.\n\nTippe in den Spalten **TrainerTelefon** und **HallenAdresse** alle Zellen an, deren Information **weiter oben im Ausschnitt** schon gespeichert ist."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "MitgliederlisteRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Zeile"
+            },
+            {
+              "name": "Mitglied"
+            },
+            {
+              "name": "Abteilungen"
+            },
+            {
+              "name": "Trainer"
+            },
+            {
+              "name": "TrainerTelefon"
+            },
+            {
+              "name": "Halle"
+            },
+            {
+              "name": "HallenAdresse"
+            }
+          ],
+          "zeilen": [
+            [
+              1,
+              "Lukas Behrens",
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415",
+              "Sportplatz Weseraue",
+              "Auenweg 2"
+            ],
+            [
+              2,
+              "Lukas Behrens",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ],
+            [
+              3,
+              "Merle Falkenrath",
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              5,
+              "Wiebke Sandmann",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ],
+            [
+              6,
+              "Wiebke Sandmann",
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142",
+              "Turnhalle Schulzentrum",
+              "Schulweg 5"
+            ],
+            [
+              7,
+              "Fenja Rademacher",
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142",
+              "Turnhalle Schulzentrum",
+              "Schulweg 5"
+            ],
+            [
+              8,
+              "Hannes Kröger",
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              9,
+              "Okke Janßen",
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415",
+              "Sportplatz Weseraue",
+              "Auenweg 2"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT rowid AS Zeile, Mitglied, Abteilungen, Trainer, TrainerTelefon, Halle, HallenAdresse\nFROM MitgliederlisteRoh\nWHERE rowid IN (1, 2, 3, 5, 6, 7, 8, 9)\nORDER BY rowid"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "zellen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zellen": [
+          [
+            1,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            7,
+            6
+          ]
+        ]
+      },
+      "tipps": [
+        "Geh die Liste von oben nach unten durch: Steht derselbe Trainer bzw. dieselbe Halle schon in einer Zeile darüber?",
+        "Jens Meyer trainiert Fußball **und** Tennis – seine Nummer ist trotzdem dieselbe Information."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Redundant sind 9 Zellen: Jens Meyers Telefonnummer steht ab Zeile 2 erneut, die von Anke Rosendahl und Birte Haschke ab ihrer zweiten Zeile; ebenso die Adressen von Tennisanlage Lindenhof, Turnhalle Schulzentrum, Halle am Mühlenfeld und Sportplatz Weseraue ab der zweiten Nennung.\n\n**Redundanz** heißt: dieselbe *Information* ist mehrfach gespeichert – nicht unbedingt dieselbe ganze Zeile. Sie ist die Ursache späterer Änderungsanomalien."
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-02",
+      "titel": "Welche Anomalie?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Vier Dinge passieren im TuS. Ordne jedem Szenario die Anomalie zu, die in der Rohliste `MitgliederlisteRoh` dabei droht."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "a) Trainerin Anke Rosendahl bekommt eine neue Telefonnummer.",
+          "optionen": [
+            {
+              "id": "einf",
+              "md": "Einfügeanomalie"
+            },
+            {
+              "id": "aend",
+              "md": "Änderungsanomalie"
+            },
+            {
+              "id": "loes",
+              "md": "Löschanomalie"
+            },
+            {
+              "id": "keine",
+              "md": "keine Anomalie"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) Das einzige Mitglied einer Abteilung tritt aus, seine Zeile wird gelöscht.",
+          "optionen": [
+            {
+              "id": "einf",
+              "md": "Einfügeanomalie"
+            },
+            {
+              "id": "aend",
+              "md": "Änderungsanomalie"
+            },
+            {
+              "id": "loes",
+              "md": "Löschanomalie"
+            },
+            {
+              "id": "keine",
+              "md": "keine Anomalie"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "c) Der Verein gründet die Abteilung Rudern mit Trainer und Bootshaus – Mitglieder gibt es noch keine.",
+          "optionen": [
+            {
+              "id": "einf",
+              "md": "Einfügeanomalie"
+            },
+            {
+              "id": "aend",
+              "md": "Änderungsanomalie"
+            },
+            {
+              "id": "loes",
+              "md": "Löschanomalie"
+            },
+            {
+              "id": "keine",
+              "md": "keine Anomalie"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "d) Der Monatsbeitrag der Gruppe Jugend steigt von 8,50 € auf 9,00 €.",
+          "optionen": [
+            {
+              "id": "einf",
+              "md": "Einfügeanomalie"
+            },
+            {
+              "id": "aend",
+              "md": "Änderungsanomalie"
+            },
+            {
+              "id": "loes",
+              "md": "Löschanomalie"
+            },
+            {
+              "id": "keine",
+              "md": "keine Anomalie"
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "aend"
+          ]
+        },
+        {
+          "richtig": [
+            "loes"
+          ]
+        },
+        {
+          "richtig": [
+            "einf"
+          ]
+        },
+        {
+          "richtig": [
+            "aend"
+          ]
+        }
+      ],
+      "tipps": [
+        "Frag dich jeweils: Muss ich etwas an vielen Stellen ändern, verliere ich beim Löschen mehr als gewollt, oder kann ich etwas gar nicht erst eintragen?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) und d) **Änderungsanomalie**: Telefonnummer und Beitrag stehen in vielen Zeilen; wird eine vergessen, widerspricht sich die Liste. b) **Löschanomalie**: Mit der letzten Zeile verschwinden auch Trainer, Telefon und Halle der Abteilung. c) **Einfügeanomalie**: Ohne Mitglied gibt es keine Zeile, in der die neue Abteilung stehen könnte."
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-03",
+      "titel": "Meyer heißt jetzt Meyer-Kahl",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Führe den Auftrag im Simulator so aus, wie die Liste es erlaubt: Der Simulator ändert jede Zelle, in der genau „Jens Meyer“ steht. Schau dir danach die Liste an.\n\nWelche Anomalie zeigt sich? Wähle die Anomalieart und markiere **alle Zellen**, die bei dieser Änderung angepasst werden müssten."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "MitgliederlisteRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Zeile"
+            },
+            {
+              "name": "Mitglied"
+            },
+            {
+              "name": "Abteilungen"
+            },
+            {
+              "name": "Trainer"
+            },
+            {
+              "name": "TrainerTelefon"
+            }
+          ],
+          "zeilen": [
+            [
+              1,
+              "Lukas Behrens",
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415"
+            ],
+            [
+              2,
+              "Lukas Behrens",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415"
+            ],
+            [
+              3,
+              "Merle Falkenrath",
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182"
+            ],
+            [
+              4,
+              "Tjark Hinrichs",
+              "Fußball, Handball",
+              "Jens Meyer, Sven Albers",
+              "0000-31415, 0000-17320"
+            ],
+            [
+              5,
+              "Wiebke Sandmann",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415"
+            ],
+            [
+              6,
+              "Wiebke Sandmann",
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142"
+            ],
+            [
+              7,
+              "Fenja Rademacher",
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142"
+            ],
+            [
+              8,
+              "Hannes Kröger",
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182"
+            ],
+            [
+              9,
+              "Okke Janßen",
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415"
+            ],
+            [
+              10,
+              "Mareike Lüders",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415"
+            ],
+            [
+              11,
+              "Bente Ahlers",
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142"
+            ],
+            [
+              12,
+              "Timo Rieken",
+              "Judo",
+              "Ole Wittkamp",
+              "0000-16180"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT rowid AS Zeile, Mitglied, Abteilungen, Trainer, TrainerTelefon\nFROM MitgliederlisteRoh\nWHERE rowid BETWEEN 1 AND 12\nORDER BY rowid"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "anomalie",
+        "block": 1,
+        "auftrag": "Trainer **Jens Meyer** heißt nach der Heirat **Jens Meyer-Kahl**.",
+        "operation": "aendern",
+        "simulation": {
+          "spalte": 3,
+          "alt": "Jens Meyer",
+          "neu": "Jens Meyer-Kahl"
+        }
+      },
+      "loesung": {
+        "art": "aenderung",
+        "zellen": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            9,
+            3
+          ]
+        ]
+      },
+      "tipps": [
+        "Suche nach dem Ändern alle Zellen, in denen noch der alte Name steht – auch in Zellen mit mehreren Namen.",
+        "Wie viele Zellen hättest du von Hand anfassen müssen?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Jens Meyer steht im Ausschnitt in 6 Zellen. In Zeile 4 (Tjark Hinrichs) steckt er in der Kommaliste „Jens Meyer, Sven Albers“ – die Zelle wird leicht vergessen. Danach heißt derselbe Trainer in einer Zeile „Meyer-Kahl“, in einer anderen „Meyer“: **Änderungsanomalie**.\n\nSo erläuterst du sie (P10): Anomalieart + konkreter Datensatz + Folge – „Ändert sich Meyers Name, muss er in allen Zeilen geändert werden; bleibt Zeile 4 stehen, widerspricht sich die Liste.“"
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-04",
+      "titel": "Der letzte Judoka",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Timo Rieken ist das **einzige** Judo-Mitglied des TuS – auch in der ganzen Liste gibt es keine weitere Judo-Zeile. Führe den Auftrag im Simulator aus.\n\nWelche Anomalie entsteht? Wähle die Anomalieart und markiere die Zellen mit Informationen über die **Abteilung**, die nach dem Löschen nirgends mehr in der Liste stehen."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "MitgliederlisteRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Zeile"
+            },
+            {
+              "name": "Mitglied"
+            },
+            {
+              "name": "Abteilungen"
+            },
+            {
+              "name": "Trainer"
+            },
+            {
+              "name": "TrainerTelefon"
+            },
+            {
+              "name": "Halle"
+            }
+          ],
+          "zeilen": [
+            [
+              8,
+              "Hannes Kröger",
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182",
+              "Halle am Mühlenfeld"
+            ],
+            [
+              9,
+              "Okke Janßen",
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415",
+              "Sportplatz Weseraue"
+            ],
+            [
+              10,
+              "Mareike Lüders",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Tennisanlage Lindenhof"
+            ],
+            [
+              11,
+              "Bente Ahlers",
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142",
+              "Turnhalle Schulzentrum"
+            ],
+            [
+              12,
+              "Timo Rieken",
+              "Judo",
+              "Ole Wittkamp",
+              "0000-16180",
+              "Halle am Mühlenfeld"
+            ],
+            [
+              13,
+              "Ilka Brunssen",
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142",
+              "Turnhalle Schulzentrum"
+            ],
+            [
+              14,
+              "Jasper Eilers",
+              "Handball",
+              "Sven Albers",
+              "0000-17320",
+              "Halle am Mühlenfeld"
+            ],
+            [
+              15,
+              "Jasper Eilers",
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415",
+              "Sportplatz Weseraue"
+            ],
+            [
+              16,
+              "Rieke Gerken",
+              "Handball",
+              "Sven Albers",
+              "0000-17320",
+              "Halle Am Mühlenfeld"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT rowid AS Zeile, Mitglied, Abteilungen, Trainer, TrainerTelefon, Halle\nFROM MitgliederlisteRoh\nWHERE rowid BETWEEN 8 AND 16\nORDER BY rowid"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "anomalie",
+        "block": 1,
+        "auftrag": "**Timo Rieken** tritt aus dem Verein aus. Lösche seine Zeile.",
+        "operation": "loeschen",
+        "simulation": {
+          "zeilen": [
+            4
+          ]
+        }
+      },
+      "loesung": {
+        "art": "loeschung",
+        "zellen": [
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      },
+      "tipps": [
+        "Gewollt ist nur, Timo Rieken zu löschen. Was verschwindet ungewollt mit?",
+        "Die Halle am Mühlenfeld steht noch in anderen Zeilen – ihr Name geht nicht verloren."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Mit Zeile 12 verschwinden ungewollt die Abteilung **Judo**, ihr Trainer **Ole Wittkamp** und dessen Telefonnummer **0000-16180**: **Löschanomalie**. Auch die Information, dass Judo in der Halle am Mühlenfeld trainiert, ist weg – der Hallenname selbst steht aber noch in anderen Zeilen.\n\nUrsache: Mitglied, Abteilung und Trainer stehen in **einer** Tabelle. Gespeichert werden sollten sie getrennt."
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-05",
+      "titel": "Boule ohne Mitglieder",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Der TuS gründet eine neue Abteilung. Lege im Simulator die neue Zeile 63 an – so, wie die Liste es erlaubt.\n\nWelche Anomalie zeigt sich? Wähle die Anomalieart und markiere in der neuen Zeile die Zellen, die **leer bleiben müssten**, weil es dazu noch nichts einzutragen gibt."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "MitgliederlisteRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Zeile"
+            },
+            {
+              "name": "Mitglied"
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Abteilungen"
+            },
+            {
+              "name": "Trainer"
+            },
+            {
+              "name": "TrainerTelefon"
+            },
+            {
+              "name": "Beitragsgruppe"
+            },
+            {
+              "name": "Halle"
+            },
+            {
+              "name": "HallenAdresse"
+            }
+          ],
+          "zeilen": [
+            [
+              55,
+              "Enno Thaden",
+              2011,
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182",
+              "Jugend",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              56,
+              "Enno Thaden",
+              2011,
+              "Handball",
+              "Sven Albers",
+              "0000-17320",
+              "Jugend",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              57,
+              "Wilma Hagens",
+              2015,
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142",
+              "Kinder",
+              "Turnhalle Schulzentrum",
+              "Schulweg 5"
+            ],
+            [
+              58,
+              "Keno Bultmann",
+              1984,
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415",
+              "Erwachsene",
+              "Sportplatz Weseraue",
+              "Auenweg 2"
+            ],
+            [
+              59,
+              "Keno Bultmann",
+              1984,
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Erwachsene",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ],
+            [
+              60,
+              "Insa Riedemann",
+              1992,
+              "Handball",
+              "Sven Albers",
+              "0000-17320",
+              "Erwachsene",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              61,
+              "Insa Riedemann",
+              1992,
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142",
+              "Erwachsene",
+              "Turnhalle Schulzentrum",
+              "Schulweg 5"
+            ],
+            [
+              62,
+              "Momme Ehlers",
+              1970,
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182",
+              "Erwachsene",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT rowid AS Zeile, Mitglied, Geburtsjahr, Abteilungen, Trainer, TrainerTelefon, Beitragsgruppe, Halle, HallenAdresse\nFROM MitgliederlisteRoh\nWHERE rowid BETWEEN 55 AND 62\nORDER BY rowid"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "anomalie",
+        "block": 1,
+        "auftrag": "Neue Abteilung **Boule**, Trainerin **Gesa Thiele** (Telefon 0000-22360), Bouleplatz Weseraue, Auenweg 4. Mitglieder hat sie noch keine.",
+        "operation": "einfuegen",
+        "simulation": {
+          "werte": [
+            63,
+            null,
+            null,
+            "Boule",
+            "Gesa Thiele",
+            "0000-22360",
+            null,
+            "Bouleplatz Weseraue",
+            "Auenweg 4"
+          ]
+        }
+      },
+      "loesung": {
+        "art": "einfuegung",
+        "zellen": [
+          [
+            8,
+            1
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            6
+          ]
+        ]
+      },
+      "tipps": [
+        "Jede Zeile der Liste beschreibt ein Mitglied. Welches Mitglied steht in Zeile 63?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Die Abteilung Boule lässt sich nur eintragen, wenn Mitglied, Geburtsjahr und Beitragsgruppe leer bleiben – eine „Mitgliedszeile ohne Mitglied“: **Einfügeanomalie**. Ohne Mitglied kann die Liste die neue Abteilung eigentlich gar nicht speichern.\n\nIm bereinigten Archiv (Ermittlung 4.2) bekommt die Abteilung eine eigene Tabelle – dann geht das problemlos."
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-06",
+      "titel": "Mehr als ein Wert",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K14"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "In manchen Zellen der Liste stehen mehrere Werte, durch Komma getrennt. Das macht Auswertungen unzuverlässig."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "MitgliederlisteRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Zeile"
+            },
+            {
+              "name": "Mitglied"
+            },
+            {
+              "name": "Abteilungen"
+            },
+            {
+              "name": "Trainer"
+            },
+            {
+              "name": "TrainerTelefon"
+            },
+            {
+              "name": "Halle"
+            },
+            {
+              "name": "HallenAdresse"
+            }
+          ],
+          "zeilen": [
+            [
+              2,
+              "Lukas Behrens",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ],
+            [
+              4,
+              "Tjark Hinrichs",
+              "Fußball, Handball",
+              "Jens Meyer, Sven Albers",
+              "0000-31415, 0000-17320",
+              "Sportplatz Weseraue, Halle am Mühlenfeld",
+              "Auenweg 2, Mühlenweg 12"
+            ],
+            [
+              14,
+              "Jasper Eilers",
+              "Handball",
+              "Sven Albers",
+              "0000-17320",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              21,
+              "Svea Harms",
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              25,
+              "Nils Detmers",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ],
+            [
+              34,
+              "Malte Grüttner",
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            [
+              35,
+              "Lina Weerts",
+              "Fußball, Tennis",
+              "Jens Meyer, Jens Meyer",
+              "0000-31415, 0000-31415",
+              "Sportplatz Weseraue, Tennisanlage Lindenhof",
+              "Auenweg 2, Lindenallee 7"
+            ],
+            [
+              41,
+              "Frauke Martens",
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT rowid AS Zeile, Mitglied, Abteilungen, Trainer, TrainerTelefon, Halle, HallenAdresse\nFROM MitgliederlisteRoh\nWHERE rowid IN (2, 4, 14, 21, 25, 34, 35, 41)\nORDER BY rowid"
+          }
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "zellen",
+          "block": 1,
+          "mehrfach": true,
+          "frage": "a) Tippe **alle Zellen** an, die keinen atomaren Wert enthalten (mehr als einen Wert)."
+        },
+        {
+          "kind": "zellen",
+          "block": 1,
+          "mehrfach": false,
+          "frage": "b) Die Kassenwartin sucht die Tennis-Mitglieder mit `WHERE Abteilungen LIKE '%Tennis%'`. Tippe die Zelle der Spalte Abteilungen an, die diese Bedingung **fälschlich** mitfindet."
+        }
+      ],
+      "loesung": [
+        {
+          "zellen": [
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              6,
+              3
+            ],
+            [
+              6,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              6,
+              6
+            ]
+          ]
+        },
+        {
+          "zellen": [
+            [
+              3,
+              2
+            ]
+          ]
+        }
+      ],
+      "tipps": [
+        "Ein NULL ist kein „mehrfacher“ Wert – es steht einfach nichts da.",
+        "LIKE unterscheidet Groß- und Kleinschreibung bei Buchstaben ohne Umlaut nicht: Steckt „tennis“ auch in einem anderen Wort?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) Nicht atomar sind 10 Zellen in den Zeilen 4 und 35: Abteilungen, Trainer, Telefon, Halle und Adresse stehen dort als Kommaliste. Zeile 34 (passives Mitglied) ist leer (NULL), aber nicht mehrwertig.\n\nb) `LIKE '%Tennis%'` findet auch „Tischtennis“ (Zeile 21) – Svea Harms spielt gar kein Tennis. Umgekehrt findet `Abteilungen = 'Tennis'` die Zeile 35 („Fußball, Tennis“) nicht. Mit nicht-atomaren Werten ist keine der beiden Bedingungen zuverlässig (P6)."
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-07",
+      "titel": "12 oder 14 Euro?",
+      "stufe": 3,
+      "punkte": 0,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K10",
+        "DB-K08"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Zum 2026-01-01 stieg der Monatsbeitrag der Gruppe Erwachsene von 12,00 € auf 14,00 €. Seitdem ergibt Wiebkes Beitragsliste jeden Monat eine andere Summe. Hier ein Ausschnitt mit Erwachsenen-Zeilen:"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "MitgliederlisteRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Zeile"
+            },
+            {
+              "name": "Mitglied"
+            },
+            {
+              "name": "Abteilungen"
+            },
+            {
+              "name": "Beitragsgruppe"
+            },
+            {
+              "name": "Monatsbeitrag"
+            },
+            {
+              "name": "Eintritt"
+            }
+          ],
+          "zeilen": [
+            [
+              2,
+              "Lukas Behrens",
+              "Tennis",
+              "Erwachsene",
+              14,
+              "2008-09-01"
+            ],
+            [
+              3,
+              "Merle Falkenrath",
+              "Tischtennis",
+              "Erwachsene",
+              14,
+              "2015-02-01"
+            ],
+            [
+              5,
+              "Wiebke Sandmann",
+              "Tennis",
+              "Erwachsene",
+              14,
+              "2010-01-01"
+            ],
+            [
+              6,
+              "Wiebke Sandmann",
+              "Turnen",
+              "Erwachsene",
+              12,
+              "2010-01-01"
+            ],
+            [
+              10,
+              "Mareike Lüders",
+              "Tennis",
+              "Erwachsene",
+              12,
+              "2005-03-01"
+            ],
+            [
+              25,
+              "Nils Detmers",
+              "Tennis",
+              "Erwachsene",
+              12,
+              "2011-11-01"
+            ],
+            [
+              33,
+              "Anja Röttger",
+              "Tennis",
+              "Erwachsene",
+              14,
+              "2013-04-01"
+            ],
+            [
+              46,
+              "Kerrin Bösch",
+              "Tischtenis",
+              "Erwachsene",
+              14,
+              "2019-01-01"
+            ],
+            [
+              49,
+              "Nora Falter",
+              "Tischtennis",
+              "Erwachsene",
+              0,
+              "2026-04-01"
+            ],
+            [
+              52,
+              "Gesche Lammers",
+              "Tischtennis",
+              "Erwachsene",
+              14,
+              "2018-05-01"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT rowid AS Zeile, Mitglied, Abteilungen, Beitragsgruppe, Monatsbeitrag, Eintritt\nFROM MitgliederlisteRoh\nWHERE rowid IN (2, 3, 5, 6, 10, 25, 33, 46, 49, 52)\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Erläutere**, wie die widersprüchlichen Monatsbeiträge entstanden sind und warum ausgerechnet der Eintrag „Nora Falter, 0,00 €“ darin nicht auffiel. Beziehe dich auf konkrete Zeilen. Schreib deine Antwort zuerst auf – sie bleibt auf deinem Gerät –, dann deck die Kernpunkte auf und hake ab."
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "nennt die **Ursache Redundanz**: Der Monatsbeitrag hängt nur von der Beitragsgruppe ab, steht aber in **jeder Zeile** (in jeder Erwachsenen-Zeile erneut)",
+          "erläutert die **Änderungsanomalie** am Datensatz: Bei der Erhöhung hätte der Betrag in allen Erwachsenen-Zeilen geändert werden müssen; in einigen blieb 12,00 € stehen (z. B. Zeile 10 Mareike Lüders, Zeile 25 Nils Detmers)",
+          "nennt den Widerspruch bei **derselben Person**: Wiebke Sandmann zahlt in Zeile 5 (Tennis) 14,00 €, in Zeile 6 (Turnen) 12,00 €",
+          "erklärt, warum 0,00 € (Zeile 49, Nora Falter) nicht auffiel: Weil die Liste ohnehin zwei verschiedene Beträge für dieselbe Gruppe enthielt, wirkte ein weiterer abweichender Wert wie ein weiterer Pflegefehler",
+          "zieht die Folgerung: Speichert man den Beitrag **nur einmal** je Beitragsgruppe, kann kein Widerspruch (und keine versteckte 0,00 €) entstehen"
+        ]
+      },
+      "tipps": [
+        "Baue deine Erläuterung aus drei Bausteinen: Anomalieart – konkreter Datensatz – Folge."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Im Abitur reicht „Das ist eine Änderungsanomalie“ nicht (P10). Erläutern heißt: Ursache (Redundanz: Beitrag in jeder Zeile) – Datensatz (Zeile 10, 25, Wiebke Sandmann in Zeile 5/6) – Folge (die Liste widerspricht sich; ein manipulierter Wert geht unter). Das Phantom hat genau diese Schwachstelle ausgenutzt."
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-08",
+      "titel": "Wie viele spielen Tennis?",
+      "stufe": 3,
+      "punkte": 0,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K14"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Kassenwartin will wissen: **Wie viele Mitglieder hat die Abteilung Tennis?** Juri probiert zwei Abfragen auf der Rohliste:"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT COUNT(*) AS Tennis\nFROM MitgliederlisteRoh\nWHERE Abteilungen = 'Tennis'"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT COUNT(*) AS Tennis\nFROM MitgliederlisteRoh\nWHERE Abteilungen LIKE '%Tennis%'"
+        },
+        {
+          "t": "text",
+          "md": "Die erste liefert 9, die zweite 23. **Erläutere**, warum die Frage mit der Rohliste per SQL nicht zuverlässig beantwortet werden kann, und **skizziere** eine bessere Speicherung. Probier die Abfragen gern in der Konsole aus. Deine Antwort bleibt auf deinem Gerät."
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "erkennt die **nicht-atomaren Werte**: In Zellen wie „Fußball, Tennis“ (Zeile 35, Lina Weerts) stehen mehrere Abteilungen",
+          "`= 'Tennis'` **übersieht** solche Zellen; `LIKE '%Tennis%'` findet sie, aber auch **„Tischtennis“** – beide Zahlen sind falsch",
+          "nennt weitere Störungen: Tippfehler-Varianten (z. B. „Tischtenis“), und eine Person mit mehreren Zeilen wird je Zeile gezählt",
+          "skizziert eine bessere Speicherung: **je Zelle nur ein Wert**, z. B. eigene Tabelle `Abteilung` und eine Tabelle `Mitgliedschaft` mit einer Zeile je Mitglied und Abteilung",
+          "nennt, wie dann gezählt wird: Verbund von Mitgliedschaft und Abteilung, `WHERE Abteilung.Name = 'Tennis'`, `COUNT(*)` – liefert die richtige Zahl"
+        ]
+      },
+      "tipps": [
+        "Schau dir die Zeilen an, die die zweite Abfrage zusätzlich findet."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Im bereinigten Archiv hat Tennis 10 Mitglieder. Die Rohliste liefert je nach Bedingung 9 oder 23, weil Zellen mehrere Werte enthalten und LIKE auch Teilwörter findet. Erst atomare Werte (eine Zeile je Mitglied und Abteilung) machen WHERE und COUNT zuverlässig. Eine Antwort ohne Bezug auf konkrete Zeilen wäre im Abitur zu wenig (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A4-E1-CC",
+      "titel": "Cold Case: Tippfehler im Archiv",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K07",
+        "DB-K19"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: Die Halle am Mühlenfeld heißt ab sofort „Mühlenhalle“. Bevor jemand die Liste ändert, willst du wissen, in welchen Schreibweisen die Halle überhaupt vorkommt."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "datenbank": "tus",
+          "varianten": [],
+          "abimodus": "hinweis",
+          "frage": "a) Gib alle **verschiedenen** Kombinationen aus `Halle` und `HallenAdresse` der Rohliste aus, in denen die Halle am Mühlenfeld vorkommt – auch in Kommalisten und in abweichender Schreibweise."
+        },
+        {
+          "kind": "kernpunkte",
+          "frage": "b) Was fällt dir auf? Welche Anomalie haben die Schreibweisen verursacht bzw. werden sie bei der Umbenennung verursachen?",
+          "kernpunkte": [
+            "findet die Varianten: „Halle Am Mühlenfeld“ (Großschreibung), die Adresse „Mühlenw. 12“ und die Halle in den Kommalisten zweier Mitglieder",
+            "erklärt die Ursache: Hallenname und Adresse sind **redundant** in vielen Zeilen gespeichert und wurden von Hand immer wieder neu getippt",
+            "erläutert die **Änderungsanomalie**: Bei der Umbenennung in „Mühlenhalle“ muss jede dieser Zeilen gefunden werden; eine Suche mit `= 'Halle am Mühlenfeld'` übersieht Varianten und Kommalisten – danach hat dieselbe Halle zwei Namen"
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "SELECT DISTINCT Halle, HallenAdresse\nFROM MitgliederlisteRoh\nWHERE Halle LIKE '%Mühlenfeld%'"
+        },
+        null
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Mit `LIKE '%Mühlenfeld%'` und DISTINCT ergeben sich 5 Kombinationen. `LIKE '%Halle%'` wäre zu grob: Es findet auch die „Turnhalle Schulzentrum“ (P6). Jede Schreibvariante ist eine Stelle, an der eine Änderung vergessen werden kann – die Redundanz macht Tippfehler erst gefährlich."
+        }
+      ],
+      "tipps": [
+        "Mit `%` vor und nach einem Wortteil findest du ihn auch mitten in einer Kommaliste."
+      ]
+    },
+    {
+      "id": "A4-E2-01",
+      "titel": "Drei Kriterien",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Im neuen Archiv bekommt jedes Mitglied eine Zeile in der Tabelle `Mitglied`. Edda lässt dich vier Vorschläge für den Primärschlüssel prüfen – für **alle möglichen** Mitglieder, nicht nur für die im Ausschnitt."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Mitglied (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "MitgliedNr"
+            },
+            {
+              "name": "Vorname"
+            },
+            {
+              "name": "Nachname"
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Beitragsgruppe"
+            },
+            {
+              "name": "Eintritt"
+            }
+          ],
+          "zeilen": [
+            [
+              1,
+              "Lukas",
+              "Behrens",
+              2011,
+              "Jugend",
+              "2019-03-01"
+            ],
+            [
+              2,
+              "Lukas",
+              "Behrens",
+              1979,
+              "Erwachsene",
+              "2008-09-01"
+            ],
+            [
+              3,
+              "Merle",
+              "Falkenrath",
+              1988,
+              "Erwachsene",
+              "2015-02-01"
+            ],
+            [
+              41,
+              "Hilke",
+              "Schoon",
+              1955,
+              "Ermäßigt",
+              "1984-04-01"
+            ],
+            [
+              42,
+              "Nora",
+              "Falter",
+              null,
+              "Erwachsene",
+              "2026-04-01"
+            ],
+            [
+              43,
+              "Jannik",
+              "Reents",
+              2005,
+              "Erwachsene",
+              "2023-10-01"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT MitgliedNr, Vorname, Nachname, Geburtsjahr, Beitragsgruppe, Eintritt\nFROM Mitglied\nWHERE MitgliedNr IN (1, 2, 3, 41, 42, 43)\nORDER BY MitgliedNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Beurteile jeden Vorschlag: Ist er geeignet? Wenn nicht – welche(s) Kriterium/Kriterien verletzt er? (Mehrere Antworten möglich.)"
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": true,
+          "frage": "a) `MitgliedNr` (vom Verein fortlaufend vergeben)",
+          "optionen": [
+            {
+              "id": "ok",
+              "md": "geeignet"
+            },
+            {
+              "id": "eindeutig",
+              "md": "verletzt: **eindeutig**"
+            },
+            {
+              "id": "null",
+              "md": "verletzt: **nie NULL**"
+            },
+            {
+              "id": "minimal",
+              "md": "verletzt: **minimal**"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": true,
+          "frage": "b) `Nachname`",
+          "optionen": [
+            {
+              "id": "ok",
+              "md": "geeignet"
+            },
+            {
+              "id": "eindeutig",
+              "md": "verletzt: **eindeutig**"
+            },
+            {
+              "id": "null",
+              "md": "verletzt: **nie NULL**"
+            },
+            {
+              "id": "minimal",
+              "md": "verletzt: **minimal**"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": true,
+          "frage": "c) `(MitgliedNr, Nachname)`",
+          "optionen": [
+            {
+              "id": "ok",
+              "md": "geeignet"
+            },
+            {
+              "id": "eindeutig",
+              "md": "verletzt: **eindeutig**"
+            },
+            {
+              "id": "null",
+              "md": "verletzt: **nie NULL**"
+            },
+            {
+              "id": "minimal",
+              "md": "verletzt: **minimal**"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": true,
+          "frage": "d) `(Vorname, Nachname, Geburtsjahr)`",
+          "optionen": [
+            {
+              "id": "ok",
+              "md": "geeignet"
+            },
+            {
+              "id": "eindeutig",
+              "md": "verletzt: **eindeutig**"
+            },
+            {
+              "id": "null",
+              "md": "verletzt: **nie NULL**"
+            },
+            {
+              "id": "minimal",
+              "md": "verletzt: **minimal**"
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "ok"
+          ]
+        },
+        {
+          "richtig": [
+            "eindeutig"
+          ]
+        },
+        {
+          "richtig": [
+            "minimal"
+          ]
+        },
+        {
+          "richtig": [
+            "eindeutig",
+            "null"
+          ]
+        }
+      ],
+      "tipps": [
+        "Schlüssel-Check: eindeutig für alle möglichen Daten · nie NULL · minimal (kein Attribut weglassbar).",
+        "Schau dir die Zeilen 1, 2 und 42 genau an."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) Die künstliche **MitgliedNr** ist eindeutig, nie NULL und minimal – geeignet. b) **Nachname** ist nicht eindeutig: zwei Lukas Behrens. c) **(MitgliedNr, Nachname)** ist zwar eindeutig, aber nicht minimal – MitgliedNr allein reicht. d) **(Vorname, Nachname, Geburtsjahr)** ist fachlich nicht garantiert eindeutig (zwei Personen gleichen Namens und Jahrgangs sind möglich) und kann NULL enthalten: Bei Nora Falter ist das Geburtsjahr leer (P8)."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-02",
+      "titel": "Die Ausschnitt-Falle",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Juri schaut sich acht Mitglieder an: Alle Nachnamen sind verschieden. „Dann nehmen wir doch `Nachname` als Primärschlüssel!“ Edda reicht ihm eine Nachlieferung."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Mitglied (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Vorname"
+            },
+            {
+              "name": "Nachname"
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Beitragsgruppe"
+            }
+          ],
+          "zeilen": [
+            [
+              "Lukas",
+              "Behrens",
+              1979,
+              "Erwachsene"
+            ],
+            [
+              "Merle",
+              "Falkenrath",
+              1988,
+              "Erwachsene"
+            ],
+            [
+              "Tjark",
+              "Hinrichs",
+              1990,
+              "Erwachsene"
+            ],
+            [
+              "Wiebke",
+              "Sandmann",
+              1985,
+              "Erwachsene"
+            ],
+            [
+              "Fenja",
+              "Rademacher",
+              2014,
+              "Kinder"
+            ],
+            [
+              "Hannes",
+              "Kröger",
+              1958,
+              "Ermäßigt"
+            ],
+            [
+              "Okke",
+              "Janßen",
+              2012,
+              "Jugend"
+            ],
+            [
+              "Mareike",
+              "Lüders",
+              1976,
+              "Erwachsene"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT Vorname, Nachname, Geburtsjahr, Beitragsgruppe\nFROM Mitglied\nWHERE MitgliedNr BETWEEN 2 AND 9\nORDER BY MitgliedNr"
+          }
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Nachlieferung",
+          "kopf": [
+            {
+              "name": "Vorname"
+            },
+            {
+              "name": "Nachname"
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Beitragsgruppe"
+            }
+          ],
+          "zeilen": [
+            [
+              "Lukas",
+              "Behrens",
+              2011,
+              "Jugend"
+            ],
+            [
+              "Bente",
+              "Ahlers",
+              2013,
+              "Kinder"
+            ],
+            [
+              "Nora",
+              "Falter",
+              null,
+              "Erwachsene"
+            ],
+            [
+              "Momme",
+              "Ehlers",
+              1970,
+              "Erwachsene"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT Vorname, Nachname, Geburtsjahr, Beitragsgruppe\nFROM Mitglied\nWHERE MitgliedNr IN (1, 10, 42, 50)\nORDER BY MitgliedNr"
+          }
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "zellen",
+          "block": 2,
+          "mehrfach": true,
+          "frage": "a) Tippe in der **Nachlieferung** alle Zellen an, die beweisen, dass `Nachname` nicht eindeutig ist."
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) Was kann ein Datenausschnitt über die Eindeutigkeit eines Attributs zeigen?",
+          "optionen": [
+            {
+              "id": "a",
+              "md": "Er kann Eindeutigkeit nur **widerlegen** (ein doppelter Wert genügt), nie beweisen – künftige Daten können jederzeit einen doppelten Wert bringen."
+            },
+            {
+              "id": "b",
+              "md": "Er beweist Eindeutigkeit, wenn er groß genug ist (mindestens acht Zeilen)."
+            },
+            {
+              "id": "c",
+              "md": "Er beweist Eindeutigkeit, wenn kein Wert NULL ist."
+            },
+            {
+              "id": "d",
+              "md": "Er zeigt gar nichts – auch ein doppelter Wert im Ausschnitt widerlegt die Eindeutigkeit nicht."
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "zellen": [
+            [
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "richtig": [
+            "a"
+          ]
+        }
+      ],
+      "tipps": [
+        "Vergleiche die Nachnamen der Nachlieferung mit denen im Ausschnitt."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "In der Nachlieferung steht ein weiterer **Behrens** – Lukas Behrens (2011) und Lukas Behrens (1979) sind zwei verschiedene Mitglieder. Ein Ausschnitt kann Eindeutigkeit nur widerlegen, nie beweisen. Ob ein Attribut Schlüssel sein kann, entscheidet die Bedeutung („Kann es zwei Mitglieder mit gleichem Nachnamen geben?“ – ja), nicht der Blick auf die Daten (P8). Deshalb vergeben Vereine Mitgliedsnummern."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-03",
+      "titel": "Wo droht Ärger?",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K09",
+        "DB-K07"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ein Vorstandsmitglied schlägt vor, Abteilungen und Hallen in **einer** Tabelle zu führen. Trainer und Halle werden darin über ihren (eindeutigen) Namen angegeben."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "AbteilungHalle",
+          "kopf": [
+            {
+              "name": "AbteilungNr",
+              "pk": true
+            },
+            {
+              "name": "Abteilung"
+            },
+            {
+              "name": "Trainer"
+            },
+            {
+              "name": "Halle"
+            },
+            {
+              "name": "HallenAdresse"
+            }
+          ],
+          "zeilen": [
+            [
+              1,
+              "Fußball",
+              "Jens Meyer",
+              "Sportplatz Weseraue",
+              "Auenweg 2"
+            ],
+            [
+              2,
+              "Tischtennis",
+              "Birte Haschke",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              3,
+              "Tennis",
+              "Jens Meyer",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ],
+            [
+              4,
+              "Judo",
+              "Ole Wittkamp",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              5,
+              "Turnen",
+              "Anke Rosendahl",
+              "Turnhalle Schulzentrum",
+              "Schulweg 5"
+            ],
+            [
+              6,
+              "Handball",
+              "Sven Albers",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              7,
+              "Boule",
+              "Gesa Thiele",
+              "Bouleplatz Weseraue",
+              "Auenweg 4"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT Abteilung.AbteilungNr, Abteilung.Name AS Abteilung, Trainer.Name AS Trainer, Halle.Name AS Halle, Halle.Adresse AS HallenAdresse\nFROM Abteilung, Trainer, Halle\nWHERE Abteilung.TrainerNr = Trainer.TrainerNr\n  AND Abteilung.HalleNr = Halle.HalleNr\nORDER BY Abteilung.AbteilungNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Untersuche** die Tabelle: Tippe alle Zellen an, an denen eine **Änderungsanomalie** auftreten kann – Zellen, deren Information mehrfach gespeichert ist und bei einer Änderung an mehreren Stellen angepasst werden müsste."
+        }
+      ],
+      "interaktion": {
+        "kind": "zellen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zellen": [
+          [
+            1,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      },
+      "tipps": [
+        "Wovon hängt die HallenAdresse ab – von der Abteilung oder von der Halle?",
+        "Ein Name, der eine Halle oder einen Trainer bezeichnet, ist wie ein Verweis – gesucht sind die Angaben, die zu diesem Namen gehören."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Die Adresse hängt von der Halle ab, nicht von der Abteilung. Drei Abteilungen trainieren in der Halle am Mühlenfeld, also steht „Mühlenweg 12“ dreimal da (3 Zellen). Zieht die Halle um und wird eine Zeile vergessen, hat dieselbe Halle zwei Adressen: Änderungsanomalie.\n\nDie Namen in Trainer und Halle bezeichnen nur, *welcher* Trainer bzw. *welche* Halle gemeint ist (wie ein Fremdschlüssel). Ihre Wiederholung ist gewollt."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-04",
+      "titel": "Wieder eingetreten",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Im neuen Archiv steht, wer seit wann in welcher Abteilung ist. Der Verein will künftig die **ganze Geschichte** behalten: Wer austritt, bekommt ein Datum in `Bis`; tritt die Person später wieder in dieselbe Abteilung ein, kommt eine **neue Zeile** hinzu (`Bis` bleibt bis zum Austritt leer)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Mitgliedschaft",
+              "attribute": [
+                {
+                  "name": "MitgliedNr",
+                  "pk": true,
+                  "fk": "Mitglied"
+                },
+                {
+                  "name": "AbteilungNr",
+                  "pk": true,
+                  "fk": "Abteilung"
+                },
+                {
+                  "name": "Seit"
+                },
+                {
+                  "name": "Bis"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "a) Kann `(MitgliedNr, AbteilungNr)` Primärschlüssel bleiben?",
+          "optionen": [
+            {
+              "id": "nein",
+              "md": "Nein: Nach einem Wiedereintritt gibt es zwei Zeilen mit derselben MitgliedNr und AbteilungNr – der Schlüssel ist nicht mehr eindeutig."
+            },
+            {
+              "id": "ja",
+              "md": "Ja: MitgliedNr und AbteilungNr sind jeweils Primärschlüssel ihrer Tabellen, also ist die Kombination immer eindeutig."
+            },
+            {
+              "id": "jaNull",
+              "md": "Ja, solange `Bis` nie NULL ist."
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": true,
+          "frage": "b) Welche Primärschlüssel sind für die neue Mitgliedschaft geeignet? (Mehrere Antworten möglich.)",
+          "optionen": [
+            {
+              "id": "seit",
+              "md": "`(MitgliedNr, AbteilungNr, Seit)`"
+            },
+            {
+              "id": "kuenstlich",
+              "md": "ein künstlicher Schlüssel `MitgliedschaftNr` (MitgliedNr und AbteilungNr bleiben Fremdschlüssel)"
+            },
+            {
+              "id": "bis",
+              "md": "`(MitgliedNr, AbteilungNr, Bis)`"
+            },
+            {
+              "id": "alle",
+              "md": "`(MitgliedNr, AbteilungNr, Seit, Bis)`"
+            },
+            {
+              "id": "mitglied",
+              "md": "`MitgliedNr`"
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "nein"
+          ]
+        },
+        {
+          "richtig": [
+            "seit",
+            "kuenstlich"
+          ]
+        }
+      ],
+      "tipps": [
+        "Spiel es durch: Mika R. tritt 2020 in Tennis ein, 2022 aus und 2025 wieder ein. Wie viele Zeilen hat sie dann?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Durch Wiedereintritte kommt dieselbe Kombination (MitgliedNr, AbteilungNr) **mehrfach** vor (P8). Geeignet sind `(MitgliedNr, AbteilungNr, Seit)` – an einem Tag beginnt höchstens eine Mitgliedschaft – oder ein künstlicher Schlüssel. `Bis` ist bei laufenden Mitgliedschaften NULL und taugt nicht als Schlüsselteil; `(…, Seit, Bis)` ist nicht minimal; `MitgliedNr` allein ist nicht eindeutig."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-05",
+      "titel": "Keine Anomalie möglich?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K09"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Drei Tabellenentwürfe für das neue Archiv liegen auf dem Tisch:"
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "MitgliedBeitrag",
+              "attribute": [
+                {
+                  "name": "MitgliedNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Beitragsgruppe"
+                },
+                {
+                  "name": "Monatsbeitrag"
+                }
+              ]
+            },
+            {
+              "name": "AbteilungHalle",
+              "attribute": [
+                {
+                  "name": "AbteilungNr",
+                  "pk": true
+                },
+                {
+                  "name": "Abteilung"
+                },
+                {
+                  "name": "Trainer"
+                },
+                {
+                  "name": "Halle"
+                },
+                {
+                  "name": "HallenAdresse"
+                }
+              ]
+            },
+            {
+              "name": "Halle",
+              "attribute": [
+                {
+                  "name": "HalleNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Adresse"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "a) In welcher Tabelle ist **keine** Anomalie möglich?",
+          "optionen": [
+            {
+              "id": "mb",
+              "md": "`MitgliedBeitrag`"
+            },
+            {
+              "id": "ah",
+              "md": "`AbteilungHalle`"
+            },
+            {
+              "id": "h",
+              "md": "`Halle`"
+            },
+            {
+              "id": "keine",
+              "md": "in keiner der drei – Anomalien sind immer möglich"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) Welche Begründung trifft zu?",
+          "optionen": [
+            {
+              "id": "abh",
+              "md": "Jedes Nicht-Schlüssel-Attribut hängt nur vom Primärschlüssel ab; keine Information steht mehrfach."
+            },
+            {
+              "id": "klein",
+              "md": "Die Tabelle hat die wenigsten Attribute."
+            },
+            {
+              "id": "kuenstlich",
+              "md": "Die Tabelle hat einen künstlichen Primärschlüssel."
+            },
+            {
+              "id": "daten",
+              "md": "In den bisherigen Daten kommt keine Adresse doppelt vor."
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "h"
+          ]
+        },
+        {
+          "richtig": [
+            "abh"
+          ]
+        }
+      ],
+      "tipps": [
+        "Suche in jeder Tabelle ein Nicht-Schlüssel-Attribut, das von einem anderen Nicht-Schlüssel-Attribut abhängt."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "In `MitgliedBeitrag` hängt Monatsbeitrag von Beitragsgruppe ab, in `AbteilungHalle` HallenAdresse von Halle – dort steht Information mehrfach. In `Halle` hängen Name und Adresse nur von HalleNr ab: Jede Halle steht genau einmal da, **keine Anomalie möglich**. Ein künstlicher Schlüssel allein schützt nicht (die beiden anderen haben auch einen), und „in den Daten nichts doppelt“ ist die Ausschnitt-Falle (P8). Im Abitur ist „keine Anomalie möglich“ eine zulässige – und begründungspflichtige – Antwort."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-06",
+      "titel": "Zerlegungs-Puzzle: Abteilungen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "niveau": "eA",
+      "kompetenzen": [
+        "DB-K11"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Erster Schritt der Neuordnung: die Abteilungsdaten aus der Rohliste. Jede Abteilung hat genau **einen** Trainer und trainiert in genau **einer** Halle; ein Trainer kann mehrere Abteilungen leiten, in einer Halle können mehrere Abteilungen trainieren. Jeder Trainer hat eine Telefonnummer, jede Halle eine Adresse. Trainer und Hallen sind über ihren Namen eindeutig."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Abteilungsliste (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Abteilung"
+            },
+            {
+              "name": "Trainer"
+            },
+            {
+              "name": "TrainerTelefon"
+            },
+            {
+              "name": "Halle"
+            },
+            {
+              "name": "HallenAdresse"
+            }
+          ],
+          "zeilen": [
+            [
+              "Fußball",
+              "Jens Meyer",
+              "0000-31415",
+              "Sportplatz Weseraue",
+              "Auenweg 2"
+            ],
+            [
+              "Tischtennis",
+              "Birte Haschke",
+              "0000-27182",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              "Tennis",
+              "Jens Meyer",
+              "0000-31415",
+              "Tennisanlage Lindenhof",
+              "Lindenallee 7"
+            ],
+            [
+              "Judo",
+              "Ole Wittkamp",
+              "0000-16180",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              "Turnen",
+              "Anke Rosendahl",
+              "0000-14142",
+              "Turnhalle Schulzentrum",
+              "Schulweg 5"
+            ],
+            [
+              "Handball",
+              "Sven Albers",
+              "0000-17320",
+              "Halle am Mühlenfeld",
+              "Mühlenweg 12"
+            ],
+            [
+              "Boule",
+              "Gesa Thiele",
+              "0000-22360",
+              "Bouleplatz Weseraue",
+              "Auenweg 4"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "tus",
+            "sql": "SELECT Abteilung.Name AS Abteilung, Trainer.Name AS Trainer, Trainer.Telefon AS TrainerTelefon, Halle.Name AS Halle, Halle.Adresse AS HallenAdresse\nFROM Abteilung, Trainer, Halle\nWHERE Abteilung.TrainerNr = Trainer.TrainerNr\n  AND Abteilung.HalleNr = Halle.HalleNr\nORDER BY Abteilung.AbteilungNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Verteile die Spalten so auf neue Tabellen, dass **nichts verloren geht** (verlustfrei) und **nichts doppelt** gespeichert wird (redundanzfrei). Setze in jeder Tabelle den Schlüssel."
+        }
+      ],
+      "interaktion": {
+        "kind": "zerlegen",
+        "attribute": [
+          "Abteilung",
+          "Trainer",
+          "TrainerTelefon",
+          "Halle",
+          "HallenAdresse"
+        ],
+        "tabellenMax": 5
+      },
+      "loesung": {
+        "fa": [
+          {
+            "links": [
+              "Abteilung"
+            ],
+            "rechts": [
+              "Trainer",
+              "Halle"
+            ]
+          },
+          {
+            "links": [
+              "Trainer"
+            ],
+            "rechts": [
+              "TrainerTelefon"
+            ]
+          },
+          {
+            "links": [
+              "Halle"
+            ],
+            "rechts": [
+              "HallenAdresse"
+            ]
+          }
+        ],
+        "schluessel": [
+          "Abteilung"
+        ],
+        "muster": [
+          {
+            "tabellen": [
+              {
+                "attribute": [
+                  "Abteilung",
+                  "Trainer",
+                  "Halle"
+                ],
+                "schluessel": [
+                  "Abteilung"
+                ]
+              },
+              {
+                "attribute": [
+                  "Trainer",
+                  "TrainerTelefon"
+                ],
+                "schluessel": [
+                  "Trainer"
+                ]
+              },
+              {
+                "attribute": [
+                  "Halle",
+                  "HallenAdresse"
+                ],
+                "schluessel": [
+                  "Halle"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "tipps": [
+        "Wovon hängt das Telefon ab – von der Abteilung oder vom Trainer? Und die Adresse?",
+        "Damit nichts verloren geht, muss die Abteilungstabelle noch wissen, welcher Trainer und welche Halle dazugehört."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Telefon hängt vom Trainer ab, die Adresse von der Halle – nicht von der Abteilung. Also: Abteilung(**Abteilung**, ↑Trainer, ↑Halle), Trainer(**Trainer**, TrainerTelefon), Halle(**Halle**, HallenAdresse). Trainer und Halle bleiben in der Abteilungstabelle als Fremdschlüssel stehen, sonst wäre die Zerlegung nicht verlustfrei. Jens Meyer steht jetzt nur noch einmal mit seiner Nummer da."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-07",
+      "titel": "Das neue Archiv",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Relationales Modell",
+      "niveau": "eA",
+      "kompetenzen": [
+        "DB-K11",
+        "DB-K04",
+        "DB-K03"
+      ],
+      "fallen": [
+        "P7"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Jetzt baust du das ganze Archiv. Ausgangspunkt ist die Rohliste:"
+        },
+        {
+          "t": "code",
+          "code": "MitgliederlisteRoh(Mitglied, Geburtsjahr, Abteilungen, Trainer, TrainerTelefon, Beitragsgruppe,\n                   Monatsbeitrag, Halle, HallenAdresse, Eintritt)",
+          "nummern": false
+        },
+        {
+          "t": "text",
+          "md": "Lege in der Werkbank ein verlustfreies, redundanzfreies Schema mit **sechs Relationen** an: `Mitglied`, `Beitragsgruppe`, `Abteilung`, `Trainer`, `Halle` und eine Relation für die Mitgliedschaft eines Mitglieds in einer Abteilung.\n\n- Der Name eines Mitglieds wird in `Vorname` und `Nachname` geteilt; Mitglieder, Abteilungen, Trainer und Hallen bekommen die künstlichen Schlüssel `MitgliedNr`, `AbteilungNr`, `TrainerNr`, `HalleNr`.\n- Eine Beitragsgruppe wird über ihre Bezeichnung `Gruppe` identifiziert; Abteilung, Trainer und Halle haben je einen `Name`, Trainer ein `Telefon`, Hallen eine `Adresse`.\n- Seit wann jemand in einer Abteilung ist, steht in `Seit`.\n\nMarkiere Primärschlüssel und Fremdschlüssel (mit Zielrelation). Ein Fremdschlüssel darf anders heißen als der Schlüssel, auf den er verweist."
+        }
+      ],
+      "interaktion": {
+        "kind": "schema",
+        "modus": "frei"
+      },
+      "loesung": {
+        "muster": [
+          [
+            {
+              "name": "Mitglied",
+              "attribute": [
+                {
+                  "name": "MitgliedNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Geburtsjahr"
+                },
+                {
+                  "name": "Beitragsgruppe",
+                  "fk": "Beitragsgruppe"
+                },
+                {
+                  "name": "Eintritt"
+                }
+              ]
+            },
+            {
+              "name": "Beitragsgruppe",
+              "attribute": [
+                {
+                  "name": "Gruppe",
+                  "pk": true
+                },
+                {
+                  "name": "Monatsbeitrag"
+                }
+              ]
+            },
+            {
+              "name": "Abteilung",
+              "attribute": [
+                {
+                  "name": "AbteilungNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "TrainerNr",
+                  "fk": "Trainer"
+                },
+                {
+                  "name": "HalleNr",
+                  "fk": "Halle"
+                }
+              ]
+            },
+            {
+              "name": "Trainer",
+              "attribute": [
+                {
+                  "name": "TrainerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Halle",
+              "attribute": [
+                {
+                  "name": "HalleNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Adresse"
+                }
+              ]
+            },
+            {
+              "name": "Mitgliedschaft",
+              "attribute": [
+                {
+                  "name": "MitgliedNr",
+                  "pk": true,
+                  "fk": "Mitglied"
+                },
+                {
+                  "name": "AbteilungNr",
+                  "pk": true,
+                  "fk": "Abteilung"
+                },
+                {
+                  "name": "Seit"
+                }
+              ]
+            }
+          ]
+        ],
+        "synonyme": {
+          "Mitgliedschaft": [
+            "istMitgliedIn",
+            "MitgliedAbteilung",
+            "AbteilungMitglied",
+            "Zugehoerigkeit",
+            "Abteilungsmitgliedschaft",
+            "Teilnahme"
+          ],
+          "Beitragsgruppe": [
+            "Beitrag",
+            "Beitragsgruppen",
+            "Beitragsordnung"
+          ],
+          "Halle": [
+            "Sportstaette",
+            "Trainingsort"
+          ],
+          "Gruppe": [
+            "Gruppenname",
+            "GruppeName"
+          ],
+          "Telefon": [
+            "TrainerTelefon",
+            "Telefonnummer",
+            "Tel"
+          ],
+          "Adresse": [
+            "HallenAdresse",
+            "Anschrift"
+          ],
+          "Name": [
+            "Bezeichnung",
+            "Abteilungsname",
+            "Trainername",
+            "Hallenname"
+          ],
+          "Seit": [
+            "Beginn",
+            "SeitDatum",
+            "Eintrittsdatum"
+          ],
+          "Monatsbeitrag": [
+            "Beitragshoehe",
+            "BeitragProMonat"
+          ]
+        }
+      },
+      "tipps": [
+        "Ein Mitglied kann in mehreren Abteilungen sein, eine Abteilung hat viele Mitglieder – dafür braucht es eine eigene Relation mit zusammengesetztem Schlüssel.",
+        "Wo steht der Monatsbeitrag, damit er nur einmal je Gruppe gespeichert ist – und wie findet ein Mitglied „seinen“ Beitrag?"
+      ],
+      "erklaerung": [
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Mitglied",
+              "attribute": [
+                {
+                  "name": "MitgliedNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Geburtsjahr"
+                },
+                {
+                  "name": "Beitragsgruppe",
+                  "fk": "Beitragsgruppe"
+                },
+                {
+                  "name": "Eintritt"
+                }
+              ]
+            },
+            {
+              "name": "Beitragsgruppe",
+              "attribute": [
+                {
+                  "name": "Gruppe",
+                  "pk": true
+                },
+                {
+                  "name": "Monatsbeitrag"
+                }
+              ]
+            },
+            {
+              "name": "Abteilung",
+              "attribute": [
+                {
+                  "name": "AbteilungNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "TrainerNr",
+                  "fk": "Trainer"
+                },
+                {
+                  "name": "HalleNr",
+                  "fk": "Halle"
+                }
+              ]
+            },
+            {
+              "name": "Trainer",
+              "attribute": [
+                {
+                  "name": "TrainerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Halle",
+              "attribute": [
+                {
+                  "name": "HalleNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Adresse"
+                }
+              ]
+            },
+            {
+              "name": "Mitgliedschaft",
+              "attribute": [
+                {
+                  "name": "MitgliedNr",
+                  "pk": true,
+                  "fk": "Mitglied"
+                },
+                {
+                  "name": "AbteilungNr",
+                  "pk": true,
+                  "fk": "Abteilung"
+                },
+                {
+                  "name": "Seit"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`Mitglied.Beitragsgruppe` verweist auf `Beitragsgruppe.Gruppe` – ein Fremdschlüssel mit **anderem Namen** als der Primärschlüssel (P7). Die n:m-Beziehung zwischen Mitglied und Abteilung wird zur Relation `Mitgliedschaft` mit dem zusammengesetzten Schlüssel aus zwei Fremdschlüsseln; `Seit` gehört zur Mitgliedschaft, nicht zum Mitglied. Der Monatsbeitrag steht nur noch einmal je Gruppe – Nora Falters 0,00 € wäre hier gar nicht mehr speicherbar."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-08",
+      "titel": "Beweis der Ordnung",
+      "stufe": 3,
+      "punkte": 0,
+      "kategorie": "Relationales Modell",
+      "niveau": "eA",
+      "kompetenzen": [
+        "DB-K12",
+        "DB-K11"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wiebke Lüttjohann muss dem Vorstand erklären, warum das neue Archiv besser ist. Nimm dein Schema aus „Das neue Archiv“.\n\n**Begründe**, dass das Schema **redundanzfrei** ist und dass die Zerlegung der Rohliste **verlustfrei** ist. Schreib deine Begründung auf (sie bleibt auf deinem Gerät), deck dann die Kernpunkte auf und hake ab."
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "**redundanzfrei:** In jeder Relation hängt jedes Nicht-Schlüssel-Attribut nur vom (ganzen) Primärschlüssel ab – z. B. Telefon nur von TrainerNr, Monatsbeitrag nur von Gruppe, Seit von (MitgliedNr, AbteilungNr)",
+          "folgert: Jede Information steht **genau einmal** (Jens Meyers Telefonnummer einmal in Trainer, der Erwachsenenbeitrag einmal in Beitragsgruppe), Änderungen erfolgen an einer Stelle",
+          "**verlustfrei:** Die Teilrelationen sind über Fremdschlüssel verbunden (Mitglied → Beitragsgruppe, Abteilung → Trainer und Halle, Mitgliedschaft → Mitglied und Abteilung)",
+          "folgert: Der **Verbund** der Relationen über diese Fremdschlüssel ergibt die Zeilen der Rohliste wieder (z. B. wer in welcher Abteilung bei welchem Trainer trainiert)",
+          "nennt den Gewinn: keine Einfüge-, Änderungs- oder Löschanomalie mehr (z. B. Boule ohne Mitglied eintragbar, Judo bleibt nach Timo Riekens Austritt erhalten)"
+        ]
+      },
+      "tipps": [
+        "Begründen heißt: „…, weil …“ – nenne für beide Eigenschaften die Regel und ein Beispiel aus dem Schema."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Redundanzfreiheit begründest du über die Abhängigkeiten (jedes Nicht-Schlüssel-Attribut hängt nur vom Schlüssel seiner Relation ab), Verlustfreiheit über die Fremdschlüssel, über die der Verbund die Rohliste wiederherstellt. Nur „Es gibt keine doppelten Daten“ ist keine Begründung (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A4-E2-CC",
+      "titel": "Cold Case: KÜR – Normalformen-Check",
+      "stufe": 3,
+      "punkte": 0,
+      "kategorie": "Relationales Modell",
+      "niveau": "eA",
+      "kompetenzen": [
+        "DB-K13",
+        "DB-K11"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "hinweis",
+          "md": "**KÜR (nicht im Abitur):** Normalformen sind ein Prüfwerkzeug für Zerlegungen. Im Abitur begründest du Redundanzfreiheit ohne diese Begriffe."
+        },
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte. Eine **funktionale Abhängigkeit** A → B bedeutet: Zu jedem Wert von A gehört genau ein Wert von B (z. B. `Beitragsgruppe → Monatsbeitrag`).\n\n- **1. NF:** nur atomare Werte\n- **2. NF:** 1. NF und kein Nicht-Schlüssel-Attribut hängt von einem **Teil** eines zusammengesetzten Schlüssels ab\n- **3. NF:** 2. NF und keine **transitive** Abhängigkeit (Nicht-Schlüssel-Attribut hängt über ein anderes Nicht-Schlüssel-Attribut vom Schlüssel ab)\n\n**Bestimme** in der Rohliste drei funktionale Abhängigkeiten und **prüfe** die Rohliste und deine Zerlegung aus „Das neue Archiv“ auf 1., 2. und 3. Normalform. Deine Antwort bleibt auf deinem Gerät."
+        }
+      ],
+      "interaktion": {
+        "kind": "kernpunkte",
+        "kernpunkte": [
+          "nennt drei fachlich richtige FAs, z. B. `Beitragsgruppe → Monatsbeitrag`, `Trainer → TrainerTelefon`, `Halle → HallenAdresse`, `Abteilung → Trainer, Halle`, `MitgliedNr → Vorname, Nachname, Geburtsjahr, Beitragsgruppe, Eintritt`",
+          "erkennt Nicht-Abhängigkeiten: Trainer ↛ Abteilung (Jens Meyer leitet zwei), Halle ↛ Abteilung, Geburtsjahr ↛ Beitragsgruppe",
+          "Rohliste: **nicht in 1. NF** (Kommalisten wie „Fußball, Tennis“)",
+          "atomisierte Rohliste mit Schlüssel (MitgliedNr, Abteilung): **nicht in 2. NF**, weil z. B. Vorname nur von MitgliedNr und Trainer nur von Abteilung abhängt (Teil des Schlüssels)",
+          "Zerlegung: **3. NF**, weil in jeder Relation die Nicht-Schlüssel-Attribute nur vom ganzen Schlüssel abhängen; z. B. ist MitgliedNr → Beitragsgruppe → Monatsbeitrag durch die eigene Relation Beitragsgruppe aufgelöst"
+        ]
+      },
+      "tipps": [
+        "Prüfe Schritt für Schritt: erst atomare Werte, dann Teilabhängigkeiten vom zusammengesetzten Schlüssel, dann Abhängigkeiten zwischen Nicht-Schlüssel-Attributen."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Die Normalformen fassen in Regeln, was du in 4.2 begründet hast: 1. NF beseitigt mehrwertige Zellen, 2. NF Teilabhängigkeiten (Mitgliederdaten in einer Tabelle mit dem Schlüssel aus Mitglied *und* Abteilung), 3. NF transitive Abhängigkeiten (Monatsbeitrag über Beitragsgruppe). KÜR – im Abitur nicht gefordert."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-01",
+      "titel": "Redundanz",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K07"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "UnterrichtRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Schueler"
+            },
+            {
+              "name": "Instrumente"
+            },
+            {
+              "name": "Lehrkraft"
+            },
+            {
+              "name": "LehrkraftTelefon"
+            },
+            {
+              "name": "Raum"
+            },
+            {
+              "name": "Tarif"
+            },
+            {
+              "name": "Monatsgebuehr"
+            }
+          ],
+          "zeilen": [
+            [
+              "Lotta Renken",
+              "Klavier",
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer",
+              "Jugend",
+              36
+            ],
+            [
+              "Finn Wilms",
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum",
+              "Kind",
+              32
+            ],
+            [
+              "Hanna Diekmann",
+              "Gesang",
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer",
+              "Erwachsen",
+              45
+            ],
+            [
+              "Mira Lindemann",
+              "Geige",
+              "Marit Osterloh",
+              "0000-36054",
+              "Studio",
+              "Jugend",
+              36
+            ],
+            [
+              "Jarne Pundt",
+              "Schlagzeug",
+              "Linus Hedden",
+              "0000-63095",
+              "Bandraum",
+              "Jugend",
+              36
+            ],
+            [
+              "Pia Kück",
+              "Querflöte",
+              "Okke Tebbe",
+              "0000-27461",
+              "Konzertsaal",
+              "Geschwister",
+              28
+            ],
+            [
+              "Emil Kück",
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum",
+              "Geschwister",
+              28
+            ],
+            [
+              "Taalke Haake",
+              "Cello",
+              "Swantje Uphoff",
+              "0000-19736",
+              "Streicherzimmer",
+              "Jugend",
+              36
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/musikschule",
+            "sql": "SELECT Schueler, Instrumente, Lehrkraft, LehrkraftTelefon, Raum, Tarif, Monatsgebuehr\nFROM UnterrichtRoh\nWHERE rowid BETWEEN 1 AND 8\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** alle Zellen des Ausschnitts **an**, die redundante Information enthalten: Angaben zu einer Lehrkraft (Telefon, Raum) oder zu einem Tarif (Monatsgebühr), die im Ausschnitt für dieselbe Lehrkraft bzw. denselben Tarif mehrfach gespeichert sind. Markieren Sie jedes Vorkommen, auch das erste. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "zellen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zellen": [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            7,
+            6
+          ]
+        ]
+      },
+      "tipps": [
+        "Gleicher Raumname bei verschiedenen Lehrkräften ist keine mehrfach gespeicherte Angabe zu derselben Lehrkraft."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Redundant sind Telefon und Raum von Jana Albers (Zeile 1 und 3) und Heiko Bargmann (Zeile 2 und 7) sowie die Monatsgebühr des Tarifs Jugend (Zeile 1, 4, 5, 8) und Geschwister (Zeile 6, 7) – 14 Zellen. Der Bandraum bei Linus Hedden (Zeile 5) ist eine Angabe zu einer anderen Lehrkraft und in der Rohliste keine Wiederholung."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-02",
+      "titel": "Anomalieart",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** zu den drei Szenarien jeweils die Anomalieart **an**, die in der Liste `UnterrichtRoh` auftritt. [3 BE]"
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "a) Taalke Haake, die einzige Cello-Schülerin, meldet sich ab; ihre Zeile wird gelöscht.",
+          "optionen": [
+            {
+              "id": "einf",
+              "md": "Einfügeanomalie"
+            },
+            {
+              "id": "aend",
+              "md": "Änderungsanomalie"
+            },
+            {
+              "id": "loes",
+              "md": "Löschanomalie"
+            },
+            {
+              "id": "keine",
+              "md": "keine Anomalie"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) Der Tarif Jugend steigt auf 37,00 €.",
+          "optionen": [
+            {
+              "id": "einf",
+              "md": "Einfügeanomalie"
+            },
+            {
+              "id": "aend",
+              "md": "Änderungsanomalie"
+            },
+            {
+              "id": "loes",
+              "md": "Löschanomalie"
+            },
+            {
+              "id": "keine",
+              "md": "keine Anomalie"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "c) Eine neue Lehrkraft für Gesang wird eingestellt, hat aber noch keine Schülerinnen und Schüler.",
+          "optionen": [
+            {
+              "id": "einf",
+              "md": "Einfügeanomalie"
+            },
+            {
+              "id": "aend",
+              "md": "Änderungsanomalie"
+            },
+            {
+              "id": "loes",
+              "md": "Löschanomalie"
+            },
+            {
+              "id": "keine",
+              "md": "keine Anomalie"
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "loes"
+          ]
+        },
+        {
+          "richtig": [
+            "aend"
+          ]
+        },
+        {
+          "richtig": [
+            "einf"
+          ]
+        }
+      ],
+      "tipps": [
+        "Löschen, ändern oder einfügen – welche Operation verlangt das Szenario, und was geht dabei schief?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "a) Löschanomalie: Mit der Zeile verschwinden Cello, Swantje Uphoff, ihre Telefonnummer und das Streicherzimmer. b) Änderungsanomalie: Die Gebühr steht in 14 Jugend-Zeilen und ist schon jetzt uneinheitlich (Zeile 17). c) Einfügeanomalie: Ohne Anmeldung gibt es keine Zeile für die Lehrkraft."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-03",
+      "titel": "Telefonwechsel",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "UnterrichtRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Schueler"
+            },
+            {
+              "name": "Instrumente"
+            },
+            {
+              "name": "Lehrkraft"
+            },
+            {
+              "name": "LehrkraftTelefon"
+            },
+            {
+              "name": "Raum"
+            }
+          ],
+          "zeilen": [
+            [
+              "Lotta Renken",
+              "Klavier",
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer"
+            ],
+            [
+              "Finn Wilms",
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum"
+            ],
+            [
+              "Hanna Diekmann",
+              "Gesang",
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer"
+            ],
+            [
+              "Mira Lindemann",
+              "Geige",
+              "Marit Osterloh",
+              "0000-36054",
+              "Studio"
+            ],
+            [
+              "Jarne Pundt",
+              "Schlagzeug",
+              "Linus Hedden",
+              "0000-63095",
+              "Bandraum"
+            ],
+            [
+              "Pia Kück",
+              "Querflöte",
+              "Okke Tebbe",
+              "0000-27461",
+              "Konzertsaal"
+            ],
+            [
+              "Emil Kück",
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum"
+            ],
+            [
+              "Taalke Haake",
+              "Cello",
+              "Swantje Uphoff",
+              "0000-19736",
+              "Streicherzimmer"
+            ],
+            [
+              "Sönke Engelken",
+              "Klavier",
+              "Okke Tebbe",
+              "0000-27461",
+              "Konzertsaal"
+            ],
+            [
+              "Ida Mammen",
+              "Klavier, Gesang",
+              "Jana Albers, Jana Albers",
+              "0000-41207, 0000-41207",
+              "Klavierzimmer, Klavierzimmer"
+            ],
+            [
+              "Rune Ohlrogge",
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum"
+            ],
+            [
+              "Greta Saathoff",
+              "Geige",
+              "Marit Osterloh",
+              "0000-36054",
+              "Studio"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/musikschule",
+            "sql": "SELECT Schueler, Instrumente, Lehrkraft, LehrkraftTelefon, Raum\nFROM UnterrichtRoh\nWHERE rowid BETWEEN 1 AND 12\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Führen Sie** die Änderung im Simulator so **aus**, wie die Liste es erlaubt, **ordnen Sie** die entstehende Anomalie **zu** und markieren Sie alle Zellen, die bei dieser Änderung angepasst werden müssten. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "anomalie",
+        "block": 1,
+        "auftrag": "Lehrkraft **Jana Albers** hat eine neue Telefonnummer: 0000-41299.",
+        "operation": "aendern",
+        "simulation": {
+          "spalte": 3,
+          "alt": "0000-41207",
+          "neu": "0000-41299"
+        }
+      },
+      "loesung": {
+        "art": "aenderung",
+        "zellen": [
+          [
+            0,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            9,
+            3
+          ]
+        ]
+      },
+      "tipps": [
+        "Auch Zellen mit mehreren Telefonnummern können die alte Nummer enthalten."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Die Nummer steht in den Zeilen 1, 3 und 10 – in Zeile 10 (Ida Mammen) zweimal in einer Kommaliste. Wird eine Stelle vergessen, hat dieselbe Lehrkraft zwei Telefonnummern: Änderungsanomalie (P10: am Datensatz erläutern, nicht nur benennen)."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-04",
+      "titel": "Mehrere Instrumente",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K14"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "UnterrichtRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Schueler"
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Instrumente"
+            },
+            {
+              "name": "Lehrkraft"
+            },
+            {
+              "name": "LehrkraftTelefon"
+            },
+            {
+              "name": "Raum"
+            },
+            {
+              "name": "Tarif"
+            }
+          ],
+          "zeilen": [
+            [
+              "Taalke Haake",
+              2012,
+              "Cello",
+              "Swantje Uphoff",
+              "0000-19736",
+              "Streicherzimmer",
+              "Jugend"
+            ],
+            [
+              "Sönke Engelken",
+              1979,
+              "Klavier",
+              "Okke Tebbe",
+              "0000-27461",
+              "Konzertsaal",
+              "Erwachsen"
+            ],
+            [
+              "Ida Mammen",
+              2014,
+              "Klavier, Gesang",
+              "Jana Albers, Jana Albers",
+              "0000-41207, 0000-41207",
+              "Klavierzimmer, Klavierzimmer",
+              "Jugend"
+            ],
+            [
+              "Rune Ohlrogge",
+              2010,
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum",
+              "Jugend"
+            ],
+            [
+              "Greta Saathoff",
+              2018,
+              "Geige",
+              "Marit Osterloh",
+              "0000-36054",
+              "Studio",
+              "Kind"
+            ],
+            [
+              "Jarne Pundt",
+              2009,
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum",
+              "Jugend"
+            ],
+            [
+              "Lotta Renken",
+              2013,
+              "Klavier",
+              "Okke Tebbe",
+              "0000-27461",
+              "Konzertsaal",
+              "Jugend"
+            ],
+            [
+              "Nele Wöltjen",
+              2004,
+              "Gesang",
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer",
+              "Erwachsen"
+            ],
+            [
+              "Jasper Holtorf",
+              2011,
+              "Gitarre, Schlagzeug",
+              "Heiko Bargmann, Linus Hedden",
+              "0000-52318, 0000-63095",
+              "Bandraum, Bandraum",
+              "Jugend"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/musikschule",
+            "sql": "SELECT Schueler, Geburtsjahr, Instrumente, Lehrkraft, LehrkraftTelefon, Raum, Tarif\nFROM UnterrichtRoh\nWHERE rowid BETWEEN 8 AND 16\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** alle Zellen des Ausschnitts **an**, die keinen atomaren Wert enthalten. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "zellen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zellen": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            8,
+            5
+          ]
+        ]
+      },
+      "tipps": [
+        "Ein atomarer Wert lässt sich nicht weiter in mehrere Angaben zerlegen."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Nicht atomar sind Instrumente, Lehrkraft, LehrkraftTelefon und Raum in den Zeilen von Ida Mammen und Jasper Holtorf (8 Zellen). Wer etwa mit `Instrumente = 'Klavier'` sucht, übersieht Ida Mammen (P6)."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-05",
+      "titel": "Schlüsselkandidat",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "UnterrichtRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Schueler"
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Instrumente"
+            },
+            {
+              "name": "Lehrkraft"
+            },
+            {
+              "name": "Tarif"
+            }
+          ],
+          "zeilen": [
+            [
+              "Lotta Renken",
+              2013,
+              "Klavier",
+              "Jana Albers",
+              "Jugend"
+            ],
+            [
+              "Finn Wilms",
+              2016,
+              "Gitarre",
+              "Heiko Bargmann",
+              "Kind"
+            ],
+            [
+              "Hanna Diekmann",
+              1987,
+              "Gesang",
+              "Jana Albers",
+              "Erwachsen"
+            ],
+            [
+              "Mira Lindemann",
+              2011,
+              "Geige",
+              "Marit Osterloh",
+              "Jugend"
+            ],
+            [
+              "Jarne Pundt",
+              2009,
+              "Schlagzeug",
+              "Linus Hedden",
+              "Jugend"
+            ],
+            [
+              "Pia Kück",
+              2017,
+              "Querflöte",
+              "Okke Tebbe",
+              "Geschwister"
+            ],
+            [
+              "Emil Kück",
+              2015,
+              "Gitarre",
+              "Heiko Bargmann",
+              "Geschwister"
+            ],
+            [
+              "Taalke Haake",
+              2012,
+              "Cello",
+              "Swantje Uphoff",
+              "Jugend"
+            ],
+            [
+              "Sönke Engelken",
+              1979,
+              "Klavier",
+              "Okke Tebbe",
+              "Erwachsen"
+            ],
+            [
+              "Ida Mammen",
+              2014,
+              "Klavier, Gesang",
+              "Jana Albers, Jana Albers",
+              "Jugend"
+            ],
+            [
+              "Rune Ohlrogge",
+              2010,
+              "Gitarre",
+              "Heiko Bargmann",
+              "Jugend"
+            ],
+            [
+              "Greta Saathoff",
+              2018,
+              "Geige",
+              "Marit Osterloh",
+              "Kind"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/musikschule",
+            "sql": "SELECT Schueler, Geburtsjahr, Instrumente, Lehrkraft, Tarif\nFROM UnterrichtRoh\nWHERE rowid BETWEEN 1 AND 12\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Im Ausschnitt sind alle Werte der Spalte `Schueler` verschieden. **Beurteilen Sie**, ob `Schueler` als Primärschlüssel der Liste geeignet ist. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Nicht geeignet: Ein Ausschnitt kann Eindeutigkeit nicht beweisen. Zwei Personen können gleich heißen, und eine Person mit mehreren Instrumenten oder Lehrkräften steht in mehreren Zeilen."
+          },
+          {
+            "id": "b",
+            "md": "Geeignet: Im Ausschnitt kommt kein Name doppelt vor."
+          },
+          {
+            "id": "c",
+            "md": "Geeignet: Die Spalte enthält keine NULL-Werte."
+          },
+          {
+            "id": "d",
+            "md": "Nicht geeignet: `Schueler` ist nicht minimal."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Kann es in einer Musikschule zwei Personen mit gleichem Namen geben?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Eindeutigkeit muss für alle möglichen Daten gelten; ein Ausschnitt kann sie nur widerlegen (P8). In der vollständigen Liste gibt es zwei verschiedene Personen namens Mira Lindemann (2011 und 2007), und z. B. Lotta Renken steht zweimal da. Ein einzelnes Attribut ist immer minimal – Antwort d) trifft nicht zu."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-06",
+      "titel": "Neues Instrument",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K08"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "UnterrichtRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Schueler"
+            },
+            {
+              "name": "Geburtsjahr"
+            },
+            {
+              "name": "Instrumente"
+            },
+            {
+              "name": "Lehrkraft"
+            },
+            {
+              "name": "LehrkraftTelefon"
+            },
+            {
+              "name": "Raum"
+            },
+            {
+              "name": "Tarif"
+            },
+            {
+              "name": "Monatsgebuehr"
+            }
+          ],
+          "zeilen": [
+            [
+              "Lotta Renken",
+              2013,
+              "Klavier",
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer",
+              "Jugend",
+              36
+            ],
+            [
+              "Finn Wilms",
+              2016,
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum",
+              "Kind",
+              32
+            ],
+            [
+              "Hanna Diekmann",
+              1987,
+              "Gesang",
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer",
+              "Erwachsen",
+              45
+            ],
+            [
+              "Mira Lindemann",
+              2011,
+              "Geige",
+              "Marit Osterloh",
+              "0000-36054",
+              "Studio",
+              "Jugend",
+              36
+            ],
+            [
+              "Jarne Pundt",
+              2009,
+              "Schlagzeug",
+              "Linus Hedden",
+              "0000-63095",
+              "Bandraum",
+              "Jugend",
+              36
+            ],
+            [
+              "Pia Kück",
+              2017,
+              "Querflöte",
+              "Okke Tebbe",
+              "0000-27461",
+              "Konzertsaal",
+              "Geschwister",
+              28
+            ],
+            [
+              "Emil Kück",
+              2015,
+              "Gitarre",
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum",
+              "Geschwister",
+              28
+            ],
+            [
+              "Taalke Haake",
+              2012,
+              "Cello",
+              "Swantje Uphoff",
+              "0000-19736",
+              "Streicherzimmer",
+              "Jugend",
+              36
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/musikschule",
+            "sql": "SELECT Schueler, Geburtsjahr, Instrumente, Lehrkraft, LehrkraftTelefon, Raum, Tarif, Monatsgebuehr\nFROM UnterrichtRoh\nWHERE rowid BETWEEN 1 AND 8\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Führen Sie** den Auftrag im Simulator so **aus**, wie die Liste es erlaubt, **ordnen Sie** die Anomalie **zu** und markieren Sie in der neuen Zeile die Zellen, die leer bleiben müssten. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "anomalie",
+        "block": 1,
+        "auftrag": "Die Musikschule bietet ab sofort **Harfe** an (Lehrkraft Swantje Uphoff, Streicherzimmer), noch ohne Anmeldungen.",
+        "operation": "einfuegen",
+        "simulation": {
+          "werte": [
+            null,
+            null,
+            "Harfe",
+            "Swantje Uphoff",
+            "0000-19736",
+            "Streicherzimmer",
+            null,
+            null
+          ]
+        }
+      },
+      "loesung": {
+        "art": "einfuegung",
+        "zellen": [
+          [
+            8,
+            0
+          ],
+          [
+            8,
+            1
+          ],
+          [
+            8,
+            6
+          ],
+          [
+            8,
+            7
+          ]
+        ]
+      },
+      "tipps": [
+        "Jede Zeile der Liste ist eine Anmeldung. Wer ist hier angemeldet?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Das neue Angebot lässt sich nur als Zeile ohne Schüler, Geburtsjahr, Tarif und Monatsgebühr eintragen – eine Anmeldung ohne Schüler: Einfügeanomalie."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-07",
+      "titel": "Ursache",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K10"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "UnterrichtRoh (Ausschnitt)",
+          "kopf": [
+            {
+              "name": "Schueler"
+            },
+            {
+              "name": "Instrumente"
+            },
+            {
+              "name": "Tarif"
+            },
+            {
+              "name": "Monatsgebuehr"
+            }
+          ],
+          "zeilen": [
+            [
+              "Jarne Pundt",
+              "Gitarre",
+              "Jugend",
+              36
+            ],
+            [
+              "Lotta Renken",
+              "Klavier",
+              "Jugend",
+              36
+            ],
+            [
+              "Nele Wöltjen",
+              "Gesang",
+              "Erwachsen",
+              45
+            ],
+            [
+              "Jasper Holtorf",
+              "Gitarre, Schlagzeug",
+              "Jugend",
+              36
+            ],
+            [
+              "Levke Bohlken",
+              "Querflöte",
+              "Jugend",
+              38
+            ],
+            [
+              "Bente Kolthoff",
+              "Klavier",
+              "Erwachsen",
+              45
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/musikschule",
+            "sql": "SELECT Schueler, Instrumente, Tarif, Monatsgebuehr\nFROM UnterrichtRoh\nWHERE rowid BETWEEN 13 AND 18\nORDER BY rowid"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, welche Aussage den Zusammenhang zwischen Redundanz und Änderungsanomalie am Beispiel des Ausschnitts korrekt erläutert. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Die Monatsgebühr hängt nur vom Tarif ab, steht aber in jeder Zeile (Redundanz). Bei einer Gebührenänderung müssen alle Zeilen des Tarifs geändert werden; wird eine vergessen, widerspricht sich die Liste – wie bei Levke Bohlken (Jugend, 38,00 € statt 36,00 €)."
+          },
+          {
+            "id": "b",
+            "md": "Die Zeile von Levke Bohlken ist redundant, weil ihr Tarif Jugend auch in anderen Zeilen vorkommt; löscht man sie, ist die Anomalie behoben."
+          },
+          {
+            "id": "c",
+            "md": "Redundanz und Änderungsanomalie bedeuten dasselbe: Eine Information steht mehrfach in der Tabelle."
+          },
+          {
+            "id": "d",
+            "md": "Die Änderungsanomalie entsteht durch einen Tippfehler; mit sorgfältiger Pflege ist die Liste anomaliefrei."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Redundanz ist die Ursache, die Anomalie die Folge."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Redundanz (Gebühr je Zeile statt einmal je Tarif) ist die **Ursache**, die Änderungsanomalie (widersprüchliche Gebühren nach einer unvollständigen Änderung) die **Folge**. Auch bei sorgfältiger Pflege bleibt die Gefahr, weil jede Änderung viele Stellen betrifft (P10)."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-08",
+      "titel": "Zusammengelegt",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K09"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Für die neue Datenbank schlägt die Verwaltung der Musikschule vor, Lehrkräfte und Räume in einer Tabelle zu führen. Jede Lehrkraft unterrichtet in genau einem Raum; jeder Raum liegt auf einer Etage."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "LehrkraftRaum",
+          "kopf": [
+            {
+              "name": "LehrkraftNr",
+              "pk": true
+            },
+            {
+              "name": "Name"
+            },
+            {
+              "name": "Telefon"
+            },
+            {
+              "name": "Raum"
+            },
+            {
+              "name": "Etage"
+            }
+          ],
+          "zeilen": [
+            [
+              1,
+              "Jana Albers",
+              "0000-41207",
+              "Klavierzimmer",
+              "1. OG"
+            ],
+            [
+              2,
+              "Okke Tebbe",
+              "0000-27461",
+              "Konzertsaal",
+              "EG"
+            ],
+            [
+              3,
+              "Heiko Bargmann",
+              "0000-52318",
+              "Bandraum",
+              "EG"
+            ],
+            [
+              4,
+              "Linus Hedden",
+              "0000-63095",
+              "Bandraum",
+              "EG"
+            ],
+            [
+              5,
+              "Marit Osterloh",
+              "0000-36054",
+              "Studio",
+              "2. OG"
+            ],
+            [
+              6,
+              "Swantje Uphoff",
+              "0000-19736",
+              "Streicherzimmer",
+              "1. OG"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/musikschule",
+            "sql": "SELECT LehrkraftNr, Name, Telefon, Raum, Etage\nFROM LehrkraftRaum\nORDER BY LehrkraftNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Untersuchen Sie** die Tabelle `LehrkraftRaum` und **geben Sie** die Zellen **an**, an denen eine Änderungsanomalie möglich ist. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "zellen",
+        "block": 1,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zellen": [
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "tipps": [
+        "Welches Nicht-Schlüssel-Attribut hängt von einem anderen Nicht-Schlüssel-Attribut ab?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Die Etage hängt vom Raum ab, nicht von der Lehrkraft. Weil Heiko Bargmann und Linus Hedden beide im Bandraum unterrichten, steht dessen Etage zweimal da. Zieht der Bandraum um und wird nur eine Zeile geändert, liegt derselbe Raum auf zwei Etagen: Änderungsanomalie."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-09",
+      "titel": "Anomaliefrei?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Anomalien",
+      "kompetenzen": [
+        "DB-K09"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "UnterrichtRoh",
+              "attribute": [
+                {
+                  "name": "Schueler"
+                },
+                {
+                  "name": "Geburtsjahr"
+                },
+                {
+                  "name": "Instrumente"
+                },
+                {
+                  "name": "Lehrkraft"
+                },
+                {
+                  "name": "LehrkraftTelefon"
+                },
+                {
+                  "name": "Raum"
+                },
+                {
+                  "name": "Tarif"
+                },
+                {
+                  "name": "Monatsgebuehr"
+                }
+              ]
+            },
+            {
+              "name": "LehrkraftRaum",
+              "attribute": [
+                {
+                  "name": "LehrkraftNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Telefon"
+                },
+                {
+                  "name": "Raum"
+                },
+                {
+                  "name": "Etage"
+                }
+              ]
+            },
+            {
+              "name": "Raum",
+              "attribute": [
+                {
+                  "name": "Raum",
+                  "pk": true
+                },
+                {
+                  "name": "Etage"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, in welcher der drei Tabellen keine Anomalie möglich ist. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "roh",
+            "md": "`UnterrichtRoh`"
+          },
+          {
+            "id": "lr",
+            "md": "`LehrkraftRaum`"
+          },
+          {
+            "id": "raum",
+            "md": "`Raum`"
+          },
+          {
+            "id": "keine",
+            "md": "in keiner der drei Tabellen"
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "raum"
+        ]
+      },
+      "tipps": [
+        "Prüfen Sie je Tabelle, ob ein Nicht-Schlüssel-Attribut von etwas anderem als dem ganzen Primärschlüssel abhängt."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "In `Raum` hängt die Etage nur vom Primärschlüssel Raum ab; jeder Raum steht genau einmal da – keine Anomalie möglich. In `LehrkraftRaum` hängt Etage von Raum ab (Bandraum doppelt), in `UnterrichtRoh` stehen Lehrkraft- und Tarifangaben vielfach (P8: auch „keine Anomalie“ muss begründet erkannt werden)."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-10",
+      "titel": "Doppelt belegt",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "text",
+          "md": "Nach der Aufteilung mehrwertiger Zellen enthält jede Zeile genau ein Instrument. Die Musikschule erlaubt, dass eine Schülerin oder ein Schüler **dasselbe Instrument bei zwei Lehrkräften** belegt (z. B. Klavier bei Jana Albers und bei Okke Tebbe).\n\n**Beurteilen Sie** den Vorschlag, `(Schueler, Instrument)` als Primärschlüssel zu verwenden. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Nicht geeignet: Dieselbe Kombination aus Schüler und Instrument kommt bei zwei Lehrkräften zweimal vor; außerdem ist der Name nicht eindeutig. Geeignet wäre z. B. `(SchuelerNr, Instrument, LehrkraftNr)`."
+          },
+          {
+            "id": "b",
+            "md": "Geeignet: Ein zusammengesetzter Schlüssel ist immer eindeutig."
+          },
+          {
+            "id": "c",
+            "md": "Nicht geeignet, weil der Schlüssel nicht minimal ist; `Instrument` allein reicht."
+          },
+          {
+            "id": "d",
+            "md": "Geeignet, wenn man zusätzlich das Geburtsjahr aufnimmt: `(Schueler, Geburtsjahr, Instrument)`."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Spielen Sie das Beispiel mit zwei Zeilen durch: Was unterscheidet sie?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Belegt Lotta Renken Klavier bei zwei Lehrkräften, stehen zwei Zeilen mit (Lotta Renken, Klavier) da – nicht eindeutig (P8). Erst die Lehrkraft unterscheidet die Zeilen; weil Namen nicht eindeutig sind (zwei Mira Lindemann), braucht es künstliche Nummern: `(SchuelerNr, Instrument, LehrkraftNr)`. Auch mit Geburtsjahr bliebe das Problem der zwei Lehrkräfte."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-11",
+      "titel": "Neuordnung",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Anomalien",
+      "niveau": "eA",
+      "kompetenzen": [
+        "DB-K11",
+        "DB-K02"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "text",
+          "md": "Für die Neuordnung wurde die Liste vorbereitet: Mehrwertige Zellen sind aufgeteilt (eine Zeile je Schüler, Instrument und Lehrkraft), Schülerinnen und Schüler haben eine `SchuelerNr`, Lehrkräfte eine `LehrkraftNr`; der Name ist in Vor- und Nachname geteilt, und zu jedem Raum ist die `Etage` ergänzt.\n\nEs gilt: Jede Schülerin und jeder Schüler hat einen Tarif; der Tarif bestimmt die Monatsgebühr. Jede Lehrkraft hat eine Telefonnummer und unterrichtet in genau einem Raum; jeder Raum liegt auf einer Etage. Eine Schülerin oder ein Schüler kann mehrere Instrumente belegen, auch dasselbe Instrument bei zwei Lehrkräften; eine Lehrkraft unterrichtet mehrere Instrumente."
+        },
+        {
+          "t": "text",
+          "md": "**Zerlegen Sie** die Liste verlustfrei in redundanzfreie Tabellen und **kennzeichnen Sie** in jeder Tabelle den Schlüssel. [5 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "zerlegen",
+        "attribute": [
+          "SchuelerNr",
+          "Vorname",
+          "Nachname",
+          "Geburtsjahr",
+          "Tarif",
+          "Monatsgebuehr",
+          "Instrument",
+          "LehrkraftNr",
+          "Lehrkraft",
+          "LehrkraftTelefon",
+          "Raum",
+          "Etage"
+        ],
+        "tabellenMax": 8
+      },
+      "loesung": {
+        "fa": [
+          {
+            "links": [
+              "SchuelerNr"
+            ],
+            "rechts": [
+              "Vorname",
+              "Nachname",
+              "Geburtsjahr",
+              "Tarif"
+            ]
+          },
+          {
+            "links": [
+              "Tarif"
+            ],
+            "rechts": [
+              "Monatsgebuehr"
+            ]
+          },
+          {
+            "links": [
+              "LehrkraftNr"
+            ],
+            "rechts": [
+              "Lehrkraft",
+              "LehrkraftTelefon",
+              "Raum"
+            ]
+          },
+          {
+            "links": [
+              "Raum"
+            ],
+            "rechts": [
+              "Etage"
+            ]
+          }
+        ],
+        "schluessel": [
+          "SchuelerNr",
+          "Instrument",
+          "LehrkraftNr"
+        ],
+        "muster": [
+          {
+            "tabellen": [
+              {
+                "attribute": [
+                  "SchuelerNr",
+                  "Vorname",
+                  "Nachname",
+                  "Geburtsjahr",
+                  "Tarif"
+                ],
+                "schluessel": [
+                  "SchuelerNr"
+                ]
+              },
+              {
+                "attribute": [
+                  "Tarif",
+                  "Monatsgebuehr"
+                ],
+                "schluessel": [
+                  "Tarif"
+                ]
+              },
+              {
+                "attribute": [
+                  "LehrkraftNr",
+                  "Lehrkraft",
+                  "LehrkraftTelefon",
+                  "Raum"
+                ],
+                "schluessel": [
+                  "LehrkraftNr"
+                ]
+              },
+              {
+                "attribute": [
+                  "Raum",
+                  "Etage"
+                ],
+                "schluessel": [
+                  "Raum"
+                ]
+              },
+              {
+                "attribute": [
+                  "SchuelerNr",
+                  "Instrument",
+                  "LehrkraftNr"
+                ],
+                "schluessel": [
+                  "SchuelerNr",
+                  "Instrument",
+                  "LehrkraftNr"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "tipps": [
+        "Welche Spalten bestimmen zusammen eine Belegung eindeutig, wenn dasselbe Instrument bei zwei Lehrkräften möglich ist?"
+      ],
+      "erklaerung": [
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Schueler",
+              "attribute": [
+                {
+                  "name": "SchuelerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Geburtsjahr"
+                },
+                {
+                  "name": "Tarif",
+                  "fk": "Tarif"
+                }
+              ]
+            },
+            {
+              "name": "Tarif",
+              "attribute": [
+                {
+                  "name": "Tarif",
+                  "pk": true
+                },
+                {
+                  "name": "Monatsgebuehr"
+                }
+              ]
+            },
+            {
+              "name": "Lehrkraft",
+              "attribute": [
+                {
+                  "name": "LehrkraftNr",
+                  "pk": true
+                },
+                {
+                  "name": "Lehrkraft"
+                },
+                {
+                  "name": "LehrkraftTelefon"
+                },
+                {
+                  "name": "Raum",
+                  "fk": "Raum"
+                }
+              ]
+            },
+            {
+              "name": "Raum",
+              "attribute": [
+                {
+                  "name": "Raum",
+                  "pk": true
+                },
+                {
+                  "name": "Etage"
+                }
+              ]
+            },
+            {
+              "name": "belegt",
+              "attribute": [
+                {
+                  "name": "SchuelerNr",
+                  "pk": true,
+                  "fk": "Schueler"
+                },
+                {
+                  "name": "Instrument",
+                  "pk": true
+                },
+                {
+                  "name": "LehrkraftNr",
+                  "pk": true,
+                  "fk": "Lehrkraft"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Monatsgebühr hängt vom Tarif, Etage vom Raum ab – beide bekommen eigene Tabellen. Die Belegung braucht den dreiteiligen Schlüssel (SchuelerNr, Instrument, LehrkraftNr), weil weder Instrument noch Lehrkraft allein die Zeile bestimmt. Eine Lehrkraft-Tabelle mit Etage wäre nicht redundanzfrei (der Bandraum stünde zweimal mit Etage da)."
+        }
+      ]
+    },
+    {
+      "id": "A4-V-12",
+      "titel": "Begründung",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "Relationales Modell",
+      "niveau": "eA",
+      "kompetenzen": [
+        "DB-K12"
+      ],
+      "fallen": [
+        "P10"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Musikschule Weserstedt hat ihre Anmeldungen bisher in einer Tabellenkalkulation gepflegt: je Zeile eine Schülerin oder ein Schüler mit Instrument(en), Lehrkraft samt Telefonnummer, Unterrichtsraum, Tarif und Monatsgebühr. Vor der Umstellung auf eine Datenbank soll die Liste `UnterrichtRoh` begutachtet werden."
+        },
+        {
+          "t": "text",
+          "md": "Ein Gutachter schlägt folgendes Schema vor:"
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Schueler",
+              "attribute": [
+                {
+                  "name": "SchuelerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                },
+                {
+                  "name": "Geburtsjahr"
+                },
+                {
+                  "name": "Tarif",
+                  "fk": "Tarif"
+                }
+              ]
+            },
+            {
+              "name": "Tarif",
+              "attribute": [
+                {
+                  "name": "Tarif",
+                  "pk": true
+                },
+                {
+                  "name": "Monatsgebuehr"
+                }
+              ]
+            },
+            {
+              "name": "Lehrkraft",
+              "attribute": [
+                {
+                  "name": "LehrkraftNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Telefon"
+                },
+                {
+                  "name": "Raum",
+                  "fk": "Raum"
+                }
+              ]
+            },
+            {
+              "name": "Raum",
+              "attribute": [
+                {
+                  "name": "Raum",
+                  "pk": true
+                },
+                {
+                  "name": "Etage"
+                }
+              ]
+            },
+            {
+              "name": "belegt",
+              "attribute": [
+                {
+                  "name": "SchuelerNr",
+                  "pk": true,
+                  "fk": "Schueler"
+                },
+                {
+                  "name": "Instrument",
+                  "pk": true
+                },
+                {
+                  "name": "LehrkraftNr",
+                  "pk": true,
+                  "fk": "Lehrkraft"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie an**, welche Begründung die Redundanzfreiheit dieses Schemas korrekt belegt. [4 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "In jeder Relation hängt jedes Nicht-Schlüssel-Attribut nur vom ganzen Primärschlüssel ab (z. B. Monatsgebuehr nur von Tarif, Etage nur von Raum). Deshalb ist jede Information – etwa die Gebühr eines Tarifs oder die Etage eines Raums – genau einmal gespeichert."
+          },
+          {
+            "id": "b",
+            "md": "Der Verbund aller Relationen über die Fremdschlüssel ergibt wieder die ursprüngliche Liste."
+          },
+          {
+            "id": "c",
+            "md": "Jede Relation hat einen Primärschlüssel, und in den Beispieldaten kommt keine Zeile doppelt vor."
+          },
+          {
+            "id": "d",
+            "md": "Keine Relation hat mehr als fünf Attribute, und alle Werte sind atomar."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Unterscheiden Sie: redundanzfrei (jede Information einmal) und verlustfrei (nichts geht verloren)."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Redundanzfreiheit wird über die Abhängigkeiten begründet: Kein Nicht-Schlüssel-Attribut hängt von einem anderen Nicht-Schlüssel-Attribut oder einem Teil des Schlüssels ab. b) begründet die Verlustfreiheit, c) und d) sind keine Begründungen (P10)."
+        }
+      ]
+    }
+  ]
+}

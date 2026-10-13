@@ -1,0 +1,225 @@
+{
+ "_hinweis": "ERZEUGT von werkzeuge/*_pdf.py – SHA-256 der Quelle je PDF; die CI prüft damit, ob die PDFs aktuell sind.",
+ "dateien": {
+  "DD_A1-AB1_Der_erste_Auftrag.pdf": {
+   "quelle": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB1_Der_erste_Auftrag.docx",
+   "sha256": "f9f10bb103842c7d781664f11f8248d8241ba658228cb2934d4be67f20924677",
+   "verfahren": "pdf"
+  },
+  "DD_A1-AB2_Das_verschwundene_Fundstueck.pdf": {
+   "quelle": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB2_Das_verschwundene_Fundstueck.docx",
+   "sha256": "2fcb384a2aa2df897179e27b10a048bcbaf0b9e03dd8af7db87a9223b2713e72",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Praesentation_Fundbuero_Handout.pdf": {
+   "quelle": "Akte1_Fundbuero/1_Praesentation/DD_A1_Fundbuero.pptx",
+   "sha256": "6582999962132b86e71f96f07fae155b45dd00e1614953f7357309872a6adebb",
+   "verfahren": "handout"
+  },
+  "DD_A1-Unplugged_Detektei-Ausweise.pdf": {
+   "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Detektei-Ausweise.docx",
+   "sha256": "9f6aa69c81f9b2f82e0b8a8b965a3c06d40944ecfadfdff0b9c0d0adb3699e7b",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Unplugged_Karteikarten.pdf": {
+   "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Karteikarten.docx",
+   "sha256": "fa9b9dfde77d02dcb2dd3bd6a46681b10a900311c3d211304fc5fdd2d56facae",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Unplugged_Platzhalter-Fahndung.pdf": {
+   "quelle": "Akte1_Fundbuero/3_Unplugged/DD_A1_Unplugged_Platzhalter-Fahndung.docx",
+   "sha256": "3e641de8fe030698c7ce33aa57ca72141fa466d429d5d6c3bca24d2cf5d0f17d",
+   "verfahren": "pdf"
+  },
+  "DD_A1-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A1.docx",
+   "sha256": "5c76d35060b26a39d27678fa3277d4d8109ed4f7d9510bb705f045297cc9cda1",
+   "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A2-AB1_Der_rote_Faden.pdf": {
+   "quelle": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB1_Der_rote_Faden.docx",
+   "sha256": "35eef16e56a2dbf9e98bb56782888ba9ca64fcbde6404b66d6c3495abad34e06",
+   "verfahren": "pdf"
+  },
+  "DD_A2-AB2_Nachtfahrten.pdf": {
+   "quelle": "Akte2_Raeder/2_Arbeitsblaetter/DD_A2_AB2_Nachtfahrten.docx",
+   "sha256": "4890ec344e3468927c85db5d7b41df1d14c0a477218f0b62b8ad559fb80d0763",
+   "verfahren": "pdf"
+  },
+  "DD_A2-Praesentation_Raeder_Handout.pdf": {
+   "quelle": "Akte2_Raeder/1_Praesentation/DD_A2_Raeder.pptx",
+   "sha256": "2121dbc6fbf1cae6d4f07f379d246de79ab1f49ef710178d504c411a73c14b32",
+   "verfahren": "handout"
+  },
+  "DD_A2-Unplugged_Ermittlungsweg.pdf": {
+   "quelle": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Ermittlungsweg.docx",
+   "sha256": "aafafb6562133e3a43f5246e05e9d30d3d3197abdec33dd6a927959dcdf39c71",
+   "verfahren": "pdf"
+  },
+  "DD_A2-Unplugged_Roter_Faden.pdf": {
+   "quelle": "Akte2_Raeder/3_Unplugged/DD_A2_Unplugged_Roter_Faden.docx",
+   "sha256": "ffb779fe9a88eacbf7be28407b0be128d4fa20e8fa5b912a16506b40d95ee5e3",
+   "verfahren": "pdf"
+  },
+  "DD_A2-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A2.docx",
+   "sha256": "352608ba7613f77ee6077653e5952f0ec7f06a41f2fce1bf120e8abfb5733e5b",
+   "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A3-AB1_Kassensturz.pdf": {
+   "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB1_Kassensturz.docx",
+   "sha256": "70ce042fb065ab66ae4f42cf11134e4b1261baf0b09fe679494e45a6194d87b4",
+   "verfahren": "pdf"
+  },
+  "DD_A3-AB2_Die_Statistik_luegt_nicht.pdf": {
+   "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB2_Die_Statistik_luegt_nicht.docx",
+   "sha256": "0d301bd932c755fc3d6eba8bd6c8146e0d659af88ac78b67970a3b8c6992a48c",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Praesentation_Stadtfest_Handout.pdf": {
+   "quelle": "Akte3_Stadtfest/1_Praesentation/DD_A3_Stadtfest.pptx",
+   "sha256": "dbd824b248f6793d49bfe5020dd44f43c44865d4908fa8792b85f0c83d15b2f2",
+   "verfahren": "handout"
+  },
+  "DD_A3-Unplugged_GROUP_BY_Karten.pdf": {
+   "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_GROUP_BY_Karten.docx",
+   "sha256": "5fbac4401cfa177eae322d008f4d16ca2a31cc151dd0b660964023f3a8548fcc",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Unplugged_Zeitlupe_Karten.pdf": {
+   "quelle": "Akte3_Stadtfest/3_Unplugged/DD_A3_Unplugged_Zeitlupe_Karten.docx",
+   "sha256": "e10eba08c170e9b201397fceed1dd507b0a9ba44ffc5bf0afa5e1290ba2022b6",
+   "verfahren": "pdf"
+  },
+  "DD_A3-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
+   "sha256": "498e6c384d532b7c9c46e0fefc84940f88af31777df7e7aae432e13704a6e191",
+   "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A4-AB1_Die_Excel-Liste.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB1_Die_Excel-Liste.docx",
+   "sha256": "8c8ad7de502e106ca2e65e956a109b79d8c0ccae30de82d00a05af04a4e3c5ee",
+   "verfahren": "pdf"
+  },
+  "DD_A4-AB2_Ordnung_ins_Archiv.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB2_Ordnung_ins_Archiv.docx",
+   "sha256": "319b14cffd59bb7598a7aca4b2801f7c07e0c99e1910daf1ae14ab460628cb66",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Praesentation_Vereinsarchiv_Handout.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
+   "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
+   "verfahren": "handout"
+  },
+  "DD_A4-Unplugged_Anomalie-Rennen.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Anomalie-Rennen.docx",
+   "sha256": "a2cad8fd49c2b33ab71948d8a773ce3c35a1d5cb2c1da166fde4951c410601b4",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Unplugged_Schluessel-Detektiv.pdf": {
+   "quelle": "Akte4_Vereinsarchiv/3_Unplugged/DD_A4_Unplugged_Schluessel-Detektiv.docx",
+   "sha256": "b31a6da8b8cd628f21753c4b42f74d5eba789b055ff6aa87b7057907548d3ee5",
+   "verfahren": "pdf"
+  },
+  "DD_A4-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
+   "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
+   "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A5-AB1_Bauplaene_lesen.pdf": {
+   "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB1_Bauplaene_lesen.docx",
+   "sha256": "46fa4bfd3bee5b4909f38c32b8e834ecd95de8e527d0a0a33c7e2913ee787897",
+   "verfahren": "pdf"
+  },
+  "DD_A5-AB2_Der_Architekturwettbewerb.pdf": {
+   "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB2_Der_Architekturwettbewerb.docx",
+   "sha256": "883dafb0945aee2356ffc13c16704dc22fef0bdfb25596217417e65e47d737e1",
+   "verfahren": "pdf"
+  },
+  "DD_A5-AB3_Vom_Plan_zur_Datenbank.pdf": {
+   "quelle": "Akte5_Bauplan/2_Arbeitsblaetter/DD_A5_AB3_Vom_Plan_zur_Datenbank.docx",
+   "sha256": "02df89edd44d0d93c12708181818c1bac455d8b5a7ab3ce4c05b4c28fb629f66",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Praesentation_Bauplan_Handout.pdf": {
+   "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
+   "sha256": "1554fa23b8ae2fdd0d48eeb8744e030f61c810d2e5df875963b162ba8c072cfd",
+   "verfahren": "handout"
+  },
+  "DD_A5-Unplugged_Architekturwettbewerb.pdf": {
+   "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Architekturwettbewerb.docx",
+   "sha256": "d2ba87231131d036dc97e0c8ab401586fdac497d39fca0b957b9210b41883c21",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Unplugged_Faeden-Kardinalitaeten.pdf": {
+   "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Faeden-Kardinalitaeten.docx",
+   "sha256": "db083ea405b3f58ba506d84e2e4b8e8503a6e0dcbb31f45f9b278f6905805bce",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Unplugged_Regelkarten.pdf": {
+   "quelle": "Akte5_Bauplan/3_Unplugged/DD_A5_Unplugged_Regelkarten.docx",
+   "sha256": "17e88e09e4d7f9f5ac029239e22d9236e985f162ce1e0e7a136f5634c64afb05",
+   "verfahren": "pdf"
+  },
+  "DD_A5-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A5.docx",
+   "sha256": "de3770fb1e6b425fc3862e3487b6f24a38eaf7bc83ec876d15b082feb0b15719",
+   "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A6-AB1_Das_Phantom.pdf": {
+   "quelle": "Akte6_Datenspuren/2_Arbeitsblaetter/DD_A6_AB1_Das_Phantom.docx",
+   "sha256": "412d8fbbbe6793f58d5f7a529bb3e539312234e7e35634216728af2453dba003",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Praesentation_Datenspuren_Handout.pdf": {
+   "quelle": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
+   "sha256": "d03c6b4c4b5497cdb0c1a1a8d1eac64cc36355b48856c3eae865cb5bff37b933",
+   "verfahren": "handout"
+  },
+  "DD_A6-Unplugged_Rollenkarten-Debatte.pdf": {
+   "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Rollenkarten-Debatte.docx",
+   "sha256": "699388b2fc358a5888753f0930dafa082ac030a588f694b8a91c9da946d23084",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Unplugged_Steh_auf_wenn.pdf": {
+   "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Steh_auf_wenn.docx",
+   "sha256": "b3113b10720a1fdc22309e4183bfbe74552fbebed7fb3a97157056f43a409c80",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
+   "sha256": "717c7e99287e7977d1d8c57b78d6c00298bf2529cfd1b59126d5c6e3c52220a9",
+   "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A7-Fallen-Checkliste.pdf": {
+   "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Fallen-Checkliste.docx",
+   "sha256": "db812fe1d58bafda71d7f56f54e4af379c6ba6f30c9cb1a43610755fdca3cf07",
+   "verfahren": "pdf"
+  },
+  "DD_A7-Praesentation_Generalprobe_Handout.pdf": {
+   "quelle": "Akte7_Generalprobe/1_Praesentation/DD_A7_Generalprobe.pptx",
+   "sha256": "ce4a000efe341fe552380e613899b1079dd6848a613594349560d962bf2afde3",
+   "verfahren": "handout"
+  },
+  "DD_A7-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A7.docx",
+   "sha256": "5036ab8c863d43525e7e0f65dbdf4fc43af73cc65c86cae3ebe73beb1922cfa7",
+   "verfahren": "ohne-loesungsteil"
+  },
+  "DD_Ermittler-Handbuch.pdf": {
+   "quelle": "00_Gesamt/DD_Ermittler-Handbuch.docx",
+   "sha256": "0e179d8272182297421bdbb24b4d23a585f8d36ce4cf931d77d4e253ef82f839",
+   "verfahren": "pdf"
+  },
+  "DD_K1-Eigene_Datenbank.pdf": {
+   "quelle": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank.docx",
+   "sha256": "1e6533715461dc1320569e0e5fb266862855f26b41636c0a5c7d8d850b4b69fd",
+   "verfahren": "pdf"
+  },
+  "DD_K2-Escape_Room_Stationen.pdf": {
+   "quelle": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Stationen.docx",
+   "sha256": "11b7f39f97dca9aa9590af883a58272e13bcc605d6f469a4108e6ef47ffc6b61",
+   "verfahren": "pdf"
+  }
+ }
+}

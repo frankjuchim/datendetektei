@@ -62,7 +62,7 @@ test('GET /api/themen ohne Inhalte: sieben Akten „folgt“, Fallen P1–P10, N
 test('GET /api/themen mit Seed: Akten 1–3 mit Ermittlungen, DS, Kompetenzen, Fallen, Anzahl, Verhör; 4–7 folgen', async () => {
   const { app } = mitInhalten();
   const d = (await request(app).get('/api/themen')).body;
-  for (const roh of seedAkten()) {
+  for (const roh of seedAkten().filter((x) => !x.kuer)) {
     const a = d.akten.find((x) => x.nr === roh.welt);
     assert.ok(a, `Akte ${roh.welt}`);
     assert.equal(a.status, 'offen');
@@ -89,7 +89,8 @@ test('GET /api/themen mit Seed: Akten 1–3 mit Ermittlungen, DS, Kompetenzen, F
     assert.equal(a.verhoer.dauerMin, roh.boss.dauerMin);
     assert.deepEqual(a.ds, [...new Set(roh.levels.flatMap((l) => l.ds))]);
   }
-  for (const nr of [4, 5, 6, 7]) assert.equal(d.akten.find((a) => a.nr === nr).status, 'folgt');
+  const vorhanden = new Set(seedAkten().map((x) => x.welt));
+  for (const nr of [4, 5, 6, 7].filter((n) => !vorhanden.has(n))) assert.equal(d.akten.find((a) => a.nr === nr).status, 'folgt');
 });
 
 test('GET /api/themen verrät keine Aufgabentexte, Lösungen, Tipps oder Erklärungen', async () => {
@@ -119,12 +120,18 @@ test('GET /api/themen: Materialliste je Akte nur als Titel „nach Anmeldung“'
   for (const a of d.akten) {
     assert.ok(a.materialien.length >= (a.nr === 7 ? 2 : 3), `Akte ${a.nr}`);
     for (const m of a.materialien) {
-      assert.equal(m.zugang, 'nach Anmeldung');
+      // mit Whitelist-Einträgen (Phase 7) erscheinen Lehrkraft-PDFs als „nach Anmeldung (Lehrkraft)“ (MATERIALIEN.md §7)
+      assert.ok(['nach Anmeldung', 'nach Anmeldung (Lehrkraft)'].includes(m.zugang), m.zugang);
       assert.equal(m.url, undefined);
     }
     const arten = a.materialien.map((m) => m.art);
     for (const art of ['Arbeitsblatt', 'Präsentations-Handout', 'Warm-up-Karten']) {
       if (a.nr === 7 && art === 'Warm-up-Karten') continue;
+      // Akte 7 hat statt Arbeitsblättern die Generalprobe (mit Whitelist-Einträgen als Art „Generalprobe“)
+      if (a.nr === 7 && art === 'Arbeitsblatt') {
+        assert.ok(arten.includes('Arbeitsblatt') || arten.includes('Generalprobe'), `Akte 7: ${arten.join(', ')}`);
+        continue;
+      }
       assert.ok(arten.includes(art), `Akte ${a.nr}: ${art}`);
     }
   }

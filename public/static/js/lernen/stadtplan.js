@@ -1,10 +1,17 @@
 // Stadtplan v1 (Startseite angemeldet, DESIGN.md §5.1, Spec §7.7): eigene SVG-Illustration im Akten-Stil mit sechs
 // Orten für sieben Akten (Detektei = Akte 5 und 7, zweiter Ring), Fortschrittsring je Ort, gesperrte Akten im Nebel,
 // Faden der bearbeiteten Akten; daneben Rang, Steckbrief, Akte-Detail, „Deine Fallen“, Abzeichen und die Pinnwand.
+// Steckbrief und Beweisstücke kommen aus GET /api/kurse/:kurs/pinnwand (Regel E10, Phase 6); die große Pinnwand
+// steht unter /pinnwand.
 // Auf dem Handy ist der Plan waagerecht wischbar, darunter steht die Aktenliste. Ausgaben nur als Textknoten.
 
 const V = new URL(import.meta.url).search;
-const [A, R] = await Promise.all([import('../kern/api.js' + V), import('../kern/render.js' + V)]);
+const [A, R, B, T] = await Promise.all([
+  import('../kern/api.js' + V),
+  import('../kern/render.js' + V),
+  import('./pinnwand_bilder.js' + V),
+  import('./pinnwand_teile.js' + V)
+]);
 const { el, h, svg } = R;
 
 const ORTE = [
@@ -20,19 +27,12 @@ const VIERTEL = [
   ['Altstadt', 60, 232], ['Hafenviertel', 556, 236], ['Mühlenfeld', 680, 350], ['Weserufer', 480, 478],
   ['Nordheide', 40, 470], ['Bahnhofsviertel', 640, 40], ['Lindenhof', 250, 478]
 ];
-const BEWEISE = ['Fundbuch-Seite', 'Schloss-Code', 'Kassenbon', 'Vereinsausweis', 'Ermittlungsnetz', 'Steckbrief', 'Detektei-Lizenz'];
-// Steckbrief (STORY.md 4.8): Hinweise je Akte – sichtbar, wenn die Akte geschlossen oder die nächste freigeschaltet ist.
-const STECKBRIEF_FELDER = ['Initialen', 'Signatur', 'Tarnname', 'Jahrgang', 'Wohnort', 'Gewohnheiten', 'Netzwerk'];
-const HINWEISE = {
-  1: { Initialen: '„N. F.“', Signatur: 'Nachtfalter', Gewohnheiten: 'Zugriff auf städtische Datenbestände' },
-  2: { Tarnname: '„Nora Falter“', Jahrgang: '1988 (unbestätigt)', Wohnort: 'Hafenviertel (unbestätigt)', Gewohnheiten: 'nachts unterwegs' },
-  3: { Jahrgang: '1988 (bestätigt)', Gewohnheiten: 'arbeitet nachts, kennt Kassen', Netzwerk: 'TuS Weserstedt' }
-};
 
 const bereich = document.getElementById('stadtplan-bereich');
 const seite = document.getElementById('seite');
 
 let stand = null;
+let pinnwandDaten = null; // GET …/pinnwand (oder null, wenn nicht verfügbar)
 let akten = []; // je Akte 1–7: { nr, titel, sichtbar, frei, anteil, ermittlungen, verhoer, geschlossen, punkte }
 let gewaehlt = null;
 
@@ -43,7 +43,8 @@ function akteDaten(nr, plan) {
   const niveau = stand.kurs.niveau;
   const sichtbar = !plan || plan.niveaus.includes(niveau);
   if (!s) return { nr, titel: plan ? plan.titel : `Akte ${nr}`, sichtbar, frei: false, geladen: false, anteil: 0, ermittlungen: [], verhoer: null, geschlossen: false, punkte: 0 };
-  const geschlossen = s.ermittlungen.length > 0 && s.ermittlungen.every((e) => e.geloest >= e.anzahl);
+  const mitAufgaben = s.ermittlungen.filter((e) => e.anzahl > 0); // Akte 7: Ermittlung ohne Lab-Aufgaben
+  const geschlossen = mitAufgaben.length > 0 && mitAufgaben.every((e) => e.geloest >= e.anzahl);
   return { ...s, sichtbar, geladen: true, geschlossen };
 }
 
@@ -250,36 +251,12 @@ function rangKarte() {
 }
 
 function steckbrief() {
-  const offen = (nr) => {
-    const a = akten[nr - 1];
-    const naechste = akten[nr];
-    const geschlossen = stand.abzeichen.some((z) => z.id === `akte-geschlossen-${nr}` && z.erhalten);
-    return geschlossen || (naechste && naechste.freigeschaltet) || (a && a.geschlossen);
-  };
-  const felder = {};
-  let anzahl = 0;
-  for (const nr of Object.keys(HINWEISE).map(Number)) {
-    if (!offen(nr)) continue;
-    anzahl++;
-    Object.assign(felder, HINWEISE[nr]);
-  }
-  const box = el('aside', 'karte steckbrief');
-  box.setAttribute('aria-label', 'Steckbrief des Phantoms');
-  box.append(el('p', 'steckbrief-titel', 'Gesucht'), el('p', 'steckbrief-unter etikett', `„Das Phantom“ · ${anzahl} von 6 Hinweisen`));
-  const bild = svg('svg', { viewBox: '0 0 96 128', role: 'img', 'aria-label': anzahl ? 'Silhouette mit Nachtfalter' : 'Silhouette, noch unbekannt' }, 'steckbrief-bild');
-  bild.appendChild(svg('circle', { cx: 48, cy: 52, r: 20 }, 'silhouette-kopf'));
-  bild.appendChild(svg('path', { d: 'M10 128c2-28 18-44 38-44s36 16 38 44z' }, 'silhouette-koerper'));
-  bild.appendChild(svgText('?', { x: 48, y: 61, 'text-anchor': 'middle' }, 'silhouette-frage'));
-  if (anzahl) bild.appendChild(svg('use', { href: '/static/img/icons.svg#i-falter', x: 62, y: 96, width: 26, height: 26 }, 'steckbrief-falter'));
-  const dl = el('dl');
-  for (const f of STECKBRIEF_FELDER) {
-    dl.appendChild(el('dt', null, f));
-    const dd = el('dd', felder[f] ? 'bekannt' : null, felder[f] || '· · ·');
-    if (!felder[f]) dd.setAttribute('aria-label', 'noch unbekannt');
-    dl.appendChild(dd);
-  }
-  box.appendChild(h('div', 'steckbrief-koerper', bild, dl));
-  return box;
+  if (!pinnwandDaten) return null;
+  const karte = T.steckbriefKarte(pinnwandDaten.steckbrief, { kompakt: true });
+  const link = A.linkKnopf('Zur Pinnwand', '/pinnwand', 'knopf');
+  link.id = 'steckbrief-link';
+  karte.appendChild(link);
+  return karte;
 }
 
 function fallenKarte() {
@@ -321,29 +298,31 @@ function abzeichenKarte() {
 }
 
 function pinnwand() {
+  if (!pinnwandDaten) return null;
+  const bs = pinnwandDaten.beweisstuecke;
   const box = el('section', 'pinnwand-bereich');
   box.setAttribute('aria-labelledby', 'pinnwand-titel');
-  const besiegt = akten.filter((a) => a.verhoer && a.verhoer.besiegt);
   const t = el('h2', null, 'Pinnwand der Detektei');
   t.id = 'pinnwand-titel';
-  box.appendChild(h('div', 'abschnitt-kopf', t, el('span', 'etikett', `${besiegt.length} von 7 Beweisstücken`)));
+  const zahl = el('span', 'etikett', `${bs.filter((b) => b.gewonnen).length} von ${bs.length} Beweisstücken`);
+  const link = el('a', 'link-ziel', 'Zur Pinnwand');
+  link.href = '/pinnwand';
+  link.id = 'pinnwand-link';
+  box.appendChild(h('div', 'abschnitt-kopf', t, h('span', 'pinnwand-kopf-rechts', zahl, ' · ', link)));
   const wand = el('ul', 'pinnwand');
-  BEWEISE.forEach((name, i) => {
-    const nr = i + 1;
-    const a = akten[i];
-    const sieg = a && a.verhoer && a.verhoer.besiegt;
-    const li = el('li', 'polaroid' + (sieg ? '' : ' leer'));
-    if (sieg) {
+  for (const b of bs) {
+    const li = el('li', 'polaroid' + (b.gewonnen ? '' : ' leer'));
+    if (b.gewonnen) {
       li.appendChild(el('span', 'nadel'));
-      li.appendChild(h('span', 'polaroid-bild', R.icon('i-notiz')));
-      li.appendChild(el('span', 'polaroid-text', name));
+      li.appendChild(h('span', 'polaroid-bild', B.beweisBild(b.bild, b.titel)));
+      li.appendChild(el('span', 'polaroid-text', b.titel));
     } else {
       li.appendChild(el('span', 'polaroid-frage', '?'));
-      li.appendChild(el('span', 'polaroid-text', nr === 7 ? 'Lizenz' : `Verhör ${nr}`));
+      li.appendChild(el('span', 'polaroid-text', b.akte === 7 ? 'Lizenz' : b.verhoer));
     }
-    li.setAttribute('aria-label', sieg ? `Beweisstück ${name} (Verhör ${nr} gewonnen)` : `Beweisstück ${nr} noch offen`);
+    li.setAttribute('aria-label', b.gewonnen ? `Beweisstück ${b.titel} (${b.verhoer} gewonnen)` : `Beweisstück aus ${b.verhoer} noch offen`);
     wand.appendChild(li);
-  });
+  }
   box.appendChild(wand);
   return box;
 }
@@ -409,6 +388,34 @@ function waehleAkte(nr, vonPlan = false) {
   if (vonPlan && window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) detail.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
+/* ---------- Kür (Phase 6 Task 7): eigener Abschnitt unter dem Plan, nur eA, ohne Rangwirkung ---------- */
+
+function kuerKarte() {
+  const k = stand.akten.find((a) => a.kuer);
+  if (!k) return null; // gA-Kurse sehen die Kür nicht (Spec §3.4)
+  const box = el('section', 'aktendeckel kuer-karte');
+  box.id = 'kuer-karte';
+  box.setAttribute('aria-labelledby', 'kuer-titel');
+  box.appendChild(el('span', 'reiter', 'Kür K1'));
+  const innen = el('div', 'aktendeckel-innen');
+  const t = el('h2', null, k.titel);
+  t.id = 'kuer-titel';
+  innen.appendChild(h('div', 'kuer-kopf', t, R.stempel('KÜR – nicht im Abitur', 'kuer', { groesse: 'klein' })));
+  innen.appendChild(el('p', 'hinweis-klein', 'Detektei-Werkstatt: Tabellen selbst anlegen, Datensätze einfügen, Fremdschlüssel erleben – mit eigener Sandbox. Zählt nicht für deinen Rang.'));
+  if (k.frei) {
+    const e = k.ermittlungen[0];
+    if (e) innen.appendChild(el('p', 'etikett zahlen', `${e.geloest} von ${e.anzahl} erledigt · ${k.punkte} Punkte`));
+    const reihe = el('div', 'knopf-reihe');
+    if (e) reihe.appendChild(A.linkKnopf(e.geloest === 0 ? 'Kür beginnen' : 'Weiter in der Kür', `/ermittlung/${e.id}`, 'knopf'));
+    reihe.appendChild(A.linkKnopf('Kür öffnen', `/akte/${k.nr}`, 'knopf'));
+    innen.appendChild(reihe);
+  } else {
+    innen.appendChild(el('p', 'hinweis-klein', 'Deine Lehrkraft schaltet die Kür frei, wenn Zeit dafür ist.'));
+  }
+  box.appendChild(innen);
+  return box;
+}
+
 /* ---------- Aktenliste (Handy) ---------- */
 
 function aktenListe() {
@@ -452,7 +459,11 @@ async function start() {
   if (!kontext) return;
   let plan;
   try {
-    [stand, plan] = await Promise.all([A.holen(A.kursApi(kontext.kurs.id, '/stand')), A.holen('/api/akten')]);
+    [stand, plan, pinnwandDaten] = await Promise.all([
+      A.holen(A.kursApi(kontext.kurs.id, '/stand')),
+      A.holen('/api/akten'),
+      A.holen(A.kursApi(kontext.kurs.id, '/pinnwand')).catch(() => null)
+    ]);
   } catch (f) {
     seite.replaceChildren(A.fehlerKarte(f, { text: 'Neu laden', href: '/' }));
     return;
@@ -473,7 +484,7 @@ async function start() {
   detail.setAttribute('aria-live', 'polite');
   detail.append(el('span', 'reiter rot', 'Akte'), el('div', 'aktendeckel-innen'));
 
-  const planSpalte = h('div', 'plan-spalte', karte, aktenListe(), pinnwand(), h('div', 'bilanz-raster', fallenKarte(), abzeichenKarte()));
+  const planSpalte = h('div', 'plan-spalte', ...[karte, aktenListe(), kuerKarte(), pinnwand(), h('div', 'bilanz-raster', fallenKarte(), abzeichenKarte())].filter(Boolean));
   const seitenspalte = h('div', 'seitenspalte', rangKarte(), detail, steckbrief());
   const wechsel = A.kursWechselLink(kontext);
   seite.replaceChildren(...[A.vorschauHinweis(kontext), wechsel, h('div', 'stadtplan-raster', planSpalte, seitenspalte)].filter(Boolean));

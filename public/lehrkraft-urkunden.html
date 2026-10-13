@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light">
+  <title>Urkunden „Detektei-Lizenz“ – Datendetektei</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/lehrkraft.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/urkunde.css?v=0.7.0">
+  <script type="module" src="/static/js/lehrkraft/urkunden-seite.js?v=0.7.0"></script>
+</head>
+<body class="urkunden-body">
+  <a class="springen" href="#inhalt">Zum Inhalt springen</a>
+  <header class="kopf nicht-drucken">
+    <a class="marke" href="/lehrkraft" aria-label="Datendetektei Weserstedt – zum Lehrkraft-Bereich">
+      <svg class="marke-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <span class="marke-text"><span class="marke-name">Datendetektei</span><span class="marke-ort">Weserstedt</span></span>
+    </a>
+    <div class="kopf-mitte"><span class="kopf-kurs" id="kopf-kurs"></span></div>
+  </header>
+  <main class="inhalt urkunden-seite" id="inhalt" tabindex="-1">
+    <div class="urkunden-steuerung nicht-drucken" id="ur-steuerung">
+      <div class="seiten-kopf">
+        <span class="etikett">Lehrkraft-Bereich · Urkunden</span>
+        <h1>Detektei-Lizenz drucken</h1>
+        <p>Je Schülerin bzw. Schüler eine A4-Seite. Drucken Sie über „Drucken“ (Hochformat, Ränder „keine“ bzw. „Standard“,
+          Hintergrundgrafiken an).</p>
+      </div>
+      <form class="lk-zeile" id="ur-form">
+        <div class="lk-feld"><label for="ur-ab">Auswahl</label><select class="lk-auswahl" id="ur-ab"></select></div>
+        <div class="lk-feld"><label for="ur-datum">Datum</label><input id="ur-datum" type="date"></div>
+        <div class="lk-feld"><label for="ur-lehrkraft">Unterschrift Lehrkraft</label><input id="ur-lehrkraft" type="text" maxlength="60" autocomplete="off"></div>
+      </form>
+      <div class="knopf-reihe">
+        <button class="knopf primaer" id="ur-drucken" type="button" disabled>Drucken</button>
+        <a class="knopf" id="ur-zurueck" href="/lehrkraft#urkunden">Zurück zum Lehrkraft-Bereich</a>
+        <p class="leise" id="ur-status" aria-live="polite">Urkunden werden vorbereitet …</p>
+      </div>
+    </div>
+    <div class="urkunden" id="ur-urkunden"></div>
+  </main>
+</body>
+</html>

@@ -5,17 +5,17 @@
 
 const LUECKE_RE = /\[\[([A-Za-z0-9_-]{1,40})\]\]/g;
 
-const BLOCK_TYPEN = ['text', 'hinweis', 'code', 'tabelle', 'dbtabelle', 'schema', 'sql', 'datenbank', 'zeitlupe', 'spurenbrett', 'sortierfaecher'];
+const BLOCK_TYPEN = ['text', 'hinweis', 'code', 'tabelle', 'dbtabelle', 'schema', 'sql', 'datenbank', 'zeitlupe', 'spurenbrett', 'sortierfaecher', 'er', 'mengen'];
 /** Blöcke der Verstehenshilfen (Phase 4): rechnen im Browser auf einer öffentlichen Übungs-DB, nie im Verhör. */
 const WERKZEUG_BLOECKE = ['zeitlupe', 'spurenbrett', 'sortierfaecher'];
 /** Klauseln der Zeitlupe in Auswertungsreihenfolge (Block zeitlupe: start). */
 const ZEITLUPE_KLAUSELN = ['FROM', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'ORDER BY', 'LIMIT'];
-/** Blöcke, die erst in Phase 5 gebaut werden (Validator lehnt sie bis dahin ab). */
-const BLOCK_TYPEN_PHASE5 = ['er', 'mengen'];
+/** Blöcke, die erst in Phase 5 gebaut werden – seit Phase 5 Task 2 leer (er, mengen sind in BLOCK_TYPEN). */
+const BLOCK_TYPEN_PHASE5 = [];
 
-const INTERAKTIONEN = ['gaps', 'choice', 'order', 'lines', 'match', 'sql', 'zeilen', 'ergebnis', 'kernpunkte'];
-/** Interaktionen, die erst in Phase 5 gebaut werden. */
-const INTERAKTIONEN_PHASE5 = ['zellen', 'anomalie', 'zerlegen', 'schema', 'er'];
+const INTERAKTIONEN = ['gaps', 'choice', 'order', 'lines', 'match', 'sql', 'zeilen', 'ergebnis', 'kernpunkte', 'zellen', 'anomalie', 'zerlegen', 'schema', 'er'];
+/** Interaktionen, die erst in Phase 5 gebaut werden – seit Phase 5 Task 2 leer (Prüfung in src/content/modellierung.js). */
+const INTERAKTIONEN_PHASE5 = [];
 /** Interaktionen, für die eine Schrittprüfung (teilweise: true) erlaubt ist. */
 const SCHRITT_ARTEN = ['order'];
 

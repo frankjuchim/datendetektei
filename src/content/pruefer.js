@@ -1,10 +1,12 @@
 'use strict';
 // Prüfer je Interaktion (docs/AUFGABENFORMAT.md §6). Prüfung NUR serverseitig.
 // Basis-Interaktionen nach dem Muster von Algo Quest src/content/checker.js; neu: sql (delegiert an einen
-// injizierten SQL-Prüfer, Phase 2 src/sql/pruefer.js), zeilen, ergebnis, kernpunkte.
+// injizierten SQL-Prüfer, Phase 2 src/sql/pruefer.js), zeilen, ergebnis, kernpunkte; Phase 5: zellen, anomalie,
+// zerlegen, schema, er (src/content/modellierung.js auf dem Modellierungs-Kern src/er).
 // Rückmeldungen enthalten nie Lösungsdaten (Vertrag §9).
 
 const F = require('./format');
+const M = require('./modellierung');
 
 class AntwortFehler extends Error {
   constructor(message) {
@@ -17,6 +19,9 @@ class AntwortFehler extends Error {
 const MAX_LISTE = 300;
 const MAX_TEXT = 500;
 const MAX_SQL = 4000;
+/** Kür K1: Schreib-Skripte (sql mit schreiben: true) dürfen länger sein (src/sql/skript.js MAX_SKRIPT). */
+const MAX_SKRIPT = 10000;
+const istSchreiben = (ia) => !!(ia && ia.kind === 'sql' && ia.schreiben === true);
 
 /* ---------- Antworten vereinheitlichen (Objekt-Hüllen wie in der Lösung erlaubt) ---------- */
 
@@ -98,7 +103,7 @@ function bereinige(ia, antwort, aufgabe) {
       return out;
     }
     case 'sql':
-      return text(auspacken(antwort, 'sql'), MAX_SQL);
+      return text(auspacken(antwort, 'sql'), istSchreiben(ia) ? MAX_SKRIPT : MAX_SQL);
     case 'zeilen': {
       const anzahl = zielTabelle(aufgabe, ia).zeilen.length;
       const idx = [...new Set(liste(auspacken(antwort, 'zeilen'), 'Zeilen').map(ganzzahl))];
@@ -128,6 +133,7 @@ function bereinige(ia, antwort, aufgabe) {
       return n;
     }
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.bereinige(ia, antwort, aufgabe);
       throw new AntwortFehler('Unbekannte Interaktion.');
   }
 }
@@ -150,6 +156,7 @@ function istLeer(ia, a, lo) {
     case 'ergebnis':
       return a.every((z) => z.every(zellLeer));
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.istLeer(ia, a, lo);
       return false;
   }
 }
@@ -249,8 +256,16 @@ function pruefeErgebnis(ia, lo, a) {
   return { ok, rueckmeldung: { zeilenzahl, nurReihenfolge: ia.reihenfolge === true && mengeOk && !listeOk } };
 }
 
-/** Aufgabe in der Form, die der SQL-Prüfer aus Phase 2 erwartet. */
+/** Aufgabe in der Form, die der SQL-Prüfer aus Phase 2 erwartet (Kür K1: Schreib-Aufgabe, src/sql/schreibpruefer.js). */
 function sqlAufgabe(ia, lo, abimodus) {
+  if (istSchreiben(ia)) {
+    return {
+      schreiben: true,
+      start: ia.start && typeof ia.start === 'object' ? { datenbank: ia.start.datenbank, skript: ia.start.skript } : null,
+      abimodus: 'aus',
+      loesung: { sql: lo && lo.sql, pruefung: lo && Array.isArray(lo.pruefung) ? lo.pruefung : [] }
+    };
+  }
   return {
     datenbank: ia.datenbank,
     varianten: Array.isArray(ia.varianten) ? ia.varianten : [],
@@ -265,6 +280,12 @@ async function pruefeSql(ia, lo, a, opt) {
   if (a.trim() === '') return { ok: false, rueckmeldung: { diagnose: [], zeilen: 0 } };
   if (typeof opt.sqlPruefer !== 'function') throw new Error('Kein SQL-Prüfer konfiguriert.');
   const r = await opt.sqlPruefer(sqlAufgabe(ia, lo, opt.abimodus), a);
+  if (istSchreiben(ia)) {
+    // Kür K1: Rückmeldung je Prüfpunkt (nur die Texte des Inhalts), Diagnose bei Abbruch des Skripts
+    const diagnose = (r && Array.isArray(r.diagnose) ? r.diagnose : []).map((d) => ({ code: d.code, falle: null, text: d.text, ...(Number.isInteger(d.zeile) ? { zeile: d.zeile } : {}) }));
+    const pruefpunkte = r && Array.isArray(r.pruefpunkte) ? r.pruefpunkte.map((p) => ({ text: String(p.text), ok: p.ok === true })) : null;
+    return { ok: !!(r && r.ok === true), rueckmeldung: { diagnose, pruefpunkte } };
+  }
   const diagnose = (r && Array.isArray(r.diagnose) ? r.diagnose : []).map((d) => ({
     code: d.code,
     falle: d.falle ?? null,
@@ -301,6 +322,7 @@ async function pruefeTeil(ia, lo, a, opt = {}) {
     case 'sql':
       return pruefeSql(ia, lo, a, opt);
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.pruefeTeil(ia, lo, a);
       throw new AntwortFehler('Unbekannte Interaktion.');
   }
 }
@@ -342,7 +364,10 @@ async function pruefeAntwort(aufgabe, antwort, opt = {}) {
     roh = [antwort];
   }
   const antworten = ts.map((t, i) => bereinige(t.interaktion, roh[i], aufgabe));
-  const leer = ts.every((t, i) => istLeer(t.interaktion, antworten[i], t.loesung));
+  // kernpunkte-Teile tragen keine prüfbare Antwort (nur Häkchen nach dem Aufdecken, E7): leer ist eine Antwort, wenn alle
+  // übrigen Teile leer sind; eine reine kernpunkte-Aufgabe ist nie leer.
+  const bewertet = ts.map((t, i) => [t, i]).filter(([t]) => F.artVon(t.interaktion) !== 'kernpunkte');
+  const leer = bewertet.length > 0 && bewertet.every(([t, i]) => istLeer(t.interaktion, antworten[i], t.loesung));
   const ergebnisse = [];
   for (let i = 0; i < ts.length; i++) {
     ergebnisse.push(await pruefeTeil(ts[i].interaktion, ts[i].loesung, antworten[i], { ...opt, teilweise: false }));
@@ -378,6 +403,7 @@ function musterantwortTeil(ia, lo) {
     case 'kernpunkte':
       return (ia.kernpunkte || []).length;
     default:
+      if (M.NEUE_INTERAKTIONEN.includes(F.artVon(ia))) return M.musterantwortTeil(ia, lo);
       return null;
   }
 }
@@ -401,6 +427,7 @@ function antwortKurz(antworten) {
 module.exports = {
   AntwortFehler,
   MAX_SQL,
+  MAX_SKRIPT,
   bereinige,
   istLeer,
   feldRichtig,

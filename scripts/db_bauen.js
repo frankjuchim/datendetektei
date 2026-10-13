@@ -20,6 +20,8 @@
 // (Ordner seed/datenbanken/verhoer/<kontext>/, Modul scripts/db/verhoer_<kontext>.js) und sind vollständig kuratiert.
 // Sie werden mitgebaut und von ladeAlle() mitgeliefert, sind aber NIE öffentlich (/db/ nur über eine Positivliste der
 // Übungs-DBs; der Name enthält einen Schrägstrich und passt schon deshalb auf keine Route /db/:name.sqlite).
+// Prüfungs-Kontexte (Klausur, Nachschreibklausur) heißen `pruefung/<kontext>` (Modul scripts/db/pruefung_<kontext>.js),
+// werden ebenso kuratiert gebaut und geprüft, aber zur Laufzeit gar nicht geladen (nur Material-Prüfung).
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -41,11 +43,14 @@ const REIHENFOLGE = ['fundbuero', 'stadtrad', 'stadtfest', 'tus', 'detektei', 'd
 /** Verhör-Kontexte (nie öffentlich); Name = Pfad unter seed/datenbanken. */
 const VERHOER_DBS = [...require('../src/sql/datenbanken').VERHOER_DATENBANKEN];
 
-/** Alle DBs, die gebaut, geprüft und zur Laufzeit geladen werden. */
-const ALLE_DBS = [...REIHENFOLGE, ...VERHOER_DBS];
+/** Prüfungs-Kontexte (Klausur, Nachschreibklausur; nur Material, nie öffentlich, zur Laufzeit nicht geladen). */
+const PRUEFUNG_DBS = [...require('../src/sql/datenbanken').PRUEFUNG_DATENBANKEN];
+
+/** Alle DBs, die gebaut und geprüft werden (zur Laufzeit geladen: alle außer PRUEFUNG_DBS). */
+const ALLE_DBS = [...REIHENFOLGE, ...VERHOER_DBS, ...PRUEFUNG_DBS];
 
 /** Vollständig kuratierte DBs ohne Generator (basis.sql = schema.sql + pflicht.sql). */
-const KURATIERT = ['tus', 'eisdiele', ...VERHOER_DBS];
+const KURATIERT = ['tus', 'eisdiele', ...VERHOER_DBS, ...PRUEFUNG_DBS];
 
 /** Welche DBs vor einer DB gebaut sein müssen (für --db). */
 const ABHAENGIGKEITEN = { datenspuren: ['fundbuero', 'stadtrad', 'stadtfest', 'tus', 'detektei'] };
@@ -331,6 +336,7 @@ module.exports = {
   SEED_VERZEICHNIS,
   REIHENFOLGE,
   VERHOER_DBS,
+  PRUEFUNG_DBS,
   ALLE_DBS,
   KURATIERT,
   ABHAENGIGKEITEN,
