@@ -50,7 +50,8 @@ test('GET kurse: Lehrkraft sieht nur ihre Kurse mit Einstellungen und Kennzahlen
   assert.equal(k.name, 'Inf-LK 12');
   assert.equal(k.aktiv, true);
   assert.equal(k.nurLesen, false);
-  assert.deepEqual(k.einstellungen, { akten: [9], niveau: 'eA', verhoer: 'auto' });
+  assert.deepEqual(k.einstellungen, { akten: [9], niveau: 'eA', verhoer: 'auto', verhoerAkten: {}, scoreboard: false, beamer: false });
+  assert.deepEqual(k.board, { aktiv: false, schluessel: null });
   assert.equal(k.kennzahlen.schueler, 2);
   assert.equal(k.kennzahlen.anteil, 0);
   // Auswahl für die Oberfläche: Akten 1–7 mit Niveaus
@@ -118,7 +119,7 @@ test('PUT einstellungen: Lehrkraft des Kurses und Superadmin ok; andere Einstell
   H.einstellen(u.db, 'k:17', { scoreboard: true, beamer: true });
   const r = await put(l, 'k:17', GUELTIG);
   assert.equal(r.status, 200);
-  assert.deepEqual(r.body.kurs.einstellungen, { akten: [1, 2], niveau: 'eA', verhoer: 'offen' });
+  assert.deepEqual(r.body.kurs.einstellungen, { akten: [1, 2], niveau: 'eA', verhoer: 'offen', verhoerAkten: {}, scoreboard: true, beamer: true });
   const e = einstellungenIn(u.db, 'k:17');
   assert.deepEqual(e.akten, [1, 2]);
   assert.equal(e.verhoer, 'offen');
@@ -168,8 +169,8 @@ test('PUT einstellungen: Validierung (400 mit deutschem Text, nichts gespeichert
     { niveau: 'GA' },
     { verhoer: 'immer' },
     { verhoer: '' },
-    { akten: [1], scoreboard: true },
-    { akten: [1], beamer: true },
+    { akten: [1], scoreboard: 'an' },
+    { akten: [1], beamer: 1 },
     { akten: [1], unbekannt: 1 },
     { akten: [1, 5], niveau: 'gA' }
   ];

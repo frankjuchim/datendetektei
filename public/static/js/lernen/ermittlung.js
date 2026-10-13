@@ -1,14 +1,16 @@
 // Ermittlung (/ermittlung/:id, DESIGN.md §5.3, Spec §7.7): Briefing und Intro, Aufgabenliste mit Status, Aufgabenkarte
 // mit Konsole (sql) bzw. Interaktionskarte, Tipps, „Lösung zeigen“ mit Bestätigung in der Seite, Feedback-Karte mit
 // Diagnose und Fallen-Plakette, Weiter-Navigation, Cold Case. Geprüft wird nur auf dem Server; Lösung und Erklärung
-// kommen erst nach dem Lösen bzw. Aufdecken.
+// kommen erst nach dem Lösen bzw. Aufdecken. Schlussplädoyer (Phase 6): Schritte tragen „Spur n von m“; nach dem Lösen
+// erscheint das Indiz als Karteikarte, nach dem letzten Schritt Auflösung und Überleitung (Server liefert sie erst dann).
 
 const V = new URL(import.meta.url).search;
-const [A, R, I, K] = await Promise.all([
+const [A, R, I, K, T] = await Promise.all([
   import('../kern/api.js' + V),
   import('../kern/render.js' + V),
   import('../kern/interaktionen.js' + V),
-  import('./konsole_lern.js' + V)
+  import('./konsole_lern.js' + V),
+  import('./pinnwand_teile.js' + V)
 ]);
 const { el, h, knopf } = R;
 
@@ -70,11 +72,49 @@ function zeichneKopf() {
   const stand = el('p', 'ermittlung-stand zahlen', `${e.geloest} von ${e.anzahl} erledigt · ${e.punkte} von ${e.maxPunkte} Punkten`);
   stand.id = 'ermittlung-stand';
   titel.appendChild(stand);
+  const pz = plaedoyerZeile();
+  if (pz) titel.appendChild(pz);
   const liste = el('ol', 'kacheln');
   liste.id = 'aufgaben-kacheln';
   liste.setAttribute('aria-label', 'Aufgaben dieser Ermittlung');
   kopf.append(titel, liste);
   return kopf;
+}
+
+/** Zeile „Schlussplädoyer: x von n Indizien · Zur Pinnwand“ im Kopf (nur Ermittlungen mit Plädoyer). */
+function plaedoyerZeile() {
+  const p = daten.ermittlung.plaedoyer;
+  if (!p) return null;
+  const zeile = el('p', 'pw-schritt-marke');
+  zeile.id = 'plaedoyer-stand';
+  zeile.append(`${p.titel}: ${p.erledigt} von ${p.anzahl} Indizien · `);
+  const link = el('a', null, 'Zur Pinnwand');
+  link.href = '/pinnwand';
+  zeile.appendChild(link);
+  return zeile;
+}
+
+/** Indiz des gelösten Plädoyer-Schritts als Karteikarte; nach dem letzten Schritt Auflösung und Überleitung. */
+function zeigePlaedoyer({ neu = false } = {}) {
+  const alt = document.getElementById('plaedoyer-karte');
+  if (alt) alt.remove();
+  const p = aktuell && aktuell.antwort.plaedoyer;
+  if (!p || p.indiz === undefined) return;
+  const box = el('section', 'pw-plaedoyer');
+  box.id = 'plaedoyer-karte';
+  box.setAttribute('aria-label', `${p.titel}: Indiz ${p.nr}`);
+  const karte = el('div', 'pw-indiz-karte');
+  karte.appendChild(el('span', 'pw-stift'));
+  karte.appendChild(el('p', 'pw-indiz-kopf', `${p.titel} · Indiz ${p.nr} von ${p.anzahl}`));
+  karte.appendChild(R.md(p.indiz));
+  if (!p.abgeschlossen) karte.appendChild(el('p', 'hinweis-klein', `${p.erledigt} von ${p.anzahl} Indizien hängen an der Pinnwand. Löse alle Spuren – dann folgt die Auflösung.`));
+  const link = A.linkKnopf('Zur Pinnwand', '/pinnwand', 'knopf');
+  link.id = 'k-pinnwand';
+  karte.appendChild(h('div', 'knopf-reihe', link));
+  box.appendChild(karte);
+  if (p.abgeschlossen && p.aufloesung) box.appendChild(T.aufloesungKarte(p));
+  aktuell.feedback.after(box);
+  if (neu && p.abgeschlossen) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
 function zeichneBriefing() {
@@ -130,6 +170,8 @@ function zeichneMeta() {
   const meta = aktuell.meta;
   meta.replaceChildren(R.sterne(a.stufe), el('span', 'punkte zahlen', punkteText(z, a)));
   if (aktuell.antwort.coldCase) meta.appendChild(R.stempel('Cold Case', 'kuer', { groesse: 'klein' }));
+  const pl = aktuell.antwort.plaedoyer;
+  if (pl) meta.appendChild(el('span', 'pw-schritt-marke', `${pl.titel} · Spur ${pl.nr} von ${pl.anzahl}`));
   const st = statusStempel(z.status, aktuell.frischGeloest);
   if (st) meta.appendChild(st);
 }
@@ -332,6 +374,9 @@ async function aktualisiereErmittlung() {
   const e = daten.ermittlung;
   const stand = document.getElementById('ermittlung-stand');
   if (stand) stand.textContent = `${e.geloest} von ${e.anzahl} erledigt · ${e.punkte} von ${e.maxPunkte} Punkten`;
+  const alt = document.getElementById('plaedoyer-stand');
+  const neu = plaedoyerZeile();
+  if (alt && neu) alt.replaceWith(neu);
 }
 
 function setzeBeschaeftigt(an) {
@@ -379,6 +424,7 @@ async function pruefen() {
   }
   setzeBeschaeftigt(false);
   aktuell.antwort.zustand = r.zustand;
+  if (r.plaedoyer) aktuell.antwort.plaedoyer = r.plaedoyer;
   aufgabe.feedback(r.rueckmeldung);
   if (r.ok) {
     aktuell.frischGeloest = r.geloest;
@@ -538,6 +584,7 @@ function loesungFragen() {
     try {
       const r = await A.senden(A.kursApi(kurs.id, `/aufgaben/${encodeURIComponent(aktuell.id)}/loesung-zeigen`));
       aktuell.antwort.zustand = r.zustand;
+      if (r.plaedoyer) aktuell.antwort.plaedoyer = r.plaedoyer;
       zeichneMeta();
       zeichneTipps();
       aktualisiereKnoepfe();
@@ -623,6 +670,7 @@ function zeigeLoesung(lo, { neu }) {
     aktuell.knoepfe.kernpunkte.hidden = false;
   }
   if (neu) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  zeigePlaedoyer({ neu });
 }
 
 async function kernpunkteAufdecken() {

@@ -1,7 +1,8 @@
 'use strict';
 // Themenseite aus dem Seed (Spec §7.12, Plan Phase 3 Task 10): GET /api/themen.
 // Je Akte: Titel, Fach, Niveaus, DS, Ermittlungen (DS, Titel, Niveau, Anzahl Aufgaben, Kompetenzen und Fallen
-// zusammengefasst, Aufgabenarten), Verhör-Titel, Materialliste (nur Titel, „nach Anmeldung“, E13).
+// zusammengefasst, Aufgabenarten), Verhör-Titel, Materialliste (Titel, Akte, Niveau, „nach Anmeldung“; Gast-Auswahl
+// mit Link; aus den Whitelists der Materialien, sonst die geplanten Titel; E13).
 // Akten ohne geladene Inhalte erscheinen mit status „folgt“ und den geplanten Ermittlungen (Spec §3.3).
 // NIE: Aufgabentexte, Aufgabentitel, Lösungen, Tipps, Erklärungen, Briefings, Verhör-Pools.
 
@@ -142,10 +143,63 @@ function materialien(nr, ermittlungen) {
   return liste;
 }
 
+/** Anzeigenamen der Material-Arten (Whitelist-Feld art, docs/MATERIALIEN.md). */
+const ART_TITEL = Object.freeze({
+  arbeitsblatt: 'Arbeitsblatt',
+  loesung: 'Lösung',
+  praesentation: 'Präsentation',
+  handout: 'Präsentations-Handout',
+  warmup: 'Warm-up-Karten',
+  handbuch: 'Ermittler-Handbuch',
+  unplugged: 'Unplugged-Vorlage',
+  lehrerhinweise: 'Lehrerhinweise',
+  pruefung: 'Prüfung',
+  erwartungshorizont: 'Erwartungshorizont',
+  gesamt: 'Gesamtmaterial',
+  video: 'Video-Folien',
+  ab: 'Arbeitsblatt',
+  generalprobe: 'Generalprobe',
+  klausur: 'Klausur',
+  kuer: 'Kür'
+});
+
 /**
- * @param {{ inhalte?: object }} opt inhalte = erzeugeInhalte(db) (optional; ohne sie erscheinen alle Akten „folgt“)
+ * Materialliste aus den Whitelists (Phase 6 Task 5, E13): Schüler- und Lehrkraft-Material nur mit Titel, Akte,
+ * Niveau, Art und Zugang („nach Anmeldung“ bzw. „nach Anmeldung (Lehrkraft)“); was in der Gast-Auswahl steht, mit
+ * öffentlichem Link. Keine Dateipfade, keine Originale. id = idVon(pfad) wie in GET /api/material (der Browser
+ * verlinkt damit für Angemeldete). Liefert Map akte → Einträge.
  */
-function erzeugeThemen({ inhalte = null } = {}) {
+function materialAusWhitelist(material) {
+  const nachAkte = new Map();
+  if (!material) return nachAkte;
+  const gast = new Map(material.liste('gast').map((e) => [e.id, e]));
+  const gesehen = new Set();
+  const dazu = (e, zugang, url) => {
+    if (gesehen.has(e.id)) return;
+    gesehen.add(e.id);
+    const akte = e.akte === null || e.akte === undefined ? 0 : e.akte;
+    const m = { id: e.id, art: ART_TITEL[e.art] || 'Material', titel: e.titel, akte, niveau: e.niveau, zugang };
+    if (url) m.url = url;
+    if (!nachAkte.has(akte)) nachAkte.set(akte, []);
+    nachAkte.get(akte).push(m);
+  };
+  for (const [stufe, zugang] of [['schueler', 'nach Anmeldung'], ['lehrkraft', 'nach Anmeldung (Lehrkraft)']]) {
+    for (const e of material.liste(stufe)) {
+      const g = gast.get(e.id);
+      if (g) dazu(e, 'Gast-Auswahl', g.url);
+      else dazu(e, zugang);
+    }
+  }
+  for (const g of gast.values()) dazu(g, 'Gast-Auswahl', g.url);
+  return nachAkte;
+}
+
+/**
+ * @param {{ inhalte?: object, material?: object }} opt inhalte = erzeugeInhalte(db) (optional; ohne sie erscheinen
+ *   alle Akten „folgt“); material = erzeugeMaterial() (optional; ohne Whitelist-Einträge einer Akte bleiben die
+ *   geplanten Titel „nach Anmeldung“)
+ */
+function erzeugeThemen({ inhalte = null, material = null } = {}) {
   function ermittlungAusSeed(akte, l) {
     const kompetenzen = new Set();
     const fallen = new Set();
@@ -178,6 +232,7 @@ function erzeugeThemen({ inhalte = null } = {}) {
   }
 
   function themen() {
+    const ausWhitelist = materialAusWhitelist(material);
     const geladen = new Map((inhalte ? inhalte.akten() : []).map((a) => [a.nr, a]));
     const akten = AKTEN.map((stamm) => {
       const plan = PLAN[stamm.nr] || { fach: '', ermittlungen: [] };
@@ -205,7 +260,7 @@ function erzeugeThemen({ inhalte = null } = {}) {
         ds,
         ermittlungen,
         verhoer,
-        materialien: materialien(stamm.nr, ermittlungen)
+        materialien: ausWhitelist.get(stamm.nr) || materialien(stamm.nr, ermittlungen)
       };
     });
     const niveaus = [
@@ -214,6 +269,8 @@ function erzeugeThemen({ inhalte = null } = {}) {
     ];
     return {
       akten,
+      // Material ohne Akte bzw. akteübergreifend (akte 0) und Kür (aus den Whitelists)
+      materialUebergreifend: [...(ausWhitelist.get(0) || []), ...(ausWhitelist.get('kuer') || [])],
       kuer: KUER.map((k) => ({ ...k })),
       fallen: FALLEN.map((f) => ({ nr: f.nr, titel: f.titel })),
       niveaus

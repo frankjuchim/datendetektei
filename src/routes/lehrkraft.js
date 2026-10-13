@@ -3,19 +3,26 @@
 // in Phase 6).
 //
 //   GET /api/lehrkraft/kurse                          Kurse mit Einstellungen und Kennzahlen (ohne Namen)
-//   PUT /api/lehrkraft/kurse/:kurs/einstellungen      { akten?: [1..7], niveau?: 'eA'|'gA', verhoer?: 'auto'|'offen'|'gesperrt' }
+//   PUT /api/lehrkraft/kurse/:kurs/einstellungen      { akten?: [1..7], niveau?: 'eA'|'gA', verhoer?: 'auto'|'offen'|'gesperrt',
+//                                                       verhoerAkten?: { "<1..7>": 'auto'|'offen'|'gesperrt'|null },
+//                                                       scoreboard?: boolean, beamer?: boolean }
+//   POST /api/lehrkraft/kurse/:kurs/board-schluessel  neuen Board-Schlüssel erzeugen (alter wird ungültig)
+//
+// verhoerAkten: eigener Verhör-Modus je Akte (überschreibt verhoer; null entfernt ihn, Teil-Änderung wird gemischt).
+// beamer: Beamer-Board an/aus; beim ersten Einschalten wird ein Board-Schlüssel erzeugt (Phase 6 Task 3).
 //
 // Rechte: Lehrkraft nur für Kurse, in denen sie laut Mitgliedschaft (aus dem Token) Lehrkraft ist; Superadmin für alle
 // Kurse. Gesperrter Kurs (aktiv = 0): nur lesend (PUT → 403). Fremder und unbekannter Kurs: gleiche Antwort (403).
-// CSRF: pruefeHerkunft (src/app.js) greift für PUT; nur JSON. Weitere Einstellungen (scoreboard, beamer) bleiben.
+// CSRF: pruefeHerkunft (src/app.js) greift für PUT/POST; nur JSON.
 
 const express = require('express');
 const { nurAngemeldet } = require('../kern/sitzung');
 const { istKursId } = require('../kern/verbund');
 const { AKTEN } = require('../domain');
 const { leseEinstellungen } = require('../services/stand');
+const { neuerBoardSchluessel } = require('../services/board');
 
-const FELDER = new Set(['akten', 'niveau', 'verhoer']);
+const FELDER = new Set(['akten', 'niveau', 'verhoer', 'verhoerAkten', 'scoreboard', 'beamer']);
 const NIVEAUS = ['eA', 'gA'];
 const VERHOER_MODI = ['auto', 'offen', 'gesperrt'];
 const AKTEN_NR = new Set(AKTEN.map((a) => a.nr));
@@ -27,8 +34,16 @@ class Fehler extends Error {
   }
 }
 
-/** Nur die drei Einstellungen dieser Seite (Akten sortiert). */
-const sichtbar = (e) => ({ akten: [...e.akten].sort((a, b) => a - b), niveau: e.niveau, verhoer: e.verhoer });
+/** Die Einstellungen dieser Seite (Akten sortiert, verhoerAkten nach Aktennummer). */
+const sichtbar = (e) => ({
+  akten: [...e.akten].sort((a, b) => a - b),
+  niveau: e.niveau,
+  verhoer: e.verhoer,
+  verhoerAkten: Object.fromEntries(Object.entries(e.verhoerAkten || {}).sort((a, b) => Number(a[0]) - Number(b[0]))),
+  scoreboard: e.scoreboard === true,
+  beamer: e.beamer === true
+});
+const istObjekt = (w) => w !== null && typeof w === 'object' && !Array.isArray(w);
 
 /** Änderung prüfen → bereinigte Teil-Einstellungen; Fehler als Fehler(400). */
 function pruefeAenderung(body) {
@@ -52,6 +67,20 @@ function pruefeAenderung(body) {
     if (!VERHOER_MODI.includes(body.verhoer)) throw new Fehler(400, 'Verhöre: nur automatisch, offen oder gesperrt.');
     neu.verhoer = body.verhoer;
   }
+  if ('verhoerAkten' in body) {
+    const v = body.verhoerAkten;
+    const eintraege = istObjekt(v) ? Object.entries(v) : null;
+    const gueltig =
+      eintraege &&
+      eintraege.length <= AKTEN_NR.size &&
+      eintraege.every(([nr, m]) => /^\d{1,2}$/.test(nr) && AKTEN_NR.has(Number(nr)) && (m === null || VERHOER_MODI.includes(m)));
+    if (!gueltig) throw new Fehler(400, 'Verhöre je Akte: Aktennummer 1 bis 7 mit automatisch, offen, gesperrt oder null.');
+    neu.verhoerAkten = Object.fromEntries(eintraege);
+  }
+  for (const k of ['scoreboard', 'beamer']) {
+    if (k in body && typeof body[k] !== 'boolean') throw new Fehler(400, k === 'scoreboard' ? 'Scoreboard: nur an oder aus.' : 'Beamer-Board: nur an oder aus.');
+    if (k in body) neu[k] = body[k];
+  }
   return neu;
 }
 
@@ -67,7 +96,8 @@ function lehrkraftRouten({ db, stand = null }) {
   const router = express.Router();
   const angemeldet = nurAngemeldet(['lehrkraft', 'superadmin']);
 
-  const kursZeile = (kursId) => db.prepare('SELECT kurs_id, name, aktiv, einstellungen FROM kurse WHERE kurs_id = ?').get(kursId);
+  const kursZeile = (kursId) =>
+    db.prepare('SELECT kurs_id, name, aktiv, einstellungen, board_schluessel FROM kurse WHERE kurs_id = ?').get(kursId);
 
   /** Darf die Sitzung den Kurs verwalten? Lehrkraft laut Mitgliedschaft oder Superadmin. */
   function darf(sitzung, kursId) {
@@ -90,14 +120,27 @@ function lehrkraftRouten({ db, stand = null }) {
 
   function kursSicht(z) {
     const aktiv = z.aktiv === 1;
+    const einstellungen = sichtbar(leseEinstellungen(z.einstellungen));
+    const schluessel = z.board_schluessel || null;
     return {
       id: z.kurs_id,
       name: z.name,
       aktiv,
       nurLesen: !aktiv,
-      einstellungen: sichtbar(leseEinstellungen(z.einstellungen)),
+      einstellungen,
+      // Board-Link nur für Lehrkraft/Superadmin des Kurses (diese Route); aktiv = über /board/<schluessel> erreichbar
+      board: { aktiv: aktiv && einstellungen.beamer && !!schluessel, schluessel },
       kennzahlen: kennzahlen(z.kurs_id)
     };
+  }
+
+  /** Kurs zum Schreiben: gültige ID, Recht, aktiv – sonst Fehler. */
+  function schreibbarerKurs(sitzung, kursId) {
+    if (!istKursId(kursId)) throw new Fehler(400, 'Ungültige Kurs-ID.');
+    const z = kursZeile(kursId);
+    if (!z || !darf(sitzung, kursId)) throw new Fehler(403, 'Kein Zugriff auf diesen Kurs.');
+    if (z.aktiv !== 1) throw new Fehler(403, 'Dieser Kurs ist gesperrt – nur Ansehen ist möglich.');
+    return z;
   }
 
   const aktenAuswahl = AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, niveaus: [...a.niveaus] }));
@@ -105,10 +148,10 @@ function lehrkraftRouten({ db, stand = null }) {
   router.get('/api/lehrkraft/kurse', angemeldet, (req, res) => {
     const zeilen =
       req.sitzung.rolle === 'superadmin'
-        ? db.prepare('SELECT kurs_id, name, aktiv, einstellungen FROM kurse ORDER BY kurs_id').all()
+        ? db.prepare('SELECT kurs_id, name, aktiv, einstellungen, board_schluessel FROM kurse ORDER BY kurs_id').all()
         : db
             .prepare(
-              'SELECT k.kurs_id, k.name, k.aktiv, k.einstellungen FROM mitgliedschaften m, kurse k ' +
+              'SELECT k.kurs_id, k.name, k.aktiv, k.einstellungen, k.board_schluessel FROM mitgliedschaften m, kurse k ' +
                 "WHERE m.kurs_id = k.kurs_id AND m.sub = ? AND m.rolle = 'lehrkraft' ORDER BY k.kurs_id"
             )
             .all(req.sitzung.sub);
@@ -118,10 +161,7 @@ function lehrkraftRouten({ db, stand = null }) {
 
   router.put('/api/lehrkraft/kurse/:kurs/einstellungen', angemeldet, (req, res) => {
     const kursId = req.params.kurs;
-    if (!istKursId(kursId)) throw new Fehler(400, 'Ungültige Kurs-ID.');
-    const z = kursZeile(kursId);
-    if (!z || !darf(req.sitzung, kursId)) throw new Fehler(403, 'Kein Zugriff auf diesen Kurs.');
-    if (z.aktiv !== 1) throw new Fehler(403, 'Dieser Kurs ist gesperrt – nur Ansehen ist möglich.');
+    const z = schreibbarerKurs(req.sitzung, kursId);
     const aenderung = pruefeAenderung(req.body);
 
     let roh = {};
@@ -131,11 +171,29 @@ function lehrkraftRouten({ db, stand = null }) {
       roh = {};
     }
     const alt = leseEinstellungen(z.einstellungen);
-    const neu = { ...roh, ...sichtbar(alt), ...aenderung };
+    const bisher = sichtbar(alt);
+    const neu = { ...roh, ...bisher, ...aenderung };
+    if (aenderung.verhoerAkten) {
+      const gemischt = { ...bisher.verhoerAkten, ...aenderung.verhoerAkten };
+      neu.verhoerAkten = Object.fromEntries(Object.entries(gemischt).filter(([, m]) => m !== null));
+    }
     if (aktenOhneNiveau(neu.akten, neu.niveau).length) {
       throw new Fehler(400, 'Akte 5 gibt es nur auf erhöhtem Niveau (eA). Schalten Sie sie vor dem Wechsel zu gA ab.');
     }
-    db.prepare('UPDATE kurse SET einstellungen = ? WHERE kurs_id = ?').run(JSON.stringify(neu), kursId);
+    db.transaction(() => {
+      db.prepare('UPDATE kurse SET einstellungen = ? WHERE kurs_id = ?').run(JSON.stringify(neu), kursId);
+      if (neu.beamer && !z.board_schluessel) {
+        db.prepare('UPDATE kurse SET board_schluessel = ? WHERE kurs_id = ?').run(neuerBoardSchluessel(), kursId);
+      }
+    })();
+    res.set('Cache-Control', 'no-store');
+    res.json({ kurs: kursSicht(kursZeile(kursId)) });
+  });
+
+  router.post('/api/lehrkraft/kurse/:kurs/board-schluessel', angemeldet, (req, res) => {
+    const kursId = req.params.kurs;
+    schreibbarerKurs(req.sitzung, kursId);
+    db.prepare('UPDATE kurse SET board_schluessel = ? WHERE kurs_id = ?').run(neuerBoardSchluessel(), kursId);
     res.set('Cache-Control', 'no-store');
     res.json({ kurs: kursSicht(kursZeile(kursId)) });
   });
