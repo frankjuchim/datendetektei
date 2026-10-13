@@ -153,7 +153,8 @@ test('Block spurenbrett in A2-E1-03: 6 × 4 = 24 Fäden, zeilen-Interaktion, Erk
     await page.waitForSelector('#feedback-richtig', { timeout: 30000 });
     await page.waitForSelector('#loesung-karte .wb-spurenbrett .wb-zaehler-zeile:not([hidden])', { timeout: 30000 });
     assert.equal(await page.textContent('#loesung-karte .wb-spurenbrett .wb-zaehler-zeile'), '6 × 4 = 24 Fäden → 5 bleiben');
-    assert.equal(await page.locator('#loesung-karte .wb-faden.passt').count(), 5);
+    // Fäden zeichnet erst der nächste Animationsframe bzw. ResizeObserver – darauf warten (CI ist langsamer).
+    await page.waitForFunction(() => document.querySelectorAll('#loesung-karte .wb-faden.passt').length === 5, null, { timeout: 30000 });
     assert.match(await page.textContent('#loesung-karte .wb-spurenbrett .wb-hinweis'), /Rad 10/);
     assert.deepEqual(meldungen, []);
   } finally {
