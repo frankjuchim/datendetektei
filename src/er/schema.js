@@ -12,14 +12,16 @@
  *     hinweise: [{ code, text, falle }] }
  *   schueler = relationen bzw. { relationen }
  *   muster   = Liste zulässiger Musterschemata [relationen | { relationen }, …]; ein einzelnes Schema geht auch.
- *   Die beste Musterlösung zählt (gelöst vor meisten richtigen Relationen vor wenigsten Hinweisen).
+ *   Die beste Musterlösung zählt (gelöst vor meisten richtigen Relationen vor wenigsten Hinweisen; Diagnosen
+ *   NM_OHNE_TABELLE/FK_FALSCHE_SEITE zählen nicht als Abzug und entscheiden Gleichstände).
  *   relationen: je Schülerrelation (Reihenfolge und Namen wie abgegeben); fehlend/ueberzaehlig: Anzahl Relationen.
  *   Zuordnung der Relationen: Name (mit Synonymen, Groß/Klein, Plural) bzw. Attributmenge (Jaccard ≥ 0,5),
  *   optimal per ungarischer Methode. Je zugeordneter Relation werden die Attribute gepaart: Name (Synonyme) →
  *   Fremdschlüssel mit derselben Zielrelation (FK-Namen nach Rolle frei: LeiterNr = ErmittlerNr, BekannterNr =
  *   Person2Nr) → einzelner künstlicher Primärschlüssel (FallID = FallNr). fk: true heißt „Ziel egal“.
  *   Hinweiscodes (Texte nennen nur Namen, die der Schüler selbst verwendet hat):
- *     PK_FALSCH (P8), PK_ZUSAMMENGESETZT_FEHLT (P9), FK_FEHLT (P9), FK_ZIEL (P7), FK_FALSCHE_SEITE (P9),
+ *     PK_FALSCH (P8), PK_ZUSAMMENGESETZT_FEHLT (P9), FK_FEHLT (P9), FK_ZIEL (P7), FK_FALSCHE_SEITE (P9; auch für einen
+ *     Fremdschlüssel einer n:m-Beziehung in einer Entitätsrelation, dann mit n:m-Text und zusätzlich NM_OHNE_TABELLE),
  *     FK_ZUVIEL (P9), ATTRIBUT_FEHLT (P9), ATTRIBUT_ZUVIEL (P9), RELATION_UEBERZAEHLIG (P9);
  *     gesamt: RELATION_FEHLT (P9), NM_OHNE_TABELLE (P9, eine fehlende Relation hat einen Primärschlüssel aus ≥ 2
  *     Fremdschlüsseln, d. h. eine n:m- oder ternäre Beziehung blieb ohne eigene Relation).
@@ -53,7 +55,9 @@ const HINWEISE = {
   FK_ZIEL: { falle: 'P7', text: (r, a) => `Der Fremdschlüssel ${q(a)} in ${q(r)} verweist auf die falsche Relation.` },
   FK_FALSCHE_SEITE: {
     falle: 'P9',
-    text: (r, a) => `Der Fremdschlüssel ${q(a)} in ${q(r)} steht auf der falschen Seite: Bei einer 1:n-Beziehung gehört er in die Relation der n-Seite.`,
+    text: (r, a, nm) => (nm
+      ? `Der Fremdschlüssel ${q(a)} gehört nicht in ${q(r)}: Die Beziehung ist n:m – auf keiner Seite passt ein einzelner Wert, sie braucht eine eigene Relation.`
+      : `Der Fremdschlüssel ${q(a)} in ${q(r)} steht auf der falschen Seite: Bei einer 1:n-Beziehung gehört er in die Relation der n-Seite.`),
   },
   FK_ZUVIEL: { falle: 'P9', text: (r, a) => `${q(a)} in ${q(r)} ist hier kein Fremdschlüssel.` },
   ATTRIBUT_FEHLT: { falle: 'P9', text: (r, n) => (n === 1 ? `In ${q(r)} fehlt 1 Attribut.` : `In ${q(r)} fehlen ${n} Attribute.`) },
@@ -65,6 +69,9 @@ const HINWEISE = {
     text: () => 'Eine n:m-Beziehung (oder eine ternäre Beziehung) braucht eine eigene Relation mit zusammengesetztem Primärschlüssel – sie fehlt.',
   },
 };
+
+/** Hinweise, die einen Fehler fachlich benennen statt einen weiteren zu zählen (Tie-Break in gleicheSchemaAb). */
+const TREFFEND = new Set(['NM_OHNE_TABELLE', 'FK_FALSCHE_SEITE']);
 
 function hinweis(code, ...args) {
   return { code, text: HINWEISE[code].text(...args), falle: HINWEISE[code].falle };
@@ -185,6 +192,21 @@ function bewerte(schueler, muster, synonyme) {
     return muster[i].attribute.some((a, k) => zieleM[i][k] === x && p.paar[k] === -1);
   };
 
+  /**
+   * Gehört ein überzähliges Schülerattribut von Relation i (Muster) zu einer fehlenden Beziehungsrelation (n:m, ternär)?
+   * Ja, wenn eine nicht zugeordnete Musterrelation einen FK auf i hat und einen weiteren FK, der zum Attribut passt
+   * (gleiche Zielrelation ≠ i bzw. bei unmarkiertem Attribut gleicher Name).
+   */
+  const nmFremd = (i, b, ziel) => muster.some((r, x) => {
+    if (zuordnung[x] >= 0) return false;
+    const fks = r.attribute.map((a, k) => ({ name: a.name, ziel: zieleM[x][k] })).filter((f) => f.ziel >= 0);
+    const k = fks.findIndex((f) => f.ziel === i);
+    if (k < 0) return false;
+    const andere = fks.filter((_, n) => n !== k);
+    return ziel >= 0 ? andere.some((f) => f.ziel === ziel) : andere.some((f) => kanonisch(f.name, synonyme) === kanonisch(b.name, synonyme));
+  });
+  let nmFalscheSeite = false;
+
   const relationen = schueler.map((s, j) => {
     const i = zuMuster[j];
     if (i < 0) return { name: s.name, ok: false, hinweise: [hinweis('RELATION_UEBERZAEHLIG', s.name)] };
@@ -219,6 +241,10 @@ function bewerte(schueler, muster, synonyme) {
       const b = s.attribute[js];
       const ziel = zieleS[j][js];
       if (b.fk && ziel >= 0 && ziel !== i && fehltFkAuf(ziel, i)) h.push(hinweis('FK_FALSCHE_SEITE', s.name, b.name));
+      else if (((b.fk && ziel >= 0) || (!b.fk && !b.pk)) && nmFremd(i, b, b.fk ? ziel : -1)) {
+        nmFalscheSeite = true;
+        h.push(hinweis('FK_FALSCHE_SEITE', s.name, b.name, true));
+      }
       else h.push(hinweis('ATTRIBUT_ZUVIEL', s.name, b.name));
     }
     return { name: s.name, ok: h.length === 0, hinweise: h };
@@ -227,7 +253,7 @@ function bewerte(schueler, muster, synonyme) {
   const fehlendeMuster = muster.filter((_, i) => zuordnung[i] < 0);
   const hinweise = [];
   if (fehlendeMuster.length) hinweise.push(hinweis('RELATION_FEHLT', fehlendeMuster.length));
-  if (fehlendeMuster.some((r) => r.attribute.filter((a) => a.pk && a.fk).length >= 2)) hinweise.push(hinweis('NM_OHNE_TABELLE'));
+  if (nmFalscheSeite || fehlendeMuster.some((r) => r.attribute.filter((a) => a.pk && a.fk).length >= 2)) hinweise.push(hinweis('NM_OHNE_TABELLE'));
   const ueberzaehlig = relationen.filter((_, j) => zuMuster[j] < 0).length;
   return {
     geloest: schueler.length > 0 && fehlendeMuster.length === 0 && relationen.every((r) => r.ok),
@@ -246,8 +272,12 @@ function gleicheSchemaAb(schueler, muster, optionen = {}) {
   let bestWert = -Infinity;
   for (const m of liste) {
     const erg = bewerte(s, m, synonyme);
-    const anzahl = erg.relationen.reduce((n, r) => n + r.hinweise.length, 0) + erg.hinweise.length;
-    const wert = (erg.geloest ? 1e6 : 0) + erg.relationen.filter((r) => r.ok).length * 1000 - (erg.fehlend + erg.ueberzaehlig) * 1000 - anzahl;
+    // Diagnose-Hinweise (TREFFEND) sind keine zusätzlichen Fehler: Sie zählen nicht als Abzug und geben bei sonst
+    // gleichem Stand den Ausschlag – so erscheint der fachlich treffendste Hinweis, das Urteil bleibt gleich.
+    const alle = erg.relationen.flatMap((r) => r.hinweise).concat(erg.hinweise);
+    const anzahl = alle.filter((h) => !TREFFEND.has(h.code)).length;
+    const treffend = alle.filter((h) => TREFFEND.has(h.code)).length;
+    const wert = (erg.geloest ? 1e6 : 0) + erg.relationen.filter((r) => r.ok).length * 1000 - (erg.fehlend + erg.ueberzaehlig) * 1000 - anzahl + treffend / 100;
     if (wert > bestWert) { bestWert = wert; bestes = erg; }
   }
   if (!bestes) {

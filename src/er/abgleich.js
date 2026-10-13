@@ -23,7 +23,10 @@
  *     entitaeten          alle Entitätstypen gefunden, keine überzähligen
  *     schluessel          je Entitätstyp genau die Schlüsselattribute des Musters (künstlicher Schlüssel darf anders
  *                         heißen: FallID = FallNr); Zwischenentitäten (nm_aufgeloest) beliebig
- *     attribute           je Entitätstyp genau die Attribute des Musters (fehlende Entitätstypen zählen als falsch)
+ *     attribute           je Entitätstyp genau die Attribute des Musters (fehlende Entitätstypen zählen als falsch);
+ *                         falle P9, wenn ein überzähliges Attribut wie ein Fremdschlüssel aussieht (Schlüssel eines
+ *                         anderen Entitätstyps oder künstlicher Name wie MentorNr, nicht als Schlüssel markiert);
+ *                         ein Beziehungsattribut am falschen Beziehungstyp heißt „gehört zu einem anderen …“
  *     beziehungen         alle Beziehungstypen gefunden (über die verbundenen Entitätstypen; Name frei), keine überzähligen
  *     kardinalitaeten     alle Beziehungstypen gefunden und je Ende strukturell richtig (1 vs. viele; n/m/p gleich),
  *                         Richtung zählt; rekursiv: Rollen legen die Zuordnung fest, sonst beste Zuordnung
@@ -158,7 +161,7 @@ function wende(muster, auswahl) {
     const b = g.beziehungen.find((x) => x.id === original.id);
     if (art === 'ns') {
       const nSeite = g.entitaeten.find((e) => e.id === b.enden.find((x) => x.kard === 'viele').entitaet);
-      nSeite.attribute.push(...b.attribute.map((a) => ({ name: a.name, schluessel: false })));
+      nSeite.attribute.push(...b.attribute.map((a) => ({ name: a.name, schluessel: false, ausBeziehung: true })));
       b.attribute = [];
     } else {
       const zid = `~z:${b.id}`;
@@ -429,9 +432,19 @@ function bewerte(s, m, syn, auswahl) {
       return false;
     });
   }
+  // Attribute, die nur durch attribut_an_n_seite beim Entitätstyp stehen (ursprünglich Beziehungsattribute)
+  const verschobeneNamen = new Set(m.entitaeten.filter((e) => !e.zwischen)
+    .flatMap((e) => e.attribute.filter((a) => a.ausBeziehung).map((a) => kanonisch(a.name, syn))));
+  const echteEntAttr = new Set(m.entitaeten.filter((e) => !e.zwischen)
+    .flatMap((e) => e.attribute.filter((a) => !a.ausBeziehung).map((a) => kanonisch(a.name, syn))));
   for (const t of traeger) {
     t.zuviel = t.zuviel.filter((a) => {
       const k = kanonisch(a.name, syn);
+      // Beziehungsattribut am falschen Beziehungstyp (auch nach Verschiebung auf die n-Seite)
+      if ((bezAttrNamen.has(k) || verschobeneNamen.has(k)) && !echteEntAttr.has(k)) {
+        fehlplatziert.push(`${q(a.name)} an ${t.name} gehört zu einem anderen Beziehungstyp bzw. Element des Bauplans.`);
+        return false;
+      }
       if (!entAttrNamen.has(k) || bezAttrNamen.has(k)) return true;
       fehlplatziert.push(`${q(a.name)} an ${t.name} beschreibt einen Entitätstyp, nicht die Beziehung.`);
       for (const p of normalePaare) if (entfernen(p.fehlend, k)) break;
@@ -494,15 +507,30 @@ function bewerte(s, m, syn, auswahl) {
   {
     const teile = [];
     let richtig = 0;
+    let fremdschluessel = false;
+    // Schlüsselattribute aller Muster-Entitätstypen (für „Fremdschlüssel als Attribut“)
+    const schluesselVon = new Map(m.entitaeten.filter((e) => !e.zwischen)
+      .map((e) => [e.id, new Set(e.attribute.filter((a) => a.schluessel).map((a) => kanonisch(a.name, syn)))]));
+    const sieht = (p, a) => {
+      if (a.schluessel) return false;
+      const k = kanonisch(a.name, syn);
+      for (const [id, menge] of schluesselVon) if (id !== p.me.id && menge.has(k)) return true;
+      return kuenstlich(a.name); // Verweis mit Rollennamen (MentorNr, LeiterNr)
+    };
     for (const p of normalePaare) {
       const ok = !p.fehlend.length && !p.zuviel.length;
       if (ok) { richtig++; teile.push({ ok, text: `${p.name}: Attribute vollständig.` }); continue; }
       if (p.fehlend.length) teile.push({ ok: false, text: `${p.name}: ${anzahl(p.fehlend.length, 'Attribut fehlt', 'Attribute fehlen')}.` });
-      for (const a of p.zuviel) teile.push({ ok: false, text: `${p.name}: Attribut ${q(a.name)} gehört nicht dazu.` });
+      for (const a of p.zuviel) {
+        if (sieht(p, a)) {
+          fremdschluessel = true;
+          teile.push({ ok: false, text: `${p.name}: Attribut ${q(a.name)} sieht wie ein Fremdschlüssel aus – ein Verweis auf einen Entitätstyp wird im ER-Diagramm ein Beziehungstyp, kein Attribut.` });
+        } else teile.push({ ok: false, text: `${p.name}: Attribut ${q(a.name)} gehört nicht dazu.` });
+      }
     }
     const gesamt = m.entitaeten.filter((e) => !e.zwischen).length;
     const ok = richtig === gesamt;
-    fuege('attribute', ok, ok ? 'Alle Attribute der Entitätstypen vollständig.' : `${richtig} von ${gesamt} Entitätstypen mit passenden Attributen.`, teile);
+    fuege('attribute', ok, ok ? 'Alle Attribute der Entitätstypen vollständig.' : `${richtig} von ${gesamt} Entitätstypen mit passenden Attributen.`, teile, fremdschluessel ? 'P9' : undefined);
   }
   // beziehungen
   {
