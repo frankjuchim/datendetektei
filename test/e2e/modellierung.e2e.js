@@ -5,7 +5,7 @@
 //   A4-E2-06 Zerlegungs-Puzzle (erst falsch mit Hinweis je Tabelle, dann richtig)
 //   A5-E2-07 Bauplan-Tisch im Zeichenmodus (Lena) und im Listenmodus nur per Tastatur (Mika)
 //   A5-E3-04 Schema-Werkbank (erst falsch mit Rückmeldung, dann richtig)
-//   Verhör 5: starten, eine er-/schema-Aufgabe beantworten – ohne Rückmeldung
+//   Verhör 5: starten, je eine gezogene er- und schema-Aufgabe beantworten – ohne Rückmeldung
 //   gA-Kurs: Akte 5 weder auf dem Stadtplan noch auf der Akte-Seite noch in der API; A4-E2-06…08 und der Cold Case
 //   A4-E2-CC fehlen.
 // Je Zustand: kein horizontales Scrollen der Seite bei 1024 × 768, 768 × 1024, 375 × 812 und 1920 × 1080; keine
@@ -445,7 +445,7 @@ test('Schema-Werkbank A5-E3-04: n:m und rekursiv überführen – erst Rückmeld
 
 /* ================= Verhör 5 ================= */
 
-test('Verhör 5: starten, er-/schema-Aufgabe beantworten – keine Rückmeldung', { timeout: 180000 }, async () => {
+test('Verhör 5: starten, er- und schema-Aufgaben beantworten – keine Rückmeldung', { timeout: 180000 }, async () => {
   const { context, page, meldungen } = await neueSeite(LENA);
   try {
     await page.goto(server.url + '/verhoer/5');
@@ -456,35 +456,46 @@ test('Verhör 5: starten, er-/schema-Aufgabe beantworten – keine Rückmeldung'
     const anzahl = await kacheln.count();
     assert.equal(anzahl, AKTE5.boss.anzahl);
     const karte = page.locator('#verhoer-aufgabe');
-    let art = null;
-    for (let i = 0; i < anzahl && !art; i++) {
+    const zeige = async (i) => {
       await kacheln.nth(i).click();
       await page.waitForFunction((n) => /Aufgabe (\d+) von/.exec(document.getElementById('verhoer-zaehler').textContent)?.[1] === String(n), i + 1);
       await page.waitForTimeout(200);
-      if (await karte.locator('.bauplan').count()) art = 'er';
-      else if (await karte.locator('.werkbank').count()) art = 'schema';
+    };
+    // je Art (er, schema) die erste gezogene Aufgabe beantworten
+    const arten = new Map();
+    for (let i = 0; i < anzahl; i++) {
+      await zeige(i);
+      if (!arten.has('er') && (await karte.locator('.bauplan').count())) arten.set('er', i);
+      else if (!arten.has('schema') && (await karte.locator('.werkbank').count())) arten.set('schema', i);
     }
-    assert.ok(art, 'Verhör 5 enthält eine er- oder schema-Aufgabe (Stufe 3 besteht nur daraus)');
-    // Antwort gespeichert – die Server-Antwort enthält keine Rückmeldung
-    const antwort = page.waitForResponse((r) => r.url().includes('/verhoere/5/antwort') && r.request().method() === 'POST');
-    if (art === 'er') {
-      const tisch = karte.locator('.bauplan');
-      await tisch.locator('[data-ansicht="liste"]').click();
-      await tisch.locator('.bp-liste [data-aktion="entitaet"]').click();
-      await page.keyboard.type('Wettkampf');
-    } else {
-      await karte.locator('.werkbank [data-aktion="relation"]').click();
-      await page.keyboard.type('Wettkampf');
+    assert.ok(arten.size >= 1, 'Verhör 5 enthält eine er- oder schema-Aufgabe (Stufe 3 besteht nur daraus)');
+    let beantwortet = 0;
+    for (const [art, i] of arten) {
+      await zeige(i);
+      // Antwort gespeichert – die Server-Antwort enthält keine Rückmeldung
+      const antwort = page.waitForResponse((r) => r.url().includes('/verhoere/5/antwort') && r.request().method() === 'POST');
+      if (art === 'er') {
+        const tisch = karte.locator('.bauplan');
+        await tisch.locator('[data-ansicht="liste"]').click();
+        await tisch.locator('.bp-liste [data-aktion="entitaet"]').click();
+        await page.keyboard.type('Wettkampf');
+      } else {
+        const wb = karte.locator('.werkbank');
+        await wb.locator('[data-aktion="relation"]').click();
+        await page.keyboard.type('Wettkampf');
+        await wb.locator('.wk-karte').last().locator('.wk-attr-feld').first().fill('WettkampfNr');
+      }
+      await page.click('#k-speichern');
+      const r = await antwort;
+      const body = await r.json();
+      assert.equal(r.status(), 200, `${art}: ${JSON.stringify(body)}`);
+      assert.doesNotMatch(JSON.stringify(body), /kriterien|rueckmeldung|loesung|muster|geloest/i);
+      await page.waitForSelector('#toast.sichtbar');
+      assert.match(await page.locator('#toast').textContent(), /Antwort gespeichert\./);
+      assert.equal(await karte.locator('.bp-ergebnis:visible, .wk-ergebnis:visible, .feedback, .stempel, .bp-loesung:visible, .wk-loesung:visible').count(), 0, 'keine Rückmeldung im Verhör');
+      beantwortet++;
+      await page.waitForFunction((n) => document.querySelectorAll('#verhoer-kacheln .kachel.beantwortet').length === n, beantwortet);
     }
-    await page.click('#k-speichern');
-    const r = await antwort;
-    const body = await r.json();
-    assert.equal(r.status(), 200);
-    assert.doesNotMatch(JSON.stringify(body), /kriterien|rueckmeldung|loesung|muster|geloest/i);
-    await page.waitForSelector('#toast.sichtbar');
-    assert.match(await page.locator('#toast').textContent(), /Antwort gespeichert\./);
-    assert.equal(await karte.locator('.bp-ergebnis:visible, .wk-ergebnis:visible, .feedback, .stempel, .bp-loesung:visible, .wk-loesung:visible').count(), 0, 'keine Rückmeldung im Verhör');
-    assert.equal(await page.locator('#verhoer-kacheln .kachel.beantwortet').count(), 1);
     assert.deepEqual(meldungen, []);
   } finally {
     await context.close();
