@@ -59,7 +59,7 @@ scripts/       vertrag_pruefen.js (UNVERÄNDERT aus labs), validate.js, db_bauen
 test/          node:test + supertest; fixtures/akte_beispiel.json; e2e/ (Playwright)
 ```
 
-## Befehle (Stand Phase 7)
+## Befehle (Stand Phase 8)
 
 ```
 npm install
@@ -117,6 +117,14 @@ nur eA, keine Verbund-Welt). Neue Tabellen müssen vom Verbund-Löschauftrag erf
 Werkzeugseiten (ohne Anmeldung, ohne Prüfung, Entwurf im `localStorage`): `/werkzeug/bauplan` (Bauplan-Tisch, ER in
 Chen-Notation, Zeichnen + Liste), `/werkzeug/werkbank` (Schema-Werkbank); angemeldet bzw. mit `?db=eisdiele`:
 `/werkzeug/zeitlupe`, `/werkzeug/spurenbrett`, `/werkzeug/sortierfaecher`. ER-Layouts in Akten: `test/chen_layout.test.js` prüft Überlappungen.
+
+**Phase 8 (Probelauf):** Regressionstests `test/e2e/probelauf8_*.e2e.js`, Screenshots `docs/screenshots/phase8/`,
+Sicherheitsprüfung `docs/SICHERHEIT_PRUEFUNG.md`, `docs/ANLEITUNG_LEHRKRAFT.md`, `docs/PROBELAUF.md`. Anrede: Lehrkraft-
+Seiten tragen `<html data-anrede="sie">` (Standardtexte aus `kern/api.js` gesiezt); Widget-Bedienhinweise im Verhör über
+die Option `sie` von `erzeugeAufgabe` (Lab geduzt). `test/datenschutz.test.js` verlangt, dass jede neue Tabelle, jedes
+Cookie und jeder `dd-`/`dd_`-Gerätespeicher-Schlüssel auf `/datenschutz` genannt wird. Rate-Limits je IP so bemessen,
+dass eine Klasse hinter einer Schul-NAT nicht ausgesperrt wird (`/sso` 300/min). Im Betrieb (`NODE_ENV=production`)
+startet der Server nicht mit dem Entwicklungsschlüssel aus `test/fixtures`.
 
 ## Konventionen
 
@@ -195,4 +203,5 @@ P10 Operator verfehlt.
 | Beamer-Board | immer dunkel |
 | Akte 7 auf dem Stadtplan | am Detektei-Gebäude (zweiter Ring) |
 | Kontrastprüfung in CI | ja, `scripts/kontrast_pruefen.js` (Phase 1, Design-Grundlagen) |
-| Lizenz Materialien | offen (Vorschlag CC BY-NC-SA 4.0) – vor Veröffentlichung klären |
+| Lizenz | vorläufig `LIZENZ.md`: Materialien/Inhalte CC BY-NC-SA 4.0, Code alle Rechte vorbehalten – Bestätigung offen |
+| Schulangaben `/datenschutz` | Platzhalter `[…]` (Klasse `platzhalter`) bis die Schule sie liefert |

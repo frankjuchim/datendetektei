@@ -7,9 +7,10 @@ Der Kurs arbeitet als Ermittlerteam der *Datendetektei Weserstedt*: Mit SQL werd
 Vereinsarchiv zeigt, warum Datenbanken gut modelliert sein müssen, die Detektei entwirft ihre eigene Fall-Datenbank –
 und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, was Datenschutz eigentlich schützt.
 
-> **Status:** Phasen 1–6 umgesetzt (Kern, SQL-Engine, Lernkern mit Akten 1–3, Visualisierungen, Akten 4–5 mit
-> Modellierung, Akten 6–7 mit Schlussplädoyer und Pinnwand, Kür K1, Live-Modus, Lehrkraft-Bereich mit Beamer-Board und
-> Urkunden; Version 0.6.0). Weitere Phasen nach `docs/superpowers/plans/`.
+> **Status:** Phasen 1–8 umgesetzt (Kern, SQL-Engine, Lernkern mit Akten 1–3, Visualisierungen, Akten 4–5 mit
+> Modellierung, Akten 6–7 mit Schlussplädoyer und Pinnwand, Kür K1, Live-Modus, Lehrkraft-Bereich, Materialien und
+> Videos, Probelauf und Feinschliff; Version 0.8.0). Als Nächstes: Probelauf im Unterricht ([`docs/PROBELAUF.md`](docs/PROBELAUF.md)),
+> danach 1.0.0.
 
 ## Überblick
 
@@ -28,6 +29,8 @@ und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, wa
 - Story-Bibel: [`docs/STORY.md`](docs/STORY.md) · Design-System: [`docs/DESIGN.md`](docs/DESIGN.md) · Prototyp: [`docs/prototyp/`](docs/prototyp/)
 - Datenbanken: [`seed/datenbanken/`](seed/datenbanken/)
 - Materialien (Design-Modul, Pipeline, Whitelists, Video-Links): [`docs/MATERIALIEN.md`](docs/MATERIALIEN.md) · [`materialien/LIESMICH.md`](materialien/LIESMICH.md)
+- Für Lehrkräfte: [`docs/ANLEITUNG_LEHRKRAFT.md`](docs/ANLEITUNG_LEHRKRAFT.md) · Probelauf: [`docs/PROBELAUF.md`](docs/PROBELAUF.md)
+- Sicherheitsprüfung: [`docs/SICHERHEIT_PRUEFUNG.md`](docs/SICHERHEIT_PRUEFUNG.md) · Lizenz: [`LIZENZ.md`](LIZENZ.md)
 - Arbeitsregeln für Claude Code: [`CLAUDE.md`](CLAUDE.md)
 
 ## Verbund InfoLabs
