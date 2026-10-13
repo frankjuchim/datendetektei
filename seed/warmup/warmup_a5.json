@@ -118,6 +118,71 @@
         "DB-K40"
       ],
       "falle": []
+    },
+    {
+      "id": "W-A5-09",
+      "akte": 5,
+      "kategorie": "Überführung",
+      "titel": "1:n überführen",
+      "aufgabe": "Überführe Ermittler —1— *leitet* —n— Fall in die Kurzschreibweise und begründe, in welcher Relation der Fremdschlüssel steht.",
+      "loesung": "Ermittler(ErmittlerNr, Name, Dienstgrad) · Fall(FallNr, Titel, Eroeffnet, Status, **↑LeiterNr**) – Primärschlüssel unterstrichen. Der Fremdschlüssel gehört auf die **n-Seite**: Jeder Fall hat genau eine Leitung, also steht in jeder Fall-Zeile genau ein Wert. In Ermittler bräuchte eine Ermittlerin mit drei Fällen drei Werte in einer Zelle.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K41",
+        "DB-K42"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-10",
+      "akte": 5,
+      "kategorie": "Überführung",
+      "titel": "n:m überführen",
+      "aufgabe": "Überführe Schueler —n— *belegt* —m— Kurs mit dem Attribut Note in die Kurzschreibweise.",
+      "loesung": "Schueler(SchuelerNr, Name) · Kurs(KursNr, Titel) · **belegt(↑SchuelerNr, ↑KursNr, Note)** – eigene Relation, Primärschlüssel aus beiden Fremdschlüsseln (beide unterstrichen), die Note als Beziehungsattribut in diese Relation. Ein Fremdschlüssel in Schueler oder Kurs reicht bei n:m nicht.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K41"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-11",
+      "akte": 5,
+      "kategorie": "Überführung",
+      "titel": "Rückwärts",
+      "aufgabe": "Skizziere aus `Spiel(SpielNr, Datum, ↑HeimNr, ↑GastNr)` und `Team(TeamNr, Name)` das ER-Diagramm (beide Fremdschlüssel verweisen auf Team).",
+      "loesung": "Entitätstypen **Team** (TeamNr unterstrichen, Name) und **Spiel** (SpielNr unterstrichen, Datum). Zwei Fremdschlüssel auf Team → **zwei** Beziehungstypen: Team 1 — *spieltHeim* — n Spiel und Team 1 — *spieltGast* — n Spiel. HeimNr und GastNr werden im ER-Diagramm keine Attribute.",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K43",
+        "DB-K38"
+      ],
+      "falle": [
+        "P9"
+      ]
+    },
+    {
+      "id": "W-A5-12",
+      "akte": 5,
+      "kategorie": "SQL Verbund",
+      "titel": "Self-Join",
+      "aufgabe": "Notiere eine Abfrage, die zu jedem Ermittler den Namen seines Mentors ausgibt (`Ermittler(ErmittlerNr, Name, Dienstgrad, ↑MentorNr)`).",
+      "loesung": "Die Tabelle Ermittler wird zweimal mit verschiedenen Aliasen verwendet und über `e.MentorNr = m.ErmittlerNr` verbunden. Ohne Aliase wäre `Name` mehrdeutig. Edda Lorenz und Ulf Witte erscheinen nicht – sie haben keinen Mentor (NULL).",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K24",
+        "DB-K16"
+      ],
+      "falle": [
+        "P7"
+      ],
+      "datenbank": "detektei",
+      "loesungSql": "SELECT e.Name AS Ermittler, m.Name AS Mentor\nFROM Ermittler e, Ermittler m\nWHERE e.MentorNr = m.ErmittlerNr\nORDER BY m.Name"
     }
   ]
 }
