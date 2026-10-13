@@ -497,6 +497,117 @@
    "art": "warmup",
    "fassung": "schueler",
    "niveau": "beide"
+  },
+  {
+   "datei": "Akte6_Datenspuren/2_Arbeitsblaetter/DD_A6_AB1_Das_Phantom.docx",
+   "titel": "AB 6.1 · Das Phantom",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "ab",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Akte6_Datenspuren/5_Loesungen/DD_A6_AB1_Das_Phantom_LSG.docx",
+   "titel": "AB 6.1 · Das Phantom – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
+   "titel": "Präsentation Datenspuren",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "praesentation",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Steh_auf_wenn.docx",
+   "titel": "Unplugged: Steh auf, wenn …",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Steh_auf_wenn_LSG.docx",
+   "titel": "Unplugged: Steh auf, wenn … – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Rollenkarten-Debatte.docx",
+   "titel": "Unplugged: Rollenkarten-Debatte „Durfte die Detektei das?“",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "schueler",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Rollenkarten-Debatte_LSG.docx",
+   "titel": "Unplugged: Rollenkarten-Debatte „Durfte die Detektei das?“ – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Akte6_Datenspuren/4_Lehrerhinweise/DD_A6_Lehrerhinweise.docx",
+   "titel": "Lehrerhinweise Akte 6",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "Warm-up/DD_Warm-up-Karten_A6.docx",
+   "titel": "Warm-up-Karten Akte 6",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "warmup",
+   "fassung": "schueler",
+   "niveau": "beide"
   }
  ]
 }

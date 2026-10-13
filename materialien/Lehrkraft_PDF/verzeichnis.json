@@ -92,6 +92,30 @@
     7,
     8
    ]
+  },
+  {
+   "datei": "DD_A6-Praesentation_Datenspuren.pdf",
+   "titel": "Präsentation Datenspuren (mit Notizen)",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "praesentation",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Lehrerhinweise.pdf",
+   "titel": "Lehrerhinweise Akte 6",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "lehrerhinweise",
+   "fassung": "lehrkraft",
+   "niveau": "beide",
+   "ds": [
+    12
+   ]
   }
  ]
 }

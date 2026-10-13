@@ -188,6 +188,54 @@
    "art": "warmup",
    "fassung": "loesung",
    "niveau": "beide"
+  },
+  {
+   "datei": "DD_A6-AB1_Das_Phantom_Loesung.pdf",
+   "titel": "AB 6.1 · Das Phantom – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "ab",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Unplugged_Steh_auf_wenn_Loesung.pdf",
+   "titel": "Unplugged: Steh auf, wenn … – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Unplugged_Rollenkarten-Debatte_Loesung.pdf",
+   "titel": "Unplugged: Rollenkarten-Debatte „Durfte die Detektei das?“ – Lösung",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "unplugged",
+   "fassung": "loesung",
+   "niveau": "beide",
+   "ermittlung": "A6-E1",
+   "ds": [
+    12
+   ]
+  },
+  {
+   "datei": "DD_A6-Warm-up-Karten_Loesungen.pdf",
+   "titel": "Warm-up-Karten Akte 6 – mit Lösungen",
+   "akte": 6,
+   "gruppe": "A6",
+   "art": "warmup",
+   "fassung": "loesung",
+   "niveau": "beide"
   }
  ]
 }

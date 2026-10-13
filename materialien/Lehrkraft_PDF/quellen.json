@@ -40,6 +40,16 @@
    "quelle": "Akte4_Vereinsarchiv/1_Praesentation/DD_A4_Vereinsarchiv.pptx",
    "sha256": "e2fa3c40398fcbce136506fc80a3027b211cc1617e0abb65ec3a4f057259cc2b",
    "verfahren": "notizen"
+  },
+  "DD_A6-Lehrerhinweise.pdf": {
+   "quelle": "Akte6_Datenspuren/4_Lehrerhinweise/DD_A6_Lehrerhinweise.docx",
+   "sha256": "bcfa046b6a39ba722958281cf400f39dae0e9c21bbc34ea309231f8231c3949f",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Praesentation_Datenspuren.pdf": {
+   "quelle": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
+   "sha256": "d03c6b4c4b5497cdb0c1a1a8d1eac64cc36355b48856c3eae865cb5bff37b933",
+   "verfahren": "notizen"
   }
  }
 }

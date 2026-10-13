@@ -358,7 +358,72 @@
    "akte": 6,
    "ordner": "Akte6_Datenspuren",
    "titel": "Akte 6 · Datenspuren",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "ab",
+     "nr": "6.1",
+     "ermittlung": "A6-E1",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Das Phantom",
+     "quelle": "Akte6_Datenspuren/2_Arbeitsblaetter/DD_A6_AB1_Das_Phantom.docx",
+     "loesung": "Akte6_Datenspuren/5_Loesungen/DD_A6_AB1_Das_Phantom_LSG.docx",
+     "datei": "DD_A6-AB1_Das_Phantom.pdf"
+    },
+    {
+     "art": "praesentation",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Präsentation Datenspuren",
+     "quelle": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
+     "datei": "DD_A6-Praesentation_Datenspuren.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A6-E1",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Steh auf, wenn …",
+     "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Steh_auf_wenn.docx",
+     "loesung": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Steh_auf_wenn_LSG.docx",
+     "datei": "DD_A6-Unplugged_Steh_auf_wenn.pdf"
+    },
+    {
+     "art": "unplugged",
+     "ermittlung": "A6-E1",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Unplugged: Rollenkarten-Debatte „Durfte die Detektei das?“",
+     "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Rollenkarten-Debatte.docx",
+     "loesung": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Rollenkarten-Debatte_LSG.docx",
+     "datei": "DD_A6-Unplugged_Rollenkarten-Debatte.pdf"
+    },
+    {
+     "art": "lehrerhinweise",
+     "ds": [
+      12
+     ],
+     "niveau": "beide",
+     "titel": "Lehrerhinweise Akte 6",
+     "quelle": "Akte6_Datenspuren/4_Lehrerhinweise/DD_A6_Lehrerhinweise.docx",
+     "datei": "DD_A6-Lehrerhinweise.pdf"
+    },
+    {
+     "art": "warmup",
+     "niveau": "beide",
+     "titel": "Warm-up-Karten Akte 6",
+     "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
+     "datei": "DD_A6-Warm-up-Karten.pdf"
+    }
+   ]
   },
   {
    "gruppe": "A7",

@@ -125,6 +125,31 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
    "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
    "verfahren": "ohne-loesungsteil"
+  },
+  "DD_A6-AB1_Das_Phantom.pdf": {
+   "quelle": "Akte6_Datenspuren/2_Arbeitsblaetter/DD_A6_AB1_Das_Phantom.docx",
+   "sha256": "412d8fbbbe6793f58d5f7a529bb3e539312234e7e35634216728af2453dba003",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Praesentation_Datenspuren_Handout.pdf": {
+   "quelle": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
+   "sha256": "d03c6b4c4b5497cdb0c1a1a8d1eac64cc36355b48856c3eae865cb5bff37b933",
+   "verfahren": "handout"
+  },
+  "DD_A6-Unplugged_Rollenkarten-Debatte.pdf": {
+   "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Rollenkarten-Debatte.docx",
+   "sha256": "699388b2fc358a5888753f0930dafa082ac030a588f694b8a91c9da946d23084",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Unplugged_Steh_auf_wenn.pdf": {
+   "quelle": "Akte6_Datenspuren/3_Unplugged/DD_A6_Unplugged_Steh_auf_wenn.docx",
+   "sha256": "b3113b10720a1fdc22309e4183bfbe74552fbebed7fb3a97157056f43a409c80",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Warm-up-Karten.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
+   "sha256": "717c7e99287e7977d1d8c57b78d6c00298bf2529cfd1b59126d5c6e3c52220a9",
+   "verfahren": "ohne-loesungsteil"
   }
  }
 }

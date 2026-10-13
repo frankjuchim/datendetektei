@@ -80,6 +80,26 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
    "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
    "verfahren": "pdf"
+  },
+  "DD_A6-AB1_Das_Phantom_Loesung.pdf": {
+   "quelle": "Akte6_Datenspuren/5_Loesungen/DD_A6_AB1_Das_Phantom_LSG.docx",
+   "sha256": "dc94afb0e142a414890207e90c167a61c1dd84f272efd1bcf3cca3c6797f5fc5",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Unplugged_Rollenkarten-Debatte_Loesung.pdf": {
+   "quelle": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Rollenkarten-Debatte_LSG.docx",
+   "sha256": "7816b431d6dcbf352414c0b039733c91824088f12e9bac4581492633386733f2",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Unplugged_Steh_auf_wenn_Loesung.pdf": {
+   "quelle": "Akte6_Datenspuren/5_Loesungen/DD_A6_Unplugged_Steh_auf_wenn_LSG.docx",
+   "sha256": "ec4e4759957a79e7da53a78bd7564a5ad963a01fc9e3def1b34116a19ebde450",
+   "verfahren": "pdf"
+  },
+  "DD_A6-Warm-up-Karten_Loesungen.pdf": {
+   "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
+   "sha256": "717c7e99287e7977d1d8c57b78d6c00298bf2529cfd1b59126d5c6e3c52220a9",
+   "verfahren": "pdf"
   }
  }
 }
