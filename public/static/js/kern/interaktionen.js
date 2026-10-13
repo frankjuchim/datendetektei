@@ -7,6 +7,8 @@
 const V = new URL(import.meta.url).search;
 const R = await import('./render.js' + V);
 const { el, h, knopf, mische } = R;
+// Modellierung (Phase 5): zellen, anomalie, zerlegen
+const M = await import('./modell_interaktionen.js' + V);
 
 const ART_SQL = 'sql';
 
@@ -738,6 +740,12 @@ export function erzeugeAufgabe(a, opt = {}) {
         return teilKernpunkte(ia, kontext, i);
       case 'sql':
         return opt.sqlTeil ? opt.sqlTeil(ia, kontext, i) : teilSqlEinfach(ia, kontext);
+      case 'zellen':
+        return M.teilZellen(ia, kontext, i, a);
+      case 'anomalie':
+        return M.teilAnomalie(ia, kontext, i, a);
+      case 'zerlegen':
+        return M.teilZerlegen(ia, kontext, i, a);
       default:
         return { kind: '?', ui: el('p', 'leise', 'Diese Interaktion kann hier noch nicht angezeigt werden.'), antwort: () => null, leer: () => true, setze() {}, feedback() {}, loesung() {}, sperren() {} };
     }
@@ -757,6 +765,8 @@ export function erzeugeAufgabe(a, opt = {}) {
     }
   };
   const inhaltEl = R.bloecke(a.inhalt, ctx);
+  // Teile, die Blöcke der Aufgabe bedienen (zellen: Zellen antippen; anomalie: Rohtabelle im Simulator)
+  teile.forEach((t) => typeof t.anbinden === 'function' && t.anbinden(inhaltEl));
   const box = h('div', 'aufgabe-inhalt', inhaltEl);
   const teilEls = [];
   ias.forEach((ia, i) => {
