@@ -143,3 +143,32 @@ test('Beamer: SSE-Antwort 502 (Proxy) beendet die Ansicht nicht – sie verbinde
     await beamer.kontext.close();
   }
 });
+
+test('Aufgabenstatistik auf dem iPad (768 × 1024): Sortierknöpfe ≥ 44 px, Aufgabenspalte bleibt beim Scrollen sichtbar', async () => {
+  const { kontext, page } = await seite(LEHRKRAFT, { breite: 768, hoehe: 1024 });
+  try {
+    await page.goto(server.url + '/lehrkraft?kurs=k:17#auswertung');
+    await page.waitForSelector('#au-aufgaben');
+    const hoehen = await page.$$eval('#au-aufgaben .sortier-knopf', (b) => b.map((x) => x.getBoundingClientRect().height));
+    assert.ok(hoehen.length >= 6);
+    assert.ok(hoehen.every((x) => x >= 44), `Sortierknöpfe: ${hoehen.join(', ')}`);
+    const rahmen = page.locator('#au-aufgaben').locator('xpath=..');
+    const breite = await rahmen.evaluate((r) => r.scrollWidth - r.clientWidth);
+    assert.ok(breite > 0, 'Tabelle scrollt waagerecht');
+    await rahmen.evaluate((r) => (r.scrollLeft = r.scrollWidth));
+    const lage = await page.evaluate(() => {
+      const r = document.querySelector('#au-aufgaben').parentElement.getBoundingClientRect();
+      const th = document.querySelector('#au-aufgaben tbody th').getBoundingClientRect();
+      return { links: th.left - r.left };
+    });
+    assert.ok(lage.links >= -1 && lage.links <= 2, `Aufgabenspalte klebt links (${lage.links})`);
+    if (FOTOS) {
+      for (const thema of ['light', 'dark']) {
+        await page.emulateMedia({ colorScheme: thema, reducedMotion: 'reduce' });
+        await page.locator('#au-aufgaben-karte').screenshot({ path: path.join(FOTO_ORDNER, `2d_aufgabenstatistik_768_${thema === 'light' ? 'hell' : 'dunkel'}.png`) });
+      }
+    }
+  } finally {
+    await kontext.close();
+  }
+});
