@@ -7,7 +7,8 @@ Zielkompetenzen und die **Pflicht-Randfälle** fest, die die Aufgaben aus `docs/
 Klausur-Blueprints) lösbar und trennscharf machen. Die SQL-Dateien (`seed/datenbanken/verhoer/<kontext>/schema.sql`,
 `pflicht.sql`, `varianten/*.sql`, `LIESMICH.md`) werden vollständig kuratiert (kein Generator) und von
 `scripts/db_bauen.js` unter dem Namen `verhoer/<kontext>` gebaut und geprüft (nie öffentlich). Fertig: V1
-`verhoer/bibliothek`, V2 `verhoer/buergerbus`, V3 `verhoer/kiosk` (Phase 3, Task 11) – die jeweilige `LIESMICH.md`
+`verhoer/bibliothek`, V2 `verhoer/buergerbus`, V3 `verhoer/kiosk` (Phase 3, Task 11), V4 `verhoer/musikschule`,
+V5 `verhoer/kletterhalle` (Phase 5, Task 6) – die jeweilige `LIESMICH.md`
 nennt die konkreten Pflicht-Datensätze und ist für die Aufgaben maßgeblich.
 
 **Gemeinsame Regeln**
