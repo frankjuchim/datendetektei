@@ -100,6 +100,16 @@
    "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
    "sha256": "717c7e99287e7977d1d8c57b78d6c00298bf2529cfd1b59126d5c6e3c52220a9",
    "verfahren": "pdf"
+  },
+  "DD_K1-Eigene_Datenbank_Loesung.pdf": {
+   "quelle": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank_LSG.docx",
+   "sha256": "8aff52d65a03abe0bc8ff508592f22bf461977c24a4e3087228c4d4e87d0f864",
+   "verfahren": "pdf"
+  },
+  "DD_K2-Escape_Room_Stationen_Loesung.pdf": {
+   "quelle": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Lehrkraft.docx",
+   "sha256": "565a77f80139e5b96b551474e8f43a4a767fc772a73123d45f6834f77a4d13c5",
+   "verfahren": "pdf"
   }
  }
 }

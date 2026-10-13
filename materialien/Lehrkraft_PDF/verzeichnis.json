@@ -2,6 +2,22 @@
  "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. Lehrkraft-Materialien – nur Lehrkraft.",
  "dateien": [
   {
+   "datei": "DD_Gesamtuebersicht.pdf",
+   "titel": "Gesamtübersicht",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "gesamt",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "DD_Abi-Kompass.pdf",
+   "titel": "Abi-Kompass",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "gesamt",
+   "fassung": "lehrkraft"
+  },
+  {
    "datei": "DD_A1-Praesentation_Fundbuero.pdf",
    "titel": "Präsentation Das Fundbüro (mit Notizen)",
    "akte": 1,

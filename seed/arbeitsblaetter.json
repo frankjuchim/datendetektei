@@ -4,10 +4,30 @@
  "gruppen": [
   {
    "gruppe": "Gesamt",
-   "akte": null,
+   "akte": 0,
    "ordner": "00_Gesamt",
    "titel": "Gesamtmaterial",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "gesamt",
+     "titel": "Gesamtübersicht",
+     "quelle": "00_Gesamt/DD_Gesamtuebersicht.docx",
+     "datei": "DD_Gesamtuebersicht.pdf"
+    },
+    {
+     "art": "gesamt",
+     "titel": "Abi-Kompass",
+     "quelle": "00_Gesamt/DD_Abi-Kompass.docx",
+     "datei": "DD_Abi-Kompass.pdf"
+    },
+    {
+     "art": "handbuch",
+     "niveau": "beide",
+     "titel": "Ermittler-Handbuch (8 Werkzeugkarten)",
+     "quelle": "00_Gesamt/DD_Ermittler-Handbuch.docx",
+     "datei": "DD_Ermittler-Handbuch.pdf"
+    }
+   ]
   },
   {
    "gruppe": "A1",
@@ -434,10 +454,30 @@
   },
   {
    "gruppe": "Kuer",
-   "akte": null,
+   "akte": "kuer",
    "ordner": "Kuer",
    "titel": "Kür (nicht im Abitur)",
-   "materialien": []
+   "materialien": [
+    {
+     "art": "kuer",
+     "nr": "K1",
+     "ermittlung": "K1-E1",
+     "niveau": "eA",
+     "titel": "K1 · Eigene Datenbank bauen",
+     "quelle": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank.docx",
+     "loesung": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank_LSG.docx",
+     "datei": "DD_K1-Eigene_Datenbank.pdf"
+    },
+    {
+     "art": "kuer",
+     "nr": "K2",
+     "niveau": "beide",
+     "titel": "K2 · Escape Room Weserstedt (Stationsumschläge)",
+     "quelle": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Stationen.docx",
+     "loesung": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Lehrkraft.docx",
+     "datei": "DD_K2-Escape_Room_Stationen.pdf"
+    }
+   ]
   },
   {
    "gruppe": "Videos",

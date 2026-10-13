@@ -50,6 +50,16 @@
    "quelle": "Akte6_Datenspuren/1_Praesentation/DD_A6_Datenspuren.pptx",
    "sha256": "d03c6b4c4b5497cdb0c1a1a8d1eac64cc36355b48856c3eae865cb5bff37b933",
    "verfahren": "notizen"
+  },
+  "DD_Abi-Kompass.pdf": {
+   "quelle": "00_Gesamt/DD_Abi-Kompass.docx",
+   "sha256": "16043ebe0a0bed68c5250c4b1f523a5e28c0a502baf44061b20add988b08c71d",
+   "verfahren": "pdf"
+  },
+  "DD_Gesamtuebersicht.pdf": {
+   "quelle": "00_Gesamt/DD_Gesamtuebersicht.docx",
+   "sha256": "250546cbbe3288c64d3c0762811a8fa064b98fc5ee416f854a801bcd8113edaf",
+   "verfahren": "pdf"
   }
  }
 }

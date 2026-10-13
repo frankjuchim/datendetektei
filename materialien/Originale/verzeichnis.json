@@ -2,6 +2,31 @@
  "_hinweis": "ERZEUGT aus seed/arbeitsblaetter.json (werkzeuge/*_pdf.py) – nicht von Hand ändern. docx/pptx-Originale (Pfade relativ zu materialien/) – nur Superadmin.",
  "dateien": [
   {
+   "datei": "00_Gesamt/DD_Gesamtuebersicht.docx",
+   "titel": "Gesamtübersicht",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "gesamt",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "00_Gesamt/DD_Abi-Kompass.docx",
+   "titel": "Abi-Kompass",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "gesamt",
+   "fassung": "lehrkraft"
+  },
+  {
+   "datei": "00_Gesamt/DD_Ermittler-Handbuch.docx",
+   "titel": "Ermittler-Handbuch (8 Werkzeugkarten)",
+   "akte": 0,
+   "gruppe": "Gesamt",
+   "art": "handbuch",
+   "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
    "datei": "Akte1_Fundbuero/2_Arbeitsblaetter/DD_A1_AB1_Der_erste_Auftrag.docx",
    "titel": "AB 1.1 · Der erste Auftrag",
    "akte": 1,
@@ -607,6 +632,44 @@
    "gruppe": "A6",
    "art": "warmup",
    "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
+   "datei": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank.docx",
+   "titel": "K1 · Eigene Datenbank bauen",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "schueler",
+   "niveau": "eA",
+   "ermittlung": "K1-E1"
+  },
+  {
+   "datei": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank_LSG.docx",
+   "titel": "K1 · Eigene Datenbank bauen – Lösung",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "loesung",
+   "niveau": "eA",
+   "ermittlung": "K1-E1"
+  },
+  {
+   "datei": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Stationen.docx",
+   "titel": "K2 · Escape Room Weserstedt (Stationsumschläge)",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "schueler",
+   "niveau": "beide"
+  },
+  {
+   "datei": "Kuer/K2_Escape_Room/DD_K2_Escape_Room_Lehrkraft.docx",
+   "titel": "K2 · Escape Room Weserstedt (Stationsumschläge) – Lösung",
+   "akte": "kuer",
+   "gruppe": "Kuer",
+   "art": "kuer",
+   "fassung": "loesung",
    "niveau": "beide"
   }
  ]
