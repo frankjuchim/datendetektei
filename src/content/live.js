@@ -11,8 +11,11 @@
  *   auswahl                 choice-Teil: Nummer der einzigen richtigen Option (Dateireihenfolge, 1-basiert)
  *   anzahlRichtig           choice-Teil: Anzahl der richtigen Optionen
  *   minimalerSchluessel     choice-Teil: kleinste Attributzahl unter den richtigen Optionen „(A, B)“
+ *   attributeRichtig        choice-Teil: Summe der Attributzahlen aller richtigen Optionen „(A, B)“
  *   relationen              schema-Teil: Anzahl der Relationen der Musterlösung
  *   fremdschluessel         schema-Teil: Anzahl der Fremdschlüssel-Attribute der Musterlösung
+ *   attribute               schema-Teil: Anzahl aller Attribute der Musterlösung
+ * Ein Code hat 3–8 Ziffern (Sicherheitsprüfung F4: zwei Ziffern wären trotz Code-Bremse in ≈ 20 min erratbar).
  * `teil` (1-basiert) wählt bei mehrteiligen Aufgaben den Teil; ohne Angabe gilt der erste passende Teil.
  * Die Codes stehen nie im JSON, sie werden beim Laden aus der Lösung berechnet (SQL: Musterlösung auf der Haupt-DB,
  * im Prozess über better-sqlite3 – nur vertrauenswürdige Seed-Abfragen, nie Schüler-SQL) und verlassen den Server
@@ -32,7 +35,7 @@ const POOL_ID = /^K2-L-(\d{2})$/;
 const STATION_ID = /^S([1-6])(g?)$/;
 const STATION_AUFGABE_ID = /^K2-S[1-6]g?$/;
 const POOL_ARTEN = ['ergebnis', 'choice', 'sql'];
-const CODE_QUELLEN = ['anzahlZeilen', 'zelle', 'zuordnung', 'auswahl', 'anzahlRichtig', 'minimalerSchluessel', 'relationen', 'fremdschluessel'];
+const CODE_QUELLEN = ['anzahlZeilen', 'zelle', 'zuordnung', 'auswahl', 'anzahlRichtig', 'minimalerSchluessel', 'attributeRichtig', 'relationen', 'fremdschluessel', 'attribute'];
 const QUELLE_ART = {
   anzahlZeilen: 'sql',
   zelle: 'sql',
@@ -40,11 +43,13 @@ const QUELLE_ART = {
   auswahl: 'choice',
   anzahlRichtig: 'choice',
   minimalerSchluessel: 'choice',
+  attributeRichtig: 'choice',
   relationen: 'schema',
-  fremdschluessel: 'schema'
+  fremdschluessel: 'schema',
+  attribute: 'schema'
 };
 const MAX_ZEIT_SEK = 90;
-const CODE_MIN = 2;
+const CODE_MIN = 3;
 const CODE_MAX = 8;
 /** Soll-Verteilung des Pools je Akte (DS_PLANUNG K2). */
 const POOL_SOLL = { 1: 4, 2: 3, 3: 4, 4: 3, 5: 3, 6: 3 };
@@ -152,17 +157,20 @@ function teilWert(aufgabe, t, fuehreAus) {
     }
     case 'anzahlRichtig':
       return String(((lo && lo.richtig) || []).length);
-    case 'minimalerSchluessel': {
+    case 'minimalerSchluessel':
+    case 'attributeRichtig': {
       const r = new Set((lo && lo.richtig) || []);
       const zahlen = (ia.optionen || []).filter((o) => r.has(o.id)).map(attributZahl);
-      if (!zahlen.length || zahlen.some((n) => n < 1)) throw new CodeFehler('minimalerSchluessel: keine Attribute in den richtigen Optionen.');
-      return String(Math.min(...zahlen));
+      if (!zahlen.length || zahlen.some((n) => n < 1)) throw new CodeFehler(`${t.quelle}: keine Attribute in den richtigen Optionen.`);
+      return String(t.quelle === 'minimalerSchluessel' ? Math.min(...zahlen) : zahlen.reduce((s, n) => s + n, 0));
     }
     case 'relationen':
-    case 'fremdschluessel': {
+    case 'fremdschluessel':
+    case 'attribute': {
       const werte = ((lo && lo.muster) || []).map((m) => {
         const rel = Array.isArray(m) ? m : istObjekt(m) && Array.isArray(m.relationen) ? m.relationen : [];
         if (t.quelle === 'relationen') return rel.length;
+        if (t.quelle === 'attribute') return rel.reduce((s, r) => s + (r.attribute || []).length, 0);
         return rel.reduce((s, r) => s + (r.attribute || []).filter((a) => a.fk).length, 0);
       });
       if (!werte.length) throw new CodeFehler(`${t.quelle}: Musterlösung fehlt.`);

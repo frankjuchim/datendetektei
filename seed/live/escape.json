@@ -41,13 +41,13 @@
     },
     {
       "id": "S3", "nr": 3, "titel": "Die Geldkassette", "niveau": "alle",
-      "story": "Eine Kassette vom Stadtfest mit zweistelligem Schloss. Auf dem Deckel: „Samstag war am meisten los.“",
-      "code": { "teile": [{ "quelle": "anzahlZeilen" }, { "quelle": "zelle", "zeile": 1, "spalte": 1 }] },
+      "story": "Eine Kassette vom Stadtfest mit vierstelligem Schloss. Auf dem Deckel: „Samstag war am meisten los.“",
+      "code": { "teile": [{ "quelle": "anzahlZeilen" }, { "quelle": "zelle", "zeile": 1, "spalte": 1 }, { "quelle": "zelle", "zeile": 1, "spalte": 3 }] },
       "aufgabe": {
         "id": "K2-S3", "titel": "Schichten am Samstag", "stufe": 3, "kategorie": "SQL Aggregation", "fallen": ["P1", "P3"],
         "inhalt": [
           { "t": "text", "md": "Gib für jeden Stand StandNr, Name und die Anzahl seiner Schichten am **Samstag, 29.08.2026** aus (Spalte Schichten) – nur Stände mit **mindestens 7** Schichten an diesem Tag, die meisten zuerst." },
-          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der Stände in eurem Ergebnis, zweite Ziffer = StandNr des Stands mit den meisten Schichten." }
+          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der Stände in eurem Ergebnis, zweite Ziffer = StandNr des Stands mit den meisten Schichten, danach seine Anzahl an Schichten." }
         ],
         "interaktion": { "kind": "sql", "datenbank": "stadtfest", "sortierung": [{ "spalte": "Schichten", "richtung": "DESC" }] },
         "loesung": { "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Schichten\nFROM Stand, Schicht\nWHERE Stand.StandNr = Schicht.StandNr\n  AND Schicht.Beginn LIKE '2026-08-29%'\nGROUP BY Stand.StandNr, Stand.Name\nHAVING COUNT(*) >= 7\nORDER BY Schichten DESC" },
@@ -93,7 +93,7 @@
     {
       "id": "S5", "nr": 5, "titel": "Die Planrolle", "niveau": "eA",
       "story": "Ein ER-Diagramm der Tanzschule „Weserschwung“. Auf der Rückseite steht: „Wie viele Tische braucht ihr?“",
-      "code": { "teile": [{ "quelle": "relationen" }, { "quelle": "fremdschluessel" }] },
+      "code": { "teile": [{ "quelle": "relationen" }, { "quelle": "fremdschluessel" }, { "quelle": "attribute" }] },
       "aufgabe": {
         "id": "K2-S5", "titel": "Die Tanzschule überführen", "stufe": 3, "kategorie": "Überführung", "fallen": ["P9"],
         "inhalt": [
@@ -114,7 +114,7 @@
               "e3": { "x": 1076, "y": 174 }, "e3.0": { "x": 998, "y": 94 }, "e3.1": { "x": 1076, "y": 48 }, "e3.2": { "x": 1154, "y": 94 },
               "b1": { "x": 386, "y": 174 }, "b2": { "x": 846, "y": 174 }, "b2.0": { "x": 846, "y": 262 }
             } },
-          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der Relationen, zweite Ziffer = Anzahl der Fremdschlüssel in eurem Schema." }
+          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der Relationen, zweite Ziffer = Anzahl der Fremdschlüssel in eurem Schema, danach die Anzahl aller Attribute in allen Relationen zusammen." }
         ],
         "interaktion": { "kind": "schema", "modus": "frei", "start": [
           { "name": "Tanzlehrer", "attribute": [{ "name": "LehrerNr", "pk": true }, { "name": "Name" }, { "name": "Telefon" }] },
@@ -137,14 +137,14 @@
     {
       "id": "S5g", "nr": 5, "titel": "Der Schlüsselkasten", "niveau": "gA",
       "story": "Im Hallenbad hängt ein Kasten mit Schließfach-Schlüsseln. Nur wer die richtigen Schlüssel findet, öffnet ihn.",
-      "code": { "teile": [{ "quelle": "anzahlRichtig" }, { "quelle": "minimalerSchluessel" }] },
+      "code": { "teile": [{ "quelle": "anzahlRichtig" }, { "quelle": "minimalerSchluessel" }, { "quelle": "attributeRichtig" }] },
       "aufgabe": {
         "id": "K2-S5g", "titel": "Welche Schlüssel taugen?", "stufe": 2, "kategorie": "Schlüssel", "fallen": ["P8"],
         "inhalt": [
           { "t": "text", "md": "Ausschnitt aus der Tabelle der Schließfächer. Jedes Fach hat in seiner Reihe einen festen Platz. Den Zahlencode stellen die Mieter selbst ein – zwei Fächer dürfen denselben Code haben, und ein Mieter darf mehrere Fächer mieten." },
           { "t": "dbtabelle", "tabelle": "Schliessfach", "kopf": [{ "name": "FachNr" }, { "name": "Reihe" }, { "name": "Platz" }, { "name": "Code" }, { "name": "MieterNr" }],
             "zeilen": [[101, "A", 1, "2580", 17], [102, "A", 2, "1234", 23], [103, "A", 3, "9071", 17], [201, "B", 1, "4455", 8], [202, "B", 2, "3306", null]] },
-          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der tauglichen Schlüssel, zweite Ziffer = Anzahl der Attribute im kleinsten tauglichen Schlüssel." }
+          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der tauglichen Schlüssel, zweite Ziffer = Anzahl der Attribute im kleinsten tauglichen Schlüssel, dritte Ziffer = Anzahl der Attribute aller tauglichen Schlüssel zusammen." }
         ],
         "interaktion": { "kind": "choice", "mehrfach": true, "frage": "Markiere **alle** Attribute bzw. Attributkombinationen, die als Primärschlüssel taugen (eindeutig **und** minimal).",
           "optionen": [
