@@ -317,6 +317,28 @@ test('kernpunkte: immer bearbeitet, nur Anzahl, kein Freitext', async () => {
   await wirftAntwortFehler(pruefe(a, 1.5));
 });
 
+test('kernpunkte in mehrteiligen Aufgaben: zählt nicht als Antwort (leer), ok hängt nur an den übrigen Teilen', async () => {
+  const a = {
+    id: 'X-01',
+    interaktion: [
+      { kind: 'gaps', frage: 'a) [[g1]]', felder: { g1: { typ: 'zahl' } } },
+      { kind: 'kernpunkte', frage: 'b) Begründe.', kernpunkte: ['eins', 'zwei'] }
+    ],
+    loesung: [{ g1: ['8'] }, null]
+  };
+  let r = await pruefe(a, [{ g1: '' }, 0]);
+  assert.equal(r.leer, true, 'nur ein kernpunkte-Teil ohne übrige Antwort ist leer');
+  r = await pruefe(a, [{ g1: '' }, 2]);
+  assert.equal(r.leer, true, 'Häkchen allein sind keine Antwort');
+  r = await pruefe(a, [{ g1: '8' }, 0]);
+  assert.equal(r.leer, false);
+  assert.equal(r.ok, true);
+  assert.deepEqual(r.rueckmeldung.teile[1], { bearbeitet: true, haken: 0 });
+  r = await pruefe(a, [{ g1: '7' }, 2]);
+  assert.equal(r.ok, false);
+  await wirftAntwortFehler(pruefe(a, [{ g1: '8' }, 'Mein Freitext']));
+});
+
 /* ---------------------------------------------------------------- sql */
 
 test('sql: delegiert an den injizierten Prüfer mit Aufgabe nach Phase-2-Schnittstelle', async () => {

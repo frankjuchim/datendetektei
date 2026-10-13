@@ -342,7 +342,10 @@ async function pruefeAntwort(aufgabe, antwort, opt = {}) {
     roh = [antwort];
   }
   const antworten = ts.map((t, i) => bereinige(t.interaktion, roh[i], aufgabe));
-  const leer = ts.every((t, i) => istLeer(t.interaktion, antworten[i], t.loesung));
+  // kernpunkte-Teile tragen keine prüfbare Antwort (nur Häkchen nach dem Aufdecken, E7): leer ist eine Antwort, wenn alle
+  // übrigen Teile leer sind; eine reine kernpunkte-Aufgabe ist nie leer.
+  const bewertet = ts.map((t, i) => [t, i]).filter(([t]) => F.artVon(t.interaktion) !== 'kernpunkte');
+  const leer = bewertet.length > 0 && bewertet.every(([t, i]) => istLeer(t.interaktion, antworten[i], t.loesung));
   const ergebnisse = [];
   for (let i = 0; i < ts.length; i++) {
     ergebnisse.push(await pruefeTeil(ts[i].interaktion, ts[i].loesung, antworten[i], { ...opt, teilweise: false }));

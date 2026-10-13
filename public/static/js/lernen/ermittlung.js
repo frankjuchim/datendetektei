@@ -138,6 +138,11 @@ function istNurKernpunkte(a) {
   return !Array.isArray(a.interaktion) && a.interaktion && a.interaktion.kind === 'kernpunkte';
 }
 
+/** Mehrteilige Aufgabe mit kernpunkte-Teil(en) neben anderen Teilen (z. B. Cold Case, AUFGABENFORMAT §6.10). */
+function hatKernTeile(a) {
+  return Array.isArray(a.interaktion) && a.interaktion.some((ia) => ia && ia.kind === 'kernpunkte') && !a.interaktion.every((ia) => ia && ia.kind === 'kernpunkte');
+}
+
 function sqlTeilFabrik(antwort) {
   return (ia, kontextTeil, nr) => {
     const konsole = K.erzeugeLernKonsole({
@@ -557,8 +562,16 @@ function zeigeLoesung(lo, { neu }) {
   // Kernpunkte (mehrteilig: Liste je Teil, sonst eine Liste)
   if (lo.kernpunkte) {
     const kp = aufgabe.teile.filter((t) => t.kind === 'kernpunkte');
-    if (Array.isArray(a.interaktion)) aufgabe.teile.forEach((t, i) => t.kind === 'kernpunkte' && Array.isArray(lo.kernpunkte[i]) && t.zeigeKernpunkte(lo.kernpunkte[i]));
-    else if (kp[0]) kp[0].zeigeKernpunkte(lo.kernpunkte, z.haken);
+    if (Array.isArray(a.interaktion)) {
+      // Gespeichert ist nur die Summe der Häkchen: der Reihe nach auf die kernpunkte-Teile verteilen.
+      let rest = Number.isInteger(z.haken) ? z.haken : null;
+      aufgabe.teile.forEach((t, i) => {
+        if (t.kind !== 'kernpunkte' || !Array.isArray(lo.kernpunkte[i])) return;
+        const n = rest === null ? null : Math.min(rest, lo.kernpunkte[i].length);
+        t.zeigeKernpunkte(lo.kernpunkte[i], n);
+        if (rest !== null) rest -= n;
+      });
+    } else if (kp[0]) kp[0].zeigeKernpunkte(lo.kernpunkte, z.haken);
   }
   const box = el('section', 'loesung-karte');
   box.id = 'loesung-karte';
@@ -577,6 +590,14 @@ function zeigeLoesung(lo, { neu }) {
     box.appendChild(R.block({ t: 'sql', sql: s.sql }, null, 0));
   }
   if (istNurKernpunkte(a)) box.appendChild(el('p', 'hinweis-klein', 'Hake ab, welche Kernpunkte deine Antwort enthält, und speichere deine Selbstkontrolle. Gesendet wird nur die Anzahl der Häkchen.'));
+  if (hatKernTeile(a) && lo.kernpunkte) {
+    box.appendChild(el('p', 'hinweis-klein', 'Hake bei deiner Freitext-Antwort ab, welche Kernpunkte sie enthält, und speichere deine Selbstkontrolle. Gesendet wird nur die Anzahl der Häkchen.'));
+    const speichern = knopf('Selbstkontrolle speichern', 'knopf gruen', 'i-pruefen');
+    speichern.id = 'k-kernpunkte';
+    speichern.addEventListener('click', () => kernpunkteSpeichern());
+    box.appendChild(h('div', 'knopf-reihe', speichern));
+    aktuell.knoepfe = { ...aktuell.knoepfe, kernpunkte: speichern };
+  }
   if (Array.isArray(lo.erklaerung) && lo.erklaerung.length) box.appendChild(R.bloecke(lo.erklaerung));
   if (Array.isArray(a.fallen) && a.fallen.length) {
     const f = el('p', 'fallen-zeile');
@@ -609,12 +630,14 @@ async function kernpunkteAufdecken() {
 }
 
 async function kernpunkteSpeichern() {
-  const teil = aktuell.aufgabe.teile.find((t) => t.kind === 'kernpunkte');
-  if (!teil) return;
+  const teile = aktuell.aufgabe.teile.filter((t) => t.kind === 'kernpunkte');
+  if (!teile.length) return;
+  // je kernpunkte-Teil nur die Anzahl der Häkchen (E7); bei mehreren kernpunkte-Teilen als Liste
+  const haken = teile.length === 1 ? teile[0].haken() : teile.map((t) => t.haken());
   try {
-    const r = await A.senden(A.kursApi(kurs.id, `/aufgaben/${encodeURIComponent(aktuell.id)}/kernpunkte`), { haken: teil.haken() });
+    const r = await A.senden(A.kursApi(kurs.id, `/aufgaben/${encodeURIComponent(aktuell.id)}/kernpunkte`), { haken });
     aktuell.antwort.zustand = r.zustand;
-    aktuell.frischGeloest = true;
+    if (istNurKernpunkte(aktuell.antwort.aufgabe)) aktuell.frischGeloest = true;
     zeichneMeta();
     const karte = el('section', 'feedback richtig');
     karte.appendChild(el('h3', 'feedback-titel', 'Selbstkontrolle gespeichert'));

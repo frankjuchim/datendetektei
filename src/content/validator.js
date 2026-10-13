@@ -841,6 +841,32 @@ function pruefeBloecke(bloecke, k) {
     }
     if (k.lueckenVerboten && F.luecken([b]).length) fb('Lücken [[…]] sind hier nicht erlaubt.');
   });
+  pruefeDoppeltesSchema(bloecke, k);
+}
+
+/**
+ * Die datenbank-Kachel zeigt das Schema der Übungs-DB schon (Schema-Browser). Ein schema-Block in derselben Blockliste,
+ * dessen Relationen alle Tabellen dieser DB sind, erschiene doppelt (Phase 5 Task 9) → Fehler.
+ */
+function pruefeDoppeltesSchema(bloecke, k) {
+  if (!k.dbs || typeof k.dbs.schema !== 'function') return;
+  const namen = bloecke.filter((b) => istObjekt(b) && b.t === 'datenbank' && F.UEBUNGS_DBS.includes(b.name)).map((b) => b.name);
+  if (!namen.length) return;
+  bloecke.forEach((b, i) => {
+    if (!istObjekt(b) || b.t !== 'schema' || !Array.isArray(b.relationen) || !b.relationen.length) return;
+    for (const db of namen) {
+      let tabellen;
+      try {
+        tabellen = new Set((k.dbs.schema(db) || []).map((t) => t.tabelle));
+      } catch {
+        continue;
+      }
+      if (b.relationen.every((r) => istObjekt(r) && tabellen.has(r.name))) {
+        k.fe(`${k.ort}[${i}] (schema): wiederholt das Schema der Datenbank „${db}“, das die datenbank-Kachel schon zeigt – es stünde doppelt da. Block entfernen.`);
+        return;
+      }
+    }
+  });
 }
 
 /* ---------- Verstehenshilfen: zeitlupe, spurenbrett, sortierfaecher (Phase 4) ---------- */

@@ -300,6 +300,57 @@ test('kernpunkte: nur die Anzahl der Häkchen, Status bearbeitet, 0 Punkte; Kern
   assert.equal((await s.post(A('A9-E1-01') + '/kernpunkte', { haken: 1 })).status, 400);
 });
 
+test('kernpunkte in mehrteiligen Aufgaben (Cold Case A3-E1-CC): gelöst über die übrigen Teile, Häkchen werden gespeichert', async () => {
+  const { u, s } = await start({ dateien: [path.join(__dirname, '..', 'seed', 'akten', 'akte3.json')], einstellungen: { akten: [3] } });
+  const id = 'A3-E1-CC';
+  const a = u.inhalte.aufgabe(id);
+  const luecken = Object.fromEntries(Object.entries(a.loesung[0]).map(([k, v]) => [k, v[0]]));
+  const kern = a.interaktion[1].kernpunkte;
+  let r = await s.get(A(id));
+  assert.ok(!JSON.stringify(r.body).includes(kern[0].slice(0, 20)), 'Kernpunkte nicht vor dem Lösen');
+  // vor dem Lösen: keine Selbstkontrolle, leere Antwort ist kein Fehlversuch
+  assert.equal((await s.post(A(id) + '/kernpunkte', { haken: 1 })).status, 400);
+  assert.equal((await s.post(A(id) + '/pruefen', { antwort: [{ g1: '', g2: '', g3: '' }, 0] })).status, 400);
+  assert.equal((await s.get(A(id))).body.zustand.fehlversuche, 0);
+  assert.equal((await s.post(A(id) + '/pruefen', { antwort: [luecken, 'Freitext'] })).status, 400, 'nie Freitext');
+  // übrige Teile richtig → gelöst, Kernpunkte je Teil
+  r = await s.post(A(id) + '/pruefen', { antwort: [luecken, 0] });
+  assert.equal(r.status, 200);
+  assert.equal(r.body.ok, true);
+  assert.equal(r.body.zustand.status, 'geloest');
+  assert.equal(r.body.zustand.haken, null);
+  assert.deepEqual(r.body.loesung.kernpunkte, [null, kern]);
+  // Selbstkontrolle: nur die Anzahl (Zahl oder Liste je kernpunkte-Teil)
+  assert.equal((await s.post(A(id) + '/kernpunkte', { haken: 'Mein Freitext' })).status, 400);
+  assert.equal((await s.post(A(id) + '/kernpunkte', { haken: kern.length + 1 })).status, 400);
+  assert.equal((await s.post(A(id) + '/kernpunkte', { haken: 1, text: 'Freitext' })).status, 400);
+  assert.equal((await s.post(A(id) + '/kernpunkte', { haken: [1, 1] })).status, 400, 'eine Zahl je kernpunkte-Teil');
+  r = await s.post(A(id) + '/kernpunkte', { haken: 2 });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.equal(r.body.zustand.status, 'geloest', 'Status bleibt gelöst');
+  assert.equal(r.body.zustand.haken, 2);
+  assert.deepEqual(r.body.rueckmeldung, { bearbeitet: true, haken: 2 });
+  assert.deepEqual(r.body.loesung.kernpunkte, [null, kern]);
+  r = await s.post(A(id) + '/kernpunkte', { haken: [3] });
+  assert.equal(r.status, 200);
+  assert.equal(r.body.zustand.haken, 3);
+  assert.equal(u.db.prepare('SELECT haken FROM kernpunkte WHERE aufgabe = ?').get(id).haken, 3);
+  r = await s.get(A(id));
+  assert.equal(r.body.zustand.haken, 3);
+  assert.deepEqual(r.body.loesung.kernpunkte, [null, kern]);
+  const cc = (await s.get(K17 + '/stand')).body.akten.find((x) => x.nr === 3).ermittlungen.find((e) => e.id === 'A3-E1').coldCase;
+  assert.equal(cc.status, 'geloest');
+  // nach „Lösung zeigen“ (andere Schülerin) darf die Selbstkontrolle ebenfalls gespeichert werden
+  const s2 = await H.client(u, H.SCHUELER2);
+  assert.equal((await s2.post(A(id) + '/kernpunkte', { haken: 1 })).status, 400);
+  r = await s2.post(A(id) + '/loesung-zeigen');
+  assert.equal(r.body.zustand.status, 'angesehen');
+  r = await s2.post(A(id) + '/kernpunkte', { haken: 1 });
+  assert.equal(r.status, 200);
+  assert.equal(r.body.zustand.status, 'angesehen');
+  assert.equal(r.body.zustand.haken, 1);
+});
+
 /* ---------------------------------------------------------------- Ränge */
 
 test('Rang: Anteil der Level-Punkte der freigeschalteten Akten nach Niveau (eA 230, gA 190)', async () => {

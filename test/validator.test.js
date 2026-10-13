@@ -275,6 +275,20 @@ test('kernpunkte: Punkte ≠ 0 → Fehler; kernpunkte im Verhör → Fehler', as
   await erwarteFehler(k, /kernpunkte/, 'A9-V-05');
 });
 
+test('intro: schema-Block, der das Schema des datenbank-Blocks wiederholt → Fehler (Briefing ohne doppeltes Schema)', async () => {
+  const j = akte();
+  j.levels[0].intro.splice(1, 0, {
+    t: 'schema',
+    relationen: [{ name: 'Fundsache', attribute: [{ name: 'FundNr', pk: true }, { name: 'Bezeichnung' }] }]
+  });
+  await erwarteFehler(j, /doppelt/);
+  // Ein schema-Block mit anderen Relationen (z. B. Entwurf) bleibt erlaubt.
+  const k = akte();
+  k.levels[0].intro.splice(1, 0, { t: 'schema', relationen: [{ name: 'Entwurf', attribute: [{ name: 'Nr', pk: true }] }] });
+  const r = await validiere(k);
+  assert.deepEqual(r.fehler.filter((f) => /doppelt/.test(f.text)), []);
+});
+
 /* ---------- Verhör ---------- */
 
 test('Verhör-Mix nicht erfüllbar (Stufe fehlt, maxJeKind, Summe ≠ anzahl) → Fehler', async () => {

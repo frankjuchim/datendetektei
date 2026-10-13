@@ -230,7 +230,8 @@ außer in Aufgaben, die gezielt fehlerhaftes SQL zeigen (`lines`).
 Kachel „Diese Ermittlung nutzt: Fundbüro“ mit Schema-Browser und Download der öffentlichen Übungs-DB
 (`/db/<name>.sqlite`). `name` ∈ `fundbuero`, `stadtrad`, `stadtfest`, `tus`, `detektei`, `datenspuren`, `eisdiele`.
 Nur für öffentliche Übungs-DBs – **nie** für Verhör-Kontexte (dort `schema` bzw. `dbtabelle` verwenden). Typischer Ort:
-`intro` der Ermittlung.
+`intro` der Ermittlung. Die Kachel zeigt das Schema schon: Ein `schema`-Block in derselben Blockliste, dessen Relationen
+alle Tabellen dieser DB sind, wäre doppelt und ist ein Validator-Fehler.
 
 ### 5.6 Verstehenshilfen: `zeitlupe`, `spurenbrett`, `sortierfaecher` (Phase 4)
 
@@ -421,6 +422,12 @@ ausgeliefert (sie sind die Lösung).
 
 - `interaktion` als Array, `loesung` als Array gleicher Länge (bei `kernpunkte`-Teilen `null`); gelöst = alle Teile
   richtig. Antwort = Array je Teil. Rückmeldung `{ teile: [Rückmeldung je Teil] }`.
+- **`kernpunkte`-Teile neben anderen Teilen** (z. B. Cold Cases): Beim Prüfen gilt der Teil als bearbeitet (Häkchen-
+  Anzahl, vor dem Lösen 0) und zählt weder für „richtig“ noch für „leer“ – sind nur die kernpunkte-Teile ausgefüllt,
+  ist die Antwort leer (kein Fehlversuch). Gelöst ist die Aufgabe, wenn alle übrigen Teile richtig sind; dann werden
+  die Kernpunkte aufgedeckt (`loesung.kernpunkte`: Liste je Teil, sonst `null`). Die Selbstkontrolle geht danach (oder
+  nach „Lösung zeigen“) an `POST …/kernpunkte` mit `{ haken: n }` bzw. bei mehreren kernpunkte-Teilen
+  `{ haken: [n je kernpunkte-Teil] }`; gespeichert wird die Summe, der Status bleibt. Vorher: 400. Nie Freitext.
 - Optional je Teil: `frage` (Mini-Markdown, darf Lücken enthalten) und `inhalt` (Blöcke) – werden über dem Teil
   angezeigt. Beginnt `frage` mit „a)“, entfällt die automatische Überschrift „Teil a)“.
 - `block` in `lines`/`zeilen` bezieht sich immer auf `inhalt` der **Aufgabe**.

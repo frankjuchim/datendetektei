@@ -12,7 +12,7 @@
 // - Verhör-Aufgaben sind hier nie erreichbar (404; nur über die Verhör-Engine).
 
 const F = require('../content/format');
-const { pruefeAntwort, AntwortFehler } = require('../content/pruefer');
+const { pruefeAntwort, bereinige, AntwortFehler } = require('../content/pruefer');
 const { punkteFuer } = require('../domain');
 
 class HttpFehler extends Error {
@@ -246,31 +246,44 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     }
   }
 
-  /** Kernpunkte-Aufgabe: nur die Häkchen-Anzahl (E7), Status bearbeitet, 0 Punkte. */
+  /**
+   * Selbstkontrolle der kernpunkte-Teile: nur die Häkchen-Anzahl (E7). Body { haken: n } oder (mehrere kernpunkte-Teile)
+   * { haken: [n je kernpunkte-Teil] }; gespeichert wird die Summe.
+   * Reine kernpunkte-Aufgabe: Status bearbeitet, 0 Punkte. Mehrteilige Aufgabe mit weiteren Teilen (AUFGABENFORMAT
+   * §6.10): erst nach dem Lösen bzw. „Lösung zeigen“ (vorher sind die Kernpunkte nicht aufgedeckt); Status bleibt.
+   */
   async function kernpunkte(sitzung, kursId, id, body) {
     const z = zugang(sitzung, kursId, { schreiben: true });
     const a = aufgabeFuer(z, id);
-    if (!nurKernpunkte(a) || Array.isArray(a.interaktion)) throw new HttpFehler(400, 'Diese Aufgabe hat keine Kernpunkte.');
+    const ts = teileVon(a);
+    const kp = ts.filter((t) => F.artVon(t.interaktion) === 'kernpunkte');
+    if (!kp.length) throw new HttpFehler(400, 'Diese Aufgabe hat keine Kernpunkte.');
     const b = body && typeof body === 'object' ? body : {};
     if (Object.keys(b).some((k) => k !== 'haken')) throw new HttpFehler(400, 'Nur die Anzahl der Häkchen wird gesendet.');
-    let erg;
+    const roh = Array.isArray(b.haken) ? b.haken : [b.haken];
+    if (roh.length !== kp.length) throw new HttpFehler(400, 'Ungültige Anzahl an Häkchen.');
+    let anzahlen;
     try {
-      erg = await pruefeAntwort(a, { haken: b.haken });
+      anzahlen = kp.map((t, i) => bereinige(t.interaktion, roh[i], a));
     } catch (e) {
       if (e instanceof AntwortFehler) throw new HttpFehler(400, e.message);
       throw e;
     }
-    const haken = erg.antworten[0];
-    let neueAbzeichen = [];
+    const haken = anzahlen.reduce((x, y) => x + y, 0);
+    const nurKern = nurKernpunkte(a);
+    if (!nurKern) {
+      const r = zeile(z, a.id);
+      if (!r || r.status === 'offen') throw new HttpFehler(400, 'Löse zuerst die übrigen Teile – danach siehst du die Kernpunkte.');
+    }
     db.transaction(() => {
       const r = sichereZeile(z, a.id);
       db.prepare(
         'INSERT INTO kernpunkte (sub, kurs_id, aufgabe, haken) VALUES (?, ?, ?, ?) ON CONFLICT (sub, kurs_id, aufgabe) DO UPDATE SET haken = excluded.haken'
       ).run(z.sub, z.kurs.id, a.id, haken);
-      if (r.status === 'offen') setze(z, a.id, { status: 'bearbeitet', punkte: 0 });
+      if (nurKern && r.status === 'offen') setze(z, a.id, { status: 'bearbeitet', punkte: 0 });
     })();
-    neueAbzeichen = stand.pruefeAbzeichen(z.sub, z.kurs.id);
-    return { ok: true, rueckmeldung: erg.rueckmeldung, zustand: zustand(z, a), neueAbzeichen, loesung: loesungsteil(a) };
+    const neueAbzeichen = nurKern ? stand.pruefeAbzeichen(z.sub, z.kurs.id) : [];
+    return { ok: true, rueckmeldung: { bearbeitet: true, haken }, zustand: zustand(z, a), neueAbzeichen, loesung: loesungsteil(a) };
   }
 
   /** Antwort prüfen. Body: { antwort, teilweise?, teil? }. */
@@ -278,7 +291,7 @@ function erzeugeLernen({ db, inhalte, stand, pruefer = null, jetzt = Date.now })
     const z = zugang(sitzung, kursId, { schreiben: true });
     const a = aufgabeFuer(z, id);
     const b = body && typeof body === 'object' ? body : {};
-    if (nurKernpunkte(a) && !Array.isArray(a.interaktion)) return kernpunkte(sitzung, kursId, id, { haken: b.antwort });
+    if (nurKernpunkte(a)) return kernpunkte(sitzung, kursId, id, { haken: b.antwort });
     if (hatSql(a) && !sqlPruefer) throw new HttpFehler(503, 'Die SQL-Prüfung ist gerade nicht verfügbar.');
     const teilweise = b.teilweise === true;
     let erg;
