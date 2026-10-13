@@ -1,7 +1,6 @@
 # Lizenz – Datendetektei Weserstedt
 
-> **Vorläufige Festlegung (Default bis zur Entscheidung von Frank Juchim, Spec §17 Punkt 3).** Bis dahin gilt
-> folgende Regelung; sie kann sich vor einer Veröffentlichung für andere Lehrkräfte noch ändern.
+> Festgelegt von Frank Juchim am 13.10.2026 (Spec §17 Punkt 3, §18 Phase 8).
 
 ## 1. Unterrichtsmaterialien und Inhalte – CC BY-NC-SA 4.0
 
@@ -22,7 +21,7 @@ Alle Personen, Firmen, Orte und Daten in den Materialien und Datenbanken sind fr
 ## 2. Programmcode – alle Rechte vorbehalten
 
 Der Programmcode der Plattform und der Werkzeuge (`src/`, `public/` ohne die unter 3. genannten Drittkomponenten,
-`scripts/`, `werkzeuge/`, `quellen/`, `test/`) ist bis zur Entscheidung **nicht** unter einer freien Lizenz
+`scripts/`, `werkzeuge/`, `quellen/`, `test/`) ist **nicht** unter einer freien Lizenz
 freigegeben: © Frank Juchim, alle Rechte vorbehalten.
 
 Ausnahmen: `src/kern/jwt.js` und `scripts/vertrag_pruefen.js` sind unveränderte Kopien aus dem Portal-Repo

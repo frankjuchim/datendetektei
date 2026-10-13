@@ -203,5 +203,5 @@ P10 Operator verfehlt.
 | Beamer-Board | immer dunkel |
 | Akte 7 auf dem Stadtplan | am Detektei-Gebäude (zweiter Ring) |
 | Kontrastprüfung in CI | ja, `scripts/kontrast_pruefen.js` (Phase 1, Design-Grundlagen) |
-| Lizenz | vorläufig `LIZENZ.md`: Materialien/Inhalte CC BY-NC-SA 4.0, Code alle Rechte vorbehalten – Bestätigung offen |
+| Lizenz | **entschieden** (`LIZENZ.md`): Materialien/Inhalte CC BY-NC-SA 4.0, Code alle Rechte vorbehalten |
 | Schulangaben `/datenschutz` | Platzhalter `[…]` (Klasse `platzhalter`) bis die Schule sie liefert |
