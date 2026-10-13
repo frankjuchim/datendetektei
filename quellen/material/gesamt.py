@@ -347,6 +347,10 @@ def materialliste(d, breite):
             zeilen.append([titel, ART_NAME.get(x["art"], x["art"]), x.get("niveau", "beide"), s, l, x["datei"]])
         tab(d, ["Material", "Art", "Niveau", "Schüler-PDF", "Lehrkraft-PDF", "Dateiname (PDF)"], zeilen,
                   breiten=[8.0, 2.6, 1.6, 2.4, 3.6, 7.5], groesse=8)
+        if g["gruppe"] == "Videos":
+            d.absatz("Die Videos selbst stehen auf YouTube (Kanal @frankjuchim, Playlist „Datendetektei“). Sobald ein "
+                     "Link in `seed/videos.json` eingetragen ist, zeigt die Plattform ihn als Link-Knopf an der "
+                     "Ermittlung der passenden Doppelstunde, auf der Themenseite und unter Lehrkraft → Materialien.")
 
 
 # ================================================================== Abi-Kompass
