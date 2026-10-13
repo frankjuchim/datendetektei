@@ -1,0 +1,413 @@
+{
+  "_hinweis": "Prüf-Fälle für src/sql/pruefer.js (Plan Phase 2 Task 10). Je Aufgabe: Musterlösung + Versuche (richtige Schreibweisen und typische Fehlabfragen). codes = Diagnosen, die mindestens vorkommen müssen; ohneCodes = dürfen nicht vorkommen. Regel: Spaltenreihenfolge zählt (wie im Abitur verlangt), Spaltennamen nur bei aliasPflicht, Zeilenreihenfolge nur bei sortierung.",
+  "aufgaben": [
+    {
+      "aufgabe": {
+        "id": "fb-offen-hafen", "datenbank": "fundbuero", "abimodus": "hinweis",
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand"],
+        "sortierung": [{ "spalte": "Funddatum", "richtung": "DESC" }],
+        "loesung": { "sql": "SELECT FundNr, Bezeichnung, Fundort, Funddatum\nFROM Fundsache\nWHERE Stadtteil = 'Hafenviertel'\n  AND AbgeholtAm IS NULL\nORDER BY Funddatum DESC" }
+      },
+      "versuche": [
+        { "beschreibung": "Musterlösung", "ok": true, "sql": "SELECT FundNr, Bezeichnung, Fundort, Funddatum\nFROM Fundsache\nWHERE Stadtteil = 'Hafenviertel'\n  AND AbgeholtAm IS NULL\nORDER BY Funddatum DESC" },
+        { "beschreibung": "Tabellenalias, Bedingungen vertauscht, kleingeschrieben", "ok": true, "sql": "select f.FundNr, f.Bezeichnung, f.Fundort, f.Funddatum from Fundsache f where f.AbgeholtAm is null and f.Stadtteil = 'Hafenviertel' order by f.Funddatum desc" },
+        { "beschreibung": "Sortierung vergessen", "ok": false, "codes": ["NUR_REIHENFOLGE"], "ohneCodes": ["ZU_VIELE_ZEILEN", "ZU_WENIGE_ZEILEN"], "sql": "SELECT FundNr, Bezeichnung, Fundort, Funddatum\nFROM Fundsache\nWHERE Stadtteil = 'Hafenviertel'\n  AND AbgeholtAm IS NULL" },
+        { "beschreibung": "= NULL statt IS NULL (P5)", "ok": false, "codes": ["NULL_VERGLEICH", "ZU_WENIGE_ZEILEN"], "sql": "SELECT FundNr, Bezeichnung, Fundort, Funddatum\nFROM Fundsache\nWHERE Stadtteil = 'Hafenviertel'\n  AND AbgeholtAm = NULL\nORDER BY Funddatum DESC" },
+        { "beschreibung": "Spalten in anderer Reihenfolge", "ok": false, "codes": ["SPALTENREIHENFOLGE"], "sql": "SELECT Bezeichnung, FundNr, Fundort, Funddatum\nFROM Fundsache\nWHERE Stadtteil = 'Hafenviertel'\n  AND AbgeholtAm IS NULL\nORDER BY Funddatum DESC" },
+        { "beschreibung": "Spalte vergessen", "ok": false, "codes": ["SPALTENANZAHL"], "sql": "SELECT FundNr, Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Stadtteil = 'Hafenviertel'\n  AND AbgeholtAm IS NULL\nORDER BY Funddatum DESC" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-kompass", "datenbank": "fundbuero", "abimodus": "hinweis", "varianten": ["gleichnamig"],
+        "loesung": { "sql": "SELECT FundNr, Bezeichnung\nFROM Fundsache\nWHERE Bezeichnung LIKE '%kompass%'" }
+      },
+      "versuche": [
+        { "beschreibung": "LIKE ohne Groß/Klein", "ok": true, "sql": "SELECT FundNr, Bezeichnung\nFROM Fundsache\nWHERE Bezeichnung LIKE '%KOMPASS%'" },
+        { "beschreibung": "Platzhalter nur hinten (P6)", "ok": false, "codes": ["ZU_WENIGE_ZEILEN"], "ohneCodes": ["NULL_ZEILEN_FEHLEN"], "sql": "SELECT FundNr, Bezeichnung\nFROM Fundsache\nWHERE Bezeichnung LIKE 'Kompass%'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-messing-wertvoll", "datenbank": "fundbuero", "abimodus": "hinweis",
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand"],
+        "loesung": { "sql": "SELECT FundNr, Bezeichnung, Funddatum, Wert, Finder\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'\n  AND Funddatum BETWEEN '2026-06-01' AND '2026-07-31'\n  AND Wert >= 400" }
+      },
+      "versuche": [
+        { "beschreibung": "Grenzen mit >= und <=", "ok": true, "sql": "SELECT FundNr, Bezeichnung, Funddatum, Wert, Finder\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'\n  AND Funddatum >= '2026-06-01'\n  AND Funddatum <= '2026-07-31'\n  AND Wert >= 400" },
+        { "beschreibung": "LIESMICH-Fehlabfrage fundbuero:103 (Bezeichnung statt Bedingungen, Variante gleichnamig)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "liesmich": "fundbuero:103", "sql": "SELECT FundNr, Bezeichnung, Funddatum, Wert, Finder\nFROM Fundsache\nWHERE Bezeichnung = 'Messing-Kompass'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-ohne-wert", "datenbank": "fundbuero", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT COUNT(*) AS Anzahl\nFROM Fundsache\nWHERE Wert IS NULL" }
+      },
+      "versuche": [
+        { "beschreibung": "COUNT(*) minus COUNT(Wert)", "ok": true, "sql": "SELECT COUNT(*) - COUNT(Wert) AS Anzahl\nFROM Fundsache" },
+        { "beschreibung": "= NULL (P5)", "ok": false, "codes": ["NULL_VERGLEICH", "ANDERE_WERTE"], "sql": "SELECT COUNT(*) AS Anzahl\nFROM Fundsache\nWHERE Wert = NULL" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-nicht-schwarz", "datenbank": "fundbuero", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT FundNr, Bezeichnung, Farbe\nFROM Fundsache\nWHERE Farbe != 'schwarz'\n   OR Farbe IS NULL" }
+      },
+      "versuche": [
+        { "beschreibung": "NULL-Zeilen fallen weg (P5)", "ok": false, "codes": ["NULL_ZEILEN_FEHLEN", "ZU_WENIGE_ZEILEN"], "sql": "SELECT FundNr, Bezeichnung, Farbe\nFROM Fundsache\nWHERE Farbe != 'schwarz'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-drei-hoechste", "datenbank": "fundbuero", "abimodus": "hinweis", "varianten": ["gleichstand"],
+        "loesung": { "sql": "SELECT FundNr, Bezeichnung, Wert\nFROM Fundsache\nWHERE Wert >= 320" }
+      },
+      "versuche": [
+        { "beschreibung": "LIMIT 3 verliert den Gleichstand", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT FundNr, Bezeichnung, Wert\nFROM Fundsache\nORDER BY Wert DESC\nLIMIT 3" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-kategorie-statistik", "datenbank": "fundbuero", "abimodus": "streng", "aliasPflicht": true,
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand"],
+        "sortierung": [{ "spalte": "Anzahl", "richtung": "DESC" }],
+        "loesung": { "sql": "SELECT Kategorie, COUNT(*) AS Anzahl, AVG(Wert) AS Durchschnittswert\nFROM Fundsache\nGROUP BY Kategorie\nHAVING COUNT(*) >= 2\nORDER BY Anzahl DESC" }
+      },
+      "versuche": [
+        { "beschreibung": "Alias anders geschrieben (Groß/Klein, Leerzeichen)", "ok": true, "sql": "SELECT Kategorie, COUNT(*) AS anzahl, AVG(Wert) AS \"Durchschnitts Wert\"\nFROM Fundsache\nGROUP BY Kategorie\nHAVING COUNT(*) >= 2\nORDER BY COUNT(*) DESC" },
+        { "beschreibung": "Alias fehlt", "ok": false, "codes": ["SPALTENNAME"], "sql": "SELECT Kategorie, COUNT(*) AS Anzahl, AVG(Wert)\nFROM Fundsache\nGROUP BY Kategorie\nHAVING COUNT(*) >= 2\nORDER BY Anzahl DESC" },
+        { "beschreibung": "Aggregat im WHERE (P1), streng: keine Ausführung", "ok": false, "codes": ["WHERE_MIT_AGG"], "ohneErgebnis": true, "sql": "SELECT Kategorie, COUNT(*) AS Anzahl, AVG(Wert) AS Durchschnittswert\nFROM Fundsache\nWHERE COUNT(*) >= 2\nGROUP BY Kategorie\nORDER BY Anzahl DESC" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-streng-ungleich", "datenbank": "fundbuero", "abimodus": "streng", "varianten": ["null"],
+        "loesung": { "sql": "SELECT FundNr\nFROM Fundsache\nWHERE Kategorie != 'Schmuck'" }
+      },
+      "versuche": [
+        { "beschreibung": "<> im Verhör: Fehler ohne Ausführung", "ok": false, "codes": ["UNGLEICH_ALT"], "ohneErgebnis": true, "sql": "SELECT FundNr\nFROM Fundsache\nWHERE Kategorie <> 'Schmuck'" },
+        { "beschreibung": "Parsefehler", "ok": false, "codes": ["UNERWARTETES_ENDE"], "ohneErgebnis": true, "sql": "SELECT FundNr\nFROM" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "fb-hinweis-ungleich", "datenbank": "fundbuero", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT FundNr\nFROM Fundsache\nWHERE Kategorie != 'Schmuck'" }
+      },
+      "versuche": [
+        { "beschreibung": "<> in einer Ermittlung: richtig mit Hinweis", "ok": true, "codes": ["UNGLEICH_ALT"], "sql": "SELECT FundNr\nFROM Fundsache\nWHERE Kategorie <> 'Schmuck'" },
+        { "beschreibung": "Spalte gibt es nicht (SQLite-Fehler)", "ok": false, "codes": ["KEINE_SPALTE"], "ohneErgebnis": true, "sql": "SELECT Fundnummer\nFROM Fundsache\nWHERE Kategorie != 'Schmuck'" },
+        { "beschreibung": "verbotene Funktion (Sandbox)", "ok": false, "codes": ["VERBOTEN"], "ohneErgebnis": true, "sql": "SELECT load_extension('x')" },
+        { "beschreibung": "keine Abfrage", "ok": false, "codes": ["NICHT_SELECT"], "ohneErgebnis": true, "sql": "DELETE FROM Fundsache" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-nie-beendet", "datenbank": "stadtrad", "abimodus": "hinweis",
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand", "leer"],
+        "sortierung": [{ "spalte": "Start", "richtung": "ASC" }],
+        "loesung": { "sql": "SELECT Ausleihe.AusleihID, Ausleihe.Start, Kunde.Vorname, Kunde.Nachname, Station.Name AS Startstation\nFROM Ausleihe, Kunde, Station\nWHERE Ausleihe.KundenID = Kunde.KundenID\n  AND Ausleihe.StartStation = Station.StationID\n  AND Ausleihe.Ende IS NULL\nORDER BY Ausleihe.Start" }
+      },
+      "versuche": [
+        { "beschreibung": "Aliasse, andere FROM-Reihenfolge", "ok": true, "sql": "SELECT a.AusleihID, a.Start, k.Vorname, k.Nachname, s.Name\nFROM Station s, Kunde k, Ausleihe a\nWHERE s.StationID = a.StartStation\n  AND k.KundenID = a.KundenID\n  AND a.Ende IS NULL\nORDER BY a.Start ASC" },
+        { "beschreibung": "= NULL (P5)", "ok": false, "codes": ["NULL_VERGLEICH", "ZU_WENIGE_ZEILEN"], "sql": "SELECT Ausleihe.AusleihID, Ausleihe.Start, Kunde.Vorname, Kunde.Nachname, Station.Name\nFROM Ausleihe, Kunde, Station\nWHERE Ausleihe.KundenID = Kunde.KundenID\n  AND Ausleihe.StartStation = Station.StationID\n  AND Ausleihe.Ende = NULL\nORDER BY Ausleihe.Start" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-start-station", "datenbank": "stadtrad", "abimodus": "hinweis", "varianten": ["leer"],
+        "loesung": { "sql": "SELECT Ausleihe.AusleihID, Station.Name\nFROM Ausleihe, Station\nWHERE Ausleihe.StartStation = Station.StationID" }
+      },
+      "versuche": [
+        { "beschreibung": "Verbundbedingung fehlt, Ergebnis abgeschnitten (P2)", "ok": false, "codes": ["KEIN_VERBUND", "KREUZPRODUKT", "ZU_VIELE_ZEILEN"], "sql": "SELECT Ausleihe.AusleihID, Station.Name\nFROM Ausleihe, Station" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-raeder-station", "datenbank": "stadtrad", "abimodus": "hinweis", "varianten": ["null", "leer"],
+        "loesung": { "sql": "SELECT Station.Name, Rad.RadID\nFROM Station, Rad\nWHERE Station.StationID = Rad.StationID" }
+      },
+      "versuche": [
+        { "beschreibung": "Kreuzprodukt mit exakter Zeilenzahl (P2)", "ok": false, "codes": ["KREUZPRODUKT", "ZU_VIELE_ZEILEN"], "sql": "SELECT Station.Name, Rad.RadID\nFROM Station, Rad" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-fahrten-je-kunde", "datenbank": "stadtrad", "abimodus": "hinweis", "varianten": ["gleichnamig"],
+        "loesung": { "sql": "SELECT Kunde.Vorname, Kunde.Nachname, COUNT(*) AS Fahrten\nFROM Kunde, Ausleihe\nWHERE Kunde.KundenID = Ausleihe.KundenID\nGROUP BY Kunde.KundenID, Kunde.Vorname, Kunde.Nachname" }
+      },
+      "versuche": [
+        { "beschreibung": "GROUP BY über den Fremdschlüssel in Ausleihe", "ok": true, "sql": "SELECT Kunde.Vorname, Kunde.Nachname, COUNT(*) AS Fahrten\nFROM Kunde, Ausleihe\nWHERE Kunde.KundenID = Ausleihe.KundenID\nGROUP BY Ausleihe.KundenID, Kunde.Vorname, Kunde.Nachname" },
+        { "beschreibung": "LIESMICH-Fehlabfrage stadtrad:149 (nach Namen gruppiert)", "ok": false, "codes": ["ZU_WENIGE_ZEILEN"], "liesmich": "stadtrad:149", "sql": "SELECT Kunde.Vorname, Kunde.Nachname, COUNT(*) AS Fahrten\nFROM Kunde, Ausleihe\nWHERE Kunde.KundenID = Ausleihe.KundenID\nGROUP BY Kunde.Vorname, Kunde.Nachname" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-hanna", "datenbank": "stadtrad", "abimodus": "hinweis",
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand", "leer"],
+        "loesung": { "sql": "SELECT Kunde.Vorname, Kunde.Nachname, COUNT(*) AS Fahrten\nFROM Kunde, Ausleihe\nWHERE Kunde.KundenID = Ausleihe.KundenID\n  AND Kunde.Vorname = 'Hanna'\nGROUP BY Kunde.KundenID, Kunde.Vorname, Kunde.Nachname" }
+      },
+      "versuche": [
+        { "beschreibung": "nach Namen gruppiert: passt nur zufällig (Review Focus 3)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT Kunde.Vorname, Kunde.Nachname, COUNT(*) AS Fahrten\nFROM Kunde, Ausleihe\nWHERE Kunde.KundenID = Ausleihe.KundenID\n  AND Kunde.Vorname = 'Hanna'\nGROUP BY Kunde.Vorname, Kunde.Nachname" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-von-nach", "datenbank": "stadtrad", "abimodus": "hinweis", "varianten": ["null"],
+        "sortierung": [{ "spalte": 2, "richtung": "ASC" }],
+        "loesung": { "sql": "SELECT a.AusleihID, a.Start, s1.Name AS Von, s2.Name AS Nach\nFROM Ausleihe a, Station s1, Station s2\nWHERE a.StartStation = s1.StationID\n  AND a.ZielStation = s2.StationID\n  AND a.KundenID = 64\nORDER BY a.Start" }
+      },
+      "versuche": [
+        { "beschreibung": "andere Aliasse", "ok": true, "sql": "SELECT Ausleihe.AusleihID, Ausleihe.Start, von.Name, nach.Name\nFROM Ausleihe, Station von, Station nach\nWHERE Ausleihe.StartStation = von.StationID\n  AND Ausleihe.ZielStation = nach.StationID\n  AND Ausleihe.KundenID = 64\nORDER BY Ausleihe.Start" },
+        { "beschreibung": "zweimal dieselbe Station (P7)", "ok": false, "codes": ["ANDERE_WERTE"], "sql": "SELECT a.AusleihID, a.Start, s1.Name, s1.Name\nFROM Ausleihe a, Station s1, Station s2\nWHERE a.StartStation = s1.StationID\n  AND a.ZielStation = s2.StationID\n  AND a.KundenID = 64\nORDER BY a.Start" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-abgeschlossen-kunde9", "datenbank": "stadtrad", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT COUNT(*) AS Fahrten\nFROM Ausleihe\nWHERE KundenID = 9\n  AND Ende IS NOT NULL" }
+      },
+      "versuche": [
+        { "beschreibung": "COUNT(Ende) (P4 richtig genutzt)", "ok": true, "sql": "SELECT COUNT(Ende) AS Fahrten\nFROM Ausleihe\nWHERE KundenID = 9" },
+        { "beschreibung": "Verbund über die Zielstation verliert frei abgestellte Räder (Variante null)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT COUNT(*) AS Fahrten\nFROM Ausleihe, Station\nWHERE Ausleihe.ZielStation = Station.StationID\n  AND Ausleihe.KundenID = 9" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-mindestens-stunde", "datenbank": "stadtrad", "abimodus": "hinweis", "varianten": ["grenze"],
+        "loesung": { "sql": "SELECT AusleihID, DauerMin\nFROM Ausleihe\nWHERE DauerMin >= 60" }
+      },
+      "versuche": [
+        { "beschreibung": "> statt >= (P6; Grenzwert schon auf der Übungs-DB)", "ok": false, "codes": ["ZU_WENIGE_ZEILEN"], "sql": "SELECT AusleihID, DauerMin\nFROM Ausleihe\nWHERE DauerMin > 60" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sr-top-stationen", "datenbank": "stadtrad", "abimodus": "hinweis", "varianten": ["gleichstand"],
+        "loesung": { "sql": "SELECT StartStation, COUNT(*) AS Starts\nFROM Ausleihe\nGROUP BY StartStation\nHAVING COUNT(*) >= 50" }
+      },
+      "versuche": [
+        { "beschreibung": "LIMIT 3 (Variante gleichstand)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT StartStation, COUNT(*) AS Starts\nFROM Ausleihe\nGROUP BY StartStation\nORDER BY Starts DESC\nLIMIT 3" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sf-umsatz-je-stand", "datenbank": "stadtfest", "abimodus": "hinweis",
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand", "leer"],
+        "loesung": { "sql": "SELECT Stand.Name, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Stand, Bon, Position, Produkt\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Stand.StandNr, Stand.Name" }
+      },
+      "versuche": [
+        { "beschreibung": "Faktoren vertauscht", "ok": true, "sql": "SELECT Stand.Name, SUM(Produkt.Preis * Position.Menge) AS Umsatz\nFROM Position, Produkt, Bon, Stand\nWHERE Position.ProduktNr = Produkt.ProduktNr\n  AND Position.BonNr = Bon.BonNr\n  AND Bon.StandNr = Stand.StandNr\nGROUP BY Stand.StandNr, Stand.Name" },
+        { "beschreibung": "LIESMICH-Fehlabfrage stadtfest:122 (Schicht vervielfacht, P2)", "ok": false, "codes": ["ANDERE_WERTE"], "liesmich": "stadtfest:122", "sql": "SELECT Stand.Name, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Stand, Schicht, Bon, Position, Produkt\nWHERE Stand.StandNr = Schicht.StandNr\n  AND Stand.StandNr = Bon.StandNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Stand.StandNr, Stand.Name" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sf-umsatz-sortiert", "datenbank": "stadtfest", "abimodus": "hinweis", "varianten": ["gleichstand"],
+        "sortierung": [{ "spalte": "Umsatz", "richtung": "DESC" }],
+        "loesung": { "sql": "SELECT Stand.StandNr, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Stand, Bon, Position, Produkt\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Stand.StandNr\nORDER BY Umsatz DESC" }
+      },
+      "versuche": [
+        { "beschreibung": "Gleichstand anders aufgelöst (zweite Sortierstufe)", "ok": true, "sql": "SELECT Stand.StandNr, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Stand, Bon, Position, Produkt\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Stand.StandNr\nORDER BY Umsatz DESC, Stand.StandNr DESC" },
+        { "beschreibung": "aufsteigend statt absteigend", "ok": false, "codes": ["NUR_REIHENFOLGE"], "sql": "SELECT Stand.StandNr, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Stand, Bon, Position, Produkt\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Stand.StandNr\nORDER BY Umsatz" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sf-bons-stunde", "datenbank": "stadtfest", "abimodus": "hinweis", "varianten": ["grenze"],
+        "loesung": { "sql": "SELECT COUNT(*) AS Bons\nFROM Bon\nWHERE StandNr = 4\n  AND Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 22:59'" }
+      },
+      "versuche": [
+        { "beschreibung": "LIKE mit Stundenmuster", "ok": true, "sql": "SELECT COUNT(*) AS Bons\nFROM Bon\nWHERE StandNr = 4\n  AND Zeitpunkt LIKE '2026-08-29 22:%'" },
+        { "beschreibung": "obere Grenze 23:00 (P6, Variante grenze)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT COUNT(*) AS Bons\nFROM Bon\nWHERE StandNr = 4\n  AND Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 23:00'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sf-positionen-artikel", "datenbank": "stadtfest", "abimodus": "hinweis", "varianten": ["grenze"],
+        "loesung": { "sql": "SELECT COUNT(*) AS Positionen, SUM(Position.Menge) AS Artikel\nFROM Bon, Position\nWHERE Bon.BonNr = Position.BonNr\n  AND Bon.StandNr = 4\n  AND Bon.Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 22:59'" }
+      },
+      "versuche": [
+        { "beschreibung": "COUNT statt SUM (P4)", "ok": false, "codes": ["ANDERE_WERTE"], "sql": "SELECT COUNT(*) AS Positionen, COUNT(Position.Menge) AS Artikel\nFROM Bon, Position\nWHERE Bon.BonNr = Position.BonNr\n  AND Bon.StandNr = 4\n  AND Bon.Zeitpunkt BETWEEN '2026-08-29 22:00' AND '2026-08-29 22:59'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sf-nullpositionen", "datenbank": "stadtfest", "abimodus": "streng",
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand", "leer"],
+        "loesung": { "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS Nullpositionen\nFROM Helfer, Bon, Position\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.Menge = 0\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING COUNT(*) >= 3" }
+      },
+      "versuche": [
+        { "beschreibung": "Musterlösung im strengen Modus", "ok": true, "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS Nullpositionen\nFROM Helfer, Bon, Position\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.Menge = 0\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname\nHAVING COUNT(*) >= 3" },
+        { "beschreibung": "Nachname nicht gruppiert (P3)", "ok": false, "codes": ["GB_REGEL"], "ohneErgebnis": true, "sql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, COUNT(*) AS Nullpositionen\nFROM Helfer, Bon, Position\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.Menge = 0\nGROUP BY Helfer.HelferNr, Helfer.Vorname\nHAVING COUNT(*) >= 3" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "sf-nicht-tus", "datenbank": "stadtfest", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT Bon.BonNr, Helfer.Verein\nFROM Bon, Helfer\nWHERE Bon.HelferNr = Helfer.HelferNr\n  AND (Helfer.Verein != 'TuS Weserstedt' OR Helfer.Verein IS NULL)" }
+      },
+      "versuche": [
+        { "beschreibung": "NULL vergessen (P5)", "ok": false, "codes": ["NULL_ZEILEN_FEHLEN"], "sql": "SELECT Bon.BonNr, Helfer.Verein\nFROM Bon, Helfer\nWHERE Bon.HelferNr = Helfer.HelferNr\n  AND Helfer.Verein != 'TuS Weserstedt'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "tus-mitglieder-je-abteilung", "datenbank": "tus", "abimodus": "hinweis",
+        "varianten": ["null", "gleichnamig", "grenze", "leer"],
+        "sortierung": [{ "spalte": "Mitglieder", "richtung": "DESC" }],
+        "loesung": { "sql": "SELECT Abteilung.AbteilungNr, Abteilung.Name, COUNT(*) AS Mitglieder\nFROM Abteilung, Mitgliedschaft\nWHERE Abteilung.AbteilungNr = Mitgliedschaft.AbteilungNr\nGROUP BY Abteilung.AbteilungNr, Abteilung.Name\nORDER BY Mitglieder DESC" }
+      },
+      "versuche": [
+        { "beschreibung": "Gleichstand Tischtennis/Fußball anders sortiert", "ok": true, "sql": "SELECT Abteilung.AbteilungNr, Abteilung.Name, COUNT(*) AS Mitglieder\nFROM Abteilung, Mitgliedschaft\nWHERE Abteilung.AbteilungNr = Mitgliedschaft.AbteilungNr\nGROUP BY Abteilung.AbteilungNr, Abteilung.Name\nORDER BY Mitglieder DESC, Abteilung.Name DESC" },
+        { "beschreibung": "Gleichstand andersherum", "ok": true, "sql": "SELECT Abteilung.AbteilungNr, Abteilung.Name, COUNT(*) AS Mitglieder\nFROM Abteilung, Mitgliedschaft\nWHERE Abteilung.AbteilungNr = Mitgliedschaft.AbteilungNr\nGROUP BY Abteilung.AbteilungNr, Abteilung.Name\nORDER BY 3 DESC, Abteilung.Name ASC" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "tus-einnahmen", "datenbank": "tus", "abimodus": "hinweis", "varianten": ["null", "gleichnamig", "grenze", "leer"],
+        "loesung": { "sql": "SELECT SUM(Beitragsgruppe.Monatsbeitrag) AS Einnahmen\nFROM Mitglied, Beitragsgruppe\nWHERE Mitglied.Beitragsgruppe = Beitragsgruppe.Gruppe" }
+      },
+      "versuche": [
+        { "beschreibung": "über Mitgliedschaft vervielfacht (P2)", "ok": false, "codes": ["ANDERE_WERTE"], "sql": "SELECT SUM(Beitragsgruppe.Monatsbeitrag) AS Einnahmen\nFROM Mitglied, Beitragsgruppe, Mitgliedschaft\nWHERE Mitglied.Beitragsgruppe = Beitragsgruppe.Gruppe\n  AND Mitglied.MitgliedNr = Mitgliedschaft.MitgliedNr" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "tus-abteilungen-je-mitglied", "datenbank": "tus", "abimodus": "hinweis", "varianten": ["gleichnamig"],
+        "loesung": { "sql": "SELECT Mitglied.Vorname, Mitglied.Nachname, COUNT(*) AS Abteilungen\nFROM Mitglied, Mitgliedschaft\nWHERE Mitglied.MitgliedNr = Mitgliedschaft.MitgliedNr\nGROUP BY Mitglied.MitgliedNr, Mitglied.Vorname, Mitglied.Nachname" }
+      },
+      "versuche": [
+        { "beschreibung": "nach Namen gruppiert (P3; Gleichnamige schon auf der Übungs-DB)", "ok": false, "codes": ["ZU_WENIGE_ZEILEN"], "sql": "SELECT Mitglied.Vorname, Mitglied.Nachname, COUNT(*) AS Abteilungen\nFROM Mitglied, Mitgliedschaft\nWHERE Mitglied.MitgliedNr = Mitgliedschaft.MitgliedNr\nGROUP BY Mitglied.Vorname, Mitglied.Nachname" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "tus-ohne-beitrag", "datenbank": "tus", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT Mitglied, Beitragsgruppe\nFROM MitgliederlisteRoh\nWHERE Monatsbeitrag IS NULL" }
+      },
+      "versuche": [
+        { "beschreibung": "= NULL: auf der Übungs-DB beide leer (P5)", "ok": false, "codes": ["NULL_VERGLEICH", "NUR_ZUFAELLIG"], "sql": "SELECT Mitglied, Beitragsgruppe\nFROM MitgliederlisteRoh\nWHERE Monatsbeitrag = NULL" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "tus-seit-erhoehung", "datenbank": "tus", "abimodus": "hinweis", "varianten": ["grenze"],
+        "loesung": { "sql": "SELECT MitgliedNr\nFROM Mitglied\nWHERE Eintritt >= '2026-01-01'" }
+      },
+      "versuche": [
+        { "beschreibung": "> statt >= (P6)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT MitgliedNr\nFROM Mitglied\nWHERE Eintritt > '2026-01-01'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "tus-trainer-streng", "datenbank": "tus", "abimodus": "streng", "varianten": ["leer"],
+        "sortierung": [{ "spalte": "Trainer", "richtung": "ASC" }],
+        "loesung": { "sql": "SELECT Trainer.Name AS Trainer, Trainer.Telefon, Abteilung.Name AS Abteilung, Halle.Name AS Halle\nFROM Trainer, Abteilung, Halle\nWHERE Trainer.TrainerNr = Abteilung.TrainerNr\n  AND Abteilung.HalleNr = Halle.HalleNr\nORDER BY Trainer.Name" }
+      },
+      "versuche": [
+        { "beschreibung": "JOIN … ON im Verhör", "ok": false, "codes": ["JOIN_ON"], "ohneErgebnis": true, "sql": "SELECT Trainer.Name, Trainer.Telefon, Abteilung.Name, Halle.Name\nFROM Trainer JOIN Abteilung ON Trainer.TrainerNr = Abteilung.TrainerNr\nJOIN Halle ON Abteilung.HalleNr = Halle.HalleNr\nORDER BY Trainer.Name" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "tus-trainer-hinweis", "datenbank": "tus", "abimodus": "hinweis", "varianten": ["leer"],
+        "sortierung": [{ "spalte": "Trainer", "richtung": "ASC" }],
+        "loesung": { "sql": "SELECT Trainer.Name AS Trainer, Trainer.Telefon, Abteilung.Name AS Abteilung, Halle.Name AS Halle\nFROM Trainer, Abteilung, Halle\nWHERE Trainer.TrainerNr = Abteilung.TrainerNr\n  AND Abteilung.HalleNr = Halle.HalleNr\nORDER BY Trainer.Name" }
+      },
+      "versuche": [
+        { "beschreibung": "JOIN … ON in einer Ermittlung: richtig mit Hinweis", "ok": true, "codes": ["JOIN_ON"], "sql": "SELECT Trainer.Name, Trainer.Telefon, Abteilung.Name, Halle.Name\nFROM Trainer JOIN Abteilung ON Trainer.TrainerNr = Abteilung.TrainerNr\nJOIN Halle ON Abteilung.HalleNr = Halle.HalleNr\nORDER BY Trainer.Name" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "det-alle-vier", "datenbank": "detektei", "abimodus": "hinweis",
+        "varianten": ["null", "gleichnamig", "grenze", "gleichstand", "leer"],
+        "loesung": { "sql": "SELECT Person.Vorname, Person.Nachname, COUNT(*) AS Faelle\nFROM Person, verdaechtig\nWHERE Person.PersonNr = verdaechtig.PersonNr\n  AND verdaechtig.FallNr IN (1, 2, 3, 4)\nGROUP BY Person.PersonNr, Person.Vorname, Person.Nachname\nHAVING COUNT(*) = 4" }
+      },
+      "versuche": [
+        { "beschreibung": "Gruppierung über den Fremdschlüssel", "ok": true, "sql": "SELECT p.Vorname, p.Nachname, COUNT(*) AS Faelle\nFROM Person p, verdaechtig v\nWHERE p.PersonNr = v.PersonNr\n  AND v.FallNr IN (1, 2, 3, 4)\nGROUP BY v.PersonNr, p.Vorname, p.Nachname\nHAVING COUNT(*) = 4" },
+        { "beschreibung": "LIESMICH-Fehlabfrage detektei:149 (nach Namen gruppiert, Review Focus 3)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "liesmich": "detektei:149", "sql": "SELECT Person.Vorname, Person.Nachname, COUNT(*) AS Faelle\nFROM Person, verdaechtig\nWHERE Person.PersonNr = verdaechtig.PersonNr\n  AND verdaechtig.FallNr IN (1, 2, 3, 4)\nGROUP BY Person.Vorname, Person.Nachname\nHAVING COUNT(*) = 4" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "det-mentor", "datenbank": "detektei", "abimodus": "hinweis", "varianten": ["null", "leer"],
+        "sortierung": [{ "spalte": "Mentor", "richtung": "ASC" }, { "spalte": "Ermittler", "richtung": "ASC" }],
+        "loesung": { "sql": "SELECT e.Name AS Ermittler, m.Name AS Mentor\nFROM Ermittler e, Ermittler m\nWHERE e.MentorNr = m.ErmittlerNr\nORDER BY m.Name, e.Name" }
+      },
+      "versuche": [
+        { "beschreibung": "andere Aliasse", "ok": true, "sql": "SELECT kind.Name, betreuer.Name\nFROM Ermittler betreuer, Ermittler kind\nWHERE kind.MentorNr = betreuer.ErmittlerNr\nORDER BY betreuer.Name ASC, kind.Name ASC" },
+        { "beschreibung": "nur nach Mentor sortiert (zweite Stufe fehlt)", "ok": false, "codes": ["NUR_REIHENFOLGE"], "sql": "SELECT e.Name, m.Name\nFROM Ermittler e, Ermittler m\nWHERE e.MentorNr = m.ErmittlerNr\nORDER BY m.Name, e.Name DESC" },
+        { "beschreibung": "Rollen vertauscht (P7) = Spalten vertauscht", "ok": false, "codes": ["SPALTENREIHENFOLGE"], "sql": "SELECT e.Name, m.Name\nFROM Ermittler e, Ermittler m\nWHERE m.MentorNr = e.ErmittlerNr\nORDER BY e.Name, m.Name" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "det-ohne-mentor", "datenbank": "detektei", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT Name\nFROM Ermittler\nWHERE MentorNr IS NULL" }
+      },
+      "versuche": [
+        { "beschreibung": "MentorNr = NULL (P5)", "ok": false, "codes": ["NULL_VERGLEICH", "ZU_WENIGE_ZEILEN"], "sql": "SELECT Name\nFROM Ermittler\nWHERE MentorNr = NULL" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "det-beweise-fall1", "datenbank": "detektei", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT BeweisNr, Bezeichnung, OrtNr\nFROM Beweisstueck\nWHERE FallNr = 1" }
+      },
+      "versuche": [
+        { "beschreibung": "Verbund mit Ort verliert NULL-Fundort (nur in Variante null)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT Beweisstueck.BeweisNr, Beweisstueck.Bezeichnung, Beweisstueck.OrtNr\nFROM Beweisstueck, Ort\nWHERE Beweisstueck.OrtNr = Ort.OrtNr\n  AND Beweisstueck.FallNr = 1" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "det-beweise-fall2", "datenbank": "detektei", "abimodus": "hinweis", "varianten": ["null"],
+        "loesung": { "sql": "SELECT BeweisNr, Bezeichnung, OrtNr\nFROM Beweisstueck\nWHERE FallNr = 2" }
+      },
+      "versuche": [
+        { "beschreibung": "Verbund mit Ort verliert die Nachtfalter-Skizze (P5)", "ok": false, "codes": ["NULL_ZEILEN_FEHLEN", "ZU_WENIGE_ZEILEN"], "sql": "SELECT Beweisstueck.BeweisNr, Beweisstueck.Bezeichnung, Beweisstueck.OrtNr\nFROM Beweisstueck, Ort\nWHERE Beweisstueck.OrtNr = Ort.OrtNr\n  AND Beweisstueck.FallNr = 2" },
+        { "beschreibung": "Bezeichnung ohne Präfix (P7)", "ok": false, "codes": ["MEHRDEUTIG"], "ohneErgebnis": true, "sql": "SELECT Beweisstueck.BeweisNr, Bezeichnung, Beweisstueck.OrtNr\nFROM Beweisstueck, Ort\nWHERE Beweisstueck.OrtNr = Ort.OrtNr\n  AND Beweisstueck.FallNr = 2" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "det-meiste-verdachtsfaelle", "datenbank": "detektei", "abimodus": "hinweis", "varianten": ["gleichstand"],
+        "loesung": { "sql": "SELECT PersonNr, COUNT(*) AS Faelle\nFROM verdaechtig\nGROUP BY PersonNr\nHAVING COUNT(*) >= 2" }
+      },
+      "versuche": [
+        { "beschreibung": "LIMIT 2 (Variante gleichstand)", "ok": false, "codes": ["NUR_ZUFAELLIG"], "sql": "SELECT PersonNr, COUNT(*) AS Faelle\nFROM verdaechtig\nGROUP BY PersonNr\nORDER BY Faelle DESC\nLIMIT 2" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "ds-ein-token", "datenbank": "datenspuren", "abimodus": "hinweis", "varianten": [],
+        "loesung": { "sql": "SELECT DISTINCT KundenToken\nFROM RadExport\nWHERE Jahrgang = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Tarif = 'Plus'" }
+      },
+      "versuche": [
+        { "beschreibung": "GROUP BY statt DISTINCT", "ok": true, "sql": "SELECT KundenToken\nFROM RadExport\nWHERE Jahrgang = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Tarif = 'Plus'\nGROUP BY KundenToken" },
+        { "beschreibung": "ohne DISTINCT", "ok": false, "codes": ["ZU_VIELE_ZEILEN"], "ohneCodes": ["KREUZPRODUKT"], "sql": "SELECT KundenToken\nFROM RadExport\nWHERE Jahrgang = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Tarif = 'Plus'" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "ds-geraet", "datenbank": "datenspuren", "abimodus": "hinweis", "varianten": [],
+        "sortierung": [{ "spalte": "Treffer", "richtung": "DESC" }],
+        "loesung": { "sql": "SELECT AppCheckin.Geraet, COUNT(*) AS Treffer\nFROM RadExport, AppCheckin\nWHERE RadExport.StartStation = AppCheckin.Ort\n  AND RadExport.Start = AppCheckin.Zeitpunkt\n  AND RadExport.KundenToken = 'R-7F3A'\nGROUP BY AppCheckin.Geraet\nORDER BY Treffer DESC" }
+      },
+      "versuche": [
+        { "beschreibung": "Aliasse", "ok": true, "sql": "SELECT a.Geraet, COUNT(*) AS Treffer\nFROM RadExport r, AppCheckin a\nWHERE r.StartStation = a.Ort\n  AND r.Start = a.Zeitpunkt\n  AND r.KundenToken = 'R-7F3A'\nGROUP BY a.Geraet\nORDER BY COUNT(*) DESC" },
+        { "beschreibung": "Zeitbedingung fehlt (P2)", "ok": false, "codes": ["ZU_VIELE_ZEILEN"], "sql": "SELECT AppCheckin.Geraet, COUNT(*) AS Treffer\nFROM RadExport, AppCheckin\nWHERE RadExport.StartStation = AppCheckin.Ort\n  AND RadExport.KundenToken = 'R-7F3A'\nGROUP BY AppCheckin.Geraet\nORDER BY Treffer DESC" }
+      ]
+    },
+    {
+      "aufgabe": {
+        "id": "ds-tus-merkmale", "datenbank": "datenspuren", "abimodus": "hinweis", "varianten": [],
+        "loesung": { "sql": "SELECT MitgliedToken, Geburtsjahr, Abteilung, Stadtteil\nFROM VereinExport\nWHERE Geburtsjahr = 1988\n  AND Stadtteil = 'Hafenviertel'\n  AND Abteilung = 'Tischtennis'" }
+      },
+      "versuche": [
+        { "beschreibung": "Text ohne Hochkommata (P5)", "ok": false, "codes": ["KEINE_SPALTE"], "ohneErgebnis": true, "sql": "SELECT MitgliedToken, Geburtsjahr, Abteilung, Stadtteil\nFROM VereinExport\nWHERE Geburtsjahr = 1988\n  AND Stadtteil = Hafenviertel\n  AND Abteilung = 'Tischtennis'" }
+      ]
+    }
+  ]
+}

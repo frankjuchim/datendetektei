@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <title>Freie Ermittlung – Datendetektei</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/konsole.css?v=0.7.0">
+  <script src="/static/js/kern/thema.js?v=0.7.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/parser.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/regeln.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/fehlertexte.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/visual.js?v=0.7.0" defer></script>
+  <script type="module" src="/static/js/konsole/konsole.js?v=0.7.0"></script>
+</head>
+<body>
+  <a class="springen" href="#sql-eingabe">Zur Konsole springen</a>
+  <header class="kopf">
+    <a class="marke" href="/" aria-label="Datendetektei Weserstedt – zur Startseite">
+      <svg class="marke-siegel" viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="siegel-ring" cx="20" cy="20" r="18"/>
+        <circle class="siegel-innen" cx="20" cy="20" r="14"/>
+        <circle class="siegel-lupe" cx="18" cy="18" r="6"/>
+        <path class="siegel-griff" d="m22.5 22.5 6 6"/>
+      </svg>
+      <span class="marke-text"><span class="marke-name">Datendetektei</span><span class="marke-ort">Weserstedt</span></span>
+    </a>
+    <div class="kopf-mitte"><span class="kopf-kurs" id="kopf-kurs"></span></div>
+    <div class="kopf-rechts">
+      <a class="portal-link" id="portal-link" href="/" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-haus"/></svg><span class="portal-text">Portal</span></a>
+      <button class="knopf-icon" id="thema-knopf" type="button" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-mond"/></svg></button>
+      <a class="knopf kopf-anmelden" id="kopf-anmelden" href="/sso/start" hidden>Anmelden</a>
+      <details class="ich" id="ich" hidden>
+        <summary class="ich-knopf"><span class="ich-initialen" id="ich-initialen" aria-hidden="true"></span><span class="ich-name" id="ich-name"></span></summary>
+        <div class="ich-menue">
+          <p class="etikett" id="ich-rolle"></p>
+          <a href="/lehrkraft" id="ich-lehrkraft" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-lehrkraft"/></svg>Lehrkraft-Bereich</a>
+          <div class="trenner"></div>
+          <a href="/abmelden"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Abmelden</a>
+          <a href="/abmelden/ueberall"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-abmelden"/></svg>Überall abmelden</a>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main class="inhalt konsole-seite" id="inhalt" tabindex="-1">
+    <div class="seiten-kopf">
+      <span class="etikett"><a class="etikett-link" href="/themen#freie-ermittlung">Freie Ermittlung</a> · <span id="db-akte">Übungs-DB</span></span>
+      <h1 id="db-titel">Ermittlungskonsole</h1>
+      <p>Probier eigene Abfragen aus. Hier wird nichts bewertet und nichts gespeichert – dein Entwurf bleibt nur auf
+        diesem Gerät.</p>
+    </div>
+
+    <section class="konsole" id="konsole" aria-labelledby="konsole-titel">
+      <div class="konsole-kopf">
+        <h2 class="konsole-titel" id="konsole-titel"><span class="led" aria-hidden="true"></span>Ermittlungskonsole</h2>
+        <span class="konsole-db" id="konsole-db">DB: … · Übungs-DB</span>
+      </div>
+      <div class="konsole-koerper">
+        <div class="editor" id="editor">
+          <div class="editor-zeilen" id="editor-zeilen"></div>
+          <div class="editor-flaeche">
+            <pre class="editor-hl" id="editor-hl" aria-hidden="true"></pre>
+            <label class="nur-sr" for="sql-eingabe">SQL-Abfrage</label>
+            <textarea id="sql-eingabe" rows="8" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="editor-tasten editor-hinweise"></textarea>
+          </div>
+        </div>
+        <div class="schema-browser" id="schema-browser" role="region" aria-labelledby="schema-titel">
+          <h3 class="etikett" id="schema-titel">Schema</h3>
+          <p class="schema-tipp" id="schema-tipp">Tippe auf eine Spalte, um sie einzufügen.</p>
+          <div id="schema-liste"><p class="schema-laedt">Schema wird geladen …</p></div>
+        </div>
+      </div>
+      <p class="nur-sr" id="editor-tasten">Strg oder Cmd und Enter führt die Abfrage aus. Tab rückt um zwei Leerzeichen ein; Escape und danach Tab verlässt das Eingabefeld.</p>
+      <div class="nur-sr" id="editor-hinweise" aria-live="polite"></div>
+      <div class="konsole-knoepfe">
+        <button class="knopf primaer" id="k-ausfuehren" type="button" aria-keyshortcuts="Control+Enter Meta+Enter"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-play"/></svg>Ausführen <kbd class="taste" id="taste">Strg ↵</kbd></button>
+        <button class="knopf leise" id="k-abbrechen" type="button" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-stopp"/></svg>Abbrechen</button>
+        <span class="trenner"></span>
+        <button class="knopf" id="k-zeitlupe" type="button" title="Abfrage Schritt für Schritt in der Zeitlupe ansehen"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-zeitlupe"/></svg>Zeitlupe</button>
+        <span class="konsole-modus" id="konsole-modus"></span>
+      </div>
+      <div class="ergebnis" id="ergebnis" aria-live="polite">
+        <p class="ergebnis-leer">Noch nichts ausgeführt. Schreib deine Abfrage und tippe auf „Ausführen“.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="fuss">
+    <nav aria-label="Weitere Seiten">
+      <a href="/">Start</a>
+      <a href="/themen">Themen</a>
+      <a href="/gast">Gastmodus</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a data-portal-pfad="/" href="/" hidden>Portal InfoLabs</a>
+    </nav>
+    <p>Datendetektei Weserstedt · Plattform im Verbund InfoLabs · Personen, Orte und Daten frei erfunden</p>
+  </footer>
+</body>
+</html>

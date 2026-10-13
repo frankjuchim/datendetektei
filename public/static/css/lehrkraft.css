@@ -1,0 +1,204 @@
+/* Lehrkraft-Bereich (DESIGN.md §5.11, Plan Phase 6 Task 4): Kurswahl, Reiterleiste, Matrix (Heatmap), Fallen-Profil,
+   Aufgabenstatistik, Fehlabfragen, Vorschau-Baum, Board-Link, Materialien, System. Nur Tokens aus tokens.css. */
+
+.lk-seite { gap: var(--a-5); }
+.lk-kopf-zeile { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--a-4); }
+.lk-kurswahl { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-3); min-width: 0; }
+.lk-kurswahl label { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tinte-2); }
+.lk-auswahl, .lk-feld select, .lk-feld input {
+  min-height: 44px; max-width: 100%; padding: 0 var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte);
+}
+.lk-auswahl { min-width: min(320px, 100%); font-weight: 600; }
+.lk-kennzahlen { display: flex; flex-wrap: wrap; gap: var(--a-2) var(--a-6); font-size: var(--t-s); color: var(--tinte-2); }
+.lk-kennzahlen strong { font-family: var(--schrift-titel); font-size: 1.5rem; color: var(--tinte); font-weight: 700; margin-right: 4px; }
+
+/* ---------- Reiterleiste ---------- */
+.lk-reiter-huelle { overflow-x: auto; min-width: 0; border-bottom: 2px solid var(--rand); scrollbar-width: thin; }
+.lk-reiter { display: flex; gap: var(--a-1); min-width: max-content; }
+.lk-reiter-knopf {
+  display: inline-flex; align-items: center; gap: var(--a-2); min-height: 48px; padding: 0 var(--a-4);
+  border: 0; border-bottom: 3px solid transparent; margin-bottom: -2px; background: transparent; color: var(--tinte-2);
+  font-family: var(--schrift-titel); font-size: 1.125rem; font-weight: 600; letter-spacing: 0.01em; cursor: pointer; white-space: nowrap;
+}
+.lk-reiter-knopf:hover { color: var(--tinte); background: var(--flaeche); }
+.lk-reiter-knopf[aria-selected="true"] { color: var(--tinte); border-bottom-color: var(--siegelrot); }
+.lk-reiter-knopf svg.icon { width: 18px; height: 18px; }
+.lk-panel { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.lk-panel:focus { outline: none; }
+.lk-panel:focus-visible { outline: 3px solid var(--fokus); outline-offset: 4px; }
+.lk-laedt { color: var(--tinte-2); }
+
+/* ---------- Karten und Raster ---------- */
+.lk-karte { background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius); box-shadow: var(--schatten-1); padding: var(--a-5); display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.lk-karte > h2, .lk-karte-kopf h2 { font-size: 1.375rem; }
+.lk-karte-kopf { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--a-2) var(--a-4); }
+.lk-karte-kopf p { font-size: var(--t-s); color: var(--tinte-2); }
+.lk-unter { font-size: var(--t-s); color: var(--tinte-2); max-width: 72ch; }
+.lk-raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+@media (max-width: 1023px) { .lk-raster { grid-template-columns: minmax(0, 1fr); } }
+.lk-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-3); }
+
+/* Übersicht: Akten-Fortschritt */
+.lk-akten { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--a-3); }
+.lk-akte { display: flex; align-items: center; gap: var(--a-3); padding: var(--a-3); border: 1px solid var(--rand); border-radius: var(--radius); border-left: 4px solid var(--akte-farbe, var(--rand-stark)); min-width: 0; }
+.lk-akte.gesperrt { color: var(--tinte-3); }
+.lk-akte-text { display: flex; flex-direction: column; min-width: 0; font-size: var(--t-s); }
+.lk-akte-text strong { font-family: var(--schrift-titel); font-size: 1.0625rem; }
+.lk-akte-text span { color: var(--tinte-2); font-size: var(--t-xs); }
+
+/* ---------- Matrix (Heatmap) ---------- */
+.heat-legende { display: flex; align-items: center; gap: var(--a-2); font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); flex-wrap: wrap; }
+.heat-legende .skala { display: inline-flex; gap: 2px; }
+.heat-legende .skala i { width: 28px; height: 14px; border-radius: 2px; display: inline-block; }
+.heat-legende .skala i.h1 { background: var(--heat-1); }
+.heat-legende .skala i.h2 { background: var(--heat-2); }
+.heat-legende .skala i.h3 { background: var(--heat-3); }
+.heat-legende .skala i.h4 { background: var(--heat-4); }
+.heat-legende .skala i.h5 { background: var(--heat-5); }
+.heat-legende .leer-muster { width: 28px; height: 14px; border: 1px dashed var(--rand-stark); border-radius: 2px; display: inline-block; }
+.matrix-huelle { overflow: auto; max-height: min(70vh, 720px); min-width: 0; border: 1px solid var(--rand); border-radius: var(--radius); }
+table.matrix { border-collapse: separate; border-spacing: 2px; font-variant-numeric: tabular-nums; width: max-content; min-width: 100%; background: var(--karte); }
+table.matrix th { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 500; color: var(--tinte-2); padding: 4px 6px; white-space: nowrap; background: var(--karte); }
+table.matrix thead th { position: sticky; top: 0; z-index: 2; text-align: center; vertical-align: bottom; }
+table.matrix thead th.matrix-akte { top: 0; border-bottom: 2px solid var(--akte-farbe, var(--rand)); color: var(--tinte); }
+table.matrix thead tr + tr th { top: 26px; }
+table.matrix thead th.ist-verhoer { color: var(--siegelrot-text); }
+table.matrix thead th.gesperrt { color: var(--tinte-3); }
+table.matrix th.ecke { position: sticky; left: 0; z-index: 3; text-align: left; }
+table.matrix tbody th { position: sticky; left: 0; z-index: 1; text-align: left; font-family: var(--schrift-text); font-size: var(--t-s); font-weight: 600; color: var(--tinte); padding-right: var(--a-3); max-width: 14rem; overflow: hidden; text-overflow: ellipsis; }
+table.matrix tbody th .lk-punkte { display: block; font-family: var(--schrift-mono); font-size: 0.6875rem; font-weight: 500; color: var(--tinte-2); }
+table.matrix td { height: 36px; min-width: 52px; text-align: center; font-family: var(--schrift-mono); font-size: 0.75rem; border-radius: 3px; position: relative; cursor: pointer; }
+table.matrix td.h1 { background: var(--heat-1); color: var(--heat-text-hell); }
+table.matrix td.h2 { background: var(--heat-2); color: var(--heat-text-hell); }
+table.matrix td.h3 { background: var(--heat-3); color: var(--heat-text-hell); }
+table.matrix td.h4 { background: var(--heat-4); color: var(--heat-text-dunkel); }
+table.matrix td.h5 { background: var(--heat-5); color: var(--heat-text-dunkel); }
+table.matrix td.leer { background: transparent; border: 1px dashed var(--rand-stark); color: var(--tinte-3); }
+table.matrix td.aus { background: var(--flaeche); color: var(--tinte-3); cursor: default; }
+table.matrix td:focus-visible, table.matrix td:hover { outline: 2px solid var(--tinte); outline-offset: 1px; z-index: 1; }
+table.matrix td[aria-selected="true"] { outline: 3px solid var(--fokus); outline-offset: 1px; z-index: 1; }
+table.matrix td .besiegt { position: absolute; top: 1px; right: 3px; font-size: 0.625rem; }
+.matrix-detail { min-height: 3.5rem; padding: var(--a-3) var(--a-4); border-left: 3px solid var(--blau); background: var(--blau-flaeche); border-radius: 0 var(--radius) var(--radius) 0; font-size: var(--t-s); }
+.matrix-detail strong { font-family: var(--schrift-titel); font-size: 1.125rem; }
+.matrix-detail ul { margin-top: var(--a-1); padding-left: 1.1em; }
+
+/* ---------- Fallen-Profil (waagerechte Balken, Wert am Ende, Text + Zahl) ---------- */
+.fallen-diagramm { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.fallen-zeile { display: grid; grid-template-columns: minmax(150px, 270px) minmax(0, 1fr); align-items: center; gap: var(--a-3); min-height: 32px; }
+.fallen-label { display: flex; gap: var(--a-2); align-items: center; font-size: var(--t-s); min-width: 0; }
+.fallen-label .nr { font-family: var(--schrift-mono); font-weight: 600; width: 2.6em; flex: none; color: var(--tinte); }
+.fallen-label .titel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--tinte-2); }
+.fallen-spur { position: relative; height: 24px; border-left: 1px solid var(--rand-stark); display: flex; align-items: center; min-width: 0; }
+.fallen-balken { height: 18px; width: calc(var(--wert, 0) * 88%); background: var(--siegelrot); border-radius: 0 4px 4px 0; flex: none; transition: width 600ms var(--kurve); }
+.fallen-wert { padding-left: 6px; font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fallen-wert.gesperrt { color: var(--tinte-3); }
+.fallen-achse { display: grid; grid-template-columns: minmax(150px, 270px) minmax(0, 1fr); gap: var(--a-3); }
+.fallen-achse .ticks { position: relative; height: 18px; font-family: var(--schrift-mono); font-size: 0.6875rem; color: var(--tinte-3); }
+.fallen-achse .ticks span { position: absolute; left: calc(var(--pos, 0) * 88%); transform: translateX(-50%); }
+@media (max-width: 599px) {
+  .fallen-zeile, .fallen-achse { grid-template-columns: 76px minmax(0, 1fr); }
+  .fallen-label .titel { display: none; }
+}
+
+/* ---------- Tabellen (Aufgabenstatistik, Verhöre) ---------- */
+.lk-tabelle { max-height: min(70vh, 720px); overflow: auto; }
+.lk-tabelle table.daten thead th { position: sticky; top: 0; z-index: 1; background: var(--flaeche); }
+.lk-tabelle table.daten td.zahl, .lk-tabelle table.daten th.zahl { text-align: right; font-family: var(--schrift-mono); white-space: nowrap; }
+.lk-tabelle table.daten .klein { font-size: var(--t-xs); color: var(--tinte-2); display: block; }
+.sortier-knopf {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 4px; border: 0; background: transparent;
+  font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; cursor: pointer; white-space: nowrap;
+}
+.sortier-knopf::after { content: "↕"; color: var(--tinte-3); font-size: 0.9em; }
+th[aria-sort="ascending"] .sortier-knopf::after { content: "↑"; color: var(--tinte); }
+th[aria-sort="descending"] .sortier-knopf::after { content: "↓"; color: var(--tinte); }
+.quote { display: inline-flex; align-items: center; gap: var(--a-2); }
+.quote meter { width: 64px; height: 10px; }
+
+/* ---------- Fehlabfragen ---------- */
+.fehlabfragen { display: flex; flex-direction: column; gap: var(--a-2); }
+.fehlabfragen details { border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); }
+.fehlabfragen summary { min-height: 44px; display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-1) var(--a-3); padding: var(--a-2) var(--a-4); cursor: pointer; font-weight: 600; }
+.fehlabfragen summary .leise { font-weight: 400; font-size: var(--t-s); }
+.fehlabfragen ol { list-style: none; padding: 0 var(--a-4) var(--a-4); margin: 0; display: flex; flex-direction: column; gap: var(--a-2); }
+.fehlabfragen li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--a-3); align-items: start; }
+.fehlabfragen pre { margin: 0; padding: var(--a-3); background: var(--konsole); color: var(--konsole-text); border-radius: var(--radius); font-family: var(--schrift-mono); font-size: 0.8125rem; overflow-x: auto; white-space: pre; }
+.fehlabfragen .anzahl { font-family: var(--schrift-mono); font-weight: 600; color: var(--siegelrot-text); white-space: nowrap; padding-top: var(--a-2); }
+
+/* ---------- Einstellungen ---------- */
+.lk-einstellungen { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+@media (max-width: 1023px) { .lk-einstellungen { grid-template-columns: minmax(0, 1fr); } }
+.verhoer-akten { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.verhoer-akten li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2) var(--a-3); min-height: 52px; border-top: 1px solid var(--rand); }
+.verhoer-akten li:first-child { border-top: 0; }
+.verhoer-akten label { font-size: var(--t-s); }
+.lk-feld { display: flex; flex-direction: column; gap: var(--a-1); min-width: 0; }
+.lk-feld label { font-size: var(--t-s); font-weight: 600; }
+.board-link { display: flex; flex-wrap: wrap; gap: var(--a-2); align-items: center; min-width: 0; }
+.board-link input { flex: 1 1 260px; min-width: 0; min-height: 44px; padding: 0 var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius); background: var(--flaeche); color: var(--tinte); font-family: var(--schrift-mono); font-size: var(--t-xs); }
+.bestaetigung { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 2px solid var(--siegelrot); border-radius: var(--radius); background: var(--rot-flaeche); }
+.speicher-leiste { position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-3); padding: var(--a-3) var(--a-4); background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius); box-shadow: var(--schatten-2); }
+
+/* ---------- Vorschau ---------- */
+.vorschau-raster { display: grid; grid-template-columns: minmax(240px, 340px) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
+@media (max-width: 1023px) { .vorschau-raster { grid-template-columns: minmax(0, 1fr); } }
+.vorschau-baum { display: flex; flex-direction: column; gap: var(--a-2); max-height: 80vh; overflow: auto; min-width: 0; }
+@media (max-width: 1023px) { .vorschau-baum { max-height: 50vh; } }
+.vorschau-baum details { border-left: 4px solid var(--akte-farbe, var(--rand-stark)); background: var(--karte); border-radius: 0 var(--radius) var(--radius) 0; }
+.vorschau-baum details details { border-left-width: 2px; margin-left: var(--a-3); }
+.vorschau-baum summary { min-height: 44px; display: flex; align-items: center; gap: var(--a-2); padding: 0 var(--a-3); cursor: pointer; font-weight: 600; }
+.vorschau-baum ul { list-style: none; padding: 0 var(--a-2) var(--a-2); margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.vorschau-eintrag {
+  width: 100%; min-height: 44px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--a-2); align-items: center;
+  padding: var(--a-1) var(--a-2); border: 1px solid transparent; border-radius: var(--radius); background: transparent; text-align: left; cursor: pointer; color: var(--tinte);
+}
+.vorschau-eintrag:hover { background: var(--flaeche); }
+.vorschau-eintrag[aria-current="true"] { border-color: var(--tinte); background: var(--flaeche); }
+.vorschau-eintrag .id { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+.vorschau-eintrag.ausgeblendet { color: var(--tinte-3); }
+.vorschau-ansicht { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
+.vorschau-meta { display: flex; flex-wrap: wrap; gap: var(--a-2) var(--a-3); align-items: center; font-size: var(--t-s); color: var(--tinte-2); }
+.vorschau-loesung { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 2px solid var(--gruen); border-radius: var(--radius); background: var(--gruen-flaeche); min-width: 0; }
+.vorschau-loesung h3 { color: var(--gruen); }
+.vorschau-tipps { display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-4); border-left: 3px solid var(--blau); background: var(--blau-flaeche); border-radius: 0 var(--radius) var(--radius) 0; }
+.vorschau-tipps ol { display: flex; flex-direction: column; gap: var(--a-1); }
+
+/* ---------- Board-Reiter (Vorschau in hell) ---------- */
+.board-mini { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.board-mini li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; gap: var(--a-3); align-items: center; min-height: 44px; padding: 0 var(--a-2); border-top: 1px solid var(--rand); }
+/* Erfolge: Stempelspalte so breit wie der längste Stempel („Abzeichen“), damit er den Text nicht überdeckt */
+.board-mini.erfolge li { grid-template-columns: 6.5rem minmax(0, 1fr); }
+.board-mini.erfolge li > span:empty { display: none; }
+.board-mini.erfolge .stempel { justify-self: start; }
+.board-mini li:nth-child(odd) { background: var(--flaeche); }
+.board-mini .platz { font-family: var(--schrift-titel); font-weight: 700; font-size: 1.25rem; }
+.board-mini .platz.top { color: var(--messing-text); }
+.board-mini .rang { display: block; font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+.board-mini .punkte { font-family: var(--schrift-mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* ---------- Urkunden-Reiter, Materialien, System ---------- */
+.material-gruppe { display: flex; flex-direction: column; gap: var(--a-2); }
+.material-gruppe h3 { display: flex; align-items: center; gap: var(--a-2); }
+.material-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.material-liste li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-1) var(--a-3); min-height: 48px; border-top: 1px solid var(--rand); padding: var(--a-1) 0; }
+.material-liste li:first-child { border-top: 0; }
+.material-liste a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+.material-info { display: inline-flex; flex-wrap: wrap; gap: var(--a-2); align-items: center; font-size: var(--t-xs); color: var(--tinte-2); font-family: var(--schrift-mono); }
+.material-stufe { font-family: var(--schrift-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-3); }
+.system-status { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; text-transform: uppercase; }
+.system-status.ok { color: var(--gruen); }
+.system-status.fehler { color: var(--siegelrot-text); }
+.lk-liste { display: flex; flex-direction: column; gap: var(--a-1); }
+
+@media (max-width: 699px) {
+  .lk-karte { padding: var(--a-4); }
+  .lk-reiter-knopf { padding: 0 var(--a-3); font-size: 1.0625rem; }
+}
+
+/* Aufklapper mit sichtbarem Zustand (summary als Link-Ziel verliert sonst sein Dreieck) */
+.lk-panel summary.link-ziel { cursor: pointer; list-style: none; gap: var(--a-2); }
+.lk-panel summary.link-ziel::-webkit-details-marker { display: none; }
+.lk-panel summary.link-ziel::before { content: "▸"; color: var(--tinte-2); }
+.lk-panel details[open] > summary.link-ziel::before { content: "▾"; }
+.lk-liste dd { margin: 0 0 var(--a-2); }

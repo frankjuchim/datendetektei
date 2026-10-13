@@ -15,9 +15,22 @@ const STANDARD_EINSTELLUNGEN = Object.freeze({
 /**
  * Tabellen mit Daten je Konto bzw. je Kurs, in Löschreihenfolge (abhängige zuerst; die Stammzeile zuletzt).
  * Spätere Phasen hängen hier ihre Lernstand-Tabellen an, damit Löschungen (Vertrag §6) vollständig bleiben.
+ * Die Lernstand-Tabellen werden ausdrücklich vor der Stammzeile geleert (nicht per ON DELETE CASCADE), damit die
+ * gemeldete Anzahl gelöschter Zeilen vollständig ist. fehlabfragen haben kein sub und hängen nur am Kurs.
  */
-const KONTO_TABELLEN = ['mitgliedschaften', 'konten'];
-const KURS_TABELLEN = ['mitgliedschaften', 'kurse'];
+const LERNSTAND_TABELLEN = Object.freeze([
+  'fortschritt',
+  'fallen_zaehler',
+  'abzeichen',
+  'erfolge',
+  'verhoer_versuche',
+  'leitner',
+  'training',
+  'kernpunkte',
+  'serien'
+]);
+const KONTO_TABELLEN = Object.freeze([...LERNSTAND_TABELLEN, 'mitgliedschaften', 'konten']);
+const KURS_TABELLEN = Object.freeze([...LERNSTAND_TABELLEN, 'fehlabfragen', 'mitgliedschaften', 'kurse']);
 
 /** ISO-Zeitstempel ohne Millisekunden, z. B. 2026-10-11T10:00:00Z (Format Vertrag §6). */
 function isoZeit(ms) {
@@ -88,26 +101,37 @@ function aendereKurs(db, kursId, { name, aktiv } = {}) {
   })();
 }
 
-/** Kennzahlen für das Portal (Vertrag §6) – nur sub und Zahlen, keine Namen. Phase 1: alle Werte 0. */
-function kursUebersicht(db, kursId, jetzt = Date.now) {
+/**
+ * Kennzahlen für das Portal (Vertrag §6) – nur sub und Zahlen, keine Namen; nur Schüler (Rolle mitglied).
+ * kennzahlen(kursId, subs) → { schueler: Map sub → { punkte, geloest, anteil, zuletzt? }, welten: [{ nr, titel, anteil }] }
+ * wird injiziert (src/services/stand.js), damit src/kern nicht von src/services abhängt; ohne sie: alle Werte 0.
+ */
+function kursUebersicht(db, kursId, jetzt = Date.now, kennzahlen = null) {
   const kurs = db.prepare('SELECT kurs_id FROM kurse WHERE kurs_id = ?').get(kursId);
   if (!kurs) return null;
-  const schueler = db
+  const zeilen = db
     .prepare(
       "SELECT k.sub, k.zuletzt FROM mitgliedschaften m, konten k WHERE m.sub = k.sub AND m.kurs_id = ? AND m.rolle = 'mitglied' ORDER BY k.sub"
     )
-    .all(kursId)
-    .map((z) => ({ sub: z.sub, punkte: 0, geloest: 0, anteil: 0, zuletzt: z.zuletzt }));
+    .all(kursId);
+  const kz = typeof kennzahlen === 'function' ? kennzahlen(kursId, zeilen.map((z) => z.sub)) : null;
+  const schueler = zeilen.map((z) => {
+    const w = (kz && kz.schueler.get(z.sub)) || { punkte: 0, geloest: 0, anteil: 0 };
+    // zuletzt: letzte Aktivität aus den Kennzahlen (Lernstand), sonst die letzte Anmeldung; leer → null
+    const zuletzt = w.zuletzt !== undefined ? w.zuletzt : z.zuletzt || null;
+    return { sub: z.sub, punkte: w.punkte, geloest: w.geloest, anteil: w.anteil, zuletzt };
+  });
   return {
     kurs: kursId,
     stand: isoZeit(jetzt()),
     schueler,
-    welten: AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, anteil: 0 }))
+    welten: kz ? kz.welten.map((w) => ({ nr: w.nr, titel: w.titel, anteil: w.anteil })) : AKTEN.map((a) => ({ nr: a.nr, titel: a.titel, anteil: 0 }))
   };
 }
 
 module.exports = {
   STANDARD_EINSTELLUNGEN,
+  LERNSTAND_TABELLEN,
   KONTO_TABELLEN,
   KURS_TABELLEN,
   isoZeit,

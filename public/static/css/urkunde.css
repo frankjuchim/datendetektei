@@ -1,0 +1,72 @@
+/* Urkunde „Detektei-Lizenz“ (STORY §10.1, Plan Phase 6 Task 4): je Schüler:in eine A4-Seite. Bildschirm: Blätter als
+   skalierte Vorschau (Container-Einheiten, auch am Handy); Druck: 210 × 297 mm, ein Blatt je Seite, ohne Kopf und
+   Bedienelemente. Immer hell (Papier). Nur Tokens aus tokens.css. */
+
+.urkunden-seite { gap: var(--a-5); }
+.urkunden-steuerung { display: flex; flex-direction: column; gap: var(--a-4); }
+.urkunden-steuerung .lk-feld input { min-width: 0; }
+.urkunden { display: flex; flex-direction: column; align-items: center; gap: var(--a-6); }
+
+.urkunde {
+  container-type: inline-size;
+  width: min(210mm, 100%);
+  aspect-ratio: 210 / 297;
+  background: var(--karte);
+  color: var(--tinte);
+  box-shadow: var(--schatten-2);
+  padding: 4.5cqw;
+  break-inside: avoid;
+}
+.urkunde-rahmen {
+  position: relative;
+  height: 100%;
+  border: 0.9cqw double var(--siegelrot);
+  outline: 0.25cqw solid var(--messing-grafik);
+  outline-offset: -2.4cqw;
+  padding: 7cqw 8cqw 5cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.6cqw;
+  overflow: hidden;
+}
+.urkunde-siegel { width: 15cqw; height: 15cqw; flex: none; }
+.urkunde-siegel circle, .urkunde-siegel path { fill: none; stroke-linecap: round; }
+.urkunde-siegel .siegel-aussen { stroke: var(--siegelrot); stroke-width: 4; }
+.urkunde-siegel .siegel-innen { stroke: var(--siegelrot); stroke-width: 1.5; }
+.urkunde-siegel .siegel-lupe, .urkunde-siegel .siegel-griff { stroke: var(--tinte); stroke-width: 5; }
+.urkunde-marke { font-family: var(--schrift-titel); font-weight: 600; font-size: 3cqw; letter-spacing: 0.32em; text-transform: uppercase; color: var(--siegelrot-text); }
+.urkunde-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: 9.5cqw; line-height: 1; letter-spacing: 0.02em; }
+.urkunde-nr { font-family: var(--schrift-mono); font-size: 2cqw; color: var(--tinte-2); letter-spacing: 0.1em; }
+.urkunde-text { font-size: 2.6cqw; line-height: 1.45; max-width: 64ch; }
+.urkunde-name {
+  font-family: var(--schrift-titel); font-weight: 700; font-size: 7.4cqw; line-height: 1.1; margin: 1.2cqw 0;
+  padding: 0 4cqw 1cqw; border-bottom: 0.3cqw solid var(--messing-grafik); overflow-wrap: anywhere;
+}
+.urkunde-befaehigung { margin-top: 1.6cqw; }
+.urkunde-fakten { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6cqw 3cqw; font-size: 2.5cqw; margin-top: 1.6cqw; }
+.urkunde-rang { color: var(--messing-text); }
+.urkunde-zitat { font-style: italic; font-size: 2.3cqw; color: var(--tinte-2); max-width: 58ch; }
+.urkunde-unterschriften { margin-top: auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8cqw; }
+.unterschrift { display: flex; flex-direction: column; align-items: center; gap: 0.6cqw; font-size: 2.2cqw; }
+.unterschrift .linie { width: 100%; height: 5cqw; border-bottom: 0.25cqw solid var(--tinte); }
+.unterschrift .name { font-weight: 600; }
+.unterschrift .rolle { color: var(--tinte-2); font-size: 1.9cqw; }
+.urkunde-stempel { position: absolute; right: 8cqw; bottom: 21cqw; font-size: 3.2cqw; padding: 0.8cqw 1.8cqw 0.6cqw; color: var(--gruen); transform: rotate(-10deg); }
+.urkunde-fuss { font-size: 1.7cqw; font-style: italic; color: var(--tinte-3); }
+
+@page { size: A4 portrait; margin: 0; }
+
+@media print {
+  html, body { background: var(--karte); }
+  .nicht-drucken, .springen { display: none !important; }
+  .inhalt { padding: 0; max-width: none; gap: 0; }
+  .urkunden { gap: 0; display: block; }
+  .urkunde {
+    width: 210mm; height: 297mm; aspect-ratio: auto; box-shadow: none; margin: 0;
+    break-after: page; page-break-after: always;
+    print-color-adjust: exact; -webkit-print-color-adjust: exact;
+  }
+  .urkunde:last-child { break-after: auto; page-break-after: auto; }
+}

@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "karten": [
+    {
+      "id": "W-A3-01",
+      "akte": 3,
+      "kategorie": "SQL Aggregation",
+      "titel": "COUNT oder SUM?",
+      "aufgabe": "Gib für die Fragen „Wie viele Bons gab es?“ und „Wie viele Crêpes wurden verkauft?“ jeweils die passende Aggregatfunktion an und begründe.",
+      "loesung": "„Anzahl Bons“: `COUNT(*)` über Bon – jeder Bon ist eine Zeile. „Verkaufte Crêpes“: `SUM(Position.Menge)` – eine Position kann mehrere Crêpes enthalten; `COUNT(*)` würde nur Positionen zählen.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K25"
+      ],
+      "falle": [
+        "P4"
+      ]
+    },
+    {
+      "id": "W-A3-02",
+      "akte": 3,
+      "kategorie": "SQL Aggregation",
+      "titel": "Regel-Check",
+      "aufgabe": "Prüfe, ob die Abfrage die GROUP-BY-Regel erfüllt, und korrigiere sie.",
+      "sql": "SELECT Stand.Name, Bon.Zahlart, COUNT(*) AS Bons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.Name",
+      "datenbank": "stadtfest",
+      "loesung": "`Bon.Zahlart` ist weder aggregiert noch gruppiert – Verstoß. Korrektur: nach dem Schlüssel des Standes, dem Namen **und** der Zahlart gruppieren.",
+      "loesungSql": "SELECT Stand.Name, Bon.Zahlart, COUNT(*) AS Bons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.StandNr, Stand.Name, Bon.Zahlart",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K26"
+      ],
+      "falle": [
+        "P3"
+      ]
+    },
+    {
+      "id": "W-A3-03",
+      "akte": 3,
+      "kategorie": "Abfrage analysieren",
+      "titel": "Fächer füllen",
+      "aufgabe": "Die Bons 503 bis 510 haben diese Zahlarten: 503 Karte · 504 bar · 505 bar · 506 Karte · 507 bar · 508 Karte · 509 bar · 510 bar. Gib das Ergebnis der Abfrage für diese acht Bons an.",
+      "sql": "SELECT Zahlart, COUNT(*) AS Bons\nFROM Bon\nWHERE BonNr BETWEEN 503 AND 510\nGROUP BY Zahlart",
+      "datenbank": "stadtfest",
+      "loesung": "Zwei Fächer, zwei Zeilen: `bar | 5` und `Karte | 3`.",
+      "loesungSql": "SELECT Zahlart, COUNT(*) AS Bons\nFROM Bon\nWHERE BonNr BETWEEN 503 AND 510\nGROUP BY Zahlart",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K26",
+        "DB-K29"
+      ],
+      "falle": []
+    },
+    {
+      "id": "W-A3-04",
+      "akte": 3,
+      "kategorie": "SQL Aggregation",
+      "titel": "Zwei Lotta Bödeker",
+      "aufgabe": "Am Stadtfest haben zwei Helferinnen namens Lotta Bödeker kassiert. Begründe, warum für den Umsatz je Person nach `Helfer.HelferNr` und nicht nur nach Vor- und Nachnamen gruppiert wird.",
+      "loesung": "Namen sind nicht eindeutig, der Schlüssel HelferNr schon. Gruppiert man nur nach Vor- und Nachnamen, landen beide Personen in **einem** Fach und ihre Umsätze werden addiert (68,00 € + 67,50 € = 135,50 €). Deshalb: `GROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname`.",
+      "loesungSql": "SELECT Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Helfer, Bon, Position, Produkt\nWHERE Helfer.HelferNr = Bon.HelferNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\n  AND Helfer.Nachname = 'Bödeker'\nGROUP BY Helfer.HelferNr, Helfer.Vorname, Helfer.Nachname",
+      "datenbank": "stadtfest",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K26"
+      ],
+      "falle": [
+        "P3"
+      ]
+    },
+    {
+      "id": "W-A3-05",
+      "akte": 3,
+      "kategorie": "SQL Aggregation",
+      "titel": "WHERE oder HAVING?",
+      "aufgabe": "Entscheide für jede Bedingung, ob sie in WHERE oder HAVING gehört, und nenne je einen Grund: `Bon.Zahlart = 'Karte'` · `COUNT(*) > 20` · `Produkt.Preis < 3` · `SUM(Position.Menge) >= 50`.",
+      "loesung": "WHERE: `Bon.Zahlart = 'Karte'` und `Produkt.Preis < 3` – sie prüfen einzelne Zeilen vor dem Gruppieren. HAVING: `COUNT(*) > 20` und `SUM(Position.Menge) >= 50` – sie enthalten ein Aggregat und prüfen ganze Gruppen.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K27"
+      ],
+      "falle": [
+        "P1"
+      ]
+    },
+    {
+      "id": "W-A3-06",
+      "akte": 3,
+      "kategorie": "SQL Aggregation",
+      "titel": "Reihenfolge",
+      "aufgabe": "Notiere die Auswertungsreihenfolge der Klauseln SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT. Erkläre damit, warum in HAVING kein Alias aus dem SELECT verwendet wird, in ORDER BY aber schon.",
+      "loesung": "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Der Alias entsteht erst im SELECT; HAVING wird vorher ausgewertet und wiederholt deshalb das Aggregat (EH). ORDER BY kommt nach SELECT und darf den Alias nutzen.",
+      "minuten": 2,
+      "kompetenz": [
+        "DB-K27"
+      ],
+      "falle": [
+        "P1"
+      ]
+    },
+    {
+      "id": "W-A3-07",
+      "akte": 3,
+      "kategorie": "Abfrage analysieren",
+      "titel": "Ein Satz Sachzusammenhang",
+      "aufgabe": "Beschreibe in **einem** Satz im Sachzusammenhang, welche Information die Abfrage liefert.",
+      "sql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Position.Menge) AS Stueck\nFROM Produkt, Position, Bon\nWHERE Produkt.ProduktNr = Position.ProduktNr\n  AND Position.BonNr = Bon.BonNr\n  AND Bon.Zeitpunkt LIKE '2026-08-28%'\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nHAVING SUM(Position.Menge) > 30\nORDER BY Stueck DESC",
+      "datenbank": "stadtfest",
+      "loesung": "Die Abfrage liefert für jedes Produkt (Nummer und Bezeichnung), wie viele Stück davon am Festfreitag verkauft wurden – aber nur Produkte mit mehr als 30 verkauften Stück, die meistverkauften zuerst.",
+      "loesungSql": "SELECT Produkt.ProduktNr, Produkt.Bezeichnung, SUM(Position.Menge) AS Stueck\nFROM Produkt, Position, Bon\nWHERE Produkt.ProduktNr = Position.ProduktNr\n  AND Position.BonNr = Bon.BonNr\n  AND Bon.Zeitpunkt LIKE '2026-08-28%'\nGROUP BY Produkt.ProduktNr, Produkt.Bezeichnung\nHAVING SUM(Position.Menge) > 30\nORDER BY Stueck DESC",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K28"
+      ],
+      "falle": [
+        "P10"
+      ]
+    },
+    {
+      "id": "W-A3-08",
+      "akte": 3,
+      "kategorie": "SQL Aggregation",
+      "titel": "Platz drei",
+      "aufgabe": "Angenommen, die Stände auf Platz 3 und 4 haben genau denselben Umsatz. Begründe, ob die Abfrage dann „die drei umsatzstärksten Stände“ eindeutig liefert.",
+      "sql": "SELECT Stand.StandNr, Stand.Name, SUM(Position.Menge * Produkt.Preis) AS Umsatz\nFROM Stand, Bon, Position, Produkt\nWHERE Stand.StandNr = Bon.StandNr\n  AND Bon.BonNr = Position.BonNr\n  AND Position.ProduktNr = Produkt.ProduktNr\nGROUP BY Stand.StandNr, Stand.Name\nORDER BY Umsatz DESC\nLIMIT 3",
+      "datenbank": "stadtfest",
+      "loesung": "Nein. `LIMIT 3` schneidet nach der dritten Zeile ab; welcher der beiden gleich starken Stände auf Platz 3 landet, ist Zufall. Eindeutig wird die Frage z. B. als „alle Stände mit mindestens so viel Umsatz wie Platz 3“ oder mit einer begründeten zweiten Sortierstufe.",
+      "minuten": 3,
+      "kompetenz": [
+        "DB-K22"
+      ],
+      "falle": [
+        "P6"
+      ]
+    }
+  ]
+}

@@ -1,20 +1,10 @@
 'use strict';
-// Startseite: ohne Sitzung Anmelde-Knöpfe, mit Sitzung Begrüßung; Aktenliste aus /api/akten (Platzhalter
-// „im Nebel“, bis die Akten in späteren Phasen öffnen). Ausgaben nur als Textknoten.
+// Startseite ohne Sitzung: Anmelde-Knöpfe und die Aktenliste aus /api/akten („im Nebel“). Mit Sitzung übernimmt
+// lernen/stadtplan.js (Stadtplan, Rang, Steckbrief). Ausgaben nur als Textknoten.
 (function () {
   const DD = window.DD;
   if (!DD) return;
   const $ = (id) => document.getElementById(id);
-
-  DD.ich.then((ich) => {
-    if (!ich) return;
-    $('start-gast').hidden = true;
-    $('start-angemeldet').hidden = false;
-    $('begruessung-name').textContent = ich.name;
-    const lehrkraft = ich.rolle === 'lehrkraft' || ich.rolle === 'superadmin';
-    $('start-lehrkraft').hidden = !lehrkraft;
-    $('start-schueler').hidden = lehrkraft;
-  });
 
   fetch('/api/akten', { headers: { Accept: 'application/json' } })
     .then((r) => (r.ok ? r.json() : null))

@@ -9,12 +9,19 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.1.0">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.1.0">
-  <script src="/static/js/kern/thema.js?v=0.1.0"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.1.0" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.7.0">
+  <link rel="preload" href="/static/fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/konsole.css?v=0.7.0">
+  <link rel="stylesheet" href="/static/css/oeffentlich.css?v=0.7.0">
+  <script src="/static/js/kern/thema.js?v=0.7.0"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/parser.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/regeln.js?v=0.7.0" defer></script>
+  <script src="/static/js/sql/fehlertexte.js?v=0.7.0" defer></script>
+  <script type="module" src="/static/js/gast.js?v=0.7.0"></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -45,33 +52,104 @@
       </details>
     </div>
   </header>
-  <main class="inhalt" id="inhalt" tabindex="-1">
-    <p class="banner"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-ermittlung"/></svg>Probefall „Eisdiele Weserstedt“ · nichts wird gespeichert</p>
-    <div class="zwei-spalten">
-      <section class="aktendeckel" aria-labelledby="titel">
-        <span class="reiter">Probefall · Lindenhof</span>
-        <div class="aktendeckel-innen">
-          <div class="seiten-kopf">
-            <span class="etikett">Gastmodus · ohne Anmeldung</span>
-            <h1 id="titel">Probefall Eisdiele folgt</h1>
-            <p>Hier ermittelst du bald ohne Anmeldung: eine kleine Datenbank der Eisdiele Weserstedt, sechs
-              Demo-Aufgaben mit Ermittlungskonsole und Zeitlupe. Nichts davon wird gespeichert.</p>
+  <main class="inhalt gast-seite" id="inhalt" tabindex="-1">
+    <p class="banner"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-ermittlung"/></svg>Probefall „Eisdiele Weserstedt“ · Nichts wird gespeichert</p>
+
+    <section class="aktendeckel gast-fall" aria-labelledby="titel">
+      <span class="reiter">Probefall · Lindenhof</span>
+      <div class="aktendeckel-innen">
+        <div class="seiten-kopf">
+          <span class="etikett">Gastmodus · ohne Anmeldung</span>
+          <h1 id="titel">Probefall Eisdiele Weserstedt</h1>
+        </div>
+        <blockquote class="briefing" id="gast-briefing"><p>Der Probefall wird geladen …</p></blockquote>
+        <div class="gast-intro" id="gast-intro"></div>
+        <p class="hinweis-klein">Sechs Demo-Aufgaben mit der Ermittlungskonsole. Nichts wird gespeichert: keine Antworten,
+          keine Punkte, keine Fehlversuche. Deine SQL-Entwürfe bleiben nur auf diesem Gerät.</p>
+        <div class="knopf-reihe">
+          <a class="knopf primaer" href="/sso/start">Mit dem Portal anmelden</a>
+          <a class="knopf" href="/themen">Themenübersicht</a>
+        </div>
+      </div>
+    </section>
+
+    <nav class="abschnitt" aria-labelledby="aufgaben-titel">
+      <h2 id="aufgaben-titel">Sechs Demo-Aufgaben</h2>
+      <ol class="aufgaben-kacheln" id="gast-aufgaben"></ol>
+    </nav>
+
+    <section class="abschnitt aufgaben-karte" id="gast-aufgabe" aria-labelledby="aufgabe-titel" hidden>
+      <div class="aufgabe-kopf">
+        <div class="aufgabe-ueber">
+          <span class="etikett" id="aufgabe-meta"></span>
+          <h2 id="aufgabe-titel" tabindex="-1"></h2>
+        </div>
+        <span class="aufgabe-stempel" id="aufgabe-stempel"></span>
+      </div>
+      <div class="aufgabe-inhalt" id="aufgabe-inhalt"></div>
+      <div class="aufgabe-interaktion" id="aufgabe-interaktion"></div>
+
+      <section class="konsole" id="konsole" aria-labelledby="konsole-titel" hidden>
+        <div class="konsole-kopf">
+          <h3 class="konsole-titel" id="konsole-titel"><span class="led" aria-hidden="true"></span>Ermittlungskonsole</h3>
+          <span class="konsole-db" id="konsole-db">DB: Eisdiele · Probefall</span>
+        </div>
+        <div class="konsole-koerper">
+          <div class="editor" id="editor">
+            <div class="editor-zeilen" id="editor-zeilen"></div>
+            <div class="editor-flaeche">
+              <pre class="editor-hl" id="editor-hl" aria-hidden="true"></pre>
+              <label class="nur-sr" for="sql-eingabe">SQL-Abfrage</label>
+              <textarea id="sql-eingabe" rows="8" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="editor-tasten editor-hinweise"></textarea>
+            </div>
           </div>
-          <div class="knopf-reihe">
-            <a class="knopf primaer" href="/sso/start">Mit dem Portal anmelden</a>
-            <a class="knopf" href="/themen">Themenübersicht</a>
+          <div class="schema-browser" id="schema-browser" role="region" aria-labelledby="schema-titel">
+            <h4 class="etikett" id="schema-titel">Schema</h4>
+            <p class="schema-tipp" id="schema-tipp">Tippe auf eine Spalte, um sie einzufügen.</p>
+            <div id="schema-liste"><p class="schema-laedt">Schema wird geladen …</p></div>
           </div>
         </div>
+        <p class="nur-sr" id="editor-tasten">Strg oder Cmd und Enter führt die Abfrage aus. Tab rückt um zwei Leerzeichen ein; Escape und danach Tab verlässt das Eingabefeld.</p>
+        <div class="nur-sr" id="editor-hinweise" aria-live="polite"></div>
+        <div class="konsole-knoepfe">
+          <button class="knopf primaer" id="k-ausfuehren" type="button" aria-keyshortcuts="Control+Enter Meta+Enter"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-play"/></svg>Ausführen <kbd class="taste" id="taste">Strg ↵</kbd></button>
+          <button class="knopf leise" id="k-abbrechen" type="button" hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-stopp"/></svg>Abbrechen</button>
+          <span class="trenner"></span>
+          <span class="konsole-modus" id="konsole-modus"></span>
+        </div>
+        <div class="ergebnis" id="ergebnis" aria-live="polite">
+          <p class="ergebnis-leer">Noch nichts ausgeführt. Schreib deine Abfrage und tippe auf „Ausführen“.</p>
+        </div>
       </section>
-      <figure class="konsole-vorschau" aria-labelledby="konsole-titel">
-        <figcaption class="konsole-kopf"><span id="konsole-titel"><span class="led" aria-hidden="true"></span>Ermittlungskonsole · Vorschau</span><span class="chip">DB: Eisdiele</span></figcaption>
-        <pre><code><span class="sql-komm">-- Welche Sorten kosten weniger als 2 Euro?</span>
-<span class="sql-kw">SELECT</span> Sorte, Preis
-<span class="sql-kw">FROM</span> Eis
-<span class="sql-kw">WHERE</span> Preis &lt; <span class="sql-num">2.00</span>
-<span class="sql-kw">ORDER BY</span> Preis;</code></pre>
-      </figure>
-    </div>
+
+      <div class="knopf-reihe aufgabe-knoepfe">
+        <button class="knopf gruen" id="k-pruefen" type="button"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-pruefen"/></svg>Prüfen</button>
+        <button class="knopf" id="k-tipp" type="button"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>Tipp</button>
+        <button class="knopf leise" id="k-loesung" type="button">Lösung zeigen</button>
+      </div>
+      <div class="rueckmeldung" id="rueckmeldung" aria-live="polite"></div>
+      <ol class="tipp-liste" id="tipps" aria-label="Tipps"></ol>
+      <div class="loesung" id="loesung" hidden></div>
+      <div class="knopf-reihe aufgabe-nav">
+        <button class="knopf leise" id="k-vorher" type="button"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-zurueck"/></svg>Vorige Aufgabe</button>
+        <button class="knopf leise" id="k-nachher" type="button">Nächste Aufgabe<svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-vor"/></svg></button>
+      </div>
+    </section>
+
+    <section class="abschnitt lehrkraft-demo" id="lehrkraft-demo" aria-labelledby="lehrkraft-titel">
+      <div class="seiten-kopf">
+        <span class="etikett">Für Lehrkräfte</span>
+        <h2 id="lehrkraft-titel">Lehrkraft-Ansicht (Demo)</h2>
+        <p id="lehrkraft-hinweis">So sieht eine Lehrkraft ihren Kurs: Punkte, Ränge, Fortschritt je Ermittlung und das
+          Fallen-Profil. Alle Namen und Zahlen sind erfunden – hier lässt sich nichts ändern.</p>
+      </div>
+      <div class="lehrkraft-raster" id="lehrkraft-inhalt"><p class="hinweis-klein">Die Demo wird geladen …</p></div>
+    </section>
+
+    <section class="abschnitt" id="gast-material" aria-labelledby="material-titel" hidden>
+      <h2 id="material-titel">Materialien zum Reinschauen</h2>
+      <ul class="material-liste" id="material-liste"></ul>
+    </section>
   </main>
   <footer class="fuss">
     <nav aria-label="Weitere Seiten">

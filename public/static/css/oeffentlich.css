@@ -1,0 +1,139 @@
+/* Öffentliche Seiten der Phase 3: Gastmodus /gast (DESIGN.md §5.13) und Themen /themen (§7.12). Nur Tokens. */
+
+/* ---------- Gemeinsame Bausteine: Blöcke ---------- */
+.block-text { display: flex; flex-direction: column; gap: var(--a-2); max-width: 70ch; }
+.block-text ul { display: flex; flex-direction: column; gap: var(--a-1); }
+.code-block {
+  margin: 0; padding: var(--a-3) var(--a-4); overflow-x: auto; min-width: 0;
+  background: var(--konsole); color: var(--konsole-text); border-radius: var(--radius);
+  font-family: var(--schrift-mono); font-size: 0.875rem; line-height: 1.55; white-space: pre;
+}
+.code-block code { font-size: inherit; }
+.kurzschreibweise { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); font-family: var(--schrift-mono); font-size: var(--t-s); overflow-wrap: anywhere; }
+.kurzschreibweise .relation { font-weight: 600; }
+.pk { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.fk-pfeil { color: var(--siegelrot-text); font-weight: 600; margin-right: 1px; }
+table.daten td.zahl, table.daten th.zahl { text-align: right; }
+table.daten .null { color: var(--tinte-3); font-family: var(--schrift-mono); font-size: var(--t-xs); }
+.notiz-inhalt { display: flex; flex-direction: column; gap: var(--a-2); font-size: var(--t-s); min-width: 0; }
+.notiz > .icon { grid-row: auto; }
+.falle {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 7px; margin-right: var(--a-2);
+  border-radius: var(--radius-pille); background: var(--rot-flaeche); color: var(--siegelrot-text);
+  font-family: var(--schrift-mono); font-size: 0.75rem; font-weight: 600;
+}
+
+/* ---------- Gast ---------- */
+.gast-seite { gap: var(--a-6); }
+.gast-fall .briefing {
+  margin: 0; max-width: 70ch; padding-left: var(--a-4); border-left: 3px solid var(--messing-grafik);
+  display: flex; flex-direction: column; gap: var(--a-2);
+}
+.gast-fall .briefing cite { font-style: normal; font-size: var(--t-s); color: var(--tinte-2); }
+.gast-intro { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+
+.aufgaben-kacheln {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--a-3);
+}
+.aufgabe-kachel {
+  width: 100%; min-height: 56px; display: flex; align-items: center; gap: var(--a-3);
+  padding: var(--a-2) var(--a-3); text-align: left; cursor: pointer;
+  background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius);
+}
+.aufgabe-kachel:hover { background: var(--flaeche); }
+.aufgabe-kachel[aria-current="true"] { border-color: var(--siegelrot); box-shadow: inset 3px 0 0 var(--siegelrot); }
+.kachel-nr {
+  display: inline-grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--messing-flaeche); color: var(--messing-text); font-family: var(--schrift-mono); font-weight: 600;
+}
+.kachel-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.kachel-titel { font-weight: 600; }
+.kachel-art { font-size: var(--t-xs); color: var(--tinte-2); }
+
+.aufgaben-karte {
+  background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius);
+  box-shadow: var(--schatten-1); padding: var(--a-5); scroll-margin-top: calc(var(--kopf-hoehe) + var(--a-4));
+}
+.aufgabe-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--a-3); }
+.aufgabe-ueber { display: flex; flex-direction: column; gap: var(--a-1); min-width: 0; }
+.aufgabe-ueber h2:focus { outline: none; }
+.aufgabe-inhalt, .aufgabe-interaktion { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+
+tr.waehlbar { cursor: pointer; }
+tr.waehlbar:hover td { background: var(--flaeche); }
+tr.gewaehlt td { background: var(--messing-flaeche); }
+tr.richtig td { box-shadow: inset 0 -2px 0 var(--gruen); }
+.wahl-spalte { width: 44px; padding: 0 !important; }
+.wahl-ziel { display: grid; place-items: center; min-width: 44px; min-height: 44px; cursor: pointer; }
+.wahl-ziel input { width: 20px; height: 20px; margin: 0; }
+
+.auswahl { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.auswahl-option {
+  display: flex; gap: var(--a-3); align-items: flex-start; min-height: 44px; padding: var(--a-2) var(--a-3);
+  border: 1px solid var(--rand); border-radius: var(--radius); background: var(--karte); cursor: pointer; min-width: 0;
+}
+.auswahl-option:hover { background: var(--flaeche); }
+.auswahl-option input { width: 20px; height: 20px; margin: 12px 0 0; flex: none; }
+.auswahl-option.richtig { border-color: var(--gruen); box-shadow: inset 3px 0 0 var(--gruen); }
+.auswahl-text { min-width: 0; flex: 1; }
+
+.ergebnis-eingabe .zeilen-nr { width: 2.5rem; color: var(--tinte-3); font-family: var(--schrift-mono); }
+.zellen-eingabe {
+  width: 100%; min-width: 6rem; min-height: 44px; padding: 0 var(--a-2);
+  border: 1px solid var(--rand-stark); border-radius: var(--radius-klein); background: var(--karte);
+  font-family: var(--schrift-mono);
+}
+
+.aufgabe-knoepfe { margin-top: var(--a-1); }
+.rueckmeldung-box { padding: var(--a-3) var(--a-4); border-radius: var(--radius); display: flex; flex-direction: column; gap: var(--a-2); }
+.rueckmeldung-box.richtig { background: var(--gruen-flaeche); }
+.rueckmeldung-box.falsch { background: var(--rot-flaeche); }
+.rueckmeldung-box.hinweis { background: var(--blau-flaeche); }
+.rueckmeldung-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: var(--t-m); }
+.rueckmeldung-box.richtig .rueckmeldung-titel { color: var(--gruen); }
+.rueckmeldung-box.falsch .rueckmeldung-titel { color: var(--siegelrot-text); }
+.rueckmeldung-zeile { font-size: var(--t-s); }
+.tipp-liste { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--a-2); }
+.tipp-liste:empty { display: none; }
+.tipp { display: flex; gap: var(--a-3); padding: var(--a-3) var(--a-4); border-radius: var(--radius); background: var(--messing-flaeche); font-size: var(--t-s); }
+.tipp-nr { font-family: var(--schrift-mono); font-weight: 600; color: var(--messing-text); flex: none; }
+.loesung { display: flex; flex-direction: column; gap: var(--a-3); padding-top: var(--a-4); border-top: 1px dashed var(--rand); }
+.erklaerung { display: flex; flex-direction: column; gap: var(--a-2); }
+.aufgabe-nav { justify-content: space-between; }
+
+.lehrkraft-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--a-4); align-items: start; }
+.demo-kurs { display: flex; flex-direction: column; gap: var(--a-2); }
+.demo-hinweis { font-size: var(--t-s); color: var(--messing-text); font-weight: 600; }
+.anteil { display: inline-flex; align-items: center; gap: var(--a-2); }
+.anteil meter { width: 6rem; height: 10px; }
+.anteil-text { font-variant-numeric: tabular-nums; font-size: var(--t-s); }
+.material-liste { display: flex; flex-direction: column; gap: var(--a-2); }
+.material-liste a { display: inline-flex; align-items: center; min-height: 44px; }
+
+/* ---------- Themen ---------- */
+.akte-status-folgt { align-self: flex-start; }
+.ermittlung-meta { grid-column: 2; display: flex; flex-wrap: wrap; gap: var(--a-1) var(--a-2); align-items: center; font-size: var(--t-xs); color: var(--tinte-2); }
+.chip-liste { grid-column: 2; display: flex; flex-wrap: wrap; gap: var(--a-1); }
+.chip-liste .falle { margin-right: 0; }
+.chip {
+  display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px;
+  border: 1px solid var(--rand); border-radius: var(--radius-pille); background: var(--flaeche);
+  font-size: var(--t-xs); color: var(--tinte-2);
+}
+.chip .kid { font-family: var(--schrift-mono); font-weight: 600; margin-right: 4px; color: var(--tinte); }
+.material-themen { display: flex; flex-direction: column; gap: var(--a-1); list-style: none; padding: 0; font-size: var(--t-s); }
+.material-themen li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--a-1) var(--a-3); padding-top: var(--a-1); border-top: 1px dashed var(--rand); }
+.material-themen .zugang { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-3); }
+.fallen-liste { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--a-2); }
+.fallen-liste li { display: flex; align-items: center; min-height: 36px; font-size: var(--t-s); }
+.themen-laedt { color: var(--tinte-2); }
+
+@media (max-width: 1023px) {
+  .lehrkraft-raster { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 699px) {
+  .aufgaben-karte { padding: var(--a-4); }
+  .aufgabe-kopf { flex-direction: column-reverse; }
+  .ermittlung-meta, .chip-liste { grid-column: 1; }
+}

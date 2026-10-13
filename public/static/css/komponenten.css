@@ -20,6 +20,10 @@
 .knopf.leise:hover { background: var(--flaeche); color: var(--tinte); }
 .knopf.gross { min-height: 52px; padding: 0 var(--a-5); font-size: var(--t-m); }
 .knopf-reihe { display: flex; flex-wrap: wrap; gap: var(--a-3); align-items: center; }
+/* Erklärvideos (Spec §13): Link-Knopf zu YouTube, lange Titel umbrechen statt horizontal scrollen. */
+.video-reihe { margin-top: var(--a-3); }
+.video-knopf { max-width: 100%; justify-content: flex-start; text-align: left; padding-block: var(--a-2); }
+.video-knopf .icon { flex: none; }
 
 /* ---------- Karten und Aktendeckel (4.1) ---------- */
 .karte {
@@ -215,6 +219,48 @@ table.daten .mitte { text-align: center; }
 .status.aktiv { color: var(--gruen); }
 .status.inaktiv { color: var(--tinte-3); }
 
+/* Kurs-Einstellungen (DESIGN §5.11, Schalter und Segment §4.16) */
+.lk-kurse { display: flex; flex-direction: column; gap: var(--a-3); min-width: 0; }
+.kurs-karten { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: var(--a-5); align-items: start; }
+.kurs-karte .aktendeckel-innen { display: flex; flex-direction: column; gap: var(--a-4); }
+.kurs-kopf { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--a-2) var(--a-4); }
+.kurs-kopf h3 { overflow-wrap: anywhere; }
+.kurs-kennzahlen { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
+.einstellung { border: 0; padding: 0; margin: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--a-2); }
+.einstellung-titel { padding: 0; font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-2); }
+.segment { display: inline-flex; flex-wrap: wrap; align-self: flex-start; border: 1px solid var(--rand-stark); border-radius: var(--radius); overflow: hidden; max-width: 100%; }
+.segment-knopf {
+  flex: 1 1 auto; min-height: 44px; min-width: 44px; padding: 0 var(--a-4); border: 0; border-left: 1px solid var(--rand-stark);
+  background: var(--karte); color: var(--tinte); font: inherit; font-size: var(--t-s); font-weight: 600; cursor: pointer;
+}
+.segment-knopf:first-child { border-left: 0; }
+.segment-knopf:hover { background: var(--flaeche); }
+.segment-knopf[aria-pressed="true"] { background: var(--tinte); color: var(--papier); }
+.segment-knopf[disabled] { cursor: not-allowed; opacity: .6; }
+.akten-schalter { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.akten-schalter li { border-top: 1px solid var(--rand); }
+.akten-schalter li:first-child { border-top: 0; }
+.akten-schalter li.ausgegraut .schalter-text { color: var(--tinte-3); }
+.schalter-zeile { display: flex; align-items: center; justify-content: space-between; gap: var(--a-3); min-height: 44px; cursor: pointer; }
+.schalter-text { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-1) var(--a-2); min-width: 0; }
+.schalter-hinweis { font-size: var(--t-xs); color: var(--tinte-3); }
+.schalter {
+  appearance: none; -webkit-appearance: none; flex: 0 0 auto; position: relative; margin: 9px 0;
+  width: 44px; height: 26px; border-radius: var(--radius-pille); background: var(--flaeche-2);
+  border: 1px solid var(--rand-stark); cursor: pointer; transition: background var(--dauer);
+}
+.schalter::before {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--karte); border: 1px solid var(--rand-stark); transition: transform var(--dauer);
+}
+.schalter:checked { background: var(--siegelrot); border-color: var(--siegelrot); }
+.schalter:checked::before { transform: translateX(18px); border-color: var(--siegelrot); }
+.schalter:disabled { cursor: not-allowed; opacity: .5; }
+.schalter-zeile:has(.schalter:disabled) { cursor: not-allowed; }
+.rueckmeldung { font-size: var(--t-s); color: var(--tinte-2); }
+.rueckmeldung.ok { color: var(--gruen); font-weight: 600; }
+.rueckmeldung.fehler { color: var(--siegelrot-text); font-weight: 600; }
+
 /* ---------- Fehlerseiten ---------- */
 .fehler-karte { max-width: 640px; }
 .fehler-karte .aktendeckel-innen { padding: var(--a-6); }
@@ -242,3 +288,16 @@ table.daten .mitte { text-align: center; }
 }
 table.daten thead th.ohne-versal { text-transform: none; }
 .fehler-karte section[data-fall] { display: flex; flex-direction: column; gap: var(--a-4); }
+
+/* ---------- Freie Ermittlung: Liste der Datenbanken ---------- */
+.db-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--a-3); }
+.db-liste a {
+  display: flex; flex-direction: column; gap: 2px; min-height: 44px; height: 100%; box-sizing: border-box;
+  padding: var(--a-3) var(--a-4); border: 1px solid var(--rand); border-radius: var(--radius);
+  background: var(--karte); color: var(--tinte); text-decoration: none;
+}
+.db-liste a:hover { border-color: var(--rand-stark); background: var(--flaeche); }
+.db-liste .db-name { font-family: var(--schrift-mono); font-weight: 600; }
+.db-liste .db-akte { font-size: var(--t-xs); color: var(--tinte-2); }
+.db-liste .db-frei { color: var(--gruen); font-weight: 600; }
+.freie-ermittlung-start { display: flex; flex-direction: column; gap: var(--a-2); margin-top: var(--a-4); }

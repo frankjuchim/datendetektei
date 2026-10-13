@@ -1,0 +1,2810 @@
+{
+  "version": 2,
+  "welt": 1,
+  "titel": "Das Fundbüro",
+  "farbe": "#8C2F39",
+  "levels": [
+    {
+      "id": "A1-E1",
+      "nr": "1.1",
+      "titel": "Der erste Auftrag",
+      "ds": [
+        1
+      ],
+      "ab": "AB 1.1 Der erste Auftrag",
+      "niveau": "alle",
+      "briefing": "Willkommen in der Datendetektei! Das Fundbüro hat uns sein Fundbuch geschickt – eine Tabelle mit allen Fundsachen. Lerne, sie mit SELECT, WHERE und ORDER BY gezielt zu befragen.",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "fundbuero"
+        },
+        {
+          "t": "tabelle",
+          "kopf": [
+            "Fachbegriff",
+            "im Fundbuch"
+          ],
+          "zeilen": [
+            [
+              "Tabelle (Relation)",
+              "Fundsache"
+            ],
+            [
+              "Datensatz",
+              "eine Zeile = eine Fundsache"
+            ],
+            [
+              "Attribut",
+              "eine Spalte, z. B. Kategorie"
+            ],
+            [
+              "Attributwert",
+              "ein Eintrag, z. B. 'Kleidung'"
+            ],
+            [
+              "Primärschlüssel",
+              "FundNr: eindeutig für alle möglichen Daten, nie NULL, minimal"
+            ]
+          ]
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Stadtteil, Wert\nFROM Fundsache\nWHERE (Kategorie = 'Kleidung' OR Kategorie = 'Dokumente')\n  AND Wert > 30\nORDER BY Stadtteil, Wert DESC"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:** SELECT wählt Spalten – WHERE wählt Zeilen – ORDER BY ordnet.\n- AND bindet stärker als OR – Klammern setzen!\n- Text steht in `'…'`.\n- ORDER BY mehrstufig: erst nach dem ersten Kriterium, bei Gleichstand nach dem zweiten; ASC ist Standard."
+        }
+      ],
+      "coldCase": "A1-E1-CC",
+      "aufgaben": [
+        "A1-E1-01",
+        "A1-E1-02",
+        "A1-E1-03",
+        "A1-E1-04",
+        "A1-E1-05",
+        "A1-E1-06",
+        "A1-E1-07",
+        "A1-E1-08"
+      ]
+    },
+    {
+      "id": "A1-E2",
+      "nr": "1.2",
+      "titel": "Das verschwundene Fundstück",
+      "ds": [
+        2
+      ],
+      "ab": "AB 1.2 Das verschwundene Fundstück",
+      "niveau": "alle",
+      "briefing": "Frau Ohlendiek erinnert sich nur an Bruchstücke: etwas aus Messing, im Sommer gefunden, ziemlich wertvoll. Kreise das Fundstück mit LIKE, BETWEEN, IN und IS NULL Schritt für Schritt ein. Text und Datum gehören in Hochkommata!",
+      "intro": [
+        {
+          "t": "datenbank",
+          "name": "fundbuero"
+        },
+        {
+          "t": "sql",
+          "sql": "WHERE Bezeichnung LIKE 'Kopf%'\nWHERE Bezeichnung LIKE 'H_lm'\nWHERE Funddatum BETWEEN '2026-09-01' AND '2026-09-30'\nWHERE Kategorie IN ('Taschen', 'Kleidung')\nWHERE AbgeholtAm IS NULL\nWHERE Kategorie != 'Kleidung'",
+          "nummern": false
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Wert, Wert * 0.05 AS Finderlohn\nFROM Fundsache\nWHERE Kategorie IN ('Taschen', 'Kleidung')\nORDER BY Finderlohn DESC\nLIMIT 3"
+        },
+        {
+          "t": "hinweis",
+          "md": "**Ermittler-Notiz:**\n- `%` = beliebig viele Zeichen (auch keins), `_` = genau ein Zeichen.\n- BETWEEN schließt beide Grenzen ein.\n- NULL heißt: weiß keiner. Prüfen nur mit `IS NULL` – niemals `= NULL`.\n- Im Abitur heißt ungleich `!=`. `SELECT DISTINCT` entfernt doppelte Zeilen.\n- Literale: Text `'Hafenviertel'`, Datum `'2026-09-30'` (JJJJ-MM-TT), Zahl `0.05` ohne Hochkommata. `7 / 2` ergibt bei ganzen Zahlen `3`.\n- LIMIT nur nach ORDER BY und nur, wenn an der Schnittkante kein Gleichstand liegt."
+        }
+      ],
+      "coldCase": "A1-E2-CC",
+      "aufgaben": [
+        "A1-E2-01",
+        "A1-E2-02",
+        "A1-E2-03",
+        "A1-E2-04",
+        "A1-E2-05",
+        "A1-E2-06",
+        "A1-E2-07",
+        "A1-E2-08"
+      ]
+    }
+  ],
+  "boss": {
+    "id": "A1-V",
+    "titel": "Verhör 1 · Stadtbibliothek",
+    "kontextDb": "verhoer/bibliothek",
+    "rahmensatz": "Bevor ich dich allein an das Fundbuch lasse, prüfe ich, ob du auch in einem fremden Archiv sauber abfragst.",
+    "abimodus": "streng",
+    "dauerMin": 20,
+    "anzahl": 6,
+    "mix": {
+      "1": 2,
+      "2": 3,
+      "3": 1
+    },
+    "maxJeKind": {
+      "choice": 1
+    },
+    "pool": [
+      "A1-V-01",
+      "A1-V-02",
+      "A1-V-03",
+      "A1-V-04",
+      "A1-V-05",
+      "A1-V-06",
+      "A1-V-07",
+      "A1-V-08",
+      "A1-V-09",
+      "A1-V-10",
+      "A1-V-11",
+      "A1-V-12"
+    ]
+  },
+  "aufgaben": [
+    {
+      "id": "A1-E1-01",
+      "titel": "Das Fundbuch aufschlagen",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Relationales Modell",
+      "kompetenzen": [
+        "DB-K01",
+        "DB-K47"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ein Ausschnitt aus dem Fundbuch. Entscheide für jede Markierung, welcher Fachbegriff passt."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Fundsache",
+          "kopf": [
+            {
+              "name": "FundNr",
+              "pk": true
+            },
+            {
+              "name": "Bezeichnung"
+            },
+            {
+              "name": "Kategorie"
+            },
+            {
+              "name": "Farbe"
+            },
+            {
+              "name": "Stadtteil"
+            }
+          ],
+          "zeilen": [
+            [
+              20,
+              "Notizbuch",
+              "Dokumente",
+              "grau",
+              "Lindenhof"
+            ],
+            [
+              21,
+              "Autoschlüssel",
+              "Schlüssel",
+              "braun",
+              "Hafenviertel"
+            ],
+            [
+              22,
+              "Ladekabel",
+              "Elektronik",
+              "weiß",
+              "Weserufer"
+            ],
+            [
+              23,
+              "Turnbeutel",
+              "Taschen",
+              "gelb",
+              "Mühlenfeld"
+            ],
+            [
+              24,
+              "Schlüsselbund",
+              "Schlüssel",
+              null,
+              "Hafenviertel"
+            ]
+          ],
+          "markiert": [
+            {
+              "zeile": 1,
+              "marke": "A"
+            },
+            {
+              "zeile": 3,
+              "spalte": 3,
+              "marke": "B"
+            }
+          ],
+          "quelle": {
+            "datenbank": "fundbuero",
+            "sql": "SELECT FundNr, Bezeichnung, Kategorie, Farbe, Stadtteil FROM Fundsache WHERE FundNr BETWEEN 20 AND 24"
+          }
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "a) Was ist **Fundsache** – das ganze Fundbuch mit allen Zeilen?",
+          "optionen": [
+            {
+              "id": "t",
+              "md": "Tabelle"
+            },
+            {
+              "id": "d",
+              "md": "Datensatz"
+            },
+            {
+              "id": "a",
+              "md": "Attribut"
+            },
+            {
+              "id": "w",
+              "md": "Attributwert"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "b) Was ist die mit **A** markierte Zeile?",
+          "optionen": [
+            {
+              "id": "t",
+              "md": "Tabelle"
+            },
+            {
+              "id": "d",
+              "md": "Datensatz"
+            },
+            {
+              "id": "a",
+              "md": "Attribut"
+            },
+            {
+              "id": "w",
+              "md": "Attributwert"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "c) Was ist die Spalte **Kategorie**?",
+          "optionen": [
+            {
+              "id": "t",
+              "md": "Tabelle"
+            },
+            {
+              "id": "d",
+              "md": "Datensatz"
+            },
+            {
+              "id": "a",
+              "md": "Attribut"
+            },
+            {
+              "id": "w",
+              "md": "Attributwert"
+            }
+          ]
+        },
+        {
+          "kind": "choice",
+          "mehrfach": false,
+          "frage": "d) Was ist die mit **B** markierte Zelle `gelb`?",
+          "optionen": [
+            {
+              "id": "t",
+              "md": "Tabelle"
+            },
+            {
+              "id": "d",
+              "md": "Datensatz"
+            },
+            {
+              "id": "a",
+              "md": "Attribut"
+            },
+            {
+              "id": "w",
+              "md": "Attributwert"
+            }
+          ]
+        }
+      ],
+      "loesung": [
+        {
+          "richtig": [
+            "t"
+          ]
+        },
+        {
+          "richtig": [
+            "d"
+          ]
+        },
+        {
+          "richtig": [
+            "a"
+          ]
+        },
+        {
+          "richtig": [
+            "w"
+          ]
+        }
+      ],
+      "tipps": [
+        "Eine Zeile beschreibt genau eine Fundsache, eine Spalte eine Eigenschaft aller Fundsachen."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "**Tabelle** = Fundsache (das ganze Fundbuch) · **Datensatz** = eine Zeile, hier der Autoschlüssel 21 · **Attribut** = eine Spalte wie Kategorie · **Attributwert** = ein einzelner Eintrag, hier `gelb` im Datensatz 23."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-02",
+      "titel": "Wer ist der Schlüssel?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Juri hat sich sechs Zeilen des Fundbuchs angesehen. Welches Attribut eignet sich als **Primärschlüssel** der Tabelle Fundsache – und warum?"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Fundsache",
+          "kopf": [
+            {
+              "name": "FundNr"
+            },
+            {
+              "name": "Bezeichnung"
+            },
+            {
+              "name": "Kategorie"
+            },
+            {
+              "name": "Funddatum"
+            }
+          ],
+          "zeilen": [
+            [
+              30,
+              "Kopfhörer",
+              "Elektronik",
+              "2026-06-01"
+            ],
+            [
+              31,
+              "Brillenetui",
+              "Sonstiges",
+              "2026-06-01"
+            ],
+            [
+              32,
+              "Fahrradschlüssel",
+              "Schlüssel",
+              "2026-06-02"
+            ],
+            [
+              33,
+              "Notizbuch",
+              "Dokumente",
+              "2026-06-03"
+            ],
+            [
+              34,
+              "Smartphone",
+              "Elektronik",
+              "2026-06-09"
+            ],
+            [
+              35,
+              "Spielzeugauto",
+              "Spielzeug",
+              "2026-06-11"
+            ]
+          ],
+          "quelle": {
+            "datenbank": "fundbuero",
+            "sql": "SELECT FundNr, Bezeichnung, Kategorie, Funddatum FROM Fundsache WHERE FundNr BETWEEN 30 AND 35"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "`FundNr`, weil das Fundbüro jede Nummer nur einmal vergibt – für alle möglichen Fundsachen, auch künftige – und sie nie fehlt."
+          },
+          {
+            "id": "b",
+            "md": "`Bezeichnung`, weil im Ausschnitt jede Bezeichnung nur einmal vorkommt."
+          },
+          {
+            "id": "c",
+            "md": "`Funddatum`, weil jede Fundsache an einem bestimmten Tag gefunden wurde."
+          },
+          {
+            "id": "d",
+            "md": "`FundNr` und `Bezeichnung` zusammen, weil zwei Attribute sicherer sind als eines."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Ein Ausschnitt beweist keine Eindeutigkeit. Kann morgen ein zweites Smartphone abgegeben werden?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Ein Primärschlüssel muss für **alle möglichen** Daten eindeutig sein, darf nie NULL sein und muss minimal sein. Dass die Bezeichnungen im Ausschnitt verschieden sind, ist Zufall (P8) – im ganzen Fundbuch gibt es z. B. vier Smartphones. Das Funddatum kommt schon im Ausschnitt doppelt vor. `FundNr` zusammen mit `Bezeichnung` wäre eindeutig, aber nicht minimal."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-03",
+      "titel": "Alles im Blick",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Edda will einen ersten Überblick. Gib für **alle** Fundsachen die Bezeichnung, die Kategorie und den Fundort aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Kategorie, Fundort\nFROM Fundsache"
+      },
+      "tipps": [
+        "Mehrere Spalten trennst du im SELECT mit Kommas.",
+        "Ohne WHERE bekommst du alle Datensätze."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Kategorie, Fundort\nFROM Fundsache"
+        },
+        {
+          "t": "text",
+          "md": "SELECT legt die Spalten fest, FROM die Tabelle. Ohne WHERE liefert die Abfrage alle 80 Fundsachen."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-04",
+      "titel": "Puzzle der Ermittlungsakte",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15",
+        "DB-K21"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Bringe die Bausteine in eine gültige Reihenfolge. Ein Baustein gehört nicht dazu."
+        },
+        {
+          "t": "code",
+          "code": "Gesucht: Bezeichnung und Farbe aller Fundsachen\nder Kategorie Kleidung, die neuesten Funde zuerst.",
+          "nummern": false
+        }
+      ],
+      "interaktion": {
+        "kind": "order",
+        "teile": [
+          {
+            "id": "a",
+            "code": "SELECT Bezeichnung, Farbe"
+          },
+          {
+            "id": "b",
+            "code": "FROM Fundsache"
+          },
+          {
+            "id": "c",
+            "code": "WHERE Kategorie = 'Kleidung'"
+          },
+          {
+            "id": "d",
+            "code": "ORDER BY Funddatum DESC"
+          },
+          {
+            "id": "x",
+            "code": "WHERE Kategorie = Kleidung"
+          }
+        ]
+      },
+      "loesung": {
+        "reihenfolgen": [
+          [
+            "a",
+            "b",
+            "c",
+            "d"
+          ]
+        ]
+      },
+      "tipps": [
+        "Die Reihenfolge ist immer SELECT – FROM – WHERE – ORDER BY."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Farbe\nFROM Fundsache\nWHERE Kategorie = 'Kleidung'\nORDER BY Funddatum DESC",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Text steht in Hochkommata: `'Kleidung'` (P5). Ohne sie hält SQL `Kleidung` für einen Spaltennamen – und die gibt es nicht."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-05",
+      "titel": "Wer steht auf?",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K17",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Wie beim Karteikarten-Filter: Tippe alle Datensätze an, die bei dieser Bedingung „aufstehen“."
+        },
+        {
+          "t": "sql",
+          "sql": "WHERE Kategorie = 'Taschen' OR Kategorie = 'Schmuck' AND Wert > 50",
+          "nummern": false
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Fundsache",
+          "kopf": [
+            {
+              "name": "FundNr",
+              "pk": true
+            },
+            {
+              "name": "Bezeichnung"
+            },
+            {
+              "name": "Kategorie"
+            },
+            {
+              "name": "Wert"
+            }
+          ],
+          "zeilen": [
+            [
+              4,
+              "Geldbörse",
+              "Taschen",
+              32
+            ],
+            [
+              17,
+              "Armbanduhr",
+              "Schmuck",
+              149
+            ],
+            [
+              22,
+              "Ladekabel",
+              "Elektronik",
+              100
+            ],
+            [
+              25,
+              "Sporttasche",
+              "Taschen",
+              35
+            ],
+            [
+              27,
+              "Armbanduhr",
+              "Schmuck",
+              null
+            ],
+            [
+              37,
+              "Kompass-Anhänger",
+              "Schmuck",
+              25
+            ],
+            [
+              44,
+              "Goldarmband",
+              "Schmuck",
+              320
+            ],
+            [
+              51,
+              "Kamera",
+              "Wertsachen",
+              390
+            ],
+            [
+              59,
+              "Rucksack",
+              "Taschen",
+              19
+            ],
+            [
+              62,
+              "Geldbörse",
+              "Taschen",
+              73
+            ]
+          ],
+          "quelle": {
+            "datenbank": "fundbuero",
+            "sql": "SELECT FundNr, Bezeichnung, Kategorie, Wert FROM Fundsache WHERE FundNr IN (4, 17, 22, 25, 27, 37, 44, 51, 59, 62) ORDER BY FundNr"
+          }
+        }
+      ],
+      "interaktion": {
+        "kind": "zeilen",
+        "block": 2,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zeilen": [
+          0,
+          1,
+          3,
+          6,
+          8,
+          9
+        ],
+        "quelleSql": "SELECT FundNr, Bezeichnung, Kategorie, Wert FROM Fundsache WHERE FundNr IN (4, 17, 22, 25, 27, 37, 44, 51, 59, 62) AND (Kategorie = 'Taschen' OR Kategorie = 'Schmuck' AND Wert > 50)"
+      },
+      "tipps": [
+        "AND bindet stärker als OR – wie Punkt vor Strich."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Gelesen wird `Kategorie = 'Taschen' OR (Kategorie = 'Schmuck' AND Wert > 50)` (P6). Darum steht **jede** Tasche auf – auch der Rucksack für 19 € –, Schmuck aber nur über 50 €. Die Armbanduhr ohne Wert bleibt sitzen: `NULL > 50` ist nicht wahr."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-06",
+      "titel": "Klammern retten den Fall",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K17"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gesucht sind alle Fundsachen der Kategorien Taschen **oder** Schmuck, die **mehr als 50 €** wert sind und **nicht** im Hafenviertel gefunden wurden. Gib Bezeichnung, Stadtteil und Wert aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [
+          "null",
+          "grenze"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Stadtteil, Wert\nFROM Fundsache\nWHERE (Kategorie = 'Taschen' OR Kategorie = 'Schmuck')\n  AND Wert > 50\n  AND NOT Stadtteil = 'Hafenviertel'"
+      },
+      "tipps": [
+        "Die beiden Kategorien gehören in eine Klammer – sonst gilt die Wert-Bedingung nur für Schmuck.",
+        "Verneinen kannst du mit `NOT` oder mit `!=`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Stadtteil, Wert\nFROM Fundsache\nWHERE (Kategorie = 'Taschen' OR Kategorie = 'Schmuck')\n  AND Wert > 50\n  AND NOT Stadtteil = 'Hafenviertel'",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ohne Klammern bindet AND stärker (P6): Dann käme **jede** Tasche ins Ergebnis, egal wie billig und wo gefunden. Richtig sind drei Fundsachen. `Stadtteil != 'Hafenviertel'` ist gleichwertig zu `NOT Stadtteil = 'Hafenviertel'`."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-07",
+      "titel": "Reihenfolge vorhersagen",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K21",
+        "DB-K29"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Welche Ergebnistabelle liefert diese Abfrage? Die Reihenfolge zählt."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Wert\nFROM Fundsache\nWHERE Kategorie = 'Fahrradzubehör'\n  AND Wert >= 20\nORDER BY Wert DESC, Bezeichnung",
+          "markiere": [
+            5
+          ]
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Fundsache",
+          "kopf": [
+            {
+              "name": "FundNr",
+              "pk": true
+            },
+            {
+              "name": "Bezeichnung"
+            },
+            {
+              "name": "Kategorie"
+            },
+            {
+              "name": "Wert"
+            }
+          ],
+          "zeilen": [
+            [
+              26,
+              "Helm",
+              "Fahrradzubehör",
+              44
+            ],
+            [
+              43,
+              "Helm",
+              "Fahrradzubehör",
+              20
+            ],
+            [
+              61,
+              "Messingglocke",
+              "Fahrradzubehör",
+              12
+            ],
+            [
+              69,
+              "Fahrradschloss",
+              "Fahrradzubehör",
+              50
+            ],
+            [
+              70,
+              "Luftpumpe",
+              "Fahrradzubehör",
+              50
+            ],
+            [
+              75,
+              "Fahrradhelm",
+              "Fahrradzubehör",
+              30
+            ]
+          ],
+          "quelle": {
+            "datenbank": "fundbuero",
+            "sql": "SELECT FundNr, Bezeichnung, Kategorie, Wert FROM Fundsache WHERE Kategorie = 'Fahrradzubehör' ORDER BY FundNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "Der Ausschnitt zeigt alle Fundsachen der Kategorie Fahrradzubehör."
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "Bezeichnung",
+          "Wert"
+        ],
+        "zeilenAnzahl": 5,
+        "reihenfolge": true
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            "Fahrradschloss",
+            50
+          ],
+          [
+            "Luftpumpe",
+            50
+          ],
+          [
+            "Helm",
+            44
+          ],
+          [
+            "Fahrradhelm",
+            30
+          ],
+          [
+            "Helm",
+            20
+          ]
+        ],
+        "quelleSql": "SELECT Bezeichnung, Wert FROM Fundsache WHERE Kategorie = 'Fahrradzubehör' AND Wert >= 20 ORDER BY Wert DESC, Bezeichnung",
+        "datenbank": "fundbuero"
+      },
+      "tipps": [
+        "Erst nach Wert absteigend; nur bei gleichem Wert entscheidet die Bezeichnung (alphabetisch)."
+      ],
+      "erklaerung": [
+        {
+          "t": "tabelle",
+          "kopf": [
+            "Bezeichnung",
+            "Wert"
+          ],
+          "zeilen": [
+            [
+              "Fahrradschloss",
+              "50"
+            ],
+            [
+              "Luftpumpe",
+              "50"
+            ],
+            [
+              "Helm",
+              "44"
+            ],
+            [
+              "Fahrradhelm",
+              "30"
+            ],
+            [
+              "Helm",
+              "20"
+            ]
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`>= 20` schließt den Helm für genau 20 € ein, die Messingglocke (12 €) fällt weg. Fahrradschloss und Luftpumpe haben denselben Wert – dann sortiert das zweite Kriterium alphabetisch: F vor L."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-08",
+      "titel": "Sortierte Spurensuche",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K21",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gib Bezeichnung, Stadtteil, Funddatum und Wert aller Fundsachen aus, die im Hafenviertel oder in der Altstadt gefunden wurden und **mindestens 20 €** wert sind. Sortiere nach Stadtteil aufsteigend, innerhalb eines Stadtteils die neuesten Funde zuerst."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [
+          "grenze"
+        ],
+        "sortierung": [
+          {
+            "spalte": "Stadtteil",
+            "richtung": "ASC"
+          },
+          {
+            "spalte": "Funddatum",
+            "richtung": "DESC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Stadtteil, Funddatum, Wert\nFROM Fundsache\nWHERE (Stadtteil = 'Hafenviertel' OR Stadtteil = 'Altstadt')\n  AND Wert >= 20\nORDER BY Stadtteil, Funddatum DESC"
+      },
+      "tipps": [
+        "„Mindestens 20“ heißt: 20 gehört dazu.",
+        "Mehrstufig sortierst du mit `ORDER BY Stadtteil, Funddatum DESC`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Stadtteil, Funddatum, Wert\nFROM Fundsache\nWHERE (Stadtteil = 'Hafenviertel' OR Stadtteil = 'Altstadt')\n  AND Wert >= 20\nORDER BY Stadtteil, Funddatum DESC",
+          "markiere": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Die Stadtteile stehen in Klammern, sonst gälte `Wert >= 20` nur für die Altstadt (P6). `>=` behält die vier Fundsachen mit genau 20 €. `DESC` gehört nur zu Funddatum – der Stadtteil bleibt aufsteigend."
+        }
+      ]
+    },
+    {
+      "id": "A1-E1-CC",
+      "titel": "Cold Case: Die Nachtfalter-Liste",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15",
+        "DB-K21"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: Sieh dir die Finder im Fundbuch genauer an."
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "datenbank": "fundbuero",
+          "varianten": [],
+          "sortierung": [
+            {
+              "spalte": "Finder",
+              "richtung": "ASC"
+            }
+          ],
+          "abimodus": "hinweis",
+          "frage": "a) Gib Finder, Bezeichnung und FundNr aller Fundsachen aus, alphabetisch sortiert nach Finder."
+        },
+        {
+          "kind": "gaps",
+          "felder": {
+            "g1": {
+              "typ": "zahl",
+              "breite": 3
+            }
+          },
+          "frage": "b) Ein Finder-Eintrag sieht aus wie ein Name, klingt aber schnell gesprochen wie ein Tier. FundNr dieser Fundsache: [[g1]]"
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "SELECT Finder, Bezeichnung, FundNr\nFROM Fundsache\nORDER BY Finder"
+        },
+        {
+          "g1": [
+            "36"
+          ]
+        }
+      ],
+      "tipps": [
+        "Lies die Einträge laut vor – besonders die mit dem Anfangsbuchstaben N."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "*N. Falter* – schnell gesprochen klingt das wie *Nachtfalter*, die Signatur des Phantoms. Ob das Zufall ist, klärst du in Ermittlung 1.2. Fundsachen ohne Finder (NULL) stehen beim Sortieren in SQLite ganz vorn."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-01",
+      "titel": "Platzhalter-Fahndung",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K19"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Ergänze die LIKE-Muster."
+        },
+        {
+          "t": "text",
+          "md": "a) Alle Bezeichnungen, die mit **Schl** beginnen:"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE Bezeichnung LIKE '[[g1]]'"
+        },
+        {
+          "t": "text",
+          "md": "b) Alle Bezeichnungen, die auf **uhr** enden:"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE Bezeichnung LIKE '[[g2]]'"
+        },
+        {
+          "t": "text",
+          "md": "c) Mütze – egal ob mit ü, u oder einem Tippfehler an der zweiten Stelle (**genau ein** unbekanntes Zeichen):"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung\nFROM Fundsache\nWHERE Bezeichnung LIKE '[[g3]]'"
+        }
+      ],
+      "interaktion": {
+        "kind": "gaps",
+        "felder": {
+          "g1": {
+            "typ": "text",
+            "breite": 8
+          },
+          "g2": {
+            "typ": "text",
+            "breite": 8
+          },
+          "g3": {
+            "typ": "text",
+            "breite": 8
+          }
+        }
+      },
+      "loesung": {
+        "g1": [
+          "Schl%",
+          "schl%"
+        ],
+        "g2": [
+          "%uhr"
+        ],
+        "g3": [
+          "M_tze",
+          "m_tze"
+        ]
+      },
+      "tipps": [
+        "`%` steht für beliebig viele Zeichen, `_` für genau eines."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "`'Schl%'` – Anfang fest, Rest beliebig (Schlüsselbund). `'%uhr'` – Ende fest: Armbanduhr und Kinderuhr, aber nicht *Uhrenkette*. `'M_tze'` – genau ein Zeichen an zweiter Stelle. Ohne Platzhalter würde LIKE wie `=` nur exakt Gleiches finden (P6)."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-02",
+      "titel": "Noch nicht abgeholt",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K15"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "In welchen Kategorien liegen noch Fundsachen im Regal, die **nicht abgeholt** wurden? Gib jede Kategorie nur **einmal** aus, alphabetisch sortiert."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [
+          "null"
+        ],
+        "sortierung": [
+          {
+            "spalte": "Kategorie",
+            "richtung": "ASC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT DISTINCT Kategorie\nFROM Fundsache\nWHERE AbgeholtAm IS NULL\nORDER BY Kategorie"
+      },
+      "tipps": [
+        "Ein leeres Feld AbgeholtAm ist NULL – das prüfst du mit `IS NULL`.",
+        "Doppelte Zeilen entfernt `SELECT DISTINCT`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT DISTINCT Kategorie\nFROM Fundsache\nWHERE AbgeholtAm IS NULL\nORDER BY Kategorie",
+          "markiere": [
+            1,
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`AbgeholtAm = NULL` wäre nie wahr und lieferte keine Zeile (P5). `DISTINCT` macht aus 36 offenen Fundsachen zehn verschiedene Kategorien."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-03",
+      "titel": "Fehler im Protokoll",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K32",
+        "DB-K18"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Juri sollte alle **noch nicht abgeholten** Fundsachen ab dem 1. September 2026 ohne Kleidung notieren. Tippe die drei Zeilen an, die fehlerhaft oder nicht EH-konform notiert sind."
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE AbgeholtAm = NULL\n  AND Funddatum >= 2026-09-01\n  AND Kategorie <> 'Kleidung'\nORDER BY Funddatum DESC"
+        }
+      ],
+      "interaktion": {
+        "kind": "lines",
+        "block": 1,
+        "anzahl": 3
+      },
+      "loesung": {
+        "zeilen": [
+          3,
+          4,
+          5
+        ]
+      },
+      "tipps": [
+        "Prüfe jede Bedingung: NULL-Vergleich, Datumsliteral, Ungleich-Zeichen."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Funddatum\nFROM Fundsache\nWHERE AbgeholtAm IS NULL\n  AND Funddatum >= '2026-09-01'\n  AND Kategorie != 'Kleidung'\nORDER BY Funddatum DESC",
+          "markiere": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Zeile 3: `IS NULL` statt `= NULL` (P5). Zeile 4: Ein Datum ohne Hochkommata rechnet SQL als 2026 − 9 − 1. Zeile 5: Im Abitur heißt ungleich `!=`."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-04",
+      "titel": "Die Septemberwoche",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K32"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gib FundNr, Bezeichnung und Funddatum aller Fundsachen aus, die vom 14.09.2026 bis einschließlich 20.09.2026 gefunden wurden – sortiert nach Funddatum, die ältesten zuerst."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [
+          "grenze"
+        ],
+        "sortierung": [
+          {
+            "spalte": "Funddatum",
+            "richtung": "ASC"
+          }
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT FundNr, Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Funddatum BETWEEN '2026-09-14' AND '2026-09-20'\nORDER BY Funddatum"
+      },
+      "tipps": [
+        "Ein Datum schreibst du als `'JJJJ-MM-TT'`.",
+        "BETWEEN schließt beide Grenzen ein."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT FundNr, Bezeichnung, Funddatum\nFROM Fundsache\nWHERE Funddatum BETWEEN '2026-09-14' AND '2026-09-20'\nORDER BY Funddatum",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "BETWEEN gehört inklusive: Fundsachen vom 14.09. und vom 20.09. sind dabei (P6). Mit `>` oder `<` würden genau diese Grenzfälle fehlen."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-05",
+      "titel": "Finderlohn",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K20",
+        "DB-K16",
+        "DB-K18",
+        "DB-K22"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Der Finderlohn beträgt 5 % des Werts. Gib für Fundsachen der Kategorien Schmuck oder Elektronik Bezeichnung, Wert und den Finderlohn aus – nur die **drei höchsten** Finderlöhne, der höchste zuerst.\n\nDie berechnete Spalte muss **Finderlohn** heißen."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [],
+        "sortierung": [
+          {
+            "spalte": "Finderlohn",
+            "richtung": "DESC"
+          }
+        ],
+        "aliasPflicht": true,
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Wert, Wert * 0.05 AS Finderlohn\nFROM Fundsache\nWHERE Kategorie IN ('Schmuck', 'Elektronik')\nORDER BY Finderlohn DESC\nLIMIT 3"
+      },
+      "tipps": [
+        "Eine Werteliste prüfst du mit `IN (…)`; die Spalte benennst du mit `AS`.",
+        "Die drei höchsten: erst `ORDER BY … DESC`, dann `LIMIT 3`."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Wert, Wert * 0.05 AS Finderlohn\nFROM Fundsache\nWHERE Kategorie IN ('Schmuck', 'Elektronik')\nORDER BY Finderlohn DESC\nLIMIT 3"
+        },
+        {
+          "t": "text",
+          "md": "Dezimalzahlen schreibst du mit Punkt: `0.05`. Nach dem Alias darfst du in ORDER BY sortieren. LIMIT ohne ORDER BY lieferte drei zufällige Zeilen; hier liegt an der Schnittkante kein Gleichstand (Platz 3: 132 €, Platz 4: 128 €)."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-06",
+      "titel": "Indizienkette 1/3: Irgendwas mit Messing",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K19",
+        "DB-K15"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Frau Ohlendiek: „Irgendwas mit Messing.“ Ob *Messingleuchter* oder *Kompass (Messing)* eingetragen ist, weiß sie nicht. Gib FundNr, Bezeichnung, Funddatum und Wert aller Fundsachen aus, die **Messing** irgendwo in der Bezeichnung tragen."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT FundNr, Bezeichnung, Funddatum, Wert\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'"
+      },
+      "tipps": [
+        "Wenn das Wort irgendwo stehen kann, brauchst du vorn **und** hinten einen Platzhalter."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT FundNr, Bezeichnung, Funddatum, Wert\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`'%Messing%'` findet vier Fundsachen – von Mai bis August. `= 'Messing'` fände nichts, und `'Messing%'` träfe hier nur zufällig dieselben Zeilen: Ein Eintrag wie *Kompass (Messing)* ginge verloren (P6). Ein Indiz ist noch kein Beweis: Weiter geht es mit dem Zeitraum."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-07",
+      "titel": "Indizienkette 2/3: Sommer und mehrere hundert Euro",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K17",
+        "DB-K19",
+        "DB-K32"
+      ],
+      "fallen": [
+        "P5",
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "„Juni oder Juli“ und „mehrere hundert Euro“: Grenze die Messing-Fundsachen ein auf ein Funddatum vom 01.06.2026 bis einschließlich 31.07.2026 und einen Wert von **mindestens 400 €** – oder einen **unbekannten** Wert, denn der könnte auch hoch sein. Gib FundNr, Bezeichnung, Funddatum und Wert aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [
+          "gleichnamig",
+          "null"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT FundNr, Bezeichnung, Funddatum, Wert\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'\n  AND Funddatum BETWEEN '2026-06-01' AND '2026-07-31'\n  AND (Wert >= 400 OR Wert IS NULL)"
+      },
+      "tipps": [
+        "Für den Zeitraum passt BETWEEN mit zwei Datumsliteralen.",
+        "Die beiden Wert-Bedingungen verbindest du mit OR – und setzt sie in Klammern."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT FundNr, Bezeichnung, Funddatum, Wert\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'\n  AND Funddatum BETWEEN '2026-06-01' AND '2026-07-31'\n  AND (Wert >= 400 OR Wert IS NULL)",
+          "markiere": [
+            4,
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`Wert >= 400` allein ließe Fundsachen mit unbekanntem Wert stillschweigend fallen, denn `NULL >= 400` ist nicht wahr (P5). Ohne Klammern bindet AND stärker: Dann käme jede Fundsache mit unbekanntem Wert aus dem ganzen Fundbuch dazu (P6). Übrig bleibt **ein** Kandidat."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-08",
+      "titel": "Indizienkette 3/3: Abgeholt ohne Unterschrift",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K17",
+        "DB-K32"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Laut Fundbuch wurde das Fundstück **abgeholt** – doch im Ausgabebuch fehlt die Unterschrift. Übernimm die Bedingungen aus der Indizienkette 2/3 und behalte nur Fundsachen, bei denen AbgeholtAm **gesetzt** ist. Gib Bezeichnung, Fundort, Wert, AbgeholtAm und Finder aus."
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "fundbuero",
+        "varianten": [
+          "gleichnamig",
+          "null"
+        ],
+        "abimodus": "hinweis"
+      },
+      "loesung": {
+        "sql": "SELECT Bezeichnung, Fundort, Wert, AbgeholtAm, Finder\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'\n  AND Funddatum BETWEEN '2026-06-01' AND '2026-07-31'\n  AND (Wert >= 400 OR Wert IS NULL)\n  AND NOT AbgeholtAm IS NULL"
+      },
+      "tipps": [
+        "„Gesetzt“ heißt: nicht NULL – also `NOT … IS NULL`.",
+        "Sprich den Eintrag im Feld Finder einmal schnell aus."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Bezeichnung, Fundort, Wert, AbgeholtAm, Finder\nFROM Fundsache\nWHERE Bezeichnung LIKE '%Messing%'\n  AND Funddatum BETWEEN '2026-06-01' AND '2026-07-31'\n  AND (Wert >= 400 OR Wert IS NULL)\n  AND NOT AbgeholtAm IS NULL",
+          "markiere": [
+            6
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Genau ein Datensatz bleibt: der **Messing-Kompass**, gefunden an der Weserpromenade, 450 €, abgeholt am 2026-09-14, Finder `'N. Falter'` – schnell gesprochen *Nachtfalter*. `AbgeholtAm != NULL` wäre nie wahr (P5). Nur über die Bezeichnung (`= 'Messing-Kompass'`) zu suchen, reicht nicht: Es könnte einen zweiten, billigen Messing-Kompass geben."
+        }
+      ]
+    },
+    {
+      "id": "A1-E2-CC",
+      "titel": "Cold Case: Der Schatten-Finder",
+      "stufe": 2,
+      "punkte": 0,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K19",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Freie Ermittlung ohne Punkte: Taucht der Name des Phantoms im Feld Finder noch öfter auf – vielleicht anders geschrieben?"
+        }
+      ],
+      "interaktion": [
+        {
+          "kind": "sql",
+          "datenbank": "fundbuero",
+          "varianten": [
+            "null"
+          ],
+          "abimodus": "hinweis",
+          "frage": "a) Gib FundNr, Bezeichnung und Finder aller Fundsachen aus, deren Finder-Eintrag **falter** enthält – egal wo."
+        },
+        {
+          "kind": "gaps",
+          "felder": {
+            "g1": {
+              "typ": "zahl",
+              "breite": 3
+            }
+          },
+          "frage": "b) Wie viele Fundsachen tragen einen solchen Finder-Eintrag? [[g1]]"
+        }
+      ],
+      "loesung": [
+        {
+          "sql": "SELECT FundNr, Bezeichnung, Finder\nFROM Fundsache\nWHERE Finder LIKE '%falter%'"
+        },
+        {
+          "g1": [
+            "1"
+          ]
+        }
+      ],
+      "tipps": [
+        "LIKE unterscheidet bei Buchstaben ohne Umlaut nicht zwischen Groß- und Kleinschreibung."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Nur ein Eintrag: `'N. Falter'` beim Messing-Kompass (FundNr 36). Das Phantom war vorsichtig – es hat nur diesen einen Datensatz geändert. Fundsachen ohne Finder (NULL) erfüllt `LIKE` nie."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-01",
+      "titel": "Begriffe",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Relationales Modell",
+      "kompetenzen": [
+        "DB-K01",
+        "DB-K47"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gegeben ist ein Ausschnitt der Tabelle Medium der Stadtbibliothek Weserstedt."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Medium",
+          "kopf": [
+            {
+              "name": "MedienNr",
+              "pk": true
+            },
+            {
+              "name": "Titel"
+            },
+            {
+              "name": "Autor"
+            },
+            {
+              "name": "Genre"
+            },
+            {
+              "name": "Preis"
+            }
+          ],
+          "zeilen": [
+            [
+              12,
+              "Der Schattenmann",
+              "Lampe",
+              "Thriller",
+              22
+            ],
+            [
+              13,
+              "Blackout an der Weser",
+              "Uphoff",
+              "Thriller",
+              29.9
+            ],
+            [
+              14,
+              "Funkstille",
+              "Möhlmann",
+              "Thriller",
+              18.5
+            ],
+            [
+              15,
+              "Die Insel der Kraniche",
+              "Tebbe",
+              "Thriller",
+              14.95
+            ],
+            [
+              16,
+              "Code Nordheide",
+              "Eggers",
+              "Thriller",
+              16
+            ]
+          ],
+          "markiert": [
+            {
+              "zeile": 2,
+              "spalte": 2,
+              "marke": "A"
+            }
+          ],
+          "quelle": {
+            "datenbank": "verhoer/bibliothek",
+            "sql": "SELECT MedienNr, Titel, Autor, Genre, Preis FROM Medium WHERE MedienNr BETWEEN 12 AND 16"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** den Fachbegriff **an**, der die mit A markierte Stelle bezeichnet. [1 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "Datensatz"
+          },
+          {
+            "id": "b",
+            "md": "Attribut"
+          },
+          {
+            "id": "c",
+            "md": "Attributwert"
+          },
+          {
+            "id": "d",
+            "md": "Primärschlüssel"
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "c"
+        ]
+      },
+      "tipps": [
+        "Markiert ist eine einzelne Zelle."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Eine einzelne Zelle enthält einen **Attributwert** – hier `Möhlmann` als Wert des Attributs Autor im Datensatz 14."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-02",
+      "titel": "Schlüssel",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Schlüssel",
+      "kompetenzen": [
+        "DB-K02"
+      ],
+      "fallen": [
+        "P8"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gegeben ist ein Ausschnitt der Tabelle Medium der Stadtbibliothek Weserstedt. Jede Zeile ist ein Exemplar."
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Medium",
+          "kopf": [
+            {
+              "name": "MedienNr"
+            },
+            {
+              "name": "Titel"
+            },
+            {
+              "name": "Autor"
+            },
+            {
+              "name": "Erscheinungsjahr"
+            }
+          ],
+          "zeilen": [
+            [
+              2,
+              "Tod am Sielhafen",
+              "Bargmann",
+              2019
+            ],
+            [
+              3,
+              "Der Leuchtturmwärter",
+              "Onken",
+              2017
+            ],
+            [
+              19,
+              "Sommer in Moorende",
+              "Harjes",
+              2000
+            ],
+            [
+              21,
+              "Der Gezeitenkalender",
+              "Schwarting",
+              2005
+            ],
+            [
+              37,
+              "Die kleine Möwe Mats",
+              "Demir",
+              2018
+            ],
+            [
+              44,
+              "Kicher-Kompass",
+              "Engelken",
+              2017
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/bibliothek",
+            "sql": "SELECT MedienNr, Titel, Autor, Erscheinungsjahr FROM Medium WHERE MedienNr IN (2, 3, 19, 21, 37, 44) ORDER BY MedienNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Beurteilen Sie**, welches Attribut bzw. welche Attributkombination als Primärschlüssel der Tabelle Medium geeignet ist. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "choice",
+        "mehrfach": false,
+        "optionen": [
+          {
+            "id": "a",
+            "md": "`MedienNr`, weil die Nummer für jedes Exemplar – auch für künftige – genau einmal vergeben wird und nie fehlt."
+          },
+          {
+            "id": "b",
+            "md": "`Titel`, weil im Ausschnitt jeder Titel nur einmal vorkommt."
+          },
+          {
+            "id": "c",
+            "md": "`Titel` und `Autor` zusammen, weil ein Autor einen Titel nur einmal schreibt."
+          },
+          {
+            "id": "d",
+            "md": "`Erscheinungsjahr`, weil jedes Medium genau ein Erscheinungsjahr hat."
+          }
+        ]
+      },
+      "loesung": {
+        "richtig": [
+          "a"
+        ]
+      },
+      "tipps": [
+        "Kann die Bibliothek ein zweites Exemplar desselben Buches anschaffen?"
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Ein Ausschnitt beweist keine Eindeutigkeit (P8): Die Bibliothek besitzt mehrere Exemplare desselben Titels vom selben Autor (z. B. zweimal „Tod am Sielhafen“). Das Erscheinungsjahr kommt schon im Ausschnitt doppelt vor. Nur `MedienNr` ist für alle möglichen Daten eindeutig, nie NULL und minimal."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-03",
+      "titel": "Krimis",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15",
+        "DB-K17"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Medium",
+              "attribute": [
+                {
+                  "name": "MedienNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Autor"
+                },
+                {
+                  "name": "Medienart"
+                },
+                {
+                  "name": "Genre"
+                },
+                {
+                  "name": "Erscheinungsjahr"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Standort"
+                },
+                {
+                  "name": "AusgeliehenBis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Titel und Autor aller Medien des Genres 'Krimi' ausgibt. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/bibliothek",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Titel, Autor\nFROM Medium\nWHERE Genre = 'Krimi'"
+      },
+      "tipps": [
+        "Text steht in Hochkommata."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Autor\nFROM Medium\nWHERE Genre = 'Krimi'",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Text-Literale stehen in Hochkommata: `'Krimi'` (P5). Jedes Exemplar ist ein eigener Datensatz – „Tod am Sielhafen“ erscheint deshalb zweimal; `DISTINCT` wäre hier falsch."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-04",
+      "titel": "Verfügbar",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Medium",
+              "attribute": [
+                {
+                  "name": "MedienNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Autor"
+                },
+                {
+                  "name": "Medienart"
+                },
+                {
+                  "name": "Genre"
+                },
+                {
+                  "name": "Erscheinungsjahr"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Standort"
+                },
+                {
+                  "name": "AusgeliehenBis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Titel und Standort aller zurzeit nicht ausgeliehenen Medien ausgibt. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/bibliothek",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Titel, Standort\nFROM Medium\nWHERE AusgeliehenBis IS NULL"
+      },
+      "tipps": [
+        "Ein nicht ausgeliehenes Medium hat kein Rückgabedatum."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Standort\nFROM Medium\nWHERE AusgeliehenBis IS NULL",
+          "markiere": [
+            3
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Nicht ausgeliehen heißt: `AusgeliehenBis` ist NULL. Geprüft wird mit `IS NULL`; `= NULL` ist nie wahr und liefert keine Zeile (P5)."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-05",
+      "titel": "Bedingungslogik",
+      "stufe": 1,
+      "punkte": 10,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K17",
+        "DB-K29"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gegeben ist ein Ausschnitt der Tabelle Medium und die folgende Bedingung:"
+        },
+        {
+          "t": "sql",
+          "sql": "WHERE Genre = 'Krimi' OR Genre = 'Thriller' AND Preis > 15",
+          "nummern": false
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Medium",
+          "kopf": [
+            {
+              "name": "MedienNr",
+              "pk": true
+            },
+            {
+              "name": "Titel"
+            },
+            {
+              "name": "Genre"
+            },
+            {
+              "name": "Preis"
+            }
+          ],
+          "zeilen": [
+            [
+              4,
+              "Schwarzes Watt",
+              "Krimi",
+              19.95
+            ],
+            [
+              6,
+              "Mord im Moor",
+              "Krimi",
+              9.99
+            ],
+            [
+              11,
+              "Verhör um Mitternacht",
+              "Krimi",
+              null
+            ],
+            [
+              12,
+              "Der Schattenmann",
+              "Thriller",
+              22
+            ],
+            [
+              13,
+              "Blackout an der Weser",
+              "Thriller",
+              29.9
+            ],
+            [
+              15,
+              "Die Insel der Kraniche",
+              "Thriller",
+              14.95
+            ],
+            [
+              18,
+              "Letzte Ausfahrt Hafen",
+              "Thriller",
+              15
+            ],
+            [
+              21,
+              "Der Gezeitenkalender",
+              "Roman",
+              19
+            ],
+            [
+              45,
+              "Das Erbe der Sturmkrähen",
+              "Fantasy",
+              18.95
+            ],
+            [
+              55,
+              "Spurensuche im Schnee",
+              "Krimi",
+              6
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/bibliothek",
+            "sql": "SELECT MedienNr, Titel, Genre, Preis FROM Medium WHERE MedienNr IN (4, 6, 11, 12, 13, 15, 18, 21, 45, 55) ORDER BY MedienNr"
+          }
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** alle Datensätze des Ausschnitts **an**, die diese Bedingung erfüllen. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "zeilen",
+        "block": 2,
+        "mehrfach": true
+      },
+      "loesung": {
+        "zeilen": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          9
+        ],
+        "quelleSql": "SELECT MedienNr, Titel, Genre, Preis FROM Medium WHERE MedienNr IN (4, 6, 11, 12, 13, 15, 18, 21, 45, 55) AND (Genre = 'Krimi' OR Genre = 'Thriller' AND Preis > 15)"
+      },
+      "tipps": [
+        "AND bindet stärker als OR."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Gelesen wird `Genre = 'Krimi' OR (Genre = 'Thriller' AND Preis > 15)` (P6): alle Krimis – auch die billigen und der ohne Preis – sowie die Thriller über 15 €. Der Thriller für genau 15,00 € erfüllt `> 15` nicht."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-06",
+      "titel": "Titelsuche",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K19"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Medium",
+              "attribute": [
+                {
+                  "name": "MedienNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Autor"
+                },
+                {
+                  "name": "Medienart"
+                },
+                {
+                  "name": "Genre"
+                },
+                {
+                  "name": "Erscheinungsjahr"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Standort"
+                },
+                {
+                  "name": "AusgeliehenBis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Titel und Autor aller Medien ausgibt, deren Titel mit dem Wort 'Der' beginnt und deren Autorname aus genau fünf Buchstaben besteht. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/bibliothek",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Titel, Autor\nFROM Medium\nWHERE Titel LIKE 'Der %'\n  AND Autor LIKE '_____'"
+      },
+      "tipps": [
+        "`_` steht für genau ein Zeichen.",
+        "Das Wort „Der“ endet mit einem Leerzeichen."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Autor\nFROM Medium\nWHERE Titel LIKE 'Der %'\n  AND Autor LIKE '_____'",
+          "markiere": [
+            3,
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "`'Der %'` verlangt das Leerzeichen nach „Der“ – `'Der%'` fände auch „Derbyfieber“ (P6). `'_____'` ohne `%` verlangt genau fünf Zeichen; `'%der %'` fände auch Titel, in denen „der“ mitten im Titel steht."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-07",
+      "titel": "Jahrgänge",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K18",
+        "DB-K32"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Medium",
+              "attribute": [
+                {
+                  "name": "MedienNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Autor"
+                },
+                {
+                  "name": "Medienart"
+                },
+                {
+                  "name": "Genre"
+                },
+                {
+                  "name": "Erscheinungsjahr"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Standort"
+                },
+                {
+                  "name": "AusgeliehenBis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Titel, Genre und Erscheinungsjahr aller Romane und Sachbücher ausgibt, die von 2000 bis einschließlich 2010 erschienen sind. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/bibliothek",
+        "varianten": [],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Titel, Genre, Erscheinungsjahr\nFROM Medium\nWHERE Genre IN ('Roman', 'Sachbuch')\n  AND Erscheinungsjahr BETWEEN 2000 AND 2010"
+      },
+      "tipps": [
+        "Eine Werteliste prüft man mit IN, einen Bereich mit BETWEEN."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Genre, Erscheinungsjahr\nFROM Medium\nWHERE Genre IN ('Roman', 'Sachbuch')\n  AND Erscheinungsjahr BETWEEN 2000 AND 2010",
+          "markiere": [
+            3,
+            4
+          ]
+        },
+        {
+          "t": "text",
+          "md": "BETWEEN schließt beide Grenzjahre ein (P6). `IN` ersetzt die OR-Verknüpfung der Genres; wer `Genre = 'Roman' OR Genre = 'Sachbuch' AND …` ohne Klammern schreibt, erhält auch Romane außerhalb des Zeitraums."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-08",
+      "titel": "Sortierung",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "Abfrage analysieren",
+      "kompetenzen": [
+        "DB-K21",
+        "DB-K29"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Gegeben ist der folgende Ausschnitt der Tabelle Medium (alle DVDs des Bestands):"
+        },
+        {
+          "t": "dbtabelle",
+          "tabelle": "Medium",
+          "kopf": [
+            {
+              "name": "MedienNr",
+              "pk": true
+            },
+            {
+              "name": "Titel"
+            },
+            {
+              "name": "Medienart"
+            },
+            {
+              "name": "Genre"
+            },
+            {
+              "name": "Erscheinungsjahr"
+            }
+          ],
+          "zeilen": [
+            [
+              11,
+              "Verhör um Mitternacht",
+              "DVD",
+              "Krimi",
+              2012
+            ],
+            [
+              18,
+              "Letzte Ausfahrt Hafen",
+              "DVD",
+              "Thriller",
+              2019
+            ],
+            [
+              36,
+              "Der Weg des Wassers",
+              "DVD",
+              "Sachbuch",
+              2014
+            ],
+            [
+              44,
+              "Kicher-Kompass",
+              "DVD",
+              "Kinderbuch",
+              2017
+            ],
+            [
+              49,
+              "Schattenwald",
+              "DVD",
+              "Fantasy",
+              2012
+            ],
+            [
+              54,
+              "Tatort Lindenhof",
+              "DVD",
+              "Krimi",
+              2010
+            ],
+            [
+              56,
+              "Abenteuer Nordsee",
+              "DVD",
+              "Sachbuch",
+              2006
+            ]
+          ],
+          "quelle": {
+            "datenbank": "verhoer/bibliothek",
+            "sql": "SELECT MedienNr, Titel, Medienart, Genre, Erscheinungsjahr FROM Medium WHERE Medienart = 'DVD' ORDER BY MedienNr"
+          }
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Genre, Erscheinungsjahr\nFROM Medium\nWHERE Medienart = 'DVD'\nORDER BY Genre, Erscheinungsjahr DESC"
+        },
+        {
+          "t": "text",
+          "md": "**Geben Sie** das Ergebnis der Abfrage in der richtigen Reihenfolge **an**. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "ergebnis",
+        "kopf": [
+          "Titel",
+          "Genre",
+          "Erscheinungsjahr"
+        ],
+        "zeilenAnzahl": 7,
+        "reihenfolge": true
+      },
+      "loesung": {
+        "zeilen": [
+          [
+            "Schattenwald",
+            "Fantasy",
+            2012
+          ],
+          [
+            "Kicher-Kompass",
+            "Kinderbuch",
+            2017
+          ],
+          [
+            "Verhör um Mitternacht",
+            "Krimi",
+            2012
+          ],
+          [
+            "Tatort Lindenhof",
+            "Krimi",
+            2010
+          ],
+          [
+            "Der Weg des Wassers",
+            "Sachbuch",
+            2014
+          ],
+          [
+            "Abenteuer Nordsee",
+            "Sachbuch",
+            2006
+          ],
+          [
+            "Letzte Ausfahrt Hafen",
+            "Thriller",
+            2019
+          ]
+        ],
+        "quelleSql": "SELECT Titel, Genre, Erscheinungsjahr FROM Medium WHERE Medienart = 'DVD' ORDER BY Genre, Erscheinungsjahr DESC",
+        "datenbank": "verhoer/bibliothek"
+      },
+      "tipps": [
+        "Zuerst alphabetisch nach Genre; nur innerhalb desselben Genres absteigend nach Jahr."
+      ],
+      "erklaerung": [
+        {
+          "t": "text",
+          "md": "Sortiert wird zuerst nach Genre aufsteigend (Fantasy, Kinderbuch, Krimi, Sachbuch, Thriller). `DESC` gilt nur für das Erscheinungsjahr: Innerhalb von Krimi und Sachbuch steht das neuere Medium zuerst."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-09",
+      "titel": "Ersatzkosten",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K20",
+        "DB-K16"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Medium",
+              "attribute": [
+                {
+                  "name": "MedienNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Autor"
+                },
+                {
+                  "name": "Medienart"
+                },
+                {
+                  "name": "Genre"
+                },
+                {
+                  "name": "Erscheinungsjahr"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Standort"
+                },
+                {
+                  "name": "AusgeliehenBis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Bei Verlust berechnet die Bibliothek den Preis zuzüglich 5 € Bearbeitungsgebühr. **Entwerfen Sie** eine SQL-Abfrage, die für alle Medien am Standort 'Magazin' den Titel und diese Ersatzkosten ausgibt. Die berechnete Spalte soll **Ersatzkosten** heißen. [3 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/bibliothek",
+        "varianten": [],
+        "aliasPflicht": true,
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Titel, Preis + 5 AS Ersatzkosten\nFROM Medium\nWHERE Standort = 'Magazin'"
+      },
+      "tipps": [
+        "Eine berechnete Spalte benennt man mit AS."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Preis + 5 AS Ersatzkosten\nFROM Medium\nWHERE Standort = 'Magazin'",
+          "markiere": [
+            1
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Die Berechnung steht im SELECT, der Spaltenname folgt nach `AS`. Für ein Medium ohne Preis ergibt `Preis + 5` NULL – Rechnen mit NULL ergibt NULL."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-10",
+      "titel": "Hörbücher",
+      "stufe": 2,
+      "punkte": 20,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K15",
+        "DB-K21"
+      ],
+      "fallen": [],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Medium",
+              "attribute": [
+                {
+                  "name": "MedienNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Autor"
+                },
+                {
+                  "name": "Medienart"
+                },
+                {
+                  "name": "Genre"
+                },
+                {
+                  "name": "Erscheinungsjahr"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Standort"
+                },
+                {
+                  "name": "AusgeliehenBis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Titel, Autor und Erscheinungsjahr aller Medien der Medienart 'Hörbuch' ausgibt, die nach 2015 erschienen sind, absteigend sortiert nach Erscheinungsjahr. [2 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/bibliothek",
+        "varianten": [
+          "gleichnamig"
+        ],
+        "sortierung": [
+          {
+            "spalte": "Erscheinungsjahr",
+            "richtung": "DESC"
+          }
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Titel, Autor, Erscheinungsjahr\nFROM Medium\nWHERE Medienart = 'Hörbuch'\n  AND Erscheinungsjahr > 2015\nORDER BY Erscheinungsjahr DESC"
+      },
+      "tipps": [
+        "„Nach 2015“ schließt 2015 nicht ein."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Autor, Erscheinungsjahr\nFROM Medium\nWHERE Medienart = 'Hörbuch'\n  AND Erscheinungsjahr > 2015\nORDER BY Erscheinungsjahr DESC",
+          "markiere": [
+            4,
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "„Nach 2015“ heißt `> 2015`: Ein Hörbuch von 2015 gehört nicht dazu. `DESC` sortiert absteigend, das neueste zuerst."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-11",
+      "titel": "Die teuersten",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K22",
+        "DB-K17",
+        "DB-K18"
+      ],
+      "fallen": [
+        "P6"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "schema",
+          "relationen": [
+            {
+              "name": "Medium",
+              "attribute": [
+                {
+                  "name": "MedienNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Autor"
+                },
+                {
+                  "name": "Medienart"
+                },
+                {
+                  "name": "Genre"
+                },
+                {
+                  "name": "Erscheinungsjahr"
+                },
+                {
+                  "name": "Preis"
+                },
+                {
+                  "name": "Standort"
+                },
+                {
+                  "name": "AusgeliehenBis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "md": "**Entwerfen Sie** eine SQL-Abfrage, die Titel und Preis der fünf teuersten zurzeit **nicht ausgeliehenen** Medien der Genres Krimi oder Thriller ausgibt, das teuerste zuerst. [4 BE]"
+        }
+      ],
+      "interaktion": {
+        "kind": "sql",
+        "datenbank": "verhoer/bibliothek",
+        "varianten": [],
+        "sortierung": [
+          {
+            "spalte": "Preis",
+            "richtung": "DESC"
+          }
+        ],
+        "abimodus": "streng"
+      },
+      "loesung": {
+        "sql": "SELECT Titel, Preis\nFROM Medium\nWHERE (Genre = 'Krimi' OR Genre = 'Thriller')\n  AND AusgeliehenBis IS NULL\nORDER BY Preis DESC\nLIMIT 5"
+      },
+      "tipps": [
+        "Die beiden Genres gehören in eine Klammer.",
+        "Top 5: erst sortieren, dann LIMIT."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, Preis\nFROM Medium\nWHERE (Genre = 'Krimi' OR Genre = 'Thriller')\n  AND AusgeliehenBis IS NULL\nORDER BY Preis DESC\nLIMIT 5",
+          "markiere": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Ohne Klammern bindet AND stärker (P6): Dann zählte die Verfügbarkeit nur für Thriller, und ein teurer, aber ausgeliehener Krimi rutschte in die Top 5. LIMIT setzt ein ORDER BY voraus; an der Schnittkante (Platz 5: 16,00 €, Platz 6: 14,95 €) liegt kein Gleichstand."
+        }
+      ]
+    },
+    {
+      "id": "A1-V-12",
+      "titel": "Fehlersuche",
+      "stufe": 3,
+      "punkte": 30,
+      "kategorie": "SQL eine Tabelle",
+      "kompetenzen": [
+        "DB-K32",
+        "DB-K18"
+      ],
+      "fallen": [
+        "P5"
+      ],
+      "inhalt": [
+        {
+          "t": "text",
+          "md": "Die Stadtbibliothek Weserstedt verwaltet ihren Bestand in der Tabelle Medium. Jede Zeile ist ein Exemplar. `AusgeliehenBis` enthält das Rückgabedatum und ist NULL, wenn das Medium im Regal steht; `Preis` ist der Wiederbeschaffungswert in Euro (NULL bei Schenkungen)."
+        },
+        {
+          "t": "text",
+          "md": "Die folgende Abfrage soll Titel und Rückgabedatum aller **ausgeliehenen** Krimis ausgeben, die bis einschließlich 20.10.2026 zurückgegeben werden müssen. **Geben Sie** alle Zeilen **an**, die fehlerhaft notiert sind. [3 BE]"
+        },
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, AusgeliehenBis\nFROM Medium\nWHERE Genre = Krimi\n  AND NOT AusgeliehenBis = NULL\n  AND AusgeliehenBis <= 2026-10-20\nORDER BY AusgeliehenBis"
+        }
+      ],
+      "interaktion": {
+        "kind": "lines",
+        "block": 2,
+        "anzahl": 3
+      },
+      "loesung": {
+        "zeilen": [
+          3,
+          4,
+          5
+        ]
+      },
+      "tipps": [
+        "Prüfen Sie jedes Literal und jeden Vergleich mit NULL."
+      ],
+      "erklaerung": [
+        {
+          "t": "sql",
+          "sql": "SELECT Titel, AusgeliehenBis\nFROM Medium\nWHERE Genre = 'Krimi'\n  AND NOT AusgeliehenBis IS NULL\n  AND AusgeliehenBis <= '2026-10-20'\nORDER BY AusgeliehenBis",
+          "markiere": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "t": "text",
+          "md": "Zeile 3: Text gehört in Hochkommata. Zeile 4: Mit NULL vergleicht man nur über `IS NULL` (P5). Zeile 5: Ein Datum ohne Hochkommata wird als Rechnung 2026 − 10 − 20 gelesen."
+        }
+      ]
+    }
+  ]
+}

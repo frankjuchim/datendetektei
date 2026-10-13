@@ -9,7 +9,7 @@ const path = require('node:path');
 
 const SITZUNG_COOKIE = 'dd_s';
 const SITZUNG_DAUER_SEK = { schueler: 30 * 24 * 3600, lehrkraft: 8 * 3600, superadmin: 8 * 3600 };
-const SEITE_403 = path.join(__dirname, '..', '..', 'public', '403.html');
+const PUBLIC_DIR = path.join(__dirname, '..', '..', 'public');
 
 function mac(konfig, name, wert) {
   return crypto.createHmac('sha256', konfig.sessionSecret).update(`${name}=${wert}`).digest('base64url');
@@ -93,7 +93,7 @@ function nurAngemeldet(rollen) {
     }
     if (!rollen.includes(sitzung.rolle)) {
       if (api) return res.status(403).json({ error: 'Keine Berechtigung.' });
-      return res.status(403).sendFile(SEITE_403);
+      return res.status(403).sendFile('403.html', { root: PUBLIC_DIR });
     }
     req.sitzung = sitzung;
     next();

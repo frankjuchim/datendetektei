@@ -7,7 +7,9 @@ Der Kurs arbeitet als Ermittlerteam der *Datendetektei Weserstedt*: Mit SQL werd
 Vereinsarchiv zeigt, warum Datenbanken gut modelliert sein müssen, die Detektei entwirft ihre eigene Fall-Datenbank –
 und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, was Datenschutz eigentlich schützt.
 
-> **Status:** Planung abgeschlossen (Phase 0). Umsetzung in Claude Code nach `docs/superpowers/plans/`.
+> **Status:** Phasen 1–6 umgesetzt (Kern, SQL-Engine, Lernkern mit Akten 1–3, Visualisierungen, Akten 4–5 mit
+> Modellierung, Akten 6–7 mit Schlussplädoyer und Pinnwand, Kür K1, Live-Modus, Lehrkraft-Bereich mit Beamer-Board und
+> Urkunden; Version 0.6.0). Weitere Phasen nach `docs/superpowers/plans/`.
 
 ## Überblick
 
@@ -16,7 +18,7 @@ und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, wa
 | Umfang | 15 Doppelstunden: 13 Kern-DS in 7 Akten + 2 Kür-DS; Klausur separat |
 | Plattform | `https://datendetektei.frankjuchim.de` · `PLATTFORM_ID=datendetektei` · Login nur über das Portal (`AUTH_MODUS=portal`) |
 | Highlights | Ermittlungskonsole mit Live-SQL (sql.js), serverseitige Prüfung gegen versteckte Randfall-Datenbanken, EH-§8-Parser mit Abimodus, Zeitlupe der Auswertungsreihenfolge, Spurenbrett, Sortierfächer, ER-Editor in Chen-Notation, Schema-Werkbank, Anomalie-Simulator, Live-Modus/Escape Room |
-| Material | Präsentationen, Arbeitsblätter („Ermittlungsakten“) + Lösungen, Unplugged-Sets, Ermittler-Handbuch, Warm-up-Karten, Generalprobe, Klausur + Nachschreibklausur mit Erwartungshorizonten, Lehrerhinweise, Videoskripte |
+| Material | Präsentationen, Arbeitsblätter („Ermittlungsakten“) + Lösungen, Unplugged-Sets, Ermittler-Handbuch, Warm-up-Karten, Generalprobe, Klausur + Nachschreibklausur mit Erwartungshorizonten, Lehrerhinweise, Gesamtübersicht, Abi-Kompass, Erklärvideos 0–7 (Folien + Drehbücher) |
 
 ## Dokumentation
 
@@ -25,6 +27,7 @@ und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, wa
 - Feinplanung und Aufgaben-Blueprints: [`docs/DS_PLANUNG.md`](docs/DS_PLANUNG.md) · Kompetenzmatrix: [`docs/KOMPETENZMATRIX.md`](docs/KOMPETENZMATRIX.md)
 - Story-Bibel: [`docs/STORY.md`](docs/STORY.md) · Design-System: [`docs/DESIGN.md`](docs/DESIGN.md) · Prototyp: [`docs/prototyp/`](docs/prototyp/)
 - Datenbanken: [`seed/datenbanken/`](seed/datenbanken/)
+- Materialien (Design-Modul, Pipeline, Whitelists, Video-Links): [`docs/MATERIALIEN.md`](docs/MATERIALIEN.md) · [`materialien/LIESMICH.md`](materialien/LIESMICH.md)
 - Arbeitsregeln für Claude Code: [`CLAUDE.md`](CLAUDE.md)
 
 ## Verbund InfoLabs
@@ -47,6 +50,73 @@ nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
 `npm install`, `npm test`, `npm run dev` (Port 3000, Daten in `./data`, ohne echtes Portal). `npm run dev` nutzt das
 Schlüsselpaar `test/fixtures/dev_portal_{public,private}.pem` – **nur für Entwicklung und Tests**: Der private
 Schlüssel liegt öffentlich im Repo und ist damit wertlos; im Betrieb nie verwenden.
+
+## Datenbanken und SQL
+
+Die sieben Übungsdatenbanken (und die nicht öffentlichen Verhör-Kontexte) entstehen deterministisch aus
+`seed/datenbanken/<name>/` (`schema.sql`, `pflicht.sql`, Generator `scripts/db/<name>.js`): `npm run db` schreibt
+`basis.sql`, `npm run db:pruefen` baut neu und vergleicht byteweise (CI). Randfall-Varianten liegen als Delta-Skripte
+in `varianten/` und sind nie öffentlich. Öffentlich ist nur die Haupt-DB unter `/db/<name>.sqlite`.
+
+Schüler-SQL läuft im Browser (sql.js im Web Worker, Abbruch nach 3 s) und zur Prüfung auf dem Server in einer
+Sandbox aus Kindprozessen (nur lesend, 1,5 s, 5 000 Zeilen). Ist WebAssembly gesperrt, führt der Server auch
+„Ausführen“ aus. Freie Ermittlung: `/konsole/<db>` (Eisdiele ohne Anmeldung).
+Verstehens- und Modellierungswerkzeuge: `/werkzeug/zeitlupe`, `/werkzeug/spurenbrett`, `/werkzeug/sortierfaecher`
+(angemeldet bzw. mit `?db=eisdiele`), `/werkzeug/bauplan` (Bauplan-Tisch, ER in Chen-Notation) und `/werkzeug/werkbank`
+(Schema-Werkbank) ohne Anmeldung; geprüft wird nur in den Aufgaben, serverseitig (`src/er`, `src/content/modellierung.js`).
+
+## Seiten für Schüler:innen und Lehrkräfte
+
+| Seite | Inhalt |
+|---|---|
+| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt |
+| `/akte/<n>`, `/ermittlung/<id>` | Akte und Ermittlung (Lab-Aufgaben, Konsole, Schlussplädoyer in Akte 6) |
+| `/verhoer/<n>`, `/warmup`, `/training` | Verhöre, Warm-up (Leitner), Trainingsplatz |
+| `/pinnwand` | Beweisstücke der gewonnenen Verhöre, Indizienkette des Plädoyers, Steckbrief des Phantoms |
+| `/live` | Live-Runde beitreten (Duell, Escape Room) |
+| `/lehrkraft` | Lehrkraft-Bereich: Übersicht, Einstellungen, Auswertung (Matrix, Fallen-Profil, CSV), Vorschau mit Lösungen, Live, Board, Urkunden, Materialien; Superadmin zusätzlich System |
+| `/lehrkraft/live`, `/live/<runde>/beamer` | Live-Steuerung und Beamer-Ansicht (nur Lehrkraft) |
+| `/lehrkraft/urkunden` | Druckseite „Detektei-Lizenz“ (eine A4-Seite je Schüler:in) |
+| `/board/<schlüssel>` | Beamer-Board ohne Anmeldung (Rangliste, Akten-Fortschritt, letzte Erfolge; nur Anzeigenamen) |
+
+Die Kür K1 („Eigene Datenbank bauen“, nur eA, nicht im Abitur) nutzt eine **Schreib-Sandbox**: je Anfrage eine frische
+In-Memory-Datenbank im Kindprozess (CREATE/INSERT erlaubt, Fremdschlüssel an, 1,5 s, Größen- und Zeilengrenzen), nichts
+wird gespeichert. Alle übrigen Aufgaben bleiben nur lesend.
+
+## Inhalte
+
+Lab-Aufgaben, Verhöre und Warm-up-Karten liegen als JSON in `seed/akten/akte<n>.json` (Kür: `seed/akten/kuer.json`) und `seed/warmup/warmup_a<n>.json`
+(Format: [`docs/AUFGABENFORMAT.md`](docs/AUFGABENFORMAT.md)), der Gastmodus in `seed/gast/probefall.json`, Beweisstücke und Steckbrief in
+`seed/fallebene.json`, Live-Pool und Escape Room in `seed/live/`. Der Server
+spielt sie beim Start per Upsert ein; `npm run validate` prüft Format, Verweise und jede SQL-Musterlösung in der Sandbox
+auf Haupt-DB und allen Varianten (EH-§8-konform). Verhör-Kontexte (eigene, nicht öffentliche DBs) liegen unter
+`seed/datenbanken/verhoer/`.
+
+## Materialien
+
+Unterrichtsmaterial liegt in [`materialien/`](materialien/) – die **docx/pptx sind maßgeblich** (Spec §11–12): je Akte
+`1_Praesentation/`, `2_Arbeitsblaetter/`, `3_Unplugged/`, `4_Lehrerhinweise/`, `5_Loesungen/`, dazu `00_Gesamt/`
+(Gesamtübersicht, Abi-Kompass, Ermittler-Handbuch), `Akte7_Generalprobe/` (Generalprobe, Klausuren mit
+Erwartungshorizonten), `Kuer/`, `Warm-up/` und `Videos/`. Erste Fassungen entstehen mit den Erstellungshilfen
+`quellen/material/*.py` (Design-Modul `werkzeuge/akten_design.py`); danach wird direkt im Dokument gepflegt.
+
+Die PDFs erzeugt die Pipeline (LibreOffice, Fonts aus `werkzeuge/fonts/`): `npm run material:pdf` (bzw. einzeln
+`arbeitsblaetter`, `loesungen`, `praesentationen`, `lehrkraft`, `originale`). Ausgabe flach in
+`Arbeitsblaetter_PDF/` (Schülerfassungen, nur angemeldet), `Loesungen_Portal/` und `Lehrkraft_PDF/` (nur Lehrkraft),
+`Originale/verzeichnis.json` (docx/pptx nur Superadmin); öffentlich ist nur die Gast-Auswahl `Gast_PDF/` (Standard
+leer, E13). `npm run pruefen` prüft Vollständigkeit und Aktualität (SHA-256 der Quelle), jede SQL-Anweisung gegen die
+Datenbanken (EH §8, Ergebnistabellen), Begriffe, Klarnamen, Schülerfassungen ohne Lösungen und die Kompetenzabdeckung.
+Details: [`docs/MATERIALIEN.md`](docs/MATERIALIEN.md).
+
+## Erklärvideos
+
+Acht Videos (0–7, Spec §13) mit Quellen `materialien/Videos/NN_Kurztitel/video.json` → Folien (pptx, Kamera-Zone
+unten rechts frei) und Drehbuch (`…_Skript.md` mit Lernzielen, YouTube-Titel/Beschreibung/Kapitel/Tags):
+`npm run videos` (Bilder aus der Plattform: `npm run videos:bilder`; Beispieldaten aus der eigenen Video-DB,
+`npm run db:video`). Nach dem Hochladen trägt Frank die YouTube-Links in [`seed/videos.json`](seed/videos.json) ein
+(nur `https://www.youtube.com/watch?v=…` bzw. `https://youtu.be/…`, geprüft von `npm run validate`); die Plattform zeigt
+sie dann als Link-Knopf (kein Embed) an der Ermittlung der passenden Doppelstunde, auf der Themenseite und im
+Lehrkraft-Reiter Materialien.
 
 ## Betrieb (CapRover)
 

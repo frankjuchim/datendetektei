@@ -23,7 +23,11 @@ function kursIdPruefen(req, res, next) {
   next();
 }
 
-function verbundRouten(konfig, db) {
+/**
+ * kennzahlen: optional, für die Kursübersicht (siehe kursUebersicht in src/kern/konten.js).
+ * nachLoeschen: optional, wird nach einem Löschauftrag mit { sub } bzw. { kurs } aufgerufen (Daten im RAM, z. B. Live-Runden).
+ */
+function verbundRouten(konfig, db, { kennzahlen = null, nachLoeschen = null } = {}) {
   const router = express.Router();
   const jti = new JtiSpeicher();
   const auth = (zweck) => verbundAuth(konfig, jti, zweck);
@@ -32,11 +36,12 @@ function verbundRouten(konfig, db) {
     const auftrag = pruefeLoeschAuftrag(req.body);
     if (!auftrag) return res.status(400).json({ error: 'Genau eines von sub oder kurs angeben.' });
     const geloescht = auftrag.sub ? loescheKonto(db, auftrag.sub) : loescheKurs(db, auftrag.kurs);
+    if (typeof nachLoeschen === 'function') nachLoeschen(auftrag);
     res.json({ geloescht });
   });
 
   router.get('/api/verbund/kurse/:kursId/uebersicht', auth('kurs-uebersicht'), kursIdPruefen, (req, res) => {
-    const uebersicht = kursUebersicht(db, req.params.kursId, konfig.jetzt);
+    const uebersicht = kursUebersicht(db, req.params.kursId, konfig.jetzt, kennzahlen);
     if (!uebersicht) return res.status(404).json({ error: 'Kurs unbekannt.' });
     res.set('Cache-Control', 'no-store');
     res.json(uebersicht);

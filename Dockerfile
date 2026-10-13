@@ -9,7 +9,16 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force \
  && node -e "require('express'); require('helmet'); new (require('better-sqlite3'))(':memory:'); console.log('Abhängigkeiten ok')"
 
-# Stufe 2: schlankes Laufzeit-Image
+# Stufe 2: Materialien (Spec §12.1/§12.4): erzeugte PDFs + Whitelists (verzeichnis.json); die docx/pptx-Originale
+# (materialien/Originale/verzeichnis.json) nur mit ORIGINALE_IM_IMAGE=1 (Standard: ja; mit --build-arg ORIGINALE_IM_IMAGE=0 ohne).
+FROM node:22-bookworm-slim AS material
+ARG ORIGINALE_IM_IMAGE=1
+WORKDIR /bau
+COPY materialien ./materialien
+COPY scripts/materialien_fuer_image.js ./
+RUN ORIGINALE_IM_IMAGE=$ORIGINALE_IM_IMAGE node materialien_fuer_image.js ./materialien /material
+
+# Stufe 3: schlankes Laufzeit-Image
 FROM node:22-bookworm-slim
 ENV NODE_ENV=production \
     PORT=80 \
@@ -22,6 +31,7 @@ COPY src ./src
 COPY public ./public
 COPY seed ./seed
 COPY scripts ./scripts
+COPY --from=material /material ./materialien
 # Datenverzeichnis (in CapRover als Persistent Directory /app/data einbinden)
 RUN mkdir -p /app/data && chown -R node:node /app/data
 # Port 80 ohne root-Rechte binden dürfen
