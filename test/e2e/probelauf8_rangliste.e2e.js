@@ -148,12 +148,12 @@ test('Lehrkraft: Link immer sichtbar; bei ausgeschaltetem Schalter Vorschau mit 
     assert.equal(await page.locator('h1').textContent(), 'Rangliste des Kurses');
     const hinweis = page.locator('.rangliste-aus-hinweis');
     assert.match(await hinweis.textContent(), /Ihre Schülerinnen und Schüler sehen sie nicht/);
-    assert.equal(await hinweis.locator('a').getAttribute('href'), '/lehrkraft?kurs=k%3A17#einstellungen');
+    assert.equal(await hinweis.locator('a').getAttribute('href'), '/lehrkraft#/kurs/k%3A17/einstellungen');
     assert.equal(await page.locator('.rang-zeile').count(), 10);
     assert.equal(await page.locator('.rang-zeile.ich').count(), 0);
     assert.ok(!(await page.locator('#seite').textContent()).includes('Frau M.'));
     // Lehrkraft-Bereich: „Rangliste ansehen“ beim Scoreboard-Schalter
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#einstellungen');
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/einstellungen');
     const link = page.locator('#ei-rangliste-link');
     await link.waitFor();
     assert.equal(await link.getAttribute('href'), '/rangliste?kurs=k%3A17');

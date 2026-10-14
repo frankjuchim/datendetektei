@@ -111,7 +111,7 @@ async function bereit(page, url) {
 test('1. Lehrkraft schaltet Akten 2–7 und die Kür frei', { timeout: 60000 }, async () => {
   const { kontext, page } = await seite(cookies.lehrkraft);
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#einstellungen');
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/einstellungen');
     await page.waitForSelector('#ei-speichern');
     for (const nr of [2, 3, 4, 5, 6, 7, 8]) {
       assert.equal(await page.isChecked(`#ei-akte-${nr}`), false, `Akte ${nr} zunächst gesperrt`);
@@ -246,11 +246,11 @@ test('3. Lena spielt Verhör 6, Pinnwand und Steckbrief zeigen die Freischaltung
   }
 });
 
-test('4. Lehrkraft: Auswertung, CSV, Vorschau, Board, Urkunden und alle Reiter', { timeout: 300000 }, async () => {
+test('4. Lehrkraft: Auswertung, CSV, Aufgaben, Board, Urkunden und alle Reiter', { timeout: 300000 }, async () => {
   const { kontext, page } = await seite(cookies.lehrkraft);
   try {
     /* ---------- Auswertung ---------- */
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#auswertung');
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/auswertung');
     await page.waitForSelector('table.matrix tbody tr:nth-child(3)');
     assert.match(await page.textContent('#lk-kennzahlen'), /3\s*Schüler:innen[\s\S]*7\s*Akten frei \+ Kür/);
     const namen = await page.$$eval('table.matrix tbody th', (ths) => ths.map((t) => t.firstChild.textContent));
@@ -274,24 +274,22 @@ test('4. Lehrkraft: Auswertung, CSV, Vorschau, Board, Urkunden und alle Reiter',
     assert.doesNotMatch(csv, /s:10\d\d|l:7/, 'keine sub in der CSV');
     await fotos(page, 'lehrkraft_auswertung', { warte: (p) => p.waitForSelector('table.matrix') });
 
-    /* ---------- Vorschau mit Lösung ---------- */
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#vorschau');
-    await page.waitForSelector('#vo-baum details');
-    for (const sel of ['#vo-baum > details:has(button[data-aufgabe="A6-E1-09"])', '#vo-baum details details:has(button[data-aufgabe="A6-E1-09"])']) {
-      if (!(await page.$eval(sel, (d) => d.open))) await page.click(sel + ' > summary');
-    }
-    await page.click('#vo-baum button[data-aufgabe="A6-E1-09"]');
+    /* ---------- Aufgaben mit Lösung ---------- */
+    await page.goto(server.url + '/lehrkraft#/aufgaben');
+    await page.waitForSelector('.lk-akten-karte');
+    await page.click('.lk-akten-karte[href="#/aufgaben/akte/6"]');
+    await page.click('a[href="#/aufgaben/aufgabe/A6-E1-09"]');
     await page.waitForSelector('#vo-loesung .etikett');
     assert.match(await page.textContent('#vo-titel'), /Fünf Nächte an der Hafenkante/);
     assert.match(await page.textContent('#vo-loesung'), /Musterlösung[\s\S]*SELECT KundenToken/);
-    await fotos(page, 'lehrkraft_vorschau');
+    await fotos(page, 'lehrkraft_aufgaben');
 
     /* ---------- Board ---------- */
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#board');
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/beitritt');
     await page.waitForSelector('#bo-umschalten');
     await page.click('#bo-umschalten');
-    await page.waitForSelector('#panel-board .board-link-feld');
-    const boardUrl = await page.inputValue('#panel-board .board-link-feld');
+    await page.waitForSelector('#panel-beitritt .board-link-feld');
+    const boardUrl = await page.inputValue('#panel-beitritt .board-link-feld');
     assert.match(boardUrl, /\/board\/[A-Za-z0-9_-]{32}$/);
     await page.waitForSelector('#bo-vorschau .board-mini li');
     const beamer = await seite(null, { breite: 1920, hoehe: 1080 });
@@ -311,10 +309,10 @@ test('4. Lehrkraft: Auswertung, CSV, Vorschau, Board, Urkunden und alle Reiter',
     }
 
     /* ---------- Urkunden ---------- */
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#urkunden');
-    await page.waitForSelector('#ur-oeffnen');
-    assert.match(await page.textContent('#ur-anzahl'), /3 Urkunden/);
-    await page.goto(server.url + (await page.getAttribute('#ur-oeffnen', 'href')));
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/schueler');
+    await page.waitForSelector('#sl-tabelle');
+    assert.equal(await page.$$eval('#sl-tabelle tbody tr', (z) => z.length), 3);
+    await page.goto(server.url + (await page.getAttribute('#lk-urkunden', 'href')));
     await page.waitForFunction(() => document.documentElement.dataset.urkunden === 'bereit');
     const urkunden = await page.$$eval('.urkunde', (u) => u.map((x) => x.textContent));
     assert.equal(urkunden.length, 3);
@@ -328,12 +326,15 @@ test('4. Lehrkraft: Auswertung, CSV, Vorschau, Board, Urkunden und alle Reiter',
     await page.emulateMedia({ media: 'screen' });
 
     /* ---------- alle Reiter ---------- */
-    for (const r of ['uebersicht', 'einstellungen', 'live', 'board', 'urkunden', 'materialien']) {
-      await page.goto(server.url + '/lehrkraft?kurs=k:17#' + r);
+    for (const r of ['schueler', 'beitritt', 'scoreboard', 'einstellungen', 'live']) {
+      await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/' + r);
       await page.waitForSelector(`#panel-${r}:not([hidden]) > :not(.lk-laedt)`);
       if (r === 'live') await page.waitForSelector('#panel-live .live-steuerung > :not(.laedt)');
       await fotos(page, 'lehrkraft_' + r);
     }
+    await page.goto(server.url + '/lehrkraft#/materialien');
+    await page.waitForSelector('#seite-materialien .material-gruppe, #seite-materialien .notiz');
+    await fotos(page, 'lehrkraft_materialien');
     assert.deepEqual(fehler(), []);
   } finally {
     await kontext.close();
