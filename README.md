@@ -72,7 +72,7 @@ Verstehens- und Modellierungswerkzeuge: `/werkzeug/zeitlupe`, `/werkzeug/spurenb
 
 | Seite | Inhalt |
 |---|---|
-| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt |
+| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt; Rangliste des Kurses (Top 10 + eigener Platz), nur wenn die Lehrkraft das Scoreboard einschaltet |
 | `/akte/<n>`, `/ermittlung/<id>` | Akte und Ermittlung (Lab-Aufgaben, Konsole, Schlussplädoyer in Akte 6) |
 | `/verhoer/<n>`, `/warmup`, `/training` | Verhöre, Warm-up (Leitner), Trainingsplatz |
 | `/pinnwand` | Beweisstücke der gewonnenen Verhöre, Indizienkette des Plädoyers, Steckbrief des Phantoms |
@@ -136,6 +136,15 @@ Umgebungsvariablen (Vertrag §8):
 | `DATA_DIR` | `/app/data` (Persistent Directory) |
 | `PORT` | `80` |
 | `TRUST_PROXY` | `1` |
+| `SANDBOX_PROZESSE` | optional, 1–16; Standard min(4, max(2, Kerne − 1)) |
+
+**SQL-Sandbox:** Schüler-SQL läuft in einem Pool aus Kindprozessen (`src/sql/sandbox.js`; Lese- und Schreibmodus der
+Kür K1 teilen sich den Pool). `SANDBOX_PROZESSE` legt die Größe fest; der Standard min(4, max(2, Kerne − 1)) lässt einen
+Kern für den Server frei (SQLite-Abfragen sind CPU-gebunden). Speicher je Prozess: ~60 MB Grundbedarf plus bis zu 128 MB
+während einer Abfrage (dann beendet der Speicherwächter den Prozess) – bei 4 Prozessen also bis ~750 MB einplanen. Je
+Konto läuft höchstens ein Sandbox-Auftrag gleichzeitig (ohne Anmeldung bis zu 4 je IP, damit eine Klasse im Gastmodus
+hinter einer Schul-NAT sich nicht gegenseitig sperrt); ein zweiter bekommt sofort 429 „Deine
+vorige Abfrage läuft noch.“ Ein ungültiger Wert bricht den Start mit Meldung ab.
 
 Nach dem ersten Deploy: Superadmin trägt die Plattform im Portal unter „Plattformen“ ein, bestätigt die
 Rücksprung-Adresse `https://datendetektei.frankjuchim.de/sso/ende` und schaltet Lehrkräfte frei.
@@ -151,7 +160,7 @@ erst nach grüner Prüfung und Freigabe nach `main` übernehmen.
 
 ## Lizenz
 
-**Vorläufig (Default bis zu Franks Entscheidung, Spec §17):** Unterrichtsmaterialien und Inhalte (`materialien/`,
+Unterrichtsmaterialien und Inhalte (`materialien/`,
 Aufgaben, Story und Datenbanken in `seed/`, Unterrichtsplanung in `docs/`) unter
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de), Namensnennung „Frank Juchim,
 Datendetektei Weserstedt“; Programmcode alle Rechte vorbehalten; Schriften (SIL OFL 1.1) und sql.js (MIT) mit eigenen

@@ -9,12 +9,12 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.8.0">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.8.0">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.8.0">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.8.0">
-  <script src="/static/js/kern/thema.js?v=0.8.0"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.8.0" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.8.1">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.8.1">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.8.1">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.8.1">
+  <script src="/static/js/kern/thema.js?v=0.8.1"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.8.1" defer></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -81,8 +81,8 @@
         <li id="ds-konto">Dein Konto: die Kennung aus dem Portal (<code>sub</code>, z. B. „s:1042“), dein Anzeigename,
           deine Rolle (Schüler, Lehrkraft, Admin) und wann du dich zuletzt angemeldet hast.</li>
         <li id="ds-kurs">Deine Kurse: Kennung und Name des Kurses, ob du Mitglied oder Lehrkraft bist, ob der Kurs
-          gesperrt ist, und die Einstellungen der Lehrkraft (freigegebene Akten, Niveau eA/gA, Verhöre, Beamer-Board mit
-          seinem geheimen Link).</li>
+          gesperrt ist, und die Einstellungen der Lehrkraft (freigegebene Akten, Niveau eA/gA, Verhöre, Rangliste des Kurses,
+          Beamer-Board mit seinem geheimen Link).</li>
         <li id="ds-lernstand">Dein Lernstand je Kurs und Aufgabe: Status (offen, gelöst, angesehen …), Fehlversuche,
           abgerufene Tipps, Punkte und Zeitpunkt; dazu wie oft du in welche Falle (P1–P10) getappt bist, Häkchen bei
           Kernpunkten (nur das Häkchen, nie dein Text) und deine Serie ohne Fehlversuch.</li>
@@ -107,6 +107,10 @@
           Kursnamen, die 15 besten Anzeigenamen mit Punkten und Rang, den Fortschritt des Kurses in den Akten und die
           letzten Erfolge mit Anzeigenamen. Sehen kann das jede Person, die den geheimen Link kennt; die Lehrkraft kann
           den Link jederzeit erneuern oder das Board ausschalten. Kennungen und Lehrkräfte erscheinen dort nie.</li>
+        <li id="ds-rangliste">Rangliste des Kurses (Scoreboard): Nur wenn deine Lehrkraft sie einschaltet, sehen die
+          angemeldeten Mitglieder deines Kurses auf dem Stadtplan die 10 besten Anzeigenamen mit Rang und Punkten; du
+          siehst zusätzlich deinen eigenen Platz. Andere Kurse sehen sie nicht, Kennungen und Lehrkräfte erscheinen dort
+          nie. Gespeichert wird dafür nichts Zusätzliches – die Liste wird bei jedem Aufruf aus dem Lernstand berechnet.</li>
         <li id="ds-sicherung">Der Admin der Datendetektei kann eine Sicherungskopie der ganzen Datenbank herunterladen,
           um sie bei einem Defekt wiederherzustellen. Aufbewahrung der Sicherungskopien:
           <span class="platzhalter">[Sicherungskopien: z. B. keine / höchstens … Tage, Ort]</span>.</li>
@@ -219,7 +223,7 @@
           (Namensnennung: Frank Juchim, Datendetektei Weserstedt; nicht kommerziell; Weitergabe unter gleichen
           Bedingungen). Der Programmcode ist nicht freigegeben (alle Rechte vorbehalten). Schriften und Bibliotheken
           anderer haben ihre eigenen Lizenzen (SIL Open Font License 1.1, MIT). Aufgaben des Zentralabiturs sind nicht
-          enthalten. Stand: vorläufige Festlegung.</p>
+          enthalten.</p>
       </section>
 
       <p class="hinweis-klein">Stand: Oktober 2026</p>

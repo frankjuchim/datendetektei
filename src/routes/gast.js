@@ -13,10 +13,10 @@
 // (konfig.rateLimits.gast). Origin-Prüfung und JSON-Pflicht übernimmt pruefeHerkunft in app.js.
 
 const express = require('express');
-const { rateLimit } = require('../kern/sicherheit');
+const { rateLimit, auftragsSperre } = require('../kern/sicherheit');
 const { sendeMaterial, schluesselAus, CACHE } = require('./material');
 
-function gastRouten({ gast, pruefer = null, konfig }) {
+function gastRouten({ gast, pruefer = null, konfig, sperre = auftragsSperre() }) {
   const router = express.Router({ caseSensitive: true, strict: true });
   const limits = konfig.rateLimits || {};
   const jetzt = konfig.jetzt || Date.now;
@@ -36,7 +36,9 @@ function gastRouten({ gast, pruefer = null, konfig }) {
   const aufgabe = '/api/gast/aufgaben/:id';
 
   router.get('/api/gast/probefall', json(() => gast.probefall()));
-  router.post(aufgabe + '/pruefen', postLimit, pruefLimit, json((req) => gast.pruefen(req.params.id, req.body, { pruefer })));
+  // sql-Aufgaben: höchstens ein Sandbox-Auftrag je IP gleichzeitig (F3, gemeinsame Sperre aus app.js)
+  const einAuftrag = sperre.wenn((req) => gast.istSqlAufgabe(req.params.id));
+  router.post(aufgabe + '/pruefen', postLimit, pruefLimit, einAuftrag, json((req) => gast.pruefen(req.params.id, req.body, { pruefer })));
   router.post(aufgabe + '/tipp', postLimit, json((req) => gast.tipp(req.params.id, req.body)));
   router.post(aufgabe + '/loesung', postLimit, json((req) => gast.loesung(req.params.id)));
   router.get('/api/gast/lehrkraft', json(() => gast.lehrkraft()));

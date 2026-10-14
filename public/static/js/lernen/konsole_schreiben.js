@@ -186,7 +186,7 @@ export function erzeugeSchreibKonsole({ kursId, aufgabeId, startTitel = 'leere D
       daten = null;
     }
     if (antwort.status === 401) return { ok: false, fehler: 'Du bist nicht mehr angemeldet. Melde dich über das Portal neu an.' };
-    if (antwort.status === 429) return { ok: false, fehler: 'Du hast in kurzer Zeit sehr oft ausgeführt. Warte einen Moment und versuch es dann noch einmal.' };
+    if (antwort.status === 429) return { ok: false, fehler: daten && daten.code === 'LAEUFT_NOCH' && typeof daten.error === 'string' ? daten.error : 'Du hast in kurzer Zeit sehr oft ausgeführt. Warte einen Moment und versuch es dann noch einmal.' };
     if (daten && typeof daten.fehler === 'string') return daten;
     if (!antwort.ok || !daten) return { ok: false, fehler: (daten && daten.error) || TEXT_SERVER };
     return daten;

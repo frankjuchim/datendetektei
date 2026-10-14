@@ -183,6 +183,9 @@ P10 Operator verfehlt.
   Anfrage eine frische In-Memory-DB (leer oder Startschema), CREATE/INSERT erlaubt, FK an, 1,5 s, ≤ 200 Anweisungen,
   ≤ 20 Tabellen, ≤ 500 Zeilen je Tabelle, ≤ 1 MB, Skript ≤ 10 000 Zeichen, TEMP/TRIGGER/VIEW/VIRTUAL verboten; nie
   Akten-DBs oder die Plattform-DB, nichts wird gespeichert.
+- Sandbox-Pool: `SANDBOX_PROZESSE` (1–16, Standard min(4, max(2, Kerne − 1))); höchstens ein Sandbox-Auftrag je Konto
+  (ohne Anmeldung bis zu 4 je IP – Schul-NAT) über alle Sandbox-Routen – neue Sandbox-Routen mit der gemeinsamen `auftragsSperre` aus
+  `app.js` versehen (sonst 429-Schutz umgangen; `test/sandbox_sperre.test.js`).
 - Live-Modus nur im RAM (Antworten, Teams, Statistik); Board und CSV ohne `sub`.
 - CSP: `default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; img-src 'self' data:;
   style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'` – keine Inline-
@@ -203,5 +206,5 @@ P10 Operator verfehlt.
 | Beamer-Board | immer dunkel |
 | Akte 7 auf dem Stadtplan | am Detektei-Gebäude (zweiter Ring) |
 | Kontrastprüfung in CI | ja, `scripts/kontrast_pruefen.js` (Phase 1, Design-Grundlagen) |
-| Lizenz | vorläufig `LIZENZ.md`: Materialien/Inhalte CC BY-NC-SA 4.0, Code alle Rechte vorbehalten – Bestätigung offen |
+| Lizenz | **entschieden** (`LIZENZ.md`): Materialien/Inhalte CC BY-NC-SA 4.0, Code alle Rechte vorbehalten |
 | Schulangaben `/datenschutz` | Platzhalter `[…]` (Klasse `platzhalter`) bis die Schule sie liefert |

@@ -566,7 +566,7 @@ def loesung_stationen(d, c):
     kopf, zeilen = abfrage_ergebnis(sql3, "stadtfest")
     d.ueberschrift(f"S3 · {s['S3']['titel']} – Code {c['S3']}", 3)
     d.inhalt(SQL(sql3, db="stadtfest"), Ergebnis(kopf, zeilen),
-             Loesung(f"{len(zeilen)} Stände, stärkster Stand Nr. {zeilen[0][0]} → Code **{c['S3']}**. "
+             Loesung(f"{len(zeilen)} Stände, stärkster Stand Nr. {zeilen[0][0]} mit {zeilen[0][2]} Schichten → Code **{c['S3']}**. "
                      "Kompetenzen K26, K27, K22.",
                      fehler=[("P1", "`COUNT(*) >= 7` im WHERE (Syntaxfehler) oder Tagesbedingung im HAVING."),
                              ("P3", "Nur nach Name gruppiert bzw. Name nicht in GROUP BY.")]))
@@ -588,7 +588,7 @@ def loesung_stationen(d, c):
                      Schema("Tanzkurs(<u>KursNr</u>, Titel, Wochentag, ↑LehrerNr)"),
                      Schema("Teilnehmer(<u>TeilnehmerNr</u>, Vorname, Nachname)"),
                      Schema("belegt(<u>↑KursNr, ↑TeilnehmerNr</u>, Seit)"),
-                     f"4 Relationen, 3 Fremdschlüssel → Code **{c['S5']}**. Kompetenzen K41, K34.",
+                     f"4 Relationen, 3 Fremdschlüssel, 13 Attribute → Code **{c['S5']}**. Kompetenzen K41, K34.",
                      fehler=[("P9", "Fremdschlüssel KursNr in Tanzlehrer (falsche Seite) oder belegt ohne eigene "
                                     "Relation (n:m) → 3 Relationen, Code 3…")]))
     # S5g
@@ -597,7 +597,8 @@ def loesung_stationen(d, c):
     d.inhalt(Loesung("Richtig: " + ", ".join(o["code"] for o in ia["optionen"] if o["id"] in
                                              s["S5g"]["aufgabe"]["loesung"]["richtig"]) + ". " +
                      s["S5g"]["aufgabe"]["erklaerung"][0]["md"],
-                     f"2 taugliche Schlüssel, der kleinste hat 1 Attribut → Code **{c['S5g']}**. Kompetenz K02.",
+                     f"2 taugliche Schlüssel, der kleinste hat 1 Attribut, zusammen 3 Attribute → Code **{c['S5g']}**. "
+                     "Kompetenz K02.",
                      fehler=[("P8", "(Code) gewählt, weil der Ausschnitt keine Wiederholung zeigt (Ausschnitt-Falle).")]))
     # S6
     ia = s["S6"]["aufgabe"]["interaktion"]

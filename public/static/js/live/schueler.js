@@ -332,7 +332,7 @@ function escapeHaupt(z) {
         meldung.replaceChildren(el('p', null, 'Das stimmt noch nicht – das Schloss bleibt zu.'));
         if (r.rueckmeldung && Array.isArray(r.rueckmeldung.diagnose) && r.rueckmeldung.diagnose.length) meldung.appendChild(R.diagnoseListe(r.rueckmeldung.diagnose));
       } catch (err) {
-        meldung.replaceChildren(document.createTextNode(err.message));
+        meldung.replaceChildren(document.createTextNode(bremsText(err)));
       }
       k.disabled = false;
     });
@@ -343,6 +343,11 @@ function escapeHaupt(z) {
   box.appendChild(schloss(st));
   box.appendChild(tippUmschlag());
   return box;
+}
+
+/** 429 der Escape-Bremsen (falsche Antworten bzw. Codes): Text des Servers (ihr-Form), sonst der Standardtext. */
+function bremsText(err) {
+  return err.status === 429 && err.daten && err.daten.bremse === true && typeof err.daten.error === 'string' ? err.daten.error : err.message;
 }
 
 /** Zahlenschloss: Code eingeben öffnet die nächste Station. */
@@ -379,7 +384,7 @@ function schloss(st) {
       meldung.textContent = 'Der Code passt nicht.';
       eingabe.select();
     } catch (err) {
-      meldung.textContent = err.message;
+      meldung.textContent = bremsText(err);
     }
     k.disabled = false;
   }

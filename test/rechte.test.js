@@ -28,7 +28,7 @@ const POSTS = [
 
 test('ohne Sitzung: 401 für alle Endpunkte', async () => {
   const { u } = await start();
-  for (const p of [K17 + '/stand', K17 + '/ermittlungen/A9-E1', A(K17, 'A9-E1-01')]) {
+  for (const p of [K17 + '/stand', K17 + '/ermittlungen/A9-E1', A(K17, 'A9-E1-01'), K17 + '/rangliste']) {
     assert.equal((await request(u.app).get(p)).status, 401, p);
   }
   for (const [weg, body] of [...POSTS, ['kernpunkte', { haken: 1 }]]) {
@@ -47,6 +47,7 @@ test('fremder Kurs: Schüler kommt weder an Stand noch an Aufgaben noch an POSTs
   const { u, s, fremd } = await start();
   await fremd.post(A(K18, 'A9-E1-01') + '/pruefen', { antwort: ['d'] });
   assert.equal((await s.get(K18 + '/stand')).status, 403);
+  assert.equal((await s.get(K18 + '/rangliste')).status, 403);
   assert.equal((await s.get(A(K18, 'A9-E1-01'))).status, 403);
   for (const [weg, body] of POSTS) assert.equal((await s.post(A(K18, 'A9-E1-01') + '/' + weg, body)).status, 403, weg);
   // unbekannter Kurs: gleiche Antwort wie fremder Kurs

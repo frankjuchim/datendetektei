@@ -38,7 +38,9 @@ try {
 }
 
 // Sandbox (Kindprozesse) für Schüler-SQL auf dem Server: Haupt-DBs und Varianten als Buffer (Spec §7.4, §18).
+// Anzahl der Prozesse aus SANDBOX_PROZESSE (Standard min(4, max(2, Kerne − 1)), Sicherheitsprüfung Phase 8 F3).
 const sandbox = erzeugeSandbox({
+  prozesse: konfig.sandboxProzesse,
   datenbanken: Object.fromEntries(
     datenbanken.namen.map((name) => [name, { haupt: datenbanken.haupt(name), varianten: datenbanken.varianten(name) }])
   )

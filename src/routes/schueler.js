@@ -15,10 +15,10 @@
 
 const express = require('express');
 const { nurAngemeldet } = require('../kern/sitzung');
-const { rateLimit } = require('../kern/sicherheit');
+const { rateLimit, auftragsSperre } = require('../kern/sicherheit');
 const { istKursId } = require('../kern/verbund');
 
-function schuelerRouten({ lernen, konfig }) {
+function schuelerRouten({ lernen, konfig, sperre = auftragsSperre() }) {
   const router = express.Router();
   const angemeldet = nurAngemeldet(['schueler', 'lehrkraft', 'superadmin']);
   const limits = konfig.rateLimits || {};
@@ -26,7 +26,8 @@ function schuelerRouten({ lernen, konfig }) {
   const jeKonto = (req) => req.sitzung.sub;
   const sqlLimit = rateLimit({ fensterMs: 60000, max: 30, ...limits.pruefenSql, schluessel: jeKonto, jetzt });
   const postLimit = rateLimit({ fensterMs: 60000, max: 120, ...limits.lernen, schluessel: jeKonto, jetzt });
-  const sqlBegrenzer = (req, res, next) => (lernen.istSqlAufgabe(req.params.id) ? sqlLimit(req, res, next) : next());
+  // sql-Aufgaben: Rate-Limit, dann höchstens ein Sandbox-Auftrag je Konto (F3, gemeinsame Sperre aus app.js)
+  const sqlBegrenzer = sperre.wenn((req) => lernen.istSqlAufgabe(req.params.id), sqlLimit);
 
   const kurs = (req, res, next) => {
     if (!istKursId(req.params.kurs)) return res.status(400).json({ error: 'Ungültige Kurs-ID.' });

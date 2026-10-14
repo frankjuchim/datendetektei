@@ -363,7 +363,7 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
       });
     }
     return {
-      kurs: { id: k.id, name: k.name, aktiv: k.aktiv, niveau: einst.niveau, rolle: zugang.rolle, nurLesen: !!zugang.nurLesen },
+      kurs: { id: k.id, name: k.name, aktiv: k.aktiv, niveau: einst.niveau, rolle: zugang.rolle, nurLesen: !!zugang.nurLesen, scoreboard: einst.scoreboard === true },
       punkte: { gesamt: kz.gesamt, lab: kz.lab, verhoer: kz.verhoer, training: kz.training },
       geloest: kz.geloest,
       rang: { ...rangFuer(kz.anteil), punkte: kz.rangIst, maxPunkte: kz.rangMax },

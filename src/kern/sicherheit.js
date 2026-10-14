@@ -93,4 +93,73 @@ function rateLimit({ fensterMs, max, schluessel = () => 'alle', jetzt = Date.now
   return begrenzer;
 }
 
-module.exports = { sicherheitsHeader, pruefeHerkunft, rateLimit, CSP_DIREKTIVEN };
+const TEXT_LAEUFT_NOCH = 'Deine vorige Abfrage läuft noch. Warte kurz und versuch es dann noch einmal.';
+const TEXT_LAEUFT_NOCH_IP = 'Gerade läuft schon eine Abfrage von diesem Anschluss. Versuch es gleich noch einmal.';
+
+/** Schlüssel der Sandbox-Sperre: angemeldet je Konto (sub), sonst je IP (nur im RAM). */
+const kontoOderIp = (req) => (req.sitzung && req.sitzung.sub ? 'konto:' + req.sitzung.sub : 'ip:' + req.ip);
+
+/**
+ * Höchstens ein laufender (oder wartender) Auftrag je Schlüssel (Sicherheitsprüfung Phase 8, F3): Ein Konto kann die
+ * SQL-Sandbox so mit absichtlich langsamen Abfragen höchstens einen Kindprozess lang belegen. Ein zweiter Auftrag
+ * desselben Schlüssels bekommt sofort 429 { error, code: 'LAEUFT_NOCH' } – kein Warten: das hielte Verbindungen offen
+ * und verlagerte die Warteschlange nur in den Server; der Doppelklick-Schutz der Seiten sendet ohnehin nicht doppelt.
+ * Eine Instanz gilt routenübergreifend (app.js reicht sie an alle Sandbox-Routen); ein Prüfauftrag auf Haupt-DB und
+ * Varianten nacheinander ist EIN Auftrag (eine Anfrage).
+ * Freigabe, sobald die Route antwortet (res.end – auch nach Fehler oder Zeitlimit, weil dann der Fehler-Handler
+ * antwortet). Bricht der Client die Verbindung ab, bleibt die Sperre bis zum Ende des Auftrags (sonst ließe sie sich
+ * durch Abbrechen umgehen); Sicherung: spätestens nach haltMs. Zustand nur im RAM.
+ * Ohne Anmeldung (Schlüssel `ip:`) sind bis zu maxJeIp Aufträge gleichzeitig erlaubt: Eine Klasse im Gastmodus teilt
+ * sich hinter einer Schul-NAT eine IP-Adresse und soll sich nicht gegenseitig sperren.
+ */
+function auftragsSperre({ haltMs = 120000, maxJeIp = 4 } = {}) {
+  const belegt = new Map(); // Schlüssel → Anzahl laufender Aufträge
+  function middleware({ schluessel = kontoOderIp, text } = {}) {
+    return function einAuftrag(req, res, next) {
+      const k = String(schluessel(req));
+      const grenze = k.startsWith('ip:') ? maxJeIp : 1;
+      if ((belegt.get(k) || 0) >= grenze) {
+        res.set('Retry-After', '1');
+        const t = text || (k.startsWith('ip:') ? TEXT_LAEUFT_NOCH_IP : TEXT_LAEUFT_NOCH);
+        return res.status(429).json({ error: t, code: 'LAEUFT_NOCH' });
+      }
+      belegt.set(k, (belegt.get(k) || 0) + 1);
+      let frei = false;
+      const sicherung = setTimeout(() => freigeben(), haltMs);
+      if (typeof sicherung.unref === 'function') sicherung.unref();
+      function freigeben() {
+        if (frei) return;
+        frei = true;
+        clearTimeout(sicherung);
+        const rest = (belegt.get(k) || 1) - 1;
+        if (rest > 0) belegt.set(k, rest);
+        else belegt.delete(k);
+      }
+      const ende = res.end;
+      res.end = function (...args) {
+        freigeben();
+        return ende.apply(this, args);
+      };
+      res.once('finish', freigeben);
+      return next();
+    };
+  }
+  /** Nur wenn bedingung(req) gilt: erst die übrigen Middlewares (z. B. Rate-Limit), dann die Sperre. */
+  function wenn(bedingung, ...davor) {
+    const sperre = middleware();
+    const kette = [...davor, sperre];
+    return function bedingt(req, res, next) {
+      if (!bedingung(req)) return next();
+      let i = 0;
+      const weiter = (fehler) => {
+        if (fehler) return next(fehler);
+        const mw = kette[i++];
+        return mw ? mw(req, res, weiter) : next();
+      };
+      return weiter();
+    };
+  }
+  return { middleware, wenn, anzahl: () => belegt.size };
+}
+
+module.exports = { sicherheitsHeader, pruefeHerkunft, rateLimit, auftragsSperre, CSP_DIREKTIVEN };

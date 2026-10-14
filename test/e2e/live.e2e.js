@@ -168,6 +168,21 @@ test('Live-Modus: Duell und Escape Room mit Lehrkraft, Beamer und drei Schülern
   await s3.fill('#live-code-eingabe', '123');
   await s3.click('#k-code');
   await s3.waitForSelector('#live-code-meldung >> text=Der Code passt nicht');
+  // Team 2: nach 10 falschen Antworten in der Minute greift die Bremse – die Seite zeigt den Text des Servers
+  const falschGesendet = await s3.evaluate(async () => {
+    const { runde } = await (await fetch('/api/kurse/k%3A17/live')).json();
+    const st = [];
+    for (let i = 0; i < 10; i++) {
+      const a = await fetch(`/api/live/${runde.id}/antwort`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ antwort: 'SELECT Bezeichnung FROM Fundsache' }) });
+      st.push(a.status);
+    }
+    return st;
+  });
+  assert.deepEqual(falschGesendet, Array(10).fill(200));
+  await s3.fill('.lern-konsole textarea', 'SELECT Fundort\nFROM Fundsache');
+  await s3.click('#k-antwort');
+  await s3.waitForSelector('#live-meldung >> text=Zu viele falsche Antworten');
+  assert.equal(await s3.isEnabled('#k-antwort'), true, 'nach der Meldung wieder bedienbar');
   // Team 1 (anderes Gerät) öffnet das Schloss → Station 2 bei beiden
   await s2.fill('#live-code-eingabe', '006');
   await s2.click('#k-code');
