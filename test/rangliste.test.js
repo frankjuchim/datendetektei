@@ -131,3 +131,49 @@ test('Stand: kurs.scoreboard zeigt der Oberfläche, ob die Rangliste sichtbar is
   H.einstellen(u.db, 'k:17', { scoreboard: true });
   assert.equal((await s.get(K17 + '/stand')).body.kurs.scoreboard, true);
 });
+
+/* ---------- Standard eingeschaltet für neue Kurse (Entscheidung Frank, 0.8.2) ---------- */
+
+const { oeffneDb } = require('../src/db');
+const { upsertAusToken, aendereKurs } = require('../src/kern/konten');
+const { leseEinstellungen } = require('../src/services/stand');
+
+const einst = (db, id) => leseEinstellungen(db.prepare('SELECT einstellungen FROM kurse WHERE kurs_id = ?').get(id).einstellungen);
+
+test('Standard: neuer Kurs (SSO oder Verbund) hat die Rangliste eingeschaltet', () => {
+  const db = oeffneDb(':memory:');
+  upsertAusToken(db, { sub: 's:1042', rolle: 'schueler', name: 'Lena K.', kurse: [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied' }] });
+  aendereKurs(db, 'k:20', { name: 'Inf-GK 13' });
+  assert.equal(einst(db, 'k:17').scoreboard, true);
+  assert.equal(einst(db, 'k:20').scoreboard, true);
+});
+
+test('Standard: gespeichertes scoreboard false bleibt aus (auch nach erneutem Login), fehlender Schlüssel → an', () => {
+  const db = oeffneDb(':memory:');
+  // Kurs aus 0.8.1: beim Anlegen wurde der damalige Standard mit scoreboard: false gespeichert
+  db.prepare("INSERT INTO kurse (kurs_id, name, einstellungen) VALUES ('k:17', 'Inf-LK 12', ?)").run(
+    JSON.stringify({ akten: [1], niveau: 'eA', verhoer: 'auto', scoreboard: false, beamer: false })
+  );
+  db.prepare("INSERT INTO kurse (kurs_id, name, einstellungen) VALUES ('k:18', 'Inf-GK 12', ?)").run(JSON.stringify({ akten: [1, 2] }));
+  upsertAusToken(db, {
+    sub: 's:1042',
+    rolle: 'schueler',
+    name: 'Lena K.',
+    kurse: [
+      { id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied' },
+      { id: 'k:18', name: 'Inf-GK 12', rolle: 'mitglied' }
+    ]
+  });
+  aendereKurs(db, 'k:17', { name: 'Inf-LK 12a', aktiv: true });
+  assert.equal(einst(db, 'k:17').scoreboard, false);
+  assert.equal(einst(db, 'k:18').scoreboard, true);
+});
+
+test('/api/ich nennt je Kurs, ob die Rangliste eingeschaltet ist (für den Link in der Navigation)', async () => {
+  const { s, u } = await start({ scoreboard: false });
+  let ich = (await s.get('/api/ich')).body;
+  assert.deepEqual(ich.kurse.map((k) => [k.id, k.scoreboard]), [['k:17', false]]);
+  H.einstellen(u.db, 'k:17', { scoreboard: true });
+  ich = (await s.get('/api/ich')).body;
+  assert.deepEqual(ich.kurse.map((k) => [k.id, k.scoreboard]), [['k:17', true]]);
+});

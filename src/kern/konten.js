@@ -4,11 +4,13 @@
 
 const { AKTEN } = require('../domain');
 
+// scoreboard (Rangliste für Schüler:innen) ist seit 0.8.2 für NEUE Kurse eingeschaltet (Entscheidung Frank). Beim Anlegen
+// wird der Standard vollständig gespeichert; Kurse aus früheren Versionen behalten so ihr gespeichertes scoreboard: false.
 const STANDARD_EINSTELLUNGEN = Object.freeze({
   akten: Object.freeze([1]),
   niveau: 'eA',
   verhoer: 'auto',
-  scoreboard: false,
+  scoreboard: true,
   beamer: false
 });
 

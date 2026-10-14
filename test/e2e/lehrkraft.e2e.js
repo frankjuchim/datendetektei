@@ -378,6 +378,8 @@ test('Materialien und Einstellungen: Downloads nach Rolle, Akte freischalten, Ve
     await page.click('#ei-verhoer-offen');
     await page.click('#panel-einstellungen details > summary');
     await page.selectOption('#ei-verhoer-akte-2', 'gesperrt');
+    // Scoreboard ist für neue Kurse eingeschaltet (Standard seit 0.8.2) – hier ausschalten
+    assert.equal(await page.isChecked('#ei-scoreboard'), true);
     await page.click('label[for="ei-scoreboard"]');
     await page.click('#ei-speichern');
     await page.waitForSelector('#ei-rueckmeldung.ok');
@@ -386,7 +388,7 @@ test('Materialien und Einstellungen: Downloads nach Rolle, Akte freischalten, Ve
     assert.ok(k.einstellungen.akten.includes(2));
     assert.equal(k.einstellungen.verhoer, 'offen');
     assert.deepEqual(k.einstellungen.verhoerAkten, { 2: 'gesperrt' });
-    assert.equal(k.einstellungen.scoreboard, true);
+    assert.equal(k.einstellungen.scoreboard, false);
     // gA blendet Akte 5 aus
     await page.click('#ei-niveau-gA');
     assert.equal(await page.isDisabled('#ei-akte-5'), true);

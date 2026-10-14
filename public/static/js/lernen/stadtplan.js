@@ -1,18 +1,20 @@
 // Stadtplan v1 (Startseite angemeldet, DESIGN.md §5.1, Spec §7.7): eigene SVG-Illustration im Akten-Stil mit sechs
 // Orten für sieben Akten (Detektei = Akte 5 und 7, zweiter Ring), Fortschrittsring je Ort, gesperrte Akten im Nebel,
 // Faden der bearbeiteten Akten; daneben Rang, Steckbrief, Akte-Detail, „Deine Fallen“, Abzeichen und die Pinnwand.
-// Scoreboard (Vertrag §4): nur wenn die Lehrkraft es einschaltet (stand.kurs.scoreboard) die Karte „Rangliste deines
-// Kurses“ aus GET /api/kurse/:kurs/rangliste – Top 10 + eigener Platz (DESIGN §4.9 Ranglisten-Zeile).
+// Scoreboard (Vertrag §4): nur wenn die Rangliste eingeschaltet ist (stand.kurs.scoreboard) die kompakte Karte
+// „Rangliste deines Kurses“ aus GET /api/kurse/:kurs/rangliste – Top 5 + eigener Platz, Link zur ganzen Rangliste
+// (/rangliste, Top 10); Darstellung aus rangliste_teile.js (DESIGN §4.9 Ranglisten-Zeile).
 // Steckbrief und Beweisstücke kommen aus GET /api/kurse/:kurs/pinnwand (Regel E10, Phase 6); die große Pinnwand
 // steht unter /pinnwand.
 // Auf dem Handy ist der Plan waagerecht wischbar, darunter steht die Aktenliste. Ausgaben nur als Textknoten.
 
 const V = new URL(import.meta.url).search;
-const [A, R, B, T] = await Promise.all([
+const [A, R, B, T, RL] = await Promise.all([
   import('../kern/api.js' + V),
   import('../kern/render.js' + V),
   import('./pinnwand_bilder.js' + V),
-  import('./pinnwand_teile.js' + V)
+  import('./pinnwand_teile.js' + V),
+  import('./rangliste_teile.js' + V)
 ]);
 const { el, h, svg } = R;
 
@@ -253,16 +255,9 @@ function rangKarte() {
   return karte;
 }
 
-/* ---------- Scoreboard: Rangliste des Kurses ---------- */
+/* ---------- Scoreboard: Rangliste des Kurses (kompakt; ganze Liste unter /rangliste) ---------- */
 
-function rangZeile(z) {
-  const li = el('li', 'rang-zeile' + (z.ich ? ' ich' : '') + (z.platz <= 3 ? ' oben' : ''));
-  const name = h('span', 'rang-name', el('strong', null, z.name), z.ich ? el('span', 'rang-du', '(du)') : null, el('span', 'rang-stufe', z.rang));
-  li.append(el('span', 'rang-platz zahlen', `${z.platz}.`), name, el('span', 'rang-wert zahlen', A.zahl(z.punkte)));
-  li.setAttribute('aria-label', `Platz ${z.platz}: ${z.name}${z.ich ? ' (du)' : ''}, ${z.rang}, ${A.mehrzahl(z.punkte, 'Punkt', 'Punkte')}`);
-  if (z.ich) li.setAttribute('aria-current', 'true');
-  return li;
-}
+const KARTE_TOP = 5;
 
 function ranglisteKarte(lehrkraft) {
   const d = ranglisteDaten;
@@ -273,27 +268,22 @@ function ranglisteKarte(lehrkraft) {
   const t = el('h2', null, lehrkraft ? 'Rangliste des Kurses' : 'Rangliste deines Kurses');
   t.id = 'kurs-rangliste-titel';
   karte.appendChild(h('div', 'kurs-rangliste-kopf', el('p', 'etikett', `Scoreboard · ${d.kurs.name}`), t));
-  if (!d.rangliste.length) {
-    karte.appendChild(el('p', 'hinweis-klein', 'Noch niemand im Kurs auf der Liste.'));
-    return karte;
+  const liste = RL.rangListe(d, KARTE_TOP);
+  karte.appendChild(liste || el('p', 'hinweis-klein', 'Noch niemand im Kurs auf der Liste.'));
+  if (liste) {
+    karte.appendChild(
+      el(
+        'p',
+        'hinweis-klein',
+        lehrkraft
+          ? 'Vorschau: Schülerinnen und Schüler sehen hier die besten 5 und ihren eigenen Platz. Gleiche Punkte – gleicher Platz.'
+          : 'Die besten 5 deines Kurses und dein eigener Platz. Gleiche Punkte – gleicher Platz.'
+      )
+    );
   }
-  const ol = el('ol', 'rang-liste');
-  for (const z of d.rangliste) ol.appendChild(rangZeile(z));
-  if (d.eigene) {
-    const luecke = el('li', 'rang-luecke', '…');
-    luecke.setAttribute('aria-hidden', 'true');
-    ol.append(luecke, rangZeile(d.eigene));
-  }
-  karte.appendChild(ol);
-  karte.appendChild(
-    el(
-      'p',
-      'hinweis-klein',
-      lehrkraft
-        ? 'Vorschau: Schülerinnen und Schüler sehen die besten 10 und zusätzlich ihren eigenen Platz. Gleiche Punkte – gleicher Platz.'
-        : 'Die besten 10 deines Kurses und dein eigener Platz. Gleiche Punkte – gleicher Platz. Sichtbar sind nur Anzeigenamen.'
-    )
-  );
+  const link = A.linkKnopf('Ganze Rangliste', '/rangliste', 'link-ziel kurs-rangliste-link');
+  link.prepend(R.icon('i-podest'));
+  karte.appendChild(link);
   return karte;
 }
 

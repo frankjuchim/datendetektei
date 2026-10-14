@@ -141,10 +141,16 @@ export async function zeige(panel, ctx) {
   spalte.appendChild(k2);
 
   const { karte: k3 } = G.karte('Rangliste und Beamer-Board', null, { id: 'ei-board' });
-  const score = schalterZeile('ei-scoreboard', 'Scoreboard', 'Ihre Schülerinnen und Schüler sehen auf dem Stadtplan die Rangliste des Kurses: die besten 10 und zusätzlich ihren eigenen Platz, jeweils mit Anzeigename, Rang und Punkten – sichtbar nur für Mitglieder dieses Kurses. Standard: aus.', e.scoreboard, nurLesen);
+  const score = schalterZeile('ei-scoreboard', 'Scoreboard', 'Ihre Schülerinnen und Schüler sehen die Rangliste des Kurses (Seite „Rangliste“ und Karte auf dem Stadtplan): die besten 10 und zusätzlich ihren eigenen Platz, jeweils mit Anzeigename, Rang und Punkten – sichtbar nur für Mitglieder dieses Kurses. Standard für neue Kurse: an.', e.scoreboard, nurLesen);
   const beamer = schalterZeile('ei-beamer', 'Beamer-Board', 'eigener, geheimer Link je Kurs – ohne Anmeldung am Beamer', e.beamer, nurLesen);
   const schalterListe = h('ul', 'akten-schalter', h('li', null, score.label), h('li', null, beamer.label));
   k3.appendChild(schalterListe);
+  // Rangliste so ansehen, wie sie Schüler:innen sehen (Vorschau; auch bei ausgeschaltetem Schalter)
+  const ranglisteLink = el('a', 'link-ziel lk-rangliste-link', 'Rangliste ansehen');
+  ranglisteLink.id = 'ei-rangliste-link';
+  ranglisteLink.href = `/rangliste?kurs=${encodeURIComponent(k.id)}`;
+  ranglisteLink.prepend(R.icon('i-podest'));
+  k3.appendChild(ranglisteLink);
   const linkPlatz = el('div');
   k3.appendChild(linkPlatz);
   const zeichneLink = () => linkPlatz.replaceChildren(B.boardLink(ctx, { nachAenderung: zeichneLink }));

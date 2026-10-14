@@ -40,4 +40,5 @@
   <symbol id="i-liste" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></symbol>
   <symbol id="i-verbinden" viewBox="0 0 24 24"><rect x="2.5" y="8.5" width="6" height="7" rx="1"/><path d="M8.5 12h3.5"/><path d="M12 12l4.5-4 4.5 4-4.5 4z"/></symbol>
   <symbol id="i-bauplan" viewBox="0 0 24 24"><rect x="2" y="9" width="6" height="6"/><path d="M15 7.5 19.5 12 15 16.5 10.5 12z"/><path d="M8 12h2.5M19.5 12H22"/><ellipse cx="5" cy="4" rx="3" ry="1.8"/><path d="M5 5.8V9"/></symbol>
+  <symbol id="i-podest" viewBox="0 0 24 24"><path d="M2.5 20.5h19"/><path d="M8.5 20.5V8.5h7v12"/><path d="M2.5 20.5v-7h6M15.5 20.5v-5h6v5"/><path d="M12 11v4"/></symbol>
 </svg>

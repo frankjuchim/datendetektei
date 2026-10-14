@@ -72,9 +72,10 @@ Verstehens- und Modellierungswerkzeuge: `/werkzeug/zeitlupe`, `/werkzeug/spurenb
 
 | Seite | Inhalt |
 |---|---|
-| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt; Rangliste des Kurses (Top 10 + eigener Platz), nur wenn die Lehrkraft das Scoreboard einschaltet |
+| `/` | Stadtplan mit Akten, kleiner Pinnwand und Steckbrief; Kür als eigener Abschnitt; kompakte Rangliste des Kurses (Top 5 + eigener Platz, Link zur ganzen Rangliste), wenn das Scoreboard an ist |
 | `/akte/<n>`, `/ermittlung/<id>` | Akte und Ermittlung (Lab-Aufgaben, Konsole, Schlussplädoyer in Akte 6) |
 | `/verhoer/<n>`, `/warmup`, `/training` | Verhöre, Warm-up (Leitner), Trainingsplatz |
+| `/rangliste` | Rangliste des Kurses (Scoreboard, Standard für neue Kurse an): Top 10 + eigener Platz; ausgeschaltet → Hinweis für Schüler:innen, Vorschau für Lehrkräfte; Link „Rangliste“ in der Lern-Navigation nur bei eingeschaltetem Scoreboard (Lehrkräfte immer) |
 | `/pinnwand` | Beweisstücke der gewonnenen Verhöre, Indizienkette des Plädoyers, Steckbrief des Phantoms |
 | `/live` | Live-Runde beitreten (Duell, Escape Room) |
 | `/lehrkraft` | Lehrkraft-Bereich: Übersicht, Einstellungen, Auswertung (Matrix, Fallen-Profil, CSV), Vorschau mit Lösungen, Live, Board, Urkunden, Materialien; Superadmin zusätzlich System |

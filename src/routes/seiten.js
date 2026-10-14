@@ -23,6 +23,7 @@ const SCHUELER_SEITEN = [
   ['/verhoer/:wert', /^[1-7]$/, 'verhoer.html'],
   ['/warmup', null, 'warmup.html'],
   ['/training', null, 'training.html'],
+  ['/rangliste', null, 'rangliste.html'], // Rangliste des Kurses (Kurseinstellung scoreboard; die API prüft den Schalter)
   ['/pinnwand', null, 'pinnwand.html']
 ];
 

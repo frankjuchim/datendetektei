@@ -96,7 +96,7 @@ test('STANDARD_EINSTELLUNGEN nach Plan', () => {
     akten: [1],
     niveau: 'eA',
     verhoer: 'auto',
-    scoreboard: false,
+    scoreboard: true,
     beamer: false
   });
 });

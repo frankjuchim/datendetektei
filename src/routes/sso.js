@@ -8,6 +8,7 @@ const { JtiSpeicher } = require('../kern/jwt');
 const { setzeSitzung, beendeSitzung, nurAngemeldet } = require('../kern/sitzung');
 const { neuerState, pruefeZiel, autorisierenUrl, setzeState, werteSsoEndeAus } = require('../kern/sso');
 const { upsertAusToken } = require('../kern/konten');
+const { leseEinstellungen } = require('../services/stand');
 
 const FEHLER_VORLAGE = fs.readFileSync(path.join(__dirname, '..', '..', 'public', 'sso-fehler.html'), 'utf8');
 const FEHLER_CODES = ['ungueltig', 'keine_berechtigung', 'abgebrochen'];
@@ -59,11 +60,12 @@ function ssoRouten(konfig, db) {
   router.get('/api/ich', nurAngemeldet(['schueler', 'lehrkraft', 'superadmin']), (req, res) => {
     const kurse = db
       .prepare(
-        'SELECT k.kurs_id AS id, k.name, m.rolle, k.aktiv FROM mitgliedschaften m, kurse k ' +
+        'SELECT k.kurs_id AS id, k.name, m.rolle, k.aktiv, k.einstellungen FROM mitgliedschaften m, kurse k ' +
           'WHERE m.kurs_id = k.kurs_id AND m.sub = ? ORDER BY k.kurs_id'
       )
       .all(req.sitzung.sub)
-      .map((k) => ({ id: k.id, name: k.name, rolle: k.rolle, aktiv: k.aktiv === 1 }));
+      // scoreboard: ob die Rangliste im Kurs eingeschaltet ist (Link „Rangliste“ in der Lern-Navigation, kopfzeile.js)
+      .map((k) => ({ id: k.id, name: k.name, rolle: k.rolle, aktiv: k.aktiv === 1, scoreboard: leseEinstellungen(k.einstellungen).scoreboard }));
     res.set('Cache-Control', 'no-store');
     res.json({ ...req.sitzung, kurse, portalUrl: konfig.portalUrl });
   });
