@@ -115,11 +115,11 @@ test('Ermittlung A1-E1 (Schülerin): Video-Knöpfe im Briefing', async () => {
   }
 });
 
-test('Lehrkraft-Reiter Materialien: Abschnitt Erklärvideos mit Link-Knöpfen', async () => {
+test('Lehrkraft-Bereich Materialien: Abschnitt Erklärvideos mit Link-Knöpfen', async () => {
   const cookie = await server.anmelden(LEHRKRAFT);
   const t = await seite(cookie);
   try {
-    await t.page.goto(server.url + '/lehrkraft?kurs=k:17#materialien');
+    await t.page.goto(server.url + '/lehrkraft#/materialien');
     await t.page.waitForSelector('#ma-videos a.video-knopf', { timeout: 20000 });
     pruefeKnoepfe(await knoepfe(t.page, '#ma-videos'), [LINK0, LINK1]);
     await foto(t.page, 'lehrkraft_materialien', '#ma-videos');

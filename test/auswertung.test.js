@@ -289,6 +289,43 @@ test('Vorschau einer Aufgabe: mit Lösung, Erklärung, allen Tipps; auch Verhör
   assert.equal((await l.get(VORSCHAU('k:17') + '/aufgaben/' + encodeURIComponent('../x'))).status, 404);
 });
 
+test('Vorschau ohne Kurs (Lehrkraft-Bereich „Aufgaben“): alle Akten mit Niveau, eine Aufgabe mit Lösung und Tipps', async () => {
+  const { u, l } = await start();
+  H.einstellen(u.db, 'k:17', { niveau: 'gA', akten: [] });
+  const r = await l.get('/api/lehrkraft/vorschau');
+  assert.equal(r.status, 200);
+  assert.equal(r.headers['cache-control'], 'no-store');
+  assert.equal(r.body.kurs, null, 'kursunabhängig');
+  const akte = r.body.akten.find((a) => a.nr === 9);
+  assert.ok(akte, 'Beispielakte 9 geladen');
+  assert.equal(akte.freigeschaltet, true, 'ohne Kurs nichts gesperrt');
+  assert.equal(akte.sichtbar, true, 'ohne Kurs nichts ausgeblendet');
+  assert.deepEqual(akte.ermittlungen.map((e) => [e.id, e.niveau, e.sichtbar]), [
+    ['A9-E1', 'alle', true],
+    ['A9-E2', 'eA', true]
+  ]);
+  assert.equal(akte.ermittlungen[0].aufgaben.length, 12);
+  assert.equal(akte.verhoer.pool.length, 4);
+  const a = await l.get('/api/lehrkraft/vorschau/aufgaben/A9-E1-02');
+  assert.equal(a.status, 200);
+  assert.equal(a.headers['cache-control'], 'no-store');
+  assert.equal(a.body.sichtbar, true);
+  assert.deepEqual(a.body.loesung.loesung, u.inhalte.aufgabe('A9-E1-02').loesung);
+  assert.deepEqual(a.body.tipps, u.inhalte.aufgabe('A9-E1-02').tipps);
+  assert.equal(a.body.ort.ermittlung.id, 'A9-E1');
+  assert.equal((await l.get('/api/lehrkraft/vorschau/aufgaben/A9-E1-99')).status, 404);
+  assert.equal((await l.get('/api/lehrkraft/vorschau/aufgaben/' + encodeURIComponent('../x'))).status, 404);
+});
+
+test('Auswertung: „zuletzt aktiv“ je Schüler:in (sekundengenau, ohne sub)', async () => {
+  const { u, l } = await mitLernstand();
+  const a = (await l.get(AUSW('k:17'))).body;
+  const erwartet = ['s:1042', 's:1043', 's:1044'].map((sub) => u.app.locals.stand.zuletztAktiv(sub, 'k:17')).sort();
+  assert.deepEqual(a.schueler.map((x) => x.zuletzt).sort(), erwartet);
+  for (const x of a.schueler) assert.match(x.zuletzt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+  assert.ok(!JSON.stringify(a.schueler).includes('s:104'));
+});
+
 test('Vorschau: Schüler kommen nie an Lösungen (403), auch nicht im eigenen Kurs', async () => {
   const { u, s } = await start();
   for (const p of [VORSCHAU('k:17'), VORSCHAU('k:17') + '/aufgaben/A9-E1-02']) {

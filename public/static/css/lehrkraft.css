@@ -2,9 +2,36 @@
    Aufgabenstatistik, Fehlabfragen, Vorschau-Baum, Board-Link, Materialien, System. Nur Tokens aus tokens.css. */
 
 .lk-seite { gap: var(--a-5); }
-.lk-kopf-zeile { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--a-4); }
-.lk-kurswahl { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-3); min-width: 0; }
-.lk-kurswahl label { font-family: var(--schrift-mono); font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tinte-2); }
+/* Aufbau wie Algo Quest: Kopf-Navigation (lern-nav), Ansicht je Hash-Route, Brotkrumen, Kurskopf */
+.lk-ansicht, .lk-seiten-inhalt, .lk-panel-teil { display: flex; flex-direction: column; gap: var(--a-5); min-width: 0; }
+.lk-krumen { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--a-2); font-size: var(--t-s); color: var(--tinte-2); min-width: 0; }
+.lk-krumen a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+.lk-krumen [aria-current="page"] { color: var(--tinte); overflow-wrap: anywhere; }
+.lk-krumen-trenner { color: var(--tinte-3); }
+.lk-kurs-kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-3) var(--a-4); margin-top: calc(-1 * var(--a-3)); }
+.lk-kurs-titel { display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-2) var(--a-3); overflow-wrap: anywhere; min-width: 0; }
+.lk-kurs-titel .niveau, .lk-kurs-titel .status { font-size: var(--t-s); }
+.lk-tabelle-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; overflow-wrap: anywhere; }
+.lk-ansicht table.daten .zahl { text-align: right; white-space: nowrap; }
+.lk-kursliste table.daten td, .lk-kursliste table.daten th { vertical-align: middle; }
+.lk-kursliste .status { margin-left: var(--a-2); }
+.lk-kursliste tbody th[scope="row"] { min-width: 8rem; }
+.lk-akten-karten { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: var(--a-4); }
+.lk-akten-karte {
+  display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-4); min-height: 44px; min-width: 0;
+  background: var(--karte); border: 1px solid var(--rand); border-left: 6px solid var(--akte-farbe, var(--rand-stark));
+  border-radius: var(--radius); box-shadow: var(--schatten-1); color: var(--tinte); text-decoration: none;
+}
+.lk-akten-karte:hover { border-color: var(--rand-stark); border-left-color: var(--akte-farbe, var(--rand-stark)); }
+.lk-akten-karte-kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--a-2); }
+.lk-akten-karte-titel { font-family: var(--schrift-titel); font-size: 1.375rem; line-height: 1.2; }
+.lk-akten-karte-meta { font-size: var(--t-s); color: var(--tinte-2); }
+.lk-akte-rand { border-left: 6px solid var(--akte-farbe, var(--rand-stark)); }
+.vo-navigation { justify-content: space-between; }
+.sb-liste { max-width: 720px; }
+/* Aufgaben-Tabellen einer Akte: ganze Höhe (kein innerer senkrechter Scrollbereich) */
+.lk-tabelle.vo-rahmen { max-height: none; }
+.vo-tabelle td, .vo-tabelle th { vertical-align: middle; }
 .lk-auswahl, .lk-feld select, .lk-feld input {
   min-height: 44px; max-width: 100%; padding: 0 var(--a-3); border: 1px solid var(--rand-stark); border-radius: var(--radius);
   background: var(--karte); color: var(--tinte);
@@ -143,27 +170,12 @@ th[aria-sort="descending"] .sortier-knopf::after { content: "↓"; color: var(--
 .bestaetigung { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 2px solid var(--siegelrot); border-radius: var(--radius); background: var(--rot-flaeche); }
 .speicher-leiste { position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: var(--a-3); padding: var(--a-3) var(--a-4); background: var(--karte); border: 1px solid var(--rand); border-radius: var(--radius); box-shadow: var(--schatten-2); }
 
-/* ---------- Vorschau ---------- */
-.vorschau-raster { display: grid; grid-template-columns: minmax(240px, 340px) minmax(0, 1fr); gap: var(--a-5); align-items: start; }
-@media (max-width: 1023px) { .vorschau-raster { grid-template-columns: minmax(0, 1fr); } }
-.vorschau-baum { display: flex; flex-direction: column; gap: var(--a-2); max-height: 80vh; overflow: auto; min-width: 0; }
-@media (max-width: 1023px) { .vorschau-baum { max-height: 50vh; } }
-.vorschau-baum details { border-left: 4px solid var(--akte-farbe, var(--rand-stark)); background: var(--karte); border-radius: 0 var(--radius) var(--radius) 0; }
-.vorschau-baum details details { border-left-width: 2px; margin-left: var(--a-3); }
-.vorschau-baum summary { min-height: 44px; display: flex; align-items: center; gap: var(--a-2); padding: 0 var(--a-3); cursor: pointer; font-weight: 600; }
-.vorschau-baum ul { list-style: none; padding: 0 var(--a-2) var(--a-2); margin: 0; display: flex; flex-direction: column; gap: 2px; }
-.vorschau-eintrag {
-  width: 100%; min-height: 44px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--a-2); align-items: center;
-  padding: var(--a-1) var(--a-2); border: 1px solid transparent; border-radius: var(--radius); background: transparent; text-align: left; cursor: pointer; color: var(--tinte);
-}
-.vorschau-eintrag:hover { background: var(--flaeche); }
-.vorschau-eintrag[aria-current="true"] { border-color: var(--tinte); background: var(--flaeche); }
-.vorschau-eintrag .id { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
-.vorschau-eintrag.ausgeblendet { color: var(--tinte-3); }
+/* ---------- Aufgaben (Vorschau einer Aufgabe) ---------- */
 .vorschau-ansicht { display: flex; flex-direction: column; gap: var(--a-4); min-width: 0; }
 .vorschau-meta { display: flex; flex-wrap: wrap; gap: var(--a-2) var(--a-3); align-items: center; font-size: var(--t-s); color: var(--tinte-2); }
 .vorschau-loesung { display: flex; flex-direction: column; gap: var(--a-3); padding: var(--a-4); border: 2px solid var(--gruen); border-radius: var(--radius); background: var(--gruen-flaeche); min-width: 0; }
-.vorschau-loesung h3 { color: var(--gruen); }
+.vorschau-loesung h2 { color: var(--gruen); font-size: 1.25rem; }
+.vorschau-tipps h2 { font-size: 1.25rem; }
 .vorschau-tipps { display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-4); border-left: 3px solid var(--blau); background: var(--blau-flaeche); border-radius: 0 var(--radius) var(--radius) 0; }
 .vorschau-tipps ol { display: flex; flex-direction: column; gap: var(--a-1); }
 
@@ -180,7 +192,7 @@ th[aria-sort="descending"] .sortier-knopf::after { content: "↓"; color: var(--
 .board-mini .rang { display: block; font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
 .board-mini .punkte { font-family: var(--schrift-mono); font-variant-numeric: tabular-nums; font-weight: 600; }
 
-/* ---------- Urkunden-Reiter, Materialien, System ---------- */
+/* ---------- Materialien, Verwaltung ---------- */
 .material-gruppe { display: flex; flex-direction: column; gap: var(--a-2); }
 .material-gruppe h3 { display: flex; align-items: center; gap: var(--a-2); }
 .material-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }

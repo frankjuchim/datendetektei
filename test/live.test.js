@@ -432,7 +432,8 @@ test('SSE: Kopfzeilen, erster Zustand, Aktualisierung, Herzschlag, getrennte Sic
 
     // Client trennt → Verbindung wird entfernt
     a2.req.destroy();
-    await new Promise((ok) => setTimeout(ok, 100));
+    // nicht fest warten: der Server bemerkt das Schließen erst, wenn der Socket-„close“ ankommt (langsamer CI-Rechner)
+    for (const bis = Date.now() + 5000; e.live.verbindungen(r.id) !== 3 && Date.now() < bis; ) await new Promise((ok) => setTimeout(ok, 20));
     assert.equal(e.live.verbindungen(r.id), 3);
 
     // Ende: Ereignis „ende“, Verbindungen geschlossen

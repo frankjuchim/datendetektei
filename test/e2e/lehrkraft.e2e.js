@@ -3,12 +3,12 @@
 // Testkurs k:17 mit Lehrkraft und drei Schülerinnen/Schülern mit Lernstand (echte Inhalte + Beispielakte 9, echter
 // SQL-Prüfer, Fixture-Materialien):
 // 1. Auswertung: Matrix (Werte, Tastatur, Detail), Fallen-Profil, Aufgabenstatistik sortierbar, Fehlabfragen, CSV.
-// 2. Vorschau: Aufgabe mit Lösung, Erklärung, Tipps und Niveau-Hinweis.
-// 3. Board: einschalten, Link, Beamer 1920 × 1080 ohne Scrollen, dunkel, aktualisiert sich (20 s, Uhr vorgespult),
+// 2. Aufgaben (#/aufgaben, kursunabhängig): Akte → Aufgabe mit Lösung, Erklärung, Tipps und Niveau-Hinweis.
+// 3. Board (Kurs-Reiter „Beitritt“): einschalten, Link, Beamer 1920 × 1080 ohne Scrollen, dunkel, aktualisiert sich (20 s, Uhr vorgespult),
 //    neuer Link → altes Board „nicht erreichbar“.
-// 4. Urkunden: Druckseite, je Schüler:in eine A4-Seite (PDF mit 3 Seiten), Auswahl ab Rang.
+// 4. Urkunden (Knopf auf der Kursseite): Druckseite, je Schüler:in eine A4-Seite (PDF mit 3 Seiten), Auswahl ab Rang.
 // 5. Materialien (Fixture-Whitelist) und Einstellungen (Akte freischalten, Verhör je Akte, speichern).
-// 6. Superadmin: System-Reiter (Seed-Bericht, Inhalte neu laden mit Bestätigung, Sicherung), Originale.
+// 6. Superadmin: Verwaltung (Seed-Bericht, Inhalte neu laden mit Bestätigung, Sicherung), Originale.
 // Je Zustand: keine CSP-Meldungen, keine Skriptfehler, kein horizontales Scrollen (1440, 1024, 768, 375).
 // SCREENSHOTS=1 → SCREENSHOT_ORDNER (Standard docs/screenshots/phase6), hell und dunkel.
 
@@ -117,6 +117,8 @@ async function foto(page, name) {
   if (FOTOS) await page.screenshot({ path: path.join(FOTO_ORDNER, `lehrkraft_${name}.png`), fullPage: true });
 }
 
+const KURS_SEITE = '/lehrkraft#/kurs/' + encodeURIComponent('k:17');
+
 async function reiter(page, name) {
   await page.click('#reiter-' + name);
   await page.waitForSelector(`#panel-${name}:not([hidden]) > :not(.lk-laedt)`);
@@ -126,14 +128,15 @@ test('Auswertung: Matrix mit Werten und Tastatur, Fallen-Profil, Aufgabenstatist
   const { kontext, page } = await seite(cookies.lehrkraft);
   try {
     await page.goto(server.url + '/lehrkraft');
-    await page.waitForSelector('#reiter-uebersicht[aria-selected="true"]');
-    await page.waitForSelector('#panel-uebersicht .lk-akten');
-    assert.equal(await page.$eval('#lk-kurs', (s) => s.value), 'k:17');
-    assert.equal(await page.isHidden('#reiter-system'), true, 'System nur für Superadmin');
+    await page.waitForSelector('#kl-tabelle');
+    assert.equal(await page.isHidden('#lk-nav a[data-bereich="verwaltung"]'), true, 'Verwaltung nur für Superadmin');
+    await page.click('#kl-tabelle tbody tr:first-child a.knopf');
+    await page.waitForSelector('#reiter-schueler[aria-selected="true"]');
+    await page.waitForSelector('#panel-schueler .lk-akten');
     assert.match(await page.textContent('#lk-kennzahlen'), /3\s*Schüler:innen/);
 
     await reiter(page, 'auswertung');
-    assert.match(page.url(), /#auswertung$/);
+    assert.match(page.url(), /#\/kurs\/k%3A17\/auswertung$/);
     await page.waitForSelector('table.matrix tbody tr:nth-child(3)');
     const namen = await page.$$eval('table.matrix tbody th', (ths) => ths.map((t) => t.firstChild.textContent));
     assert.deepEqual(namen, ['Ida W.', 'Lena K.', 'Mika R.']);
@@ -191,19 +194,16 @@ test('Auswertung: Matrix mit Werten und Tastatur, Fallen-Profil, Aufgabenstatist
   }
 });
 
-test('Vorschau: Baum, Aufgabe mit Lösung, Erklärung, Tipps und Niveau-Hinweis', async () => {
+test('Aufgaben: Akte, Aufgabe mit Lösung, Erklärung, Tipps und Niveau-Hinweis', async () => {
   const { kontext, page } = await seite(cookies.lehrkraft);
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#vorschau');
-    await page.waitForSelector('#vo-baum details');
-    // Akte 9 und die Ermittlung aufklappen (Tastatur: Summary mit Enter)
-    for (const sel of ['#vo-baum > details:has(button[data-aufgabe="A9-E1-01"])', '#vo-baum details details:has(button[data-aufgabe="A9-E1-01"])']) {
-      if (!(await page.$eval(sel, (d) => d.open))) {
-        await page.focus(sel + ' > summary');
-        await page.keyboard.press('Enter');
-      }
-    }
-    await page.click('#vo-baum button[data-aufgabe="A9-E1-01"]');
+    await page.goto(server.url + '/lehrkraft#/aufgaben');
+    await page.waitForSelector('.lk-akten-karte');
+    // Akte 9 öffnen, Aufgabe per Tastatur (Link mit Enter)
+    await page.click('.lk-akten-karte[href="#/aufgaben/akte/9"]');
+    await page.waitForSelector('.vo-tabelle');
+    await page.focus('a[href="#/aufgaben/aufgabe/A9-E1-01"]');
+    await page.keyboard.press('Enter');
     await page.waitForSelector('#vo-loesung');
     assert.equal(await page.textContent('#vo-titel'), 'Was ist markiert?');
     assert.equal(await page.textContent('#vo-niveau'), 'sichtbar für eA und gA');
@@ -212,13 +212,14 @@ test('Vorschau: Baum, Aufgabe mit Lösung, Erklärung, Tipps und Niveau-Hinweis'
     assert.equal(await page.$$eval('#vo-ansicht .option', (o) => o.length), 4, 'Aufgabe gerendert');
     await page.click('#vo-eintragen');
     assert.equal(await page.isDisabled('#vo-eintragen'), true);
-    // SQL-Aufgabe: Musterlösung als hervorgehobener Code
-    await page.click('#vo-baum button[data-aufgabe="A9-E1-02"]');
+    // SQL-Aufgabe: Musterlösung als hervorgehobener Code (nächste Aufgabe)
+    await page.click('#vo-nachher');
+    await page.waitForFunction(() => /A9-E1-02/.test(document.querySelector('#vo-ansicht .etikett')?.textContent || ''));
     await page.waitForSelector('#vo-loesung .etikett');
     assert.match(await page.textContent('#vo-loesung'), /Musterlösung[\s\S]*SELECT/);
     // Verhör-Pool
-    await page.click('#vo-baum details details:has(button[data-aufgabe="A9-V-01"]) > summary');
-    await page.click('#vo-baum button[data-aufgabe="A9-V-01"]');
+    await page.goto(server.url + '/lehrkraft#/aufgaben/akte/9');
+    await page.click('a[href="#/aufgaben/aufgabe/A9-V-01"]');
     await page.waitForFunction(() => /A9-V-01/.test(document.querySelector('#vo-ansicht .etikett')?.textContent || ''));
     assert.match(await page.textContent('#vo-ansicht .etikett'), /Verhör-Pool/);
     await foto(page, 'vorschau_1440_hell');
@@ -237,14 +238,14 @@ test('Vorschau: Baum, Aufgabe mit Lösung, Erklärung, Tipps und Niveau-Hinweis'
 test('Board: einschalten, Link, Beamer 1920 × 1080 ohne Scrollen, Aktualisierung, neuer Link macht alten ungültig', async () => {
   const { kontext, page } = await seite(cookies.lehrkraft, { extra: { permissions: ['clipboard-read', 'clipboard-write'] } });
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#board');
+    await page.goto(server.url + KURS_SEITE + '/beitritt');
     await page.waitForSelector('#bo-umschalten');
     await page.click('#bo-umschalten');
-    await page.waitForSelector('#panel-board .board-link-feld');
-    const url = await page.inputValue('#panel-board .board-link-feld');
+    await page.waitForSelector('#panel-beitritt .board-link-feld');
+    const url = await page.inputValue('#panel-beitritt .board-link-feld');
     assert.match(url, /\/board\/[A-Za-z0-9_-]{32}$/);
-    await page.click('#panel-board .board-kopieren');
-    await page.waitForSelector('#panel-board .rueckmeldung:has-text("Board-Link kopiert.")');
+    await page.click('#panel-beitritt .board-kopieren');
+    await page.waitForSelector('#panel-beitritt .rueckmeldung:has-text("Board-Link kopiert.")');
     assert.equal(await page.evaluate(() => navigator.clipboard.readText()), url);
     await page.waitForSelector('#bo-vorschau .board-mini li');
     await foto(page, 'board_reiter_1440_hell');
@@ -293,10 +294,10 @@ test('Board: einschalten, Link, Beamer 1920 × 1080 ohne Scrollen, Aktualisierun
       await beamer.page.setViewportSize({ width: 1920, height: 1080 });
 
       // Neuer Link (Bestätigung) → altes Board meldet „nicht erreichbar“
-      await page.click('#panel-board .board-neu');
+      await page.click('#panel-beitritt .board-neu');
       await page.click('#board-neu-ja');
       await page.waitForFunction((alt) => {
-        const f = document.querySelector('#panel-board .board-link-feld');
+        const f = document.querySelector('#panel-beitritt .board-link-feld');
         return f && f.value !== alt;
       }, url);
       await beamer.page.clock.runFor(20500);
@@ -316,13 +317,13 @@ test('Board: einschalten, Link, Beamer 1920 × 1080 ohne Scrollen, Aktualisierun
 test('Urkunden: Druckseite mit je einer A4-Seite pro Schüler:in, Auswahl ab Rang, nur Anzeigenamen', async () => {
   const { kontext, page } = await seite(cookies.lehrkraft);
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#urkunden');
-    await page.waitForSelector('#ur-oeffnen');
-    assert.match(await page.textContent('#ur-anzahl'), /3 Urkunden/);
-    const href = await page.getAttribute('#ur-oeffnen', 'href');
-    assert.match(href, /^\/lehrkraft\/urkunden\?kurs=k%3A17&datum=\d{4}-\d{2}-\d{2}$/);
-    await page.goto(server.url + href);
+    await page.goto(server.url + KURS_SEITE + '/schueler');
+    await page.waitForSelector('#lk-urkunden');
+    const href = await page.getAttribute('#lk-urkunden', 'href');
+    assert.equal(href, '/lehrkraft/urkunden?kurs=k%3A17');
+    await Promise.all([page.waitForURL(/\/lehrkraft\/urkunden/), page.click('#lk-urkunden')]);
     await page.waitForFunction(() => document.documentElement.dataset.urkunden === 'bereit');
+    assert.match(await page.getAttribute('#ur-zurueck', 'href'), /^\/lehrkraft#\/kurs\/k%3A17\/schueler$/);
     const urkunden = await page.$$eval('.urkunde', (u) => u.map((x) => x.textContent));
     assert.equal(urkunden.length, 3);
     assert.match(urkunden[1], /Detektei-Lizenz[\s\S]*Lena K\.[\s\S]*Inf-LK 12[\s\S]*Erreichter Rang: [\s\S]*Beweisstücke: 1 von 7/);
@@ -361,17 +362,17 @@ test('Urkunden: Druckseite mit je einer A4-Seite pro Schüler:in, Auswahl ab Ran
 test('Materialien und Einstellungen: Downloads nach Rolle, Akte freischalten, Verhör je Akte, Board-Link', async () => {
   const { kontext, page } = await seite(cookies.lehrkraft);
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#materialien');
-    await page.waitForSelector('#panel-materialien .material-liste');
-    const stufen = await page.$$eval('#panel-materialien .material-liste', (u) => u.map((x) => x.dataset.stufe));
+    await page.goto(server.url + '/lehrkraft#/materialien');
+    await page.waitForSelector('#seite-materialien .material-liste');
+    const stufen = await page.$$eval('#seite-materialien .material-liste', (u) => u.map((x) => x.dataset.stufe));
     assert.ok(stufen.includes('schueler') && stufen.includes('lehrkraft'));
     assert.ok(!stufen.includes('original'), 'Originale nur Superadmin');
-    const lsg = await page.getAttribute('#panel-materialien a:has-text("Lösung")', 'href');
+    const lsg = await page.getAttribute('#seite-materialien a:has-text("Lösung")', 'href');
     const r = await page.request.get(server.url + lsg);
     assert.equal(r.status(), 200);
     await foto(page, 'materialien_1440_hell');
 
-    await reiter(page, 'einstellungen');
+    await page.goto(server.url + KURS_SEITE + '/einstellungen');
     await page.waitForSelector('#ei-speichern');
     await foto(page, 'einstellungen_1440_hell');
     await page.click('label[for="ei-akte-2"]');
@@ -404,16 +405,16 @@ test('Materialien und Einstellungen: Downloads nach Rolle, Akte freischalten, Ve
     // Tastatur in der Reiterleiste
     await page.focus('#reiter-einstellungen');
     await page.keyboard.press('ArrowRight');
-    assert.equal(await page.getAttribute('#reiter-auswertung', 'aria-selected'), 'true');
+    assert.equal(await page.getAttribute('#reiter-live', 'aria-selected'), 'true');
     await page.keyboard.press('Home');
-    assert.equal(await page.getAttribute('#reiter-uebersicht', 'aria-selected'), 'true');
+    assert.equal(await page.getAttribute('#reiter-schueler', 'aria-selected'), 'true');
 
     // Layout aller Reiter, hell und dunkel
     for (const dunkel of [false, true]) {
       const s = await seite(cookies.lehrkraft, { dunkel });
       try {
-        for (const r of ['uebersicht', 'einstellungen', 'live', 'board', 'urkunden', 'materialien']) {
-          await s.page.goto(server.url + '/lehrkraft?kurs=k:17#' + r);
+        for (const r of ['schueler', 'beitritt', 'scoreboard', 'einstellungen', 'live']) {
+          await s.page.goto(server.url + KURS_SEITE + '/' + r);
           await s.page.waitForSelector(`#panel-${r}:not([hidden]) > :not(.lk-laedt)`);
           if (r === 'live') await s.page.waitForSelector('#panel-live .live-steuerung > :not(.laedt)');
           for (const [b, h] of [[1440, 900], [1024, 768], [768, 1024], [375, 812]]) {
@@ -421,19 +422,19 @@ test('Materialien und Einstellungen: Downloads nach Rolle, Akte freischalten, Ve
             await s.page.waitForTimeout(80);
             await ohneUeberlauf(s.page, `${r} @${b}${dunkel ? ' dunkel' : ''}`);
             const klein = await s.page.evaluate(() =>
-              [...document.querySelectorAll('main .knopf, main .lk-reiter-knopf, main .segment-knopf, main .vorschau-eintrag')]
+              [...document.querySelectorAll('main .knopf, main .lk-reiter-knopf, main .segment-knopf, #lk-nav a')]
                 .filter((x) => x.offsetParent !== null)
                 .map((x) => ({ t: x.textContent.trim().slice(0, 30), h: x.getBoundingClientRect().height }))
                 .filter((x) => x.h < 43.5)
             );
             assert.deepEqual(klein, [], `${r} @${b}: Touch-Ziele unter 44 px`);
-            if (FOTOS && (b !== 1024 || r === 'uebersicht' || r === 'einstellungen')) {
+            if (FOTOS && (b !== 1024 || r === 'schueler' || r === 'einstellungen')) {
               await s.page.screenshot({ path: path.join(FOTO_ORDNER, `lehrkraft_${r}_${b}_${dunkel ? 'dunkel' : 'hell'}.png`), fullPage: true });
             }
           }
         }
         await s.page.setViewportSize({ width: 1440, height: 900 });
-        await s.page.goto(server.url + '/lehrkraft?kurs=k:17#auswertung');
+        await s.page.goto(server.url + KURS_SEITE + '/auswertung');
         await s.page.waitForSelector('table.matrix');
         if (FOTOS) await s.page.screenshot({ path: path.join(FOTO_ORDNER, `lehrkraft_auswertung_1440_${dunkel ? 'dunkel' : 'hell'}.png`), fullPage: true });
       } finally {
@@ -446,30 +447,32 @@ test('Materialien und Einstellungen: Downloads nach Rolle, Akte freischalten, Ve
   }
 });
 
-test('Superadmin: System-Reiter (Seed-Bericht, Inhalte neu laden, Sicherung) und Originale', async () => {
+test('Superadmin: Verwaltung (Seed-Bericht, Inhalte neu laden, Sicherung) und Originale', async () => {
   const cookie = await server.anmelden(ADMIN);
   const { kontext, page } = await seite(cookie);
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17');
-    await page.waitForSelector('#reiter-system:not([hidden])');
-    await reiter(page, 'system');
+    await page.goto(server.url + '/lehrkraft');
+    await page.waitForSelector('#lk-nav a[data-bereich="verwaltung"]:not([hidden])');
+    await page.click('#lk-nav a[data-bereich="verwaltung"]');
     await page.waitForSelector('#sy-bericht table');
     assert.match(await page.textContent('#sy-bericht'), /akte_beispiel\.json/);
     await page.click('#sy-neu-laden');
     await page.click('#sy-neu-ja');
-    await page.waitForSelector('#panel-system .rueckmeldung.ok');
+    await page.waitForSelector('#panel-inhalte .rueckmeldung.ok');
+    assert.ok((await page.$$('#sy-originale a[href^="/material/original-zip/"]')).length >= 1);
+    await reiter(page, 'sicherung');
     const sicherung = await page.getAttribute('#sy-sicherung-link', 'href');
     const r = await page.request.get(server.url + sicherung);
     assert.equal(r.status(), 200);
     assert.equal((await r.body()).subarray(0, 15).toString(), 'SQLite format 3');
-    assert.ok((await page.$$('#sy-originale a[href^="/material/original-zip/"]')).length >= 1);
     await foto(page, 'system_1440_hell');
-    await reiter(page, 'materialien');
-    const stufen = await page.$$eval('#panel-materialien .material-liste', (u) => u.map((x) => x.dataset.stufe));
+    await page.click('#lk-nav a[data-bereich="materialien"]');
+    await page.waitForSelector('#seite-materialien .material-liste');
+    const stufen = await page.$$eval('#seite-materialien .material-liste', (u) => u.map((x) => x.dataset.stufe));
     assert.ok(stufen.includes('original'));
     for (const [b, h] of [[768, 1024], [375, 812]]) {
       await page.setViewportSize({ width: b, height: h });
-      await page.goto(server.url + '/lehrkraft?kurs=k:17#system');
+      await page.goto(server.url + '/lehrkraft#/verwaltung/inhalte');
       await page.waitForSelector('#sy-bericht table');
       await ohneUeberlauf(page, `System @${b}`);
       await foto(page, `system_${b}_hell`);

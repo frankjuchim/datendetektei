@@ -402,7 +402,16 @@ function erzeugeAuswertung({ db, inhalte, stand }) {
       anteilSchnitt: n ? d.zeilen.reduce((s, z) => s + z.anteil, 0) / n : 0,
       akten: aktenUebersicht(d),
       spalten: d.spalten.map(oeffentlicheSpalte),
-      schueler: d.zeilen.map((z) => ({ nr: z.nr, name: z.name, platz: z.platz, rang: z.rang, anteil: z.anteil, punkte: z.punkte, zellen: z.zellen })),
+      schueler: d.zeilen.map((z) => ({
+        nr: z.nr,
+        name: z.name,
+        platz: z.platz,
+        rang: z.rang,
+        anteil: z.anteil,
+        punkte: z.punkte,
+        zuletzt: d.kz.schueler.get(z._sub) ? d.kz.schueler.get(z._sub).zuletzt : null,
+        zellen: z.zellen
+      })),
       verhoere: verhoerStatistik(d),
       aufgaben: aufgabenStatistik(d),
       fallen: fallenProfil(d),

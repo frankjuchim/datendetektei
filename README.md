@@ -78,7 +78,7 @@ Verstehens- und Modellierungswerkzeuge: `/werkzeug/zeitlupe`, `/werkzeug/spurenb
 | `/rangliste` | Rangliste des Kurses (Scoreboard, Standard für neue Kurse an): Top 10 + eigener Platz; ausgeschaltet → Hinweis für Schüler:innen, Vorschau für Lehrkräfte; Link „Rangliste“ in der Lern-Navigation nur bei eingeschaltetem Scoreboard (Lehrkräfte immer) |
 | `/pinnwand` | Beweisstücke der gewonnenen Verhöre, Indizienkette des Plädoyers, Steckbrief des Phantoms |
 | `/live` | Live-Runde beitreten (Duell, Escape Room) |
-| `/lehrkraft` | Lehrkraft-Bereich: Übersicht, Einstellungen, Auswertung (Matrix, Fallen-Profil, CSV), Vorschau mit Lösungen, Live, Board, Urkunden, Materialien; Superadmin zusätzlich System |
+| `/lehrkraft` | Lehrkraft-Bereich, Aufbau wie Algo Quest: Kopf-Navigation Kurse · Aufgaben · Materialien · Themen · Verwaltung (nur Superadmin); `#/` Kursliste, `#/kurs/<id>/<reiter>` Kursseite mit Reitern Schüler · Beitritt (inkl. Beamer-Board) · Auswertung (Matrix, Fallen-Profil, CSV) · Scoreboard · Einstellungen · Live und Knopf Urkunden; `#/aufgaben` Aufgaben mit Lösungen; `#/materialien`; `#/verwaltung/inhalte`, `…/sicherung` |
 | `/lehrkraft/live`, `/live/<runde>/beamer` | Live-Steuerung und Beamer-Ansicht (nur Lehrkraft) |
 | `/lehrkraft/urkunden` | Druckseite „Detektei-Lizenz“ (eine A4-Seite je Schüler:in) |
 | `/board/<schlüssel>` | Beamer-Board ohne Anmeldung (Rangliste, Akten-Fortschritt, letzte Erfolge; nur Anzeigenamen) |

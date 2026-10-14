@@ -16,9 +16,43 @@ Datendetektei statt.
 4. **Mitlehrkräfte** laden Sie im Portal zum Kurs ein; sie sehen dann denselben Kurs in der Datendetektei.
 
 Schüler:innen öffnen danach im Portal *Meine Plattformen → Weiter zur Datendetektei*. Sie selbst gelangen über
-*Plattformen → Datendetektei* in den Lehrkraft-Bereich.
+*Plattformen → Datendetektei* in den Lehrkraft-Bereich (Abschnitt 2).
 
-## 2. Kurs einstellen (Lehrkraft-Bereich, Reiter „Einstellungen“)
+## 2. Aufbau des Lehrkraft-Bereichs
+
+Der Lehrkraft-Bereich (`/lehrkraft`) ist aufgebaut wie in **Algo Quest** – wer sich dort auskennt, findet sich sofort
+zurecht. Oben steht die Navigation:
+
+| Navigation | Inhalt |
+|---|---|
+| **Kurse** | Startseite „Meine Kurse“ (Admin: „Alle Kurse“): Tabelle mit Niveau, Zahl der Schüler:innen, Ø Fortschritt und „zuletzt aktiv“. *Öffnen* führt zur Kursseite. |
+| **Aufgaben** | Alle Akten als Karten → Akte mit Ermittlungen und Verhör-Pool → Aufgabe mit Lösung, Erklärung und allen Tipps (kursunabhängig, Niveau an jeder Aufgabe). |
+| **Materialien** | Arbeitsblätter, Lösungen, Präsentationen, Lehrerhinweise und Prüfungen als PDF, nach Akten sortiert. |
+| **Themen** | Öffentliche Themenseite (Inhalte und Kompetenzen der Einheit). |
+| **Verwaltung** | Nur für die Administration: Inhalte prüfen und neu laden, Sicherung. |
+
+Portal-Link, Hell/Dunkel und Ihr Name mit *Abmelden* bzw. *Überall abmelden* stehen in der Kopfzeile. Jede Seite hat
+eine eigene Adresse (z. B. `/lehrkraft#/kurs/k%3A17/auswertung`) – Lesezeichen und der Zurück-Knopf des Browsers
+funktionieren. Kurse selbst legen Sie im Portal an; nach der nächsten Anmeldung über das Portal erscheinen sie hier.
+
+## 3. Die Kursseite
+
+Kopf: Brotkrumen *Kurse › Kursname*, Kursname mit Niveau, rechts die Knöpfe **Urkunden** und **Live-Runde**, darunter
+die Kennzahlen. Reiter (gleiche Reihenfolge wie in Algo Quest, *Live* zusätzlich am Ende):
+
+| Reiter | Inhalt |
+|---|---|
+| **Schüler** | Schüler:innen mit Platz, Rang, Punkten, Anteil und „zuletzt aktiv“; Akten-Fortschritt des Kurses; Link zur Schüleransicht (Vorschau). Namen und Codes ändern Sie im Portal. |
+| **Beitritt** | Beitritt läuft über das Portal (Kurscode des Portals). Darunter das **Beamer-Board**: einschalten, Link kopieren/öffnen, neuen Link erzeugen, Vorschau. |
+| **Auswertung** | Siehe Abschnitt 5. |
+| **Scoreboard** | Rangliste des Kurses (die besten 10) wie auf der Schülerseite „Rangliste“, mit Hinweis, ob sie für Schüler:innen sichtbar ist. |
+| **Einstellungen** | Akten, Niveau, Verhöre, Scoreboard und Beamer-Board (Tabelle unten). |
+| **Live** | Live-Runden (Duell, Escape Room) für diesen Kurs. |
+
+**Urkunden:** Der Knopf öffnet die Druckseite „Detektei-Lizenz“ – eine A4-Seite je Schüler:in, Auswahl ab einem Rang,
+Datum und Unterschriftszeile. Im Browser drucken bzw. als PDF speichern.
+
+### Einstellungen
 
 | Einstellung | Wirkung | Standard |
 |---|---|---|
@@ -30,37 +64,37 @@ Schüler:innen öffnen danach im Portal *Meine Plattformen → Weiter zur Datend
 
 Änderungen wirken sofort; Schüler:innen sehen sie beim nächsten Seitenaufruf.
 
-## 3. Im Unterricht
+## 4. Im Unterricht
 
 - **Ermittlungen (Lab):** Schüler:innen lösen Aufgaben in der Ermittlungskonsole; geprüft wird auf dem Server gegen
   versteckte Randfall-Datenbanken. Tipps kosten Punkte, „Lösung zeigen“ gibt 0 Punkte.
 - **Verhöre:** zeitbegrenzte Abschlussprüfung je Akte im Abitur-Stil (gesiezt); Beweisstück auf der Pinnwand.
 - **Warm-up** (5 Minuten zu Stundenbeginn) und **Trainingsplatz** (zufällige Übungen) laufen unabhängig von Akten.
-- **Live-Runde** (Reiter *Live* → *Neue Runde*): *Duell* (Quiz in Teams) oder *Escape Room* (Stationen mit Codes).
+- **Live-Runde** (Kursseite → Knopf *Live-Runde* bzw. Reiter *Live*): *Duell* (Quiz in Teams) oder *Escape Room* (Stationen mit Codes).
   Schüler:innen treten unter `/live` bei; die Beamer-Ansicht öffnen Sie aus der Steuerung. Antworten werden nach
   Rundenende verworfen. Benötigt eine stabile WLAN-Verbindung (Server-Sent Events).
 - **Werkzeuge ohne Anmeldung** (z. B. für die Tafel): `/werkzeug/bauplan` (ER-Diagramm), `/werkzeug/werkbank`
   (Relationenschema), `/werkzeug/zeitlupe?db=eisdiele`, `/konsole/eisdiele`.
 
-## 4. Auswertung (Reiter „Auswertung“)
+## 5. Auswertung (Kursseite, Reiter „Auswertung“)
 
 - **Matrix** Schüler:in × Ermittlung: Punkte, Fehlversuche, Tipps; Verhöre mit Ergebnis.
 - **Fallen-Profil P1–P10:** Welche typischen Fehler (z. B. P1 WHERE ↔ HAVING, P2 fehlender Verbund) im Kurs gehäuft
   auftreten – Grundlage für das nächste Warm-up oder eine Wiederholung.
 - **Häufige Fehlabfragen** je Aufgabe (ohne Namen, gezählt) – gut für eine Fehlerbesprechung am Beamer.
 - **CSV-Export** (ohne interne Kennungen) für die eigene Unterlage. Die Ergebnisse sind Übungsstände, keine Noten.
-- **Vorschau:** alle Aufgaben mit Tipps und Lösungen, auch gesperrte Akten – zur Unterrichtsvorbereitung.
 
-## 5. Materialien (Reiter „Materialien“)
+## 6. Aufgaben und Materialien (Navigation oben)
 
-Arbeitsblätter (Schülerfassung), Lösungen, Präsentationen mit Notizen, Lehrerhinweise, Unplugged-Vorlagen,
-Warm-up-Karten, Generalprobe und Klausuren mit Erwartungshorizonten als PDF; einzeln oder als ZIP. Schüler:innen sehen
-in ihrem Bereich nur die Schülerfassungen. Die bearbeitbaren Originale (docx/pptx) gibt es für die Administration.
-
-## 6. Urkunden
-
-*Lehrkraft-Bereich → Urkunden*: Druckseite „Detektei-Lizenz“, eine A4-Seite je Schüler:in, Auswahl ab einem Rang.
-Im Browser drucken bzw. als PDF speichern.
+- **Aufgaben:** alle Aufgaben mit Tipps und Lösungen, auch aus Akten, die Ihr Kurs noch nicht sieht – zur
+  Unterrichtsvorbereitung. Die Aufgabe erscheint wie bei den Schüler:innen (ohne Prüfen); *Lösung in die Aufgabe
+  eintragen* füllt sie aus. Mit *vorherige/nächste Aufgabe* blättern Sie innerhalb einer Ermittlung.
+- **Materialien:** Arbeitsblätter (Schülerfassung), Lösungen, Präsentationen mit Notizen, Lehrerhinweise,
+  Unplugged-Vorlagen, Warm-up-Karten, Generalprobe und Klausuren mit Erwartungshorizonten als PDF; Material nur für
+  eA bzw. gA ist markiert. Schüler:innen sehen in ihrem Bereich nur die Schülerfassungen. Die bearbeitbaren Originale
+  (docx/pptx, einzeln oder als ZIP) gibt es für die Administration.
+- **Verwaltung** (nur Administration): Reiter *Inhalte* (geladene Akten, Fehler, neu laden, Originale als ZIP) und
+  *Sicherung* (Plattform-Datenbank herunterladen).
 
 ## 7. Datenschutz in Kürze
 
@@ -76,7 +110,7 @@ Im Browser drucken bzw. als PDF speichern.
 | Problem | Lösung |
 |---|---|
 | Schüler:in sieht „keine Berechtigung“ | Ist die Datendetektei im Portal für den Kurs angekreuzt? |
-| Akte fehlt | Reiter *Einstellungen → Akten*; bei gA sind eA-Inhalte ausgeblendet. |
+| Akte fehlt | Kursseite → Reiter *Einstellungen → Akten*; bei gA sind eA-Inhalte ausgeblendet. |
 | Verhör gesperrt | Modus *automatisch* verlangt 60 % der Ermittlungspunkte; sonst auf *offen* stellen. |
 | Konsole „Ausführen“ langsam | Schulnetz sperrt evtl. WebAssembly – dann rechnet der Server; „Prüfen“ läuft immer serverseitig. |
 | Live-Runde hängt | Seite neu laden; die Verbindung baut sich wieder auf. Bleibt es dabei, WLAN/Proxy prüfen (Server-Sent Events). |

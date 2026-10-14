@@ -74,6 +74,20 @@ test('GET kurse: Kennzahlen = Anzahl Schüler und Durchschnitts-Anteil (ohne Nam
   assert.ok(!text.includes('Lena') && !text.includes('s:1042'), 'keine Namen oder subs');
 });
 
+test('GET kurse: Kennzahlen mit „zuletzt aktiv“ (späteste Aktivität der Schüler:innen, sekundengenau) für die Kursliste', async () => {
+  const { u, s, l } = await start();
+  const leer = (await l.get(LISTE)).body.kurse[0];
+  assert.ok('zuletzt' in leer.kennzahlen, 'Feld zuletzt vorhanden');
+  const r1 = await s.post(H.K17 + '/aufgaben/A9-E1-02/pruefen', { antwort: musterantwort(u.inhalte.aufgabe('A9-E1-02')) });
+  assert.equal(r1.status, 200);
+  const k = (await l.get(LISTE)).body.kurse[0];
+  assert.match(k.kennzahlen.zuletzt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+  assert.equal(k.kennzahlen.zuletzt, u.app.locals.stand.zuletztAktiv('s:1042', 'k:17'));
+  // Kurs ohne Schüler:innen: null
+  u.db.prepare("DELETE FROM mitgliedschaften WHERE kurs_id = 'k:17' AND rolle = 'mitglied'").run();
+  assert.equal((await l.get(LISTE)).body.kurse[0].kennzahlen.zuletzt, null);
+});
+
 test('GET kurse: Superadmin sieht alle Kurse', async () => {
   const { admin } = await start();
   const r = await admin.get(LISTE);

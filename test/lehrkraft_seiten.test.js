@@ -32,18 +32,18 @@ async function start() {
 
 /* ---------- /lehrkraft ---------- */
 
-test('/lehrkraft: Reiter-Oberfläche mit allen Reitern, System nur als verborgener Reiter, Modul statt altem Skript', async () => {
+test('/lehrkraft: Kopf-Navigation wie Algo Quest (Kurse · Aufgaben · Materialien · Themen · Verwaltung verborgen), Modul statt altem Skript', async () => {
   const { l } = await start();
   const r = await l.get('/lehrkraft');
   assert.equal(r.status, 200);
   assert.match(r.headers['content-type'], /text\/html/);
-  for (const reiter of ['uebersicht', 'einstellungen', 'auswertung', 'vorschau', 'live', 'board', 'urkunden', 'materialien', 'system']) {
-    assert.match(r.text, new RegExp(`<button[^>]*role="tab"[^>]*id="reiter-${reiter}"`), reiter);
-    assert.match(r.text, new RegExp(`<section[^>]*role="tabpanel"[^>]*id="panel-${reiter}"`), reiter);
-  }
-  assert.match(r.text, /id="reiter-system"[^>]*hidden/);
-  assert.match(r.text, /role="tablist"/);
-  assert.match(r.text, /<select[^>]*id="lk-kurs"/);
+  const nav = /<nav class="lern-nav lk-nav" id="lk-nav"[^>]*>([\s\S]*?)<\/nav>/.exec(r.text);
+  assert.ok(nav, 'Kopf-Navigation');
+  const bereiche = [...nav[1].matchAll(/data-bereich="([a-z]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(bereiche, ['kurse', 'aufgaben', 'materialien', 'themen', 'verwaltung']);
+  assert.match(nav[1], /href="#\/verwaltung" data-bereich="verwaltung" hidden/);
+  assert.match(r.text, /id="lk-ansicht"/);
+  assert.doesNotMatch(r.text, /id="lk-kurs"/, 'keine Kurs-Auswahl mehr (Kursliste wie Algo Quest)');
   assert.match(r.text, /<script type="module" src="\/static\/js\/lehrkraft\/seite\.js\?v=/);
   assert.doesNotMatch(r.text, /\/static\/js\/lehrkraft\.js/);
   assert.doesNotMatch(r.text, /Auswertung folgt in Phase 6/);

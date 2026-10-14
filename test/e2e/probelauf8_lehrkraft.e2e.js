@@ -50,7 +50,7 @@ test('Auswertung „Neu laden“: Netzfehler und abgelaufene Sitzung zeigen eine
   const vorher = meldungen.length;
   const { kontext, page } = await seite(LEHRKRAFT, { breite: 768, hoehe: 1024 });
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#auswertung');
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/auswertung');
     await page.waitForSelector('table.matrix');
     await kontext.setOffline(true);
     await page.click('#au-neu');
@@ -77,7 +77,7 @@ test('Auswertung „Neu laden“: Netzfehler und abgelaufene Sitzung zeigen eine
 test('Einstellungen speichern ohne Sitzung: verständliche Meldung (gesiezt) statt „Nicht angemeldet.“', async () => {
   const { kontext, page } = await seite(LEHRKRAFT);
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#einstellungen');
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/einstellungen');
     await page.waitForSelector('#ei-speichern');
     await kontext.clearCookies();
     await page.click('label[for="ei-akte-2"]');
@@ -147,7 +147,7 @@ test('Beamer: SSE-Antwort 502 (Proxy) beendet die Ansicht nicht – sie verbinde
 test('Aufgabenstatistik auf dem iPad (768 × 1024): Sortierknöpfe ≥ 44 px, Aufgabenspalte bleibt beim Scrollen sichtbar', async () => {
   const { kontext, page } = await seite(LEHRKRAFT, { breite: 768, hoehe: 1024 });
   try {
-    await page.goto(server.url + '/lehrkraft?kurs=k:17#auswertung');
+    await page.goto(server.url + '/lehrkraft#/kurs/k%3A17/auswertung');
     await page.waitForSelector('#au-aufgaben');
     const hoehen = await page.$$eval('#au-aufgaben .sortier-knopf', (b) => b.map((x) => x.getBoundingClientRect().height));
     assert.ok(hoehen.length >= 6);
