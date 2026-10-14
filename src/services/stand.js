@@ -375,20 +375,21 @@ function erzeugeStand({ db, inhalte, jetzt = Date.now }) {
 
   /**
    * Letzte Aktivität eines Kontos in diesem Kurs (Vertrag §6 `zuletzt`): späteste Zeit aus Lernstand (Lösen, Aufdecken)
-   * und Verhör-Versuchen; ohne Aktivität die letzte Anmeldung. Leere Zeitangaben → null. Alle Zeiten im Format
-   * JJJJ-MM-TTThh:mm:ssZ, daher ist der Textvergleich zugleich der Zeitvergleich.
+   * und Verhör-Versuchen; ohne Aktivität die letzte Anmeldung. Leere Zeitangaben → null. Lernstand und Verhör speichern
+   * mit Millisekunden, die Anmeldung ohne: Verglichen und ausgegeben wird sekundengenau (JJJJ-MM-TTThh:mm:ss + 'Z',
+   * Vertrag §6), dann ist der Textvergleich zugleich der Zeitvergleich.
    */
   function zuletztAktiv(sub, kursId) {
     const z = db
       .prepare(
-        `SELECT MAX(t) AS t FROM (
+        `SELECT MAX(substr(t, 1, 19)) AS t FROM (
            SELECT MAX(zeit) AS t FROM fortschritt WHERE sub = ? AND kurs_id = ?
            UNION ALL SELECT MAX(COALESCE(ende, beginn)) FROM verhoer_versuche WHERE sub = ? AND kurs_id = ?
            UNION ALL SELECT zuletzt FROM konten WHERE sub = ?
          ) WHERE t IS NOT NULL AND t != ''`
       )
       .get(sub, kursId, sub, kursId, sub);
-    return z && z.t ? z.t : null;
+    return z && z.t ? z.t + 'Z' : null;
   }
 
   /**

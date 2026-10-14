@@ -86,6 +86,22 @@ test('Kursübersicht: zuletzt = letzte Aktivität im Kurs (Lösen, Verhör), son
   assert.equal(zu('s:1043'), null);
 });
 
+test('Kursübersicht: zuletzt immer ohne Millisekunden (Lernstand/Verhör speichern mit, Anmeldung ohne; Vergleich sekundengenau)', async () => {
+  const u = H.umgebung();
+  await H.client(u, H.SCHUELERIN);
+  await H.client(u, H.SCHUELER2);
+  // Anmeldung ohne Millisekunden, Lösen eine Sekunde später mit Millisekunden (so speichert lernen.js)
+  u.db.prepare("UPDATE konten SET zuletzt = '2026-03-01T09:30:00Z'").run();
+  u.db.prepare("INSERT INTO fortschritt (sub, kurs_id, aufgabe, status, punkte, zeit) VALUES ('s:1042', 'k:17', 'A9-E1-01', 'geloest', 10, '2026-03-01T09:30:01.004Z')").run();
+  // gleiche Sekunde wie die Anmeldung, aber mit Millisekunden: Ergebnis trotzdem ohne Millisekunden
+  u.db.prepare("INSERT INTO fortschritt (sub, kurs_id, aufgabe, status, punkte, zeit) VALUES ('s:1043', 'k:17', 'A9-E1-01', 'geloest', 10, '2026-03-01T09:30:00.500Z')").run();
+  const r = await uebersicht(u);
+  const zu = (sub) => r.body.schueler.find((x) => x.sub === sub).zuletzt;
+  assert.equal(zu('s:1042'), '2026-03-01T09:30:01Z');
+  assert.equal(zu('s:1043'), '2026-03-01T09:30:00Z');
+  for (const x of r.body.schueler) assert.match(x.zuletzt, ISO);
+});
+
 test('Kursübersicht: welten nur mit den Akten des Kurs-Niveaus (gA ohne Akte 5), anteil = Durchschnitt der Schüler', async () => {
   for (const niveau of ['eA', 'gA']) {
     const u = H.umgebung();
