@@ -63,37 +63,37 @@
   },
   "DD_A7-Generalprobe_eA.pdf": {
    "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_eA.docx",
-   "sha256": "8c232ed35b8f6f00d68361659ce89ff57a6ee99562b4fd46b07d84b79473ee6c",
+   "sha256": "57b076591a99b53d2752a0af75b77b9fc13cf2b73d4553e7babac73fc4eff047",
    "verfahren": "pdf"
   },
   "DD_A7-Generalprobe_gA.pdf": {
    "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_gA.docx",
-   "sha256": "60066d6cdcf89695289a3e52e83ef37c9e20f288bd771e29920ed049a21b6cb7",
+   "sha256": "9d21e8ebbfd506dbb42d4ba5ffb8b414ac57ce3184a2f5db9b45a23c957a8ee9",
    "verfahren": "pdf"
   },
   "DD_A7-Klausur_eA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_eA.docx",
-   "sha256": "3b64699ff1729aae3e3d85ee1e25b58d81969a488180f3e943332eaebe9706d7",
+   "sha256": "4e2639783ea531ee7e06928fdeb7cdd871afe984fc00247fc8abbc43e009b4ed",
    "verfahren": "pdf"
   },
   "DD_A7-Klausur_gA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_gA.docx",
-   "sha256": "636fe8107ff4a2d7b0e22abacceddb560f8ebb9b8d82e7d2f8371aa116ca740d",
+   "sha256": "786dfebfe98886750769776bef743f9eeff6f00dcea7aebf5d1b0dd111baa929",
    "verfahren": "pdf"
   },
   "DD_A7-Lehrerhinweise.pdf": {
    "quelle": "Akte7_Generalprobe/4_Lehrerhinweise/DD_A7_Lehrerhinweise.docx",
-   "sha256": "f33da34c695ba527c22d314d05593cc1231f0e8e31ad81e03f78fd83efb9ed02",
+   "sha256": "c8eb7dc23d2f7f351438158d9c9019d4e424a1b498d81aa08d9af74c6ac56dee",
    "verfahren": "pdf"
   },
   "DD_A7-Nachschreibklausur_eA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_eA.docx",
-   "sha256": "fbb891e29914b6147d0a7de1f28e31126e60015496a1d1a956034b3fbfb3b0b2",
+   "sha256": "aa50e62de55de04195f2f10b595e1627b8fa663bd8998921c35736fc884f5bd6",
    "verfahren": "pdf"
   },
   "DD_A7-Nachschreibklausur_gA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_gA.docx",
-   "sha256": "a8935372004e8e8a01ce3bdfc30149668d45cf5703a0c25fa1ea80c81ad81032",
+   "sha256": "8e0a3fa3a1ac10bf8fab784ab805afa6e490e8477ae0c48040caff8a4ec207a2",
    "verfahren": "pdf"
   },
   "DD_A7-Praesentation_Generalprobe.pdf": {
