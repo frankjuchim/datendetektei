@@ -28,7 +28,7 @@
       "akte": 6,
       "kategorie": "Datenschutz",
       "titel": "Pseudonym oder anonym?",
-      "aufgabe": "Entscheide und begründe, ob der Datensatz pseudonym oder anonym ist:\n\n- `WA-3917 | Kranstraße 7 | 2026-09-08 02:41`\n- „Am Stadtfest-Wochenende gab es am Festplatz insgesamt 21 Check-ins.“",
+      "aufgabe": "Entscheide und begründe, ob der Datensatz pseudonym oder anonym ist:\n\n- `WA-5208 | Lindenweg 12 | 2026-09-14 18:20`\n- „Am Stadtfest-Wochenende gab es am Festplatz insgesamt 21 Check-ins.“",
       "loesung": "Der erste Datensatz ist **pseudonym**: Die Gerätekennung ersetzt den Namen, mit Zusatzwissen (z. B. Einwohnerverzeichnis) ist die Person bestimmbar – er bleibt personenbezogen. Die Summe ist **anonym**: Sie lässt keinen Rückschluss auf einzelne Personen zu.",
       "minuten": 2,
       "kompetenz": ["DB-K46"],

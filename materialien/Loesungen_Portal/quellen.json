@@ -38,7 +38,7 @@
   },
   "DD_A3-AB2_Die_Statistik_luegt_nicht_Loesung.pdf": {
    "quelle": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB2_Die_Statistik_luegt_nicht_LSG.docx",
-   "sha256": "47ebbb57b2da52e4f44a2118d59c71e18466d3fddbe78deaf244e245f05b1015",
+   "sha256": "944e30f94e8c62754b34cfbf483c00971dac0600a6fe8c69368a73fb1a698080",
    "verfahren": "pdf"
   },
   "DD_A3-Unplugged_GROUP_BY_Karten_Loesung.pdf": {
@@ -63,7 +63,7 @@
   },
   "DD_A4-AB2_Ordnung_ins_Archiv_Loesung.pdf": {
    "quelle": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB2_Ordnung_ins_Archiv_LSG.docx",
-   "sha256": "26d2620ae74bf41ac167c3078197755630d35c3efc8612ede9785c9db5d106d4",
+   "sha256": "f636a29dea2c2defd1d0d87126c9468ae78dec08134ab3cdccea392c0aa2feb4",
    "verfahren": "pdf"
   },
   "DD_A4-Unplugged_Anomalie-Rennen_Loesung.pdf": {
@@ -118,37 +118,37 @@
   },
   "DD_A6-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
-   "sha256": "717c7e99287e7977d1d8c57b78d6c00298bf2529cfd1b59126d5c6e3c52220a9",
+   "sha256": "44563ad12d37897af01908fac5b06332b5ffb8f28274442934c79317ee2b4e7c",
    "verfahren": "pdf"
   },
   "DD_A7-Generalprobe_eA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_eA_Erwartungshorizont.docx",
-   "sha256": "e4ff44bfa71f2205588780e2ba60f3c2e65ce709ef8d4d5a41b6139b7894681e",
+   "sha256": "3293ff51affa401e1f9774640d031fff2aded93b61205f9131d73fef26fca6fe",
    "verfahren": "pdf"
   },
   "DD_A7-Generalprobe_gA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_gA_Erwartungshorizont.docx",
-   "sha256": "400cd7c53e2707d3a128714de093cd64688bbf2cfe2fde1bc290b2e7885a47d9",
+   "sha256": "025b5fa5b7429daccd71d2760296126880afbee2b27c778721702d71c308e08a",
    "verfahren": "pdf"
   },
   "DD_A7-Klausur_eA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_eA_Erwartungshorizont.docx",
-   "sha256": "09c4642dab47d364fd4e3a6ec6ac4425c8ef926a799829eac48452d0f2fa09b1",
+   "sha256": "409ef47ba454accc528640a9e4ba8fa556cc35a4508ca1e54481dc42ac2271c8",
    "verfahren": "pdf"
   },
   "DD_A7-Klausur_gA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_gA_Erwartungshorizont.docx",
-   "sha256": "6cc0e8c5b1b04ed6ccce631ec4136cd42103efd9f593caf0e2e2bf3146fc2917",
+   "sha256": "d03b006aa19aa1c3463845fcdd270eead1ac8ca54b50bff98c8789ed316aa20a",
    "verfahren": "pdf"
   },
   "DD_A7-Nachschreibklausur_eA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_eA_Erwartungshorizont.docx",
-   "sha256": "848011ea0c1c7d6a0ba03e57277a707de6d0cbe0dde71c58a613eb0dc71332b3",
+   "sha256": "557bed214b5d023f5989b94228dd9c4c02c3f6577f4c2ca8fcd11bb5624de8bd",
    "verfahren": "pdf"
   },
   "DD_A7-Nachschreibklausur_gA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_gA_Erwartungshorizont.docx",
-   "sha256": "7227aa8a86366987bed6f3984c646b05e358a23176701713debd0b93b927523d",
+   "sha256": "60fcd084e1941bd49b703e4a2ee5a470b6049d5e6c691055aa519a4d4baf08a4",
    "verfahren": "pdf"
   },
   "DD_A7-Warm-up-Karten_Loesungen.pdf": {

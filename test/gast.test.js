@@ -307,18 +307,34 @@ test('Lehrkraft-Demo ohne Inhalte: Kurs und Probefall-Statistik, keine Ermittlun
 
 /* ---------- Gast-PDF-Whitelist (E13, Spec §12.4) ---------- */
 
-test('Gast-PDF-Whitelist im Repo: materialien/Gast_PDF/verzeichnis.json ist leer', () => {
+// Auswahl von Frank (Spec §18, 2026-10-14): Einstieg Akte 1, Handbuch, Fallen-Checkliste, Gesamtübersicht
+const GAST_AUSWAHL = [
+  'DD_Gesamtuebersicht.pdf', 'DD_Ermittler-Handbuch.pdf', 'DD_A1-AB1_Der_erste_Auftrag.pdf',
+  'DD_A1-Praesentation_Fundbuero_Handout.pdf', 'DD_A1-Unplugged_Karteikarten.pdf', 'DD_A1-Warm-up-Karten.pdf',
+  'DD_A7-Fallen-Checkliste.pdf'
+];
+
+test('Gast-PDF-Whitelist im Repo: genau Franks Auswahl, keine Lösungen, alle Dateien vorhanden', () => {
   const v = JSON.parse(fs.readFileSync(path.join(WURZEL, 'materialien', 'Gast_PDF', 'verzeichnis.json'), 'utf8'));
-  assert.deepEqual(v, { dateien: [] });
+  assert.deepEqual(v.dateien.map((e) => e.datei), GAST_AUSWAHL);
+  for (const e of v.dateien) {
+    assert.notEqual(e.ordner, 'Loesungen_Portal', e.datei);
+    assert.equal(e.ausdruecklich, undefined, e.datei);
+    assert.ok(fs.existsSync(path.join(WURZEL, 'materialien', e.ordner, e.datei)), e.datei);
+  }
 });
 
-test('GET /gast/material/:datei ohne Whitelist-Eintrag → 404; Liste leer', async () => {
+test('GET /gast/material/:datei ohne Whitelist-Eintrag → 404; Liste = Gast-Auswahl', async () => {
   const t = app();
-  for (const datei of ['DD_A1-AB1_Fundbuch.pdf', 'verzeichnis.json', '..%2Fpackage.json']) {
+  for (const datei of ['DD_A1-AB1_Fundbuch.pdf', 'DD_A1-AB2_Das_verschwundene_Fundstueck.pdf', 'verzeichnis.json', '..%2Fpackage.json']) {
     const r = await request(t.app).get('/gast/material/' + datei);
     assert.equal(r.status, 404, datei);
   }
-  assert.deepEqual((await request(t.app).get('/api/gast/material')).body, { dateien: [] });
+  const liste = (await request(t.app).get('/api/gast/material')).body.dateien;
+  assert.deepEqual(liste.map((e) => e.datei), GAST_AUSWAHL);
+  const r = await request(t.app).get(liste[1].url);
+  assert.equal(r.status, 200);
+  assert.equal(r.headers['content-type'], 'application/pdf');
 });
 
 function materialOrdner(eintraege, dateien) {

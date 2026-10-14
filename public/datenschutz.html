@@ -9,12 +9,12 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.8.5">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.8.5">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.8.5">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.8.5">
-  <script src="/static/js/kern/thema.js?v=0.8.5"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.8.5" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.8.6">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.8.6">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.8.6">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.8.6">
+  <script src="/static/js/kern/thema.js?v=0.8.6"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.8.6" defer></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -52,13 +52,6 @@
       <p>Diese Seite ergänzt die zentrale Datenschutzerklärung des Portals InfoLabs um das, was nur die Datendetektei betrifft.</p>
     </div>
     <div class="karte text">
-      <div class="notiz">
-        <svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>
-        <p class="notiz-titel">Entwurf</p>
-        <p>Diese Hinweise beschreiben, wie die Datendetektei technisch arbeitet.
-        Die Angaben in [eckigen Klammern] und die Rechtsgrundlage ergänzt bzw. bestätigt die Schule (Schulleitung,
-        Datenschutzbeauftragte bzw. Datenschutzbeauftragter).</p>
-      </div>
 
       <h2>Zentrale Datenschutzerklärung</h2>
       <p>Die Datendetektei ist eine Plattform im Verbund InfoLabs. Angemeldet wird ausschließlich über das Portal; dort
@@ -67,13 +60,17 @@
         <span data-ohne-portal>Die zentrale Datenschutzerklärung findest du im Portal InfoLabs unter „Datenschutz“.</span></p>
 
       <h2>Verantwortlich</h2>
-      <p><span class="platzhalter">[Name und Anschrift der Schule, vertreten durch die Schulleitung]</span><br>
-        Datenschutz: <span class="platzhalter">[Datenschutzbeauftragte bzw. Datenschutzbeauftragter der Schule, E-Mail]</span><br>
-        Ansprechpartner für einen Kurs ist die Lehrkraft des Kurses.</p>
+      <section id="ds-verantwortlich">
+        <p>Frank Juchim (Lehrkraft für Informatik), Betreiber der Datendetektei und des Portals InfoLabs.<br>
+          Kontakt: <span class="platzhalter">[Kontakt: Anschrift bzw. E-Mail-Adresse für Datenschutzanfragen]</span><br>
+          Ansprechpartner für einen Kurs ist die Lehrkraft des Kurses.</p>
+        <p>Eine Datenschutzbeauftragte bzw. ein Datenschutzbeauftragter ist nicht benannt, weil dazu keine Pflicht
+          besteht (Art. 37 DSGVO, § 38 BDSG). Wende dich mit Fragen direkt an den Verantwortlichen oder an deine Lehrkraft.</p>
+      </section>
 
       <h2>Wozu?</h2>
       <p>Du übst mit automatisch geprüften Aufgaben zu Datenbanken. Deine Lehrkraft sieht den Lernstand ihres Kurses, um
-        den Unterricht zu planen.</p>
+        den Unterricht zu planen. Die Ergebnisse sind Übungsstände und fließen nicht in Noten ein.</p>
 
       <h2>Was die Datendetektei speichert</h2>
       <p>Alles liegt in einer Datenbank auf dem Server der Datendetektei:</p>
@@ -113,8 +110,9 @@
           siehst zusätzlich deinen eigenen Platz. Andere Kurse sehen sie nicht, Kennungen und Lehrkräfte erscheinen dort
           nie. Gespeichert wird dafür nichts Zusätzliches – die Liste wird bei jedem Aufruf aus dem Lernstand berechnet.</li>
         <li id="ds-sicherung">Der Admin der Datendetektei kann eine Sicherungskopie der ganzen Datenbank herunterladen,
-          um sie bei einem Defekt wiederherzustellen. Aufbewahrung der Sicherungskopien:
-          <span class="platzhalter">[Sicherungskopien: z. B. keine / höchstens … Tage, Ort]</span>.</li>
+          um sie bei einem Defekt wiederherzustellen. Sicherungskopien werden verschlüsselt aufbewahrt, sind nur ihm zugänglich
+          und werden nach höchstens 30 Tagen gelöscht – so lange können darin auch schon gelöschte Daten noch enthalten
+          sein. Sie werden nur zur Wiederherstellung genutzt.</li>
       </ul>
 
       <h2>Was nur kurz im Arbeitsspeicher liegt</h2>
@@ -152,8 +150,9 @@
       <h2>Server-Protokolle</h2>
       <p id="ds-logs">Die Datendetektei selbst schreibt keine Zugriffsprotokolle: keine Seitenaufrufe, keine IP-Adressen,
         keine Anmeldedaten, keine Abfragen. Ins Protokoll kommen nur Start- und Fehlermeldungen des Programms ohne
-        personenbezogene Daten. Protokolle des Servers beim Hoster:
-        <span class="platzhalter">[Hoster: Protokolle des Servers – Inhalt und Aufbewahrung]</span>.</p>
+        personenbezogene Daten. Der vorgeschaltete Webserver (Weiterleitung auf HTTPS) kann technische Zugriffsprotokolle
+        führen: IP-Adresse, Zeitpunkt, aufgerufene Adresse, Statuscode und Browserkennung. Sie dienen nur der Fehlersuche
+        und der Abwehr von Angriffen, werden nicht ausgewertet und nach höchstens 7 Tagen gelöscht.</p>
 
       <h2>Cookies</h2>
       <section id="ds-cookies">
@@ -195,8 +194,10 @@
 
       <h2>Speicherort, Speicherdauer und Löschung</h2>
       <section id="ds-loeschung">
-        <p>Die Datendetektei läuft auf einem Server von <span class="platzhalter">[Hoster, Standort in der EU]</span>;
-          alle Verbindungen sind mit HTTPS verschlüsselt.</p>
+        <p id="ds-hoster">Die Datendetektei läuft auf einem gemieteten Server der IONOS SE (Elgendorfer Str. 57,
+          56410 Montabaur) in einem Rechenzentrum in der EU. IONOS verarbeitet die Daten nur im Auftrag des Verantwortlichen
+          (Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO) und nutzt sie nicht für eigene Zwecke. Alle Verbindungen
+          sind mit HTTPS verschlüsselt.</p>
         <ul>
           <li>Dein Lernstand bleibt gespeichert, solange dein Konto und dein Kurs im Portal bestehen – auch wenn du einen
             Kurs verlässt.</li>
@@ -209,12 +210,16 @@
       </section>
 
       <h2>Rechtsgrundlage</h2>
-      <p><span class="platzhalter">[Rechtsgrundlage: von der Schule festzulegen, wie in der zentralen Datenschutzerklärung des Portals]</span></p>
+      <p id="ds-rechtsgrundlage">Die Daten werden für den Informatikunterricht verarbeitet, also zur Erfüllung des
+        Bildungsauftrags der Schule: Art. 6 Abs. 1 lit. e DSGVO i. V. m. § 31 NSchG. Es werden nur die dafür nötigen Daten
+        verarbeitet (Datenminimierung, Art. 5 DSGVO). Die beiden Cookies sind technisch notwendig; dafür ist keine
+        Einwilligung nötig (§ 25 Abs. 2 Nr. 2 TDDDG). Es gibt keine automatisierte Entscheidung über dich (Art. 22 DSGVO).</p>
 
       <h2>Deine Rechte und Kontakt</h2>
-      <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Widerspruch sowie auf
-        Beschwerde bei der Aufsichtsbehörde (Einzelheiten in der zentralen Datenschutzerklärung). Ansprechpartner ist die
-        Lehrkraft deines Kurses bzw. <span class="platzhalter">[Datenschutzbeauftragte bzw. Datenschutzbeauftragter der Schule]</span>.</p>
+      <p id="ds-rechte">Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17),
+        Einschränkung der Verarbeitung (Art. 18) und Widerspruch (Art. 21). Ansprechpartner ist die Lehrkraft deines Kurses
+        bzw. der Verantwortliche (siehe oben). Außerdem kannst du dich bei der Aufsichtsbehörde beschweren: Die
+        Landesbeauftragte für den Datenschutz Niedersachsen, Prinzenstraße 5, 30159 Hannover.</p>
 
       <h2>Nutzungsrechte</h2>
       <section id="lizenz">

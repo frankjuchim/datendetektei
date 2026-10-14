@@ -1,1 +1,12 @@
-{"dateien":[]}
+{
+ "_hinweis": "Gast-Auswahl (E13, docs/MATERIALIEN.md §8): öffentlich ohne Anmeldung unter /gast/material/<datei>. Auswahl 2026-10-14 (Entscheidung Frank): Einstieg Akte 1, Handbuch, Fallen-Checkliste, Gesamtübersicht – keine Lösungen, keine Prüfungen, keine Story-Auflösung.",
+ "dateien": [
+  { "datei": "DD_Gesamtuebersicht.pdf", "ordner": "Lehrkraft_PDF", "titel": "Gesamtübersicht der Unterrichtseinheit", "akte": 0, "art": "gesamt", "niveau": "beide", "fassung": "lehrkraft" },
+  { "datei": "DD_Ermittler-Handbuch.pdf", "ordner": "Arbeitsblaetter_PDF", "titel": "Ermittler-Handbuch (8 Werkzeugkarten)", "akte": 0, "art": "handbuch", "niveau": "beide", "fassung": "schueler" },
+  { "datei": "DD_A1-AB1_Der_erste_Auftrag.pdf", "ordner": "Arbeitsblaetter_PDF", "titel": "AB 1.1 · Der erste Auftrag", "akte": 1, "art": "ab", "niveau": "beide", "fassung": "schueler" },
+  { "datei": "DD_A1-Praesentation_Fundbuero_Handout.pdf", "ordner": "Arbeitsblaetter_PDF", "titel": "Präsentation Das Fundbüro (Handout)", "akte": 1, "art": "handout", "niveau": "beide", "fassung": "schueler" },
+  { "datei": "DD_A1-Unplugged_Karteikarten.pdf", "ordner": "Arbeitsblaetter_PDF", "titel": "Unplugged: Karteikarten-Filter", "akte": 1, "art": "unplugged", "niveau": "beide", "fassung": "schueler" },
+  { "datei": "DD_A1-Warm-up-Karten.pdf", "ordner": "Arbeitsblaetter_PDF", "titel": "Warm-up-Karten Akte 1", "akte": 1, "art": "warmup", "niveau": "beide", "fassung": "schueler" },
+  { "datei": "DD_A7-Fallen-Checkliste.pdf", "ordner": "Arbeitsblaetter_PDF", "titel": "Kopiervorlage: Fallen-Checkliste P1–P10", "akte": 7, "art": "unplugged", "niveau": "beide", "fassung": "schueler" }
+ ]
+}

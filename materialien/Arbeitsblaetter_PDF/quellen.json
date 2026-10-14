@@ -73,7 +73,7 @@
   },
   "DD_A3-AB2_Die_Statistik_luegt_nicht.pdf": {
    "quelle": "Akte3_Stadtfest/2_Arbeitsblaetter/DD_A3_AB2_Die_Statistik_luegt_nicht.docx",
-   "sha256": "0d301bd932c755fc3d6eba8bd6c8146e0d659af88ac78b67970a3b8c6992a48c",
+   "sha256": "05932c20b8ec28812e913a6b9c394cd62e037aa2dc3917517978f61ea8660805",
    "verfahren": "pdf"
   },
   "DD_A3-Praesentation_Stadtfest_Handout.pdf": {
@@ -103,7 +103,7 @@
   },
   "DD_A4-AB2_Ordnung_ins_Archiv.pdf": {
    "quelle": "Akte4_Vereinsarchiv/2_Arbeitsblaetter/DD_A4_AB2_Ordnung_ins_Archiv.docx",
-   "sha256": "319b14cffd59bb7598a7aca4b2801f7c07e0c99e1910daf1ae14ab460628cb66",
+   "sha256": "a11bed7c664fef8f6922acee5eae1a06cd31a7ff8972e363aafb073cf5adc001",
    "verfahren": "pdf"
   },
   "DD_A4-Praesentation_Vereinsarchiv_Handout.pdf": {
@@ -188,7 +188,7 @@
   },
   "DD_A6-Warm-up-Karten.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
-   "sha256": "717c7e99287e7977d1d8c57b78d6c00298bf2529cfd1b59126d5c6e3c52220a9",
+   "sha256": "44563ad12d37897af01908fac5b06332b5ffb8f28274442934c79317ee2b4e7c",
    "verfahren": "ohne-loesungsteil"
   },
   "DD_A7-Fallen-Checkliste.pdf": {

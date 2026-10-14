@@ -77,11 +77,17 @@ test('Schülerfassungen sind nie Lösungen; Lösungen und Klausuren nie in der S
   for (const h of handouts) assert.match(h.datei, /_Handout\.pdf$/);
 });
 
-test('Gast-Auswahl leer (E13, Standard bis Frank auswählt): keine öffentlichen PDFs', async () => {
-  assert.deepEqual(GAST, []);
+test('Gast-Auswahl (E13, Auswahl Frank): nur die gelisteten PDFs öffentlich, keine Lösungen', async () => {
+  assert.equal(GAST.length, 7);
   const r = await request(t.app).get('/api/material').expect(200);
-  assert.deepEqual(r.body.stufen, { gast: [] });
-  const s = SCHUELER[0];
+  assert.deepEqual(Object.keys(r.body.stufen), ['gast']);
+  assert.deepEqual(r.body.stufen.gast.map((e) => e.datei).sort(), GAST.map((e) => e.datei).sort());
+  for (const e of r.body.stufen.gast) {
+    assert.doesNotMatch(e.datei, /Loesung|LSG|Erwartungshorizont|Klausur/);
+    await request(t.app).get(e.url).expect(200);
+  }
+  const gelistet = new Set(GAST.map((e) => e.datei));
+  const s = SCHUELER.find((e) => !gelistet.has(e.datei));
   await request(t.app).get('/gast/material/' + encodeURIComponent(s.datei)).expect(404);
   await request(t.app).get('/gast/material/Arbeitsblaetter_PDF/' + encodeURIComponent(s.datei)).expect(404);
 });
