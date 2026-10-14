@@ -157,7 +157,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Ein Ausschnitt aus dem Fundbuch. Entscheide für jede Markierung, welcher Fachbegriff passt."
+          "md": "Ein Ausschnitt aus dem Fundbuch. Gib zu jeder Markierung den passenden Fachbegriff an."
         },
         {
           "t": "dbtabelle",
@@ -531,7 +531,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Bringe die Bausteine in eine gültige Reihenfolge. Ein Baustein gehört nicht dazu."
+          "md": "Stelle die Bausteine in einer gültigen Reihenfolge dar. Ein Baustein gehört nicht dazu."
         },
         {
           "t": "code",
@@ -1422,7 +1422,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "„Juni oder Juli“ und „mehrere hundert Euro“: Grenze die Messing-Fundsachen ein auf ein Funddatum vom 01.06.2026 bis einschließlich 31.07.2026 und einen Wert von **mindestens 400 €** – oder einen **unbekannten** Wert, denn der könnte auch hoch sein. Gib FundNr, Bezeichnung, Funddatum und Wert aus."
+          "md": "„Juni oder Juli“ und „mehrere hundert Euro“: Entwirf eine Abfrage, die die Messing-Fundsachen eingrenzt auf ein Funddatum vom 01.06.2026 bis einschließlich 31.07.2026 und einen Wert von **mindestens 400 €** – oder einen **unbekannten** Wert, denn der könnte auch hoch sein. Gib FundNr, Bezeichnung, Funddatum und Wert aus."
         }
       ],
       "interaktion": {

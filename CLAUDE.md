@@ -89,7 +89,7 @@ npm run originale        # materialien/Originale/verzeichnis.json (docx/pptx, nu
 npm run material:pdf     # alle fünf in dieser Reihenfolge (nur fehlende/veraltete; --alle erzwingt alles)
 npm run material:vollstaendig  # --pruefen aller Pipeline-Skripte (Vollständigkeit, SHA-256-Aktualität; ohne LibreOffice)
 npm run material:sql     # jede SQL-Anweisung in docx/pptx gegen ihre DB (EH §8, Ergebnistabellen)
-npm run material:pruefen # Begriffe, `<>`/JOIN, Klarnamen (werkzeuge/klarnamen.txt), PDF-Namen, Schülerfassungen ohne Lösung
+npm run material:pruefen # Begriffe, Operatoren, `<>`/JOIN, Klarnamen (werkzeuge/klarnamen.txt), PDF-Namen, Schülerfassungen ohne Lösung
 npm run material:kompetenzen   # KOMPETENZMATRIX × Akten × Warm-up × Material (--streng)
 npm run material:tests   # Python-Tests werkzeuge/tests (u. a. Schüler-PDFs ohne Lösung/Story-Auflösung)
 npm run videos           # Videos: video.json → Folien (pptx) + Drehbuch (md); npm run videos:bilder rendert vorher die
@@ -138,6 +138,9 @@ startet der Server nicht mit dem Entwicklungsschlüssel aus `test/fixtures`.
 - Schülerinnen und Schüler werden **geduzt**; Verhöre, Generalprobe, Klausuren, Erwartungshorizonte, Abi-Ecken im
   **Abitur-Stil gesiezt** („Entwerfen Sie …“, Operatoren fett, `[x BE]`).
 - Vertragsbegriffe: Kurs, Kurscode, persönlicher Code, Lehrkraft, Warm-up, Team; **keine XP**; Punkte nur automatisch.
+- **Operatoren** in allen Aufgabenstellungen nur aus der KM-Liste (`werkzeuge/operatoren.json`, Stand 01.02.2024):
+  z. B. *entwirf* (SQL, ER), *erstelle* (Relationenschema/ER-Diagramm), *erläutere*, *gib … an*, *untersuche*, *beurteile*,
+  *verändere*; nie „notiere/erkläre/prüfe/überführe/ordne zu“. Geprüft von `test/operatoren.test.js` und `npm run material:pruefen`.
 - Oberfläche: Welt = **Akte**, Level = **Ermittlung**, Boss = **Verhör** (im Code/Manifest bleiben welt/level/boss).
 - Fachbegriffe nach EH: Entitätstyp, Beziehungstyp, Schlüsselattribut, Kardinalität, Primär-/Fremdschlüssel, Verbund.
   Nie „Entitätsmenge“. Story-Begriffe ersetzen nie Fachbegriffe.

@@ -678,7 +678,7 @@
    "kapitel": "Jetzt du",
    "links": [
     {
-     "text": "Modelliere in Chen-Notation:"
+     "text": "Entwirf ein ER-Modell in Chen-Notation:"
     },
     {
      "punkte": [
@@ -700,7 +700,7 @@
     }
    ],
    "pause_s": 45,
-   "sprechertext": "Jetzt du. Modelliere: Jede Futtersorte wird von genau einem Lieferanten geliefert, ein Lieferant liefert mehrere Sorten. Jedes Tier bekommt mehrere Futtersorten, und eine Sorte wird an mehrere Tiere verfüttert – jeweils mit einer Tagesmenge. Zeichne das ER-Modell mit Schlüsselattributen und Kardinalitäten. Halte das Video an – oder zeichne es direkt im Bauplan-Tisch."
+   "sprechertext": "Jetzt du. Entwirf ein ER-Modell: Jede Futtersorte wird von genau einem Lieferanten geliefert, ein Lieferant liefert mehrere Sorten. Jedes Tier bekommt mehrere Futtersorten, und eine Sorte wird an mehrere Tiere verfüttert – jeweils mit einer Tagesmenge. Zeichne das ER-Modell mit Schlüsselattributen und Kardinalitäten. Halte das Video an – oder zeichne es direkt im Bauplan-Tisch."
   },
   {
    "titel": "Auflösung",

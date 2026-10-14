@@ -135,7 +135,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Bevor du Exporte verknüpfst, brauchst du die Spielregeln. Ordne jede Beschreibung und jedes Beispiel aus Weserstedt dem passenden **DSGVO-Grundsatz** zu."
+          "md": "Bevor du Exporte verknüpfst, brauchst du die Spielregeln. Gib zu jeder Beschreibung und jedem Beispiel aus Weserstedt den passenden **DSGVO-Grundsatz** an."
         }
       ],
       "interaktion": {
@@ -240,7 +240,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Edda legt dir vier Auszüge aus den Exporten der Stadt hin. Entscheide für jeden Datensatz: Ist er **personenbezogen** (die Person ist direkt genannt), **pseudonym** (ein Kennzeichen statt des Namens – mit Zusatzwissen zuordenbar) oder **anonym** (keine Person mehr bestimmbar)?"
+          "md": "Edda legt dir vier Auszüge aus den Exporten der Stadt hin. Beurteile für jeden Datensatz: Ist er **personenbezogen** (die Person ist direkt genannt), **pseudonym** (ein Kennzeichen statt des Namens – mit Zusatzwissen zuordenbar) oder **anonym** (keine Person mehr bestimmbar)?"
         }
       ],
       "interaktion": [
@@ -734,7 +734,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Ein Werbepartner bietet der Stadt Geld für die Ausleihdaten von StadtRad (KundenToken, Jahrgang, Stadtteil, Tarif, Stationen, Zeitpunkte), um personalisierte Werbung auszuspielen. **Beurteile**, ob die Stadt die Daten weitergeben darf. Beziehe dich auf mindestens zwei Grundsätze und komm zu einem begründeten Urteil. Schreib deine Antwort auf – sie bleibt auf deinem Gerät."
+          "md": "Ein Werbepartner bietet der Stadt Geld für die Ausleihdaten von StadtRad (KundenToken, Jahrgang, Stadtteil, Tarif, Stationen, Zeitpunkte), um personalisierte Werbung auszuspielen. **Beurteile**, ob die Stadt die Daten weitergeben darf. Gehe dabei auf mindestens zwei Grundsätze ein und komm zu einem begründeten Urteil. Schreib deine Antwort auf – sie bleibt auf deinem Gerät."
         }
       ],
       "interaktion": {
@@ -774,7 +774,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Die Stadt will künftig Daten für die Verkehrsplanung veröffentlichen, ohne dass jemand so enttarnt werden kann wie in dieser Akte. **Erläutere** mindestens drei technische oder organisatorische Maßnahmen und **grenze** Datenschutz von Datensicherheit **ab**. Schreib deine Antwort auf – sie bleibt auf deinem Gerät."
+          "md": "Die Stadt will künftig Daten für die Verkehrsplanung veröffentlichen, ohne dass jemand so enttarnt werden kann wie in dieser Akte. **Erläutere** mindestens drei technische oder organisatorische Maßnahmen und **erläutere** dabei den Unterschied zwischen Datenschutz und Datensicherheit. Schreib deine Antwort auf – sie bleibt auf deinem Gerät."
         }
       ],
       "interaktion": {
@@ -1134,7 +1134,7 @@
         },
         {
           "kind": "gaps",
-          "frage": "b) Prüfe mit einer zweiten Abfrage (`HAVING COUNT(*) >= 5`), welche Gruppen groß genug sind. Anteil der Einwohner in Gruppen mit weniger als 5 Personen: [[g1]] %",
+          "frage": "b) Bestimme mit einer zweiten Abfrage (`HAVING COUNT(*) >= 5`), welche Gruppen groß genug sind. Anteil der Einwohner in Gruppen mit weniger als 5 Personen: [[g1]] %",
           "felder": {
             "g1": {
               "typ": "zahl",
@@ -1144,7 +1144,7 @@
         },
         {
           "kind": "kernpunkte",
-          "frage": "c) Was ändert sich, wenn die Stadt statt des Jahrgangs nur das **Jahrzehnt** (z. B. 1980–1989) veröffentlicht? Notiere deine Vermutung und begründe sie.",
+          "frage": "c) Was ändert sich, wenn die Stadt statt des Jahrgangs nur das **Jahrzehnt** (z. B. 1980–1989) veröffentlicht? Gib deine Vermutung an und begründe sie.",
           "kernpunkte": [
             "erkennt: Vergröberung macht die Gruppen größer, weil je zehn Jahrgänge zusammenfallen",
             "erkennt: Das reicht trotzdem nicht überall – in kleinen Stadtteilen (Deichkamp, Weserufer) bleiben Gruppen unter 5 (nachgerechnet: 67 von 250 Einwohnern, also 26,8 %)",
@@ -1205,7 +1205,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen Sie** jedem Auszug den Grundsatz der DSGVO **zu**, gegen den er verstößt. Ein Grundsatz bleibt übrig. [2 BE]"
+          "md": "**Geben Sie** zu jedem Auszug den Grundsatz der DSGVO **an**, gegen den er verstößt. Ein Grundsatz bleibt übrig. [2 BE]"
         }
       ],
       "interaktion": {
@@ -1829,7 +1829,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen Sie** jedem Risiko die technische bzw. organisatorische Maßnahme **zu**, die ihm am wirksamsten begegnet. [4 BE]"
+          "md": "**Geben Sie** zu jedem Risiko die technische bzw. organisatorische Maßnahme **an**, die ihm am wirksamsten begegnet. [4 BE]"
         }
       ],
       "interaktion": {

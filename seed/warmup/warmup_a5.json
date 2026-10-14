@@ -6,7 +6,7 @@
       "akte": 5,
       "kategorie": "ER-Modell",
       "titel": "Notation benennen",
-      "aufgabe": "Im Bauplan steht: `[Ermittler]` —1— `<leitet>` —n— `[Fall]`, an Ermittler die Ellipsen *ErmittlerNr* (unterstrichen) und *Name*. Benenne die Elemente mit den Fachbegriffen der EH: Rechteck, Raute, unterstrichene Ellipse, Ellipse, 1 und n.",
+      "aufgabe": "Im Bauplan steht: `[Ermittler]` —1— `<leitet>` —n— `[Fall]`, an Ermittler die Ellipsen *ErmittlerNr* (unterstrichen) und *Name*. Gib zu den Elementen die Fachbegriffe der EH an: Rechteck, Raute, unterstrichene Ellipse, Ellipse, 1 und n.",
       "loesung": "Rechteck **Ermittler**, **Fall** = Entitätstyp · Raute **leitet** = Beziehungstyp · unterstrichene Ellipse **ErmittlerNr** = Schlüsselattribut · Ellipse **Name** = Attribut · **1** und **n** an den Kanten = Kardinalität. Nicht „Entitätsmenge“.",
       "minuten": 2,
       "kompetenz": [
@@ -20,7 +20,7 @@
       "akte": 5,
       "kategorie": "ER-Modell",
       "titel": "Mengenbild",
-      "aufgabe": "Mengendiagramm: Station A ist mit den Rädern 1, 2, 3 verbunden, Station B mit Rad 4 und 5; jedes Rad hat genau eine Linie. Bestimme die Kardinalität von *steht an* zwischen Station und Rad und formuliere sie in **beiden** Richtungen.",
+      "aufgabe": "Mengendiagramm: Station A ist mit den Rädern 1, 2, 3 verbunden, Station B mit Rad 4 und 5; jedes Rad hat genau eine Linie. Bestimme die Kardinalität von *steht an* zwischen Station und Rad und beschreibe sie in **beiden** Richtungen.",
       "loesung": "Station **1** : **n** Rad. „An einer Station können mehrere Räder stehen; jedes Rad steht an genau einer Station.“ Das n gehört an die Kante zu Rad.",
       "minuten": 2,
       "kompetenz": [
@@ -35,7 +35,7 @@
       "akte": 5,
       "kategorie": "ER-Modell",
       "titel": "Aus den Daten",
-      "aufgabe": "Tabelle `Leihe(LeserNr, BuchNr)` mit den Zeilen (1, 10), (1, 11), (2, 10), (3, 12). Leite die Kardinalität zwischen Leser und Buch ab und begründe.",
+      "aufgabe": "Tabelle `Leihe(LeserNr, BuchNr)` mit den Zeilen (1, 10), (1, 11), (2, 10), (3, 12). Bestimme die Kardinalität zwischen Leser und Buch und begründe sie.",
       "loesung": "Leser 1 leiht die Bücher 10 und 11 (ein Leser – mehrere Bücher), Buch 10 wurde von Leser 1 und 2 geliehen (ein Buch – mehrere Leser) → **n:m**. Wer nur eine Richtung prüft, kommt auf 1:n. Daten stützen die Kardinalität nur; begründet wird sie im Sachzusammenhang (ein Buch wird im Lauf der Zeit von vielen gelesen).",
       "minuten": 3,
       "kompetenz": [
@@ -65,7 +65,7 @@
       "akte": 5,
       "kategorie": "ER-Modell",
       "titel": "Rekursiv lesen",
-      "aufgabe": "Ein Bauplan zeigt `[Schueler]` mit der Raute *istPateVon*, an deren Kanten „Pate 1“ und „Patenkind n“ stehen. Formuliere die Beziehung in **beiden** Richtungen im Sachzusammenhang.",
+      "aufgabe": "Ein Bauplan zeigt `[Schueler]` mit der Raute *istPateVon*, an deren Kanten „Pate 1“ und „Patenkind n“ stehen. Beschreibe die Beziehung in **beiden** Richtungen im Sachzusammenhang.",
       "loesung": "„Ein Schüler kann Pate von mehreren Patenkindern sein; jedes Patenkind hat höchstens einen Paten.“ Beide Kanten führen zu Schueler (rekursiv 1:n); die Rollen Pate/Patenkind stehen an den Kanten.",
       "minuten": 2,
       "kompetenz": [
@@ -96,7 +96,7 @@
       "akte": 5,
       "kategorie": "ER-Modell",
       "titel": "Text → Mini-ER",
-      "aufgabe": "Skizziere ein Mini-ER zu: „Ein Kurs wird von genau einer Lehrkraft geleitet. Schüler belegen mehrere Kurse.“ (Entitätstypen mit Schlüsselattribut, Beziehungstypen, Kardinalitäten)",
+      "aufgabe": "Zeichne ein kleines ER-Diagramm zu: „Ein Kurs wird von genau einer Lehrkraft geleitet. Schüler belegen mehrere Kurse.“ (Entitätstypen mit Schlüsselattribut, Beziehungstypen, Kardinalitäten)",
       "loesung": "Lehrkraft (LehrkraftNr) —1— *leitet* —n— Kurs (KursNr) · Schueler (SchuelerNr) —n— *belegt* —m— Kurs. „Mehrere Kurse“ je Schüler und viele Schüler je Kurs → n:m; „genau eine Lehrkraft“ → 1 an der Lehrkraft-Kante.",
       "minuten": 3,
       "kompetenz": [
@@ -124,7 +124,7 @@
       "akte": 5,
       "kategorie": "Überführung",
       "titel": "1:n überführen",
-      "aufgabe": "Überführe Ermittler —1— *leitet* —n— Fall in die Kurzschreibweise und begründe, in welcher Relation der Fremdschlüssel steht.",
+      "aufgabe": "Erstelle zu Ermittler —1— *leitet* —n— Fall das Relationenschema in Kurzschreibweise und begründe, in welcher Relation der Fremdschlüssel steht.",
       "loesung": "Ermittler(ErmittlerNr, Name, Dienstgrad) · Fall(FallNr, Titel, Eroeffnet, Status, **↑LeiterNr**) – Primärschlüssel unterstrichen. Der Fremdschlüssel gehört auf die **n-Seite**: Jeder Fall hat genau eine Leitung, also steht in jeder Fall-Zeile genau ein Wert. In Ermittler bräuchte eine Ermittlerin mit drei Fällen drei Werte in einer Zelle.",
       "minuten": 2,
       "kompetenz": [
@@ -140,7 +140,7 @@
       "akte": 5,
       "kategorie": "Überführung",
       "titel": "n:m überführen",
-      "aufgabe": "Überführe Schueler —n— *belegt* —m— Kurs mit dem Attribut Note in die Kurzschreibweise.",
+      "aufgabe": "Erstelle zu Schueler —n— *belegt* —m— Kurs mit dem Attribut Note das Relationenschema in Kurzschreibweise.",
       "loesung": "Schueler(SchuelerNr, Name) · Kurs(KursNr, Titel) · **belegt(↑SchuelerNr, ↑KursNr, Note)** – eigene Relation, Primärschlüssel aus beiden Fremdschlüsseln (beide unterstrichen), die Note als Beziehungsattribut in diese Relation. Ein Fremdschlüssel in Schueler oder Kurs reicht bei n:m nicht.",
       "minuten": 2,
       "kompetenz": [
@@ -155,7 +155,7 @@
       "akte": 5,
       "kategorie": "Überführung",
       "titel": "Rückwärts",
-      "aufgabe": "Skizziere aus `Spiel(SpielNr, Datum, ↑HeimNr, ↑GastNr)` und `Team(TeamNr, Name)` das ER-Diagramm (beide Fremdschlüssel verweisen auf Team).",
+      "aufgabe": "Zeichne zu `Spiel(SpielNr, Datum, ↑HeimNr, ↑GastNr)` und `Team(TeamNr, Name)` das ER-Diagramm (beide Fremdschlüssel verweisen auf Team).",
       "loesung": "Entitätstypen **Team** (TeamNr unterstrichen, Name) und **Spiel** (SpielNr unterstrichen, Datum). Zwei Fremdschlüssel auf Team → **zwei** Beziehungstypen: Team 1 — *spieltHeim* — n Spiel und Team 1 — *spieltGast* — n Spiel. HeimNr und GastNr werden im ER-Diagramm keine Attribute.",
       "minuten": 3,
       "kompetenz": [
@@ -171,7 +171,7 @@
       "akte": 5,
       "kategorie": "SQL Verbund",
       "titel": "Self-Join",
-      "aufgabe": "Notiere eine Abfrage, die zu jedem Ermittler den Namen seines Mentors ausgibt (`Ermittler(ErmittlerNr, Name, Dienstgrad, ↑MentorNr)`).",
+      "aufgabe": "Entwirf eine Abfrage, die zu jedem Ermittler den Namen seines Mentors ausgibt (`Ermittler(ErmittlerNr, Name, Dienstgrad, ↑MentorNr)`).",
       "loesung": "Die Tabelle Ermittler wird zweimal mit verschiedenen Aliasen verwendet und über `e.MentorNr = m.ErmittlerNr` verbunden. Ohne Aliase wäre `Name` mehrdeutig. Edda Lorenz und Ulf Witte erscheinen nicht – sie haben keinen Mentor (NULL).",
       "minuten": 3,
       "kompetenz": [

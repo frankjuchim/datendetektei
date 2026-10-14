@@ -13,7 +13,7 @@
       ],
       "ab": "AB 2.1 Der rote Faden",
       "niveau": "alle",
-      "briefing": "StadtRad Weserstedt vermisst fünf Lastenräder, und die Antwort steckt in mehreren Tabellen zugleich. Verbinde die Tabellen über ihre Fremdschlüssel und prüfe im Spurenbrett, welche Fäden übrig bleiben. Vorsicht: Ohne Verbundbedingung bekommst du jede Zeile mit jeder!",
+      "briefing": "StadtRad Weserstedt vermisst fünf Lastenräder, und die Antwort steckt in mehreren Tabellen zugleich. Verbinde die Tabellen über ihre Fremdschlüssel und untersuche im Spurenbrett, welche Fäden übrig bleiben. Vorsicht: Ohne Verbundbedingung bekommst du jede Zeile mit jeder!",
       "intro": [
         {
           "t": "datenbank",
@@ -227,7 +227,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Hollwedel plant eine zusätzliche Tabelle für die Ladeplätze an den Stationen. Ordne jeder Kennzeichnung ihre Bedeutung zu."
+          "md": "Hollwedel plant eine zusätzliche Tabelle für die Ladeplätze an den Stationen. Gib zu jeder Kennzeichnung ihre Bedeutung an."
         },
         {
           "t": "schema",
@@ -1112,7 +1112,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Freie Ermittlung ohne Punkte: In deiner Standortliste (A2-E1-06) fehlen einige Räder. Finde sie mit einer Abfrage nur auf Rad – gib `RadID`, `Typ` und `Status` aller Räder aus, die an keiner Station stehen. Überlege: Was passiert mit ihnen im Verbund?"
+          "md": "Freie Ermittlung ohne Punkte: In deiner Standortliste (A2-E1-06) fehlen einige Räder. Entwirf eine Abfrage nur auf Rad, die `RadID`, `Typ` und `Status` aller Räder ausgibt, die an keiner Station stehen. Erläutere: Was passiert mit ihnen im Verbund?"
         }
       ],
       "interaktion": {
@@ -1157,7 +1157,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Im FROM stehen `Ausleihe a, Rad r, Kunde k, Station s`. Ordne jedem Tabellenpaar die passende Verbundbedingung zu. Eine Bedingung passt zu keinem Paar."
+          "md": "Im FROM stehen `Ausleihe a, Rad r, Kunde k, Station s`. Gib zu jedem Tabellenpaar die passende Verbundbedingung an. Eine Bedingung passt zu keinem Paar."
         },
         {
           "t": "schema",
@@ -2054,7 +2054,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen Sie** den Kennzeichnungen der Relation Fahrt ihre Bedeutung **zu**. [2 BE]"
+          "md": "**Geben Sie** zu den Kennzeichnungen der Relation Fahrt jeweils die Bedeutung **an**. [2 BE]"
         }
       ],
       "interaktion": {

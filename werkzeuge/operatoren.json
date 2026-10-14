@@ -1,0 +1,165 @@
+{
+  "_hinweis": "Operatoren für das Fach Informatik (Niedersächsisches Kultusministerium, INF_2024Abi_Operatoren, Stand 1. Februar 2024). Aufgabenstellungen in Plattform und Material verwenden nur diese Operatoren (Entscheidung Frank, Spec §18, 2026-10-14). Geprüft von test/operatoren.test.js (seed) und werkzeuge/materialien_pruefen.py (docx/pptx). 'nicht' = häufige Verben, die keine Operatoren sind (Infinitiv für die Sie-Form, Imperativ für die du-Form); Bedienhinweise (tippen, wählen, markieren, ziehen, eintragen, ausführen, testen) sind erlaubt.",
+  "operatoren": [
+    {
+      "sie": "abschätzen",
+      "du": "schätze … ab"
+    },
+    {
+      "sie": "analysieren",
+      "du": "analysiere"
+    },
+    {
+      "sie": "untersuchen",
+      "du": "untersuche"
+    },
+    {
+      "sie": "anwenden",
+      "du": "wende … an"
+    },
+    {
+      "sie": "begründen",
+      "du": "begründe"
+    },
+    {
+      "sie": "zeigen",
+      "du": "zeige"
+    },
+    {
+      "sie": "berechnen",
+      "du": "berechne"
+    },
+    {
+      "sie": "beschreiben",
+      "du": "beschreibe"
+    },
+    {
+      "sie": "bestimmen",
+      "du": "bestimme"
+    },
+    {
+      "sie": "beurteilen",
+      "du": "beurteile"
+    },
+    {
+      "sie": "darstellen",
+      "du": "stelle … dar"
+    },
+    {
+      "sie": "erörtern",
+      "du": "erörtere"
+    },
+    {
+      "sie": "entwerfen",
+      "du": "entwirf"
+    },
+    {
+      "sie": "entwickeln",
+      "du": "entwickle"
+    },
+    {
+      "sie": "ergänzen",
+      "du": "ergänze"
+    },
+    {
+      "sie": "erweitern",
+      "du": "erweitere"
+    },
+    {
+      "sie": "verändern",
+      "du": "verändere"
+    },
+    {
+      "sie": "erläutern",
+      "du": "erläutere"
+    },
+    {
+      "sie": "erstellen",
+      "du": "erstelle"
+    },
+    {
+      "sie": "implementieren",
+      "du": "implementiere"
+    },
+    {
+      "sie": "nennen",
+      "du": "nenne"
+    },
+    {
+      "sie": "angeben",
+      "du": "gib … an"
+    },
+    {
+      "sie": "vergleichen",
+      "du": "vergleiche"
+    },
+    {
+      "sie": "zeichnen",
+      "du": "zeichne"
+    }
+  ],
+  "nicht": {
+    "sie": [
+      "notieren",
+      "erklären",
+      "prüfen",
+      "überprüfen",
+      "korrigieren",
+      "überführen",
+      "ordnen",
+      "finden",
+      "formulieren",
+      "ermitteln",
+      "benennen",
+      "entscheiden",
+      "rekonstruieren",
+      "zerlegen",
+      "skizzieren",
+      "modellieren",
+      "diskutieren",
+      "überlegen",
+      "schlagen",
+      "bewerten",
+      "interpretieren",
+      "identifizieren",
+      "kennzeichnen",
+      "bringen",
+      "grenzen",
+      "beschriften",
+      "kontrollieren",
+      "leiten"
+    ],
+    "du": [
+      "notiere",
+      "erkläre",
+      "prüfe",
+      "überprüfe",
+      "korrigiere",
+      "überführe",
+      "ordne",
+      "finde",
+      "formuliere",
+      "ermittle",
+      "benenne",
+      "entscheide",
+      "rekonstruiere",
+      "zerlege",
+      "skizziere",
+      "modelliere",
+      "diskutiere",
+      "überlege",
+      "schlage",
+      "bewerte",
+      "interpretiere",
+      "identifiziere",
+      "kennzeichne",
+      "bringe",
+      "beschrifte",
+      "kontrolliere",
+      "leite",
+      "vermute",
+      "bilde",
+      "beziehe"
+    ]
+  }
+}

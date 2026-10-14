@@ -155,6 +155,7 @@ Beispiel: Ermittlung `A9-E1` in `test/fixtures/akte_beispiel.json`.
   Rest aufgefüllt (der Validator meldet einen nicht erfüllbaren Mix als Fehler). Reihenfolge im Verhör: Stufe 1 → 3.
 - Kein Feedback im Verhör; Punkte = Summe der Punkte richtiger Aufgaben (mehrteilig: alle Teile richtig).
   „Besiegt“ ab 50 %, neuer Versuch nach 12 h, bester Versuch zählt.
+- Aufgabenstellungen verwenden nur **Operatoren der KM-Liste** (`werkzeuge/operatoren.json`, geprüft von `test/operatoren.test.js`); Bedienhinweise (tippen, wählen, markieren …) sind erlaubt.
 - Verhör-Aufgaben sind **gesiezt** und im Abitur-Stil (Operator fett); `kernpunkte` kommt im Verhör nicht vor. Die
   Modellierungs-Interaktionen (`zellen`, `anomalie`, `zerlegen`, `schema`, `er`) und die Blöcke `er`/`mengen` sind im
   Verhör erlaubt (wie alle Verhör-Aufgaben ohne Rückmeldung).

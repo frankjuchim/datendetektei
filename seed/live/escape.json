@@ -8,186 +8,874 @@
   "tippStrafeMin": 2,
   "stationen": [
     {
-      "id": "S1", "nr": 1, "titel": "Das Fundbuch-Schloss", "niveau": "alle",
+      "id": "S1",
+      "nr": 1,
+      "titel": "Das Fundbuch-Schloss",
+      "niveau": "alle",
       "story": "Juri hat den ersten Code „unter den Fundsachen“ versteckt. Das Schloss hat drei Rädchen.",
-      "code": { "teile": [{ "quelle": "anzahlZeilen", "stellen": 3 }] },
+      "code": {
+        "teile": [
+          {
+            "quelle": "anzahlZeilen",
+            "stellen": 3
+          }
+        ]
+      },
       "aufgabe": {
-        "id": "K2-S1", "titel": "Schlüssel ohne Besitzer", "stufe": 2, "kategorie": "SQL eine Tabelle", "fallen": ["P5", "P10"],
-        "inhalt": [
-          { "t": "text", "md": "Gib Bezeichnung und Fundort aller Fundsachen aus, deren Bezeichnung **schlüssel** enthält, die **noch nicht abgeholt** wurden und deren **Finder bekannt** ist." },
-          { "t": "hinweis", "md": "**Schloss:** Der Code ist die Anzahl der Zeilen eures Ergebnisses, dreistellig mit führenden Nullen (z. B. 007)." }
+        "id": "K2-S1",
+        "titel": "Schlüssel ohne Besitzer",
+        "stufe": 2,
+        "kategorie": "SQL eine Tabelle",
+        "fallen": [
+          "P5",
+          "P10"
         ],
-        "interaktion": { "kind": "sql", "datenbank": "fundbuero", "varianten": ["null"] },
-        "loesung": { "sql": "SELECT Bezeichnung, Fundort\nFROM Fundsache\nWHERE Bezeichnung LIKE '%schlüssel%'\n  AND AbgeholtAm IS NULL\n  AND Finder IS NOT NULL" },
-        "tipps": ["„Noch nicht abgeholt“ heißt: Im Feld AbgeholtAm steht kein Datum – dafür gibt es eine eigene Bedingung mit IS."],
-        "erklaerung": [{ "t": "text", "md": "`LIKE '%schlüssel%'` findet „schlüssel“ an beliebiger Stelle. Fehlende Werte prüft man mit `IS NULL` bzw. `IS NOT NULL` – nie mit `= NULL`." }]
+        "inhalt": [
+          {
+            "t": "text",
+            "md": "Gib Bezeichnung und Fundort aller Fundsachen aus, deren Bezeichnung **schlüssel** enthält, die **noch nicht abgeholt** wurden und deren **Finder bekannt** ist."
+          },
+          {
+            "t": "hinweis",
+            "md": "**Schloss:** Der Code ist die Anzahl der Zeilen eures Ergebnisses, dreistellig mit führenden Nullen (z. B. 007)."
+          }
+        ],
+        "interaktion": {
+          "kind": "sql",
+          "datenbank": "fundbuero",
+          "varianten": [
+            "null"
+          ]
+        },
+        "loesung": {
+          "sql": "SELECT Bezeichnung, Fundort\nFROM Fundsache\nWHERE Bezeichnung LIKE '%schlüssel%'\n  AND AbgeholtAm IS NULL\n  AND Finder IS NOT NULL"
+        },
+        "tipps": [
+          "„Noch nicht abgeholt“ heißt: Im Feld AbgeholtAm steht kein Datum – dafür gibt es eine eigene Bedingung mit IS."
+        ],
+        "erklaerung": [
+          {
+            "t": "text",
+            "md": "`LIKE '%schlüssel%'` findet „schlüssel“ an beliebiger Stelle. Fehlende Werte prüft man mit `IS NULL` bzw. `IS NOT NULL` – nie mit `= NULL`."
+          }
+        ]
       }
     },
     {
-      "id": "S2", "nr": 2, "titel": "Das Speichenschloss", "niveau": "alle",
+      "id": "S2",
+      "nr": 2,
+      "titel": "Das Speichenschloss",
+      "niveau": "alle",
       "story": "Auf einem Zettel am Fahrradständer steht: „Der Code steht auf dem Rad mit der teuersten Reparatur – unter den Rädern, die gerade an einer Station im Lindenhof stehen.“",
-      "code": { "teile": [{ "quelle": "zelle", "zeile": 1, "spalte": 1, "stellen": 4 }] },
+      "code": {
+        "teile": [
+          {
+            "quelle": "zelle",
+            "zeile": 1,
+            "spalte": 1,
+            "stellen": 4
+          }
+        ]
+      },
       "aufgabe": {
-        "id": "K2-S2", "titel": "Die teuerste Reparatur im Lindenhof", "stufe": 3, "kategorie": "SQL Verbund", "fallen": ["P2", "P7"],
-        "inhalt": [
-          { "t": "text", "md": "Gib RadID, Typ und die Kosten der teuersten Reparatur aus – nur für Räder, die an einer Station im Stadtteil **Lindenhof** stehen. Das Ergebnis ist **genau ein** Datensatz. Nutze Tabellenaliase." },
-          { "t": "hinweis", "md": "**Schloss:** Der Code ist die RadID, vierstellig mit führenden Nullen (z. B. 0042)." }
+        "id": "K2-S2",
+        "titel": "Die teuerste Reparatur im Lindenhof",
+        "stufe": 3,
+        "kategorie": "SQL Verbund",
+        "fallen": [
+          "P2",
+          "P7"
         ],
-        "interaktion": { "kind": "sql", "datenbank": "stadtrad" },
-        "loesung": { "sql": "SELECT d.RadID, d.Typ, r.Kosten\nFROM Reparatur r, Rad d, Station s\nWHERE r.RadID = d.RadID\n  AND d.StationID = s.StationID\n  AND s.Stadtteil = 'Lindenhof'\nORDER BY r.Kosten DESC\nLIMIT 1" },
-        "tipps": ["Drei Tabellen brauchen zwei Verbundbedingungen: Reparatur–Rad über RadID und Rad–Station über StationID."],
-        "erklaerung": [{ "t": "text", "md": "Reparatur, Rad und Station werden über RadID und StationID verbunden, der Stadtteil filtert. `ORDER BY r.Kosten DESC LIMIT 1` liefert die teuerste Reparatur." }]
+        "inhalt": [
+          {
+            "t": "text",
+            "md": "Gib RadID, Typ und die Kosten der teuersten Reparatur aus – nur für Räder, die an einer Station im Stadtteil **Lindenhof** stehen. Das Ergebnis ist **genau ein** Datensatz. Nutze Tabellenaliase."
+          },
+          {
+            "t": "hinweis",
+            "md": "**Schloss:** Der Code ist die RadID, vierstellig mit führenden Nullen (z. B. 0042)."
+          }
+        ],
+        "interaktion": {
+          "kind": "sql",
+          "datenbank": "stadtrad"
+        },
+        "loesung": {
+          "sql": "SELECT d.RadID, d.Typ, r.Kosten\nFROM Reparatur r, Rad d, Station s\nWHERE r.RadID = d.RadID\n  AND d.StationID = s.StationID\n  AND s.Stadtteil = 'Lindenhof'\nORDER BY r.Kosten DESC\nLIMIT 1"
+        },
+        "tipps": [
+          "Drei Tabellen brauchen zwei Verbundbedingungen: Reparatur–Rad über RadID und Rad–Station über StationID."
+        ],
+        "erklaerung": [
+          {
+            "t": "text",
+            "md": "Reparatur, Rad und Station werden über RadID und StationID verbunden, der Stadtteil filtert. `ORDER BY r.Kosten DESC LIMIT 1` liefert die teuerste Reparatur."
+          }
+        ]
       }
     },
     {
-      "id": "S3", "nr": 3, "titel": "Die Geldkassette", "niveau": "alle",
+      "id": "S3",
+      "nr": 3,
+      "titel": "Die Geldkassette",
+      "niveau": "alle",
       "story": "Eine Kassette vom Stadtfest mit vierstelligem Schloss. Auf dem Deckel: „Samstag war am meisten los.“",
-      "code": { "teile": [{ "quelle": "anzahlZeilen" }, { "quelle": "zelle", "zeile": 1, "spalte": 1 }, { "quelle": "zelle", "zeile": 1, "spalte": 3 }] },
+      "code": {
+        "teile": [
+          {
+            "quelle": "anzahlZeilen"
+          },
+          {
+            "quelle": "zelle",
+            "zeile": 1,
+            "spalte": 1
+          },
+          {
+            "quelle": "zelle",
+            "zeile": 1,
+            "spalte": 3
+          }
+        ]
+      },
       "aufgabe": {
-        "id": "K2-S3", "titel": "Schichten am Samstag", "stufe": 3, "kategorie": "SQL Aggregation", "fallen": ["P1", "P3"],
-        "inhalt": [
-          { "t": "text", "md": "Gib für jeden Stand StandNr, Name und die Anzahl seiner Schichten am **Samstag, 29.08.2026** aus (Spalte Schichten) – nur Stände mit **mindestens 7** Schichten an diesem Tag, die meisten zuerst." },
-          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der Stände in eurem Ergebnis, zweite Ziffer = StandNr des Stands mit den meisten Schichten, danach seine Anzahl an Schichten." }
+        "id": "K2-S3",
+        "titel": "Schichten am Samstag",
+        "stufe": 3,
+        "kategorie": "SQL Aggregation",
+        "fallen": [
+          "P1",
+          "P3"
         ],
-        "interaktion": { "kind": "sql", "datenbank": "stadtfest", "sortierung": [{ "spalte": "Schichten", "richtung": "DESC" }] },
-        "loesung": { "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Schichten\nFROM Stand, Schicht\nWHERE Stand.StandNr = Schicht.StandNr\n  AND Schicht.Beginn LIKE '2026-08-29%'\nGROUP BY Stand.StandNr, Stand.Name\nHAVING COUNT(*) >= 7\nORDER BY Schichten DESC" },
-        "tipps": ["Der Tag ist eine Bedingung für einzelne Schichten (WHERE), „mindestens 7“ eine Bedingung für ganze Gruppen (HAVING)."],
-        "erklaerung": [{ "t": "text", "md": "Erst filtert `WHERE` die Samstagsschichten, dann bildet `GROUP BY` eine Gruppe je Stand, und `HAVING COUNT(*) >= 7` behält nur die großen Gruppen." }]
+        "inhalt": [
+          {
+            "t": "text",
+            "md": "Gib für jeden Stand StandNr, Name und die Anzahl seiner Schichten am **Samstag, 29.08.2026** aus (Spalte Schichten) – nur Stände mit **mindestens 7** Schichten an diesem Tag, die meisten zuerst."
+          },
+          {
+            "t": "hinweis",
+            "md": "**Schloss:** Erste Ziffer = Anzahl der Stände in eurem Ergebnis, zweite Ziffer = StandNr des Stands mit den meisten Schichten, danach seine Anzahl an Schichten."
+          }
+        ],
+        "interaktion": {
+          "kind": "sql",
+          "datenbank": "stadtfest",
+          "sortierung": [
+            {
+              "spalte": "Schichten",
+              "richtung": "DESC"
+            }
+          ]
+        },
+        "loesung": {
+          "sql": "SELECT Stand.StandNr, Stand.Name, COUNT(*) AS Schichten\nFROM Stand, Schicht\nWHERE Stand.StandNr = Schicht.StandNr\n  AND Schicht.Beginn LIKE '2026-08-29%'\nGROUP BY Stand.StandNr, Stand.Name\nHAVING COUNT(*) >= 7\nORDER BY Schichten DESC"
+        },
+        "tipps": [
+          "Der Tag ist eine Bedingung für einzelne Schichten (WHERE), „mindestens 7“ eine Bedingung für ganze Gruppen (HAVING)."
+        ],
+        "erklaerung": [
+          {
+            "t": "text",
+            "md": "Erst filtert `WHERE` die Samstagsschichten, dann bildet `GROUP BY` eine Gruppe je Stand, und `HAVING COUNT(*) >= 7` behält nur die großen Gruppen."
+          }
+        ]
       }
     },
     {
-      "id": "S4", "nr": 4, "titel": "Der Vereinsspind", "niveau": "alle",
+      "id": "S4",
+      "nr": 4,
+      "titel": "Der Vereinsspind",
+      "niveau": "alle",
       "story": "An der Spindtür des TuS kleben drei Auftragskarten und eine Liste mit Schlüssel-Vorschlägen.",
-      "code": { "teile": [{ "quelle": "zuordnung", "teil": 1 }, { "quelle": "auswahl", "teil": 2 }] },
+      "code": {
+        "teile": [
+          {
+            "quelle": "zuordnung",
+            "teil": 1
+          },
+          {
+            "quelle": "auswahl",
+            "teil": 2
+          }
+        ]
+      },
       "aufgabe": {
-        "id": "K2-S4", "titel": "Drei Karten, ein Schlüssel", "stufe": 2, "kategorie": "Anomalien", "fallen": ["P8"],
+        "id": "K2-S4",
+        "titel": "Drei Karten, ein Schlüssel",
+        "stufe": 2,
+        "kategorie": "Anomalien",
+        "fallen": [
+          "P8"
+        ],
         "inhalt": [
-          { "t": "text", "md": "Alle Daten des TuS stehen noch in **einer** Tabelle: MitgliederlisteRoh(Mitglied, Geburtsjahr, Abteilungen, Trainer, TrainerTelefon, Beitragsgruppe, Monatsbeitrag, Halle, HallenAdresse, Eintritt)." },
-          { "t": "hinweis", "md": "**Schloss:** Die ersten drei Ziffern sind die Nummern der Anomalien zu den Karten (in der Reihenfolge Beitrag, Austritt, Rudern), die vierte ist die Nummer des richtigen Schlüssels." }
+          {
+            "t": "text",
+            "md": "Alle Daten des TuS stehen noch in **einer** Tabelle: MitgliederlisteRoh(Mitglied, Geburtsjahr, Abteilungen, Trainer, TrainerTelefon, Beitragsgruppe, Monatsbeitrag, Halle, HallenAdresse, Eintritt)."
+          },
+          {
+            "t": "hinweis",
+            "md": "**Schloss:** Die ersten drei Ziffern sind die Nummern der Anomalien zu den Karten (in der Reihenfolge Beitrag, Austritt, Rudern), die vierte ist die Nummer des richtigen Schlüssels."
+          }
         ],
         "interaktion": [
-          { "kind": "match", "frage": "a) Ordne jeder Auftragskarte die Anomalie zu, die sie auslöst.",
+          {
+            "kind": "match",
+            "frage": "a) Gib zu jeder Auftragskarte die Anomalie an, die sie auslöst.",
             "elemente": [
-              { "id": "e1", "md": "**Beitrag:** Der Monatsbeitrag der Gruppe Jugend steigt von 8,50 € auf 9 €." },
-              { "id": "e2", "md": "**Austritt:** Die beiden passiven Mitglieder treten aus – danach steht nirgends mehr, was die Gruppe Passiv kostet." },
-              { "id": "e3", "md": "**Rudern:** Die neue Abteilung Rudern mit Trainerin und Bootshaus soll eingetragen werden, hat aber noch keine Mitglieder." }
+              {
+                "id": "e1",
+                "md": "**Beitrag:** Der Monatsbeitrag der Gruppe Jugend steigt von 8,50 € auf 9 €."
+              },
+              {
+                "id": "e2",
+                "md": "**Austritt:** Die beiden passiven Mitglieder treten aus – danach steht nirgends mehr, was die Gruppe Passiv kostet."
+              },
+              {
+                "id": "e3",
+                "md": "**Rudern:** Die neue Abteilung Rudern mit Trainerin und Bootshaus soll eingetragen werden, hat aber noch keine Mitglieder."
+              }
             ],
             "kategorien": [
-              { "id": "k1", "md": "1 Einfügeanomalie" },
-              { "id": "k2", "md": "2 Änderungsanomalie" },
-              { "id": "k3", "md": "3 Löschanomalie" }
-            ] },
-          { "kind": "choice", "mehrfach": false, "frage": "b) Für die neue Relation Mitglied(…, Vorname, Nachname, Geburtsjahr, Beitragsgruppe, Eintritt) wird ein Primärschlüssel gesucht. In der Liste heißen zwei verschiedene Mitglieder „Lukas Behrens“. Welcher Vorschlag taugt?",
+              {
+                "id": "k1",
+                "md": "1 Einfügeanomalie"
+              },
+              {
+                "id": "k2",
+                "md": "2 Änderungsanomalie"
+              },
+              {
+                "id": "k3",
+                "md": "3 Löschanomalie"
+              }
+            ]
+          },
+          {
+            "kind": "choice",
+            "mehrfach": false,
+            "frage": "b) Für die neue Relation Mitglied(…, Vorname, Nachname, Geburtsjahr, Beitragsgruppe, Eintritt) wird ein Primärschlüssel gesucht. In der Liste heißen zwei verschiedene Mitglieder „Lukas Behrens“. Welcher Vorschlag taugt?",
             "optionen": [
-              { "id": "a", "md": "Schlüssel 1: (Nachname)" },
-              { "id": "b", "md": "Schlüssel 2: (Vorname, Nachname)" },
-              { "id": "c", "md": "Schlüssel 3: eine neue, fortlaufende MitgliedNr" },
-              { "id": "d", "md": "Schlüssel 4: (Beitragsgruppe, Eintritt)" }
-            ] }
+              {
+                "id": "a",
+                "md": "Schlüssel 1: (Nachname)"
+              },
+              {
+                "id": "b",
+                "md": "Schlüssel 2: (Vorname, Nachname)"
+              },
+              {
+                "id": "c",
+                "md": "Schlüssel 3: eine neue, fortlaufende MitgliedNr"
+              },
+              {
+                "id": "d",
+                "md": "Schlüssel 4: (Beitragsgruppe, Eintritt)"
+              }
+            ]
+          }
         ],
-        "loesung": [{ "e1": "k2", "e2": "k3", "e3": "k1" }, { "richtig": ["c"] }],
-        "tipps": ["Änderung = derselbe Wert steht vielfach und muss überall geändert werden; Löschung = mit einer Zeile verschwindet mehr als gewollt; Einfügung = etwas lässt sich ohne andere Daten gar nicht eintragen."],
-        "erklaerung": [{ "t": "text", "md": "Der Beitrag steht in jeder Jugend-Zeile (Änderung), mit den passiven Zeilen verschwindet der Beitrag der Gruppe (Löschung), eine Abteilung ohne Mitglied passt in keine Zeile (Einfügung). Namen sind nicht eindeutig, Gruppe und Eintritt erst recht nicht – ein künstlicher Schlüssel MitgliedNr ist sicher." }]
+        "loesung": [
+          {
+            "e1": "k2",
+            "e2": "k3",
+            "e3": "k1"
+          },
+          {
+            "richtig": [
+              "c"
+            ]
+          }
+        ],
+        "tipps": [
+          "Änderung = derselbe Wert steht vielfach und muss überall geändert werden; Löschung = mit einer Zeile verschwindet mehr als gewollt; Einfügung = etwas lässt sich ohne andere Daten gar nicht eintragen."
+        ],
+        "erklaerung": [
+          {
+            "t": "text",
+            "md": "Der Beitrag steht in jeder Jugend-Zeile (Änderung), mit den passiven Zeilen verschwindet der Beitrag der Gruppe (Löschung), eine Abteilung ohne Mitglied passt in keine Zeile (Einfügung). Namen sind nicht eindeutig, Gruppe und Eintritt erst recht nicht – ein künstlicher Schlüssel MitgliedNr ist sicher."
+          }
+        ]
       }
     },
     {
-      "id": "S5", "nr": 5, "titel": "Die Planrolle", "niveau": "eA",
+      "id": "S5",
+      "nr": 5,
+      "titel": "Die Planrolle",
+      "niveau": "eA",
       "story": "Ein ER-Diagramm der Tanzschule „Weserschwung“. Auf der Rückseite steht: „Wie viele Tische braucht ihr?“",
-      "code": { "teile": [{ "quelle": "relationen" }, { "quelle": "fremdschluessel" }, { "quelle": "attribute" }] },
+      "code": {
+        "teile": [
+          {
+            "quelle": "relationen"
+          },
+          {
+            "quelle": "fremdschluessel"
+          },
+          {
+            "quelle": "attribute"
+          }
+        ]
+      },
       "aufgabe": {
-        "id": "K2-S5", "titel": "Die Tanzschule überführen", "stufe": 3, "kategorie": "Überführung", "fallen": ["P9"],
+        "id": "K2-S5",
+        "titel": "Die Tanzschule überführen",
+        "stufe": 3,
+        "kategorie": "Überführung",
+        "fallen": [
+          "P9"
+        ],
         "inhalt": [
-          { "t": "text", "md": "Überführe das ER-Modell in ein Relationenschema. Die Relationen der drei Entitätstypen sind schon angelegt – ergänze, was fehlt (Fremdschlüssel mit Zielrelation, weitere Relationen)." },
-          { "t": "er", "graph": {
-            "entitaeten": [
-              { "id": "e1", "name": "Tanzlehrer", "attribute": [{ "name": "LehrerNr", "schluessel": true }, { "name": "Name", "schluessel": false }, { "name": "Telefon", "schluessel": false }] },
-              { "id": "e2", "name": "Tanzkurs", "attribute": [{ "name": "KursNr", "schluessel": true }, { "name": "Titel", "schluessel": false }, { "name": "Wochentag", "schluessel": false }] },
-              { "id": "e3", "name": "Teilnehmer", "attribute": [{ "name": "TeilnehmerNr", "schluessel": true }, { "name": "Vorname", "schluessel": false }, { "name": "Nachname", "schluessel": false }] }
-            ],
-            "beziehungen": [
-              { "id": "b1", "name": "leitet", "enden": [{ "entitaet": "e1", "kard": "1" }, { "entitaet": "e2", "kard": "n" }], "attribute": [] },
-              { "id": "b2", "name": "belegt", "enden": [{ "entitaet": "e2", "kard": "m" }, { "entitaet": "e3", "kard": "n" }], "attribute": [{ "name": "Seit" }] }
-            ] },
+          {
+            "t": "text",
+            "md": "Erstelle zu dem ER-Modell das Relationenschema. Die Relationen der drei Entitätstypen sind schon angelegt – ergänze, was fehlt (Fremdschlüssel mit Zielrelation, weitere Relationen)."
+          },
+          {
+            "t": "er",
+            "graph": {
+              "entitaeten": [
+                {
+                  "id": "e1",
+                  "name": "Tanzlehrer",
+                  "attribute": [
+                    {
+                      "name": "LehrerNr",
+                      "schluessel": true
+                    },
+                    {
+                      "name": "Name",
+                      "schluessel": false
+                    },
+                    {
+                      "name": "Telefon",
+                      "schluessel": false
+                    }
+                  ]
+                },
+                {
+                  "id": "e2",
+                  "name": "Tanzkurs",
+                  "attribute": [
+                    {
+                      "name": "KursNr",
+                      "schluessel": true
+                    },
+                    {
+                      "name": "Titel",
+                      "schluessel": false
+                    },
+                    {
+                      "name": "Wochentag",
+                      "schluessel": false
+                    }
+                  ]
+                },
+                {
+                  "id": "e3",
+                  "name": "Teilnehmer",
+                  "attribute": [
+                    {
+                      "name": "TeilnehmerNr",
+                      "schluessel": true
+                    },
+                    {
+                      "name": "Vorname",
+                      "schluessel": false
+                    },
+                    {
+                      "name": "Nachname",
+                      "schluessel": false
+                    }
+                  ]
+                }
+              ],
+              "beziehungen": [
+                {
+                  "id": "b1",
+                  "name": "leitet",
+                  "enden": [
+                    {
+                      "entitaet": "e1",
+                      "kard": "1"
+                    },
+                    {
+                      "entitaet": "e2",
+                      "kard": "n"
+                    }
+                  ],
+                  "attribute": []
+                },
+                {
+                  "id": "b2",
+                  "name": "belegt",
+                  "enden": [
+                    {
+                      "entitaet": "e2",
+                      "kard": "m"
+                    },
+                    {
+                      "entitaet": "e3",
+                      "kard": "n"
+                    }
+                  ],
+                  "attribute": [
+                    {
+                      "name": "Seit"
+                    }
+                  ]
+                }
+              ]
+            },
             "layout": {
-              "e1": { "x": 156, "y": 174 }, "e1.0": { "x": 78, "y": 94 }, "e1.1": { "x": 156, "y": 48 }, "e1.2": { "x": 234, "y": 94 },
-              "e2": { "x": 616, "y": 174 }, "e2.0": { "x": 538, "y": 94 }, "e2.1": { "x": 616, "y": 48 }, "e2.2": { "x": 694, "y": 94 },
-              "e3": { "x": 1076, "y": 174 }, "e3.0": { "x": 998, "y": 94 }, "e3.1": { "x": 1076, "y": 48 }, "e3.2": { "x": 1154, "y": 94 },
-              "b1": { "x": 386, "y": 174 }, "b2": { "x": 846, "y": 174 }, "b2.0": { "x": 846, "y": 262 }
-            } },
-          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der Relationen, zweite Ziffer = Anzahl der Fremdschlüssel in eurem Schema, danach die Anzahl aller Attribute in allen Relationen zusammen." }
+              "e1": {
+                "x": 156,
+                "y": 174
+              },
+              "e1.0": {
+                "x": 78,
+                "y": 94
+              },
+              "e1.1": {
+                "x": 156,
+                "y": 48
+              },
+              "e1.2": {
+                "x": 234,
+                "y": 94
+              },
+              "e2": {
+                "x": 616,
+                "y": 174
+              },
+              "e2.0": {
+                "x": 538,
+                "y": 94
+              },
+              "e2.1": {
+                "x": 616,
+                "y": 48
+              },
+              "e2.2": {
+                "x": 694,
+                "y": 94
+              },
+              "e3": {
+                "x": 1076,
+                "y": 174
+              },
+              "e3.0": {
+                "x": 998,
+                "y": 94
+              },
+              "e3.1": {
+                "x": 1076,
+                "y": 48
+              },
+              "e3.2": {
+                "x": 1154,
+                "y": 94
+              },
+              "b1": {
+                "x": 386,
+                "y": 174
+              },
+              "b2": {
+                "x": 846,
+                "y": 174
+              },
+              "b2.0": {
+                "x": 846,
+                "y": 262
+              }
+            }
+          },
+          {
+            "t": "hinweis",
+            "md": "**Schloss:** Erste Ziffer = Anzahl der Relationen, zweite Ziffer = Anzahl der Fremdschlüssel in eurem Schema, danach die Anzahl aller Attribute in allen Relationen zusammen."
+          }
         ],
-        "interaktion": { "kind": "schema", "modus": "frei", "start": [
-          { "name": "Tanzlehrer", "attribute": [{ "name": "LehrerNr", "pk": true }, { "name": "Name" }, { "name": "Telefon" }] },
-          { "name": "Tanzkurs", "attribute": [{ "name": "KursNr", "pk": true }, { "name": "Titel" }, { "name": "Wochentag" }] },
-          { "name": "Teilnehmer", "attribute": [{ "name": "TeilnehmerNr", "pk": true }, { "name": "Vorname" }, { "name": "Nachname" }] }
-        ] },
-        "loesung": {
-          "muster": [[
-            { "name": "Tanzlehrer", "attribute": [{ "name": "LehrerNr", "pk": true }, { "name": "Name" }, { "name": "Telefon" }] },
-            { "name": "Tanzkurs", "attribute": [{ "name": "KursNr", "pk": true }, { "name": "Titel" }, { "name": "Wochentag" }, { "name": "LehrerNr", "fk": "Tanzlehrer" }] },
-            { "name": "Teilnehmer", "attribute": [{ "name": "TeilnehmerNr", "pk": true }, { "name": "Vorname" }, { "name": "Nachname" }] },
-            { "name": "belegt", "attribute": [{ "name": "KursNr", "pk": true, "fk": "Tanzkurs" }, { "name": "TeilnehmerNr", "pk": true, "fk": "Teilnehmer" }, { "name": "Seit" }] }
-          ]],
-          "synonyme": { "belegt": ["Belegung", "Teilnahme", "Anmeldung"], "Seit": ["SeitDatum", "Datum", "Beginn"], "LehrerNr": ["TanzlehrerNr"] }
+        "interaktion": {
+          "kind": "schema",
+          "modus": "frei",
+          "start": [
+            {
+              "name": "Tanzlehrer",
+              "attribute": [
+                {
+                  "name": "LehrerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Name"
+                },
+                {
+                  "name": "Telefon"
+                }
+              ]
+            },
+            {
+              "name": "Tanzkurs",
+              "attribute": [
+                {
+                  "name": "KursNr",
+                  "pk": true
+                },
+                {
+                  "name": "Titel"
+                },
+                {
+                  "name": "Wochentag"
+                }
+              ]
+            },
+            {
+              "name": "Teilnehmer",
+              "attribute": [
+                {
+                  "name": "TeilnehmerNr",
+                  "pk": true
+                },
+                {
+                  "name": "Vorname"
+                },
+                {
+                  "name": "Nachname"
+                }
+              ]
+            }
+          ]
         },
-        "tipps": ["1:n: Der Fremdschlüssel kommt auf die n-Seite. n:m: Der Beziehungstyp bekommt eine eigene Relation mit beiden Fremdschlüsseln (und seinem Attribut)."],
-        "erklaerung": [{ "t": "text", "md": "*leitet* ist 1:n – Tanzkurs bekommt **↑LehrerNr**. *belegt* ist n:m – eigene Relation belegt(↑KursNr, ↑TeilnehmerNr, Seit) mit zusammengesetztem Primärschlüssel. Vier Relationen, drei Fremdschlüssel." }]
+        "loesung": {
+          "muster": [
+            [
+              {
+                "name": "Tanzlehrer",
+                "attribute": [
+                  {
+                    "name": "LehrerNr",
+                    "pk": true
+                  },
+                  {
+                    "name": "Name"
+                  },
+                  {
+                    "name": "Telefon"
+                  }
+                ]
+              },
+              {
+                "name": "Tanzkurs",
+                "attribute": [
+                  {
+                    "name": "KursNr",
+                    "pk": true
+                  },
+                  {
+                    "name": "Titel"
+                  },
+                  {
+                    "name": "Wochentag"
+                  },
+                  {
+                    "name": "LehrerNr",
+                    "fk": "Tanzlehrer"
+                  }
+                ]
+              },
+              {
+                "name": "Teilnehmer",
+                "attribute": [
+                  {
+                    "name": "TeilnehmerNr",
+                    "pk": true
+                  },
+                  {
+                    "name": "Vorname"
+                  },
+                  {
+                    "name": "Nachname"
+                  }
+                ]
+              },
+              {
+                "name": "belegt",
+                "attribute": [
+                  {
+                    "name": "KursNr",
+                    "pk": true,
+                    "fk": "Tanzkurs"
+                  },
+                  {
+                    "name": "TeilnehmerNr",
+                    "pk": true,
+                    "fk": "Teilnehmer"
+                  },
+                  {
+                    "name": "Seit"
+                  }
+                ]
+              }
+            ]
+          ],
+          "synonyme": {
+            "belegt": [
+              "Belegung",
+              "Teilnahme",
+              "Anmeldung"
+            ],
+            "Seit": [
+              "SeitDatum",
+              "Datum",
+              "Beginn"
+            ],
+            "LehrerNr": [
+              "TanzlehrerNr"
+            ]
+          }
+        },
+        "tipps": [
+          "1:n: Der Fremdschlüssel kommt auf die n-Seite. n:m: Der Beziehungstyp bekommt eine eigene Relation mit beiden Fremdschlüsseln (und seinem Attribut)."
+        ],
+        "erklaerung": [
+          {
+            "t": "text",
+            "md": "*leitet* ist 1:n – Tanzkurs bekommt **↑LehrerNr**. *belegt* ist n:m – eigene Relation belegt(↑KursNr, ↑TeilnehmerNr, Seit) mit zusammengesetztem Primärschlüssel. Vier Relationen, drei Fremdschlüssel."
+          }
+        ]
       }
     },
     {
-      "id": "S5g", "nr": 5, "titel": "Der Schlüsselkasten", "niveau": "gA",
+      "id": "S5g",
+      "nr": 5,
+      "titel": "Der Schlüsselkasten",
+      "niveau": "gA",
       "story": "Im Hallenbad hängt ein Kasten mit Schließfach-Schlüsseln. Nur wer die richtigen Schlüssel findet, öffnet ihn.",
-      "code": { "teile": [{ "quelle": "anzahlRichtig" }, { "quelle": "minimalerSchluessel" }, { "quelle": "attributeRichtig" }] },
+      "code": {
+        "teile": [
+          {
+            "quelle": "anzahlRichtig"
+          },
+          {
+            "quelle": "minimalerSchluessel"
+          },
+          {
+            "quelle": "attributeRichtig"
+          }
+        ]
+      },
       "aufgabe": {
-        "id": "K2-S5g", "titel": "Welche Schlüssel taugen?", "stufe": 2, "kategorie": "Schlüssel", "fallen": ["P8"],
-        "inhalt": [
-          { "t": "text", "md": "Ausschnitt aus der Tabelle der Schließfächer. Jedes Fach hat in seiner Reihe einen festen Platz. Den Zahlencode stellen die Mieter selbst ein – zwei Fächer dürfen denselben Code haben, und ein Mieter darf mehrere Fächer mieten." },
-          { "t": "dbtabelle", "tabelle": "Schliessfach", "kopf": [{ "name": "FachNr" }, { "name": "Reihe" }, { "name": "Platz" }, { "name": "Code" }, { "name": "MieterNr" }],
-            "zeilen": [[101, "A", 1, "2580", 17], [102, "A", 2, "1234", 23], [103, "A", 3, "9071", 17], [201, "B", 1, "4455", 8], [202, "B", 2, "3306", null]] },
-          { "t": "hinweis", "md": "**Schloss:** Erste Ziffer = Anzahl der tauglichen Schlüssel, zweite Ziffer = Anzahl der Attribute im kleinsten tauglichen Schlüssel, dritte Ziffer = Anzahl der Attribute aller tauglichen Schlüssel zusammen." }
+        "id": "K2-S5g",
+        "titel": "Welche Schlüssel taugen?",
+        "stufe": 2,
+        "kategorie": "Schlüssel",
+        "fallen": [
+          "P8"
         ],
-        "interaktion": { "kind": "choice", "mehrfach": true, "frage": "Markiere **alle** Attribute bzw. Attributkombinationen, die als Primärschlüssel taugen (eindeutig **und** minimal).",
+        "inhalt": [
+          {
+            "t": "text",
+            "md": "Ausschnitt aus der Tabelle der Schließfächer. Jedes Fach hat in seiner Reihe einen festen Platz. Den Zahlencode stellen die Mieter selbst ein – zwei Fächer dürfen denselben Code haben, und ein Mieter darf mehrere Fächer mieten."
+          },
+          {
+            "t": "dbtabelle",
+            "tabelle": "Schliessfach",
+            "kopf": [
+              {
+                "name": "FachNr"
+              },
+              {
+                "name": "Reihe"
+              },
+              {
+                "name": "Platz"
+              },
+              {
+                "name": "Code"
+              },
+              {
+                "name": "MieterNr"
+              }
+            ],
+            "zeilen": [
+              [
+                101,
+                "A",
+                1,
+                "2580",
+                17
+              ],
+              [
+                102,
+                "A",
+                2,
+                "1234",
+                23
+              ],
+              [
+                103,
+                "A",
+                3,
+                "9071",
+                17
+              ],
+              [
+                201,
+                "B",
+                1,
+                "4455",
+                8
+              ],
+              [
+                202,
+                "B",
+                2,
+                "3306",
+                null
+              ]
+            ]
+          },
+          {
+            "t": "hinweis",
+            "md": "**Schloss:** Erste Ziffer = Anzahl der tauglichen Schlüssel, zweite Ziffer = Anzahl der Attribute im kleinsten tauglichen Schlüssel, dritte Ziffer = Anzahl der Attribute aller tauglichen Schlüssel zusammen."
+          }
+        ],
+        "interaktion": {
+          "kind": "choice",
+          "mehrfach": true,
+          "frage": "Markiere **alle** Attribute bzw. Attributkombinationen, die als Primärschlüssel taugen (eindeutig **und** minimal).",
           "optionen": [
-            { "id": "a", "code": "(FachNr)" },
-            { "id": "b", "code": "(Reihe, Platz)" },
-            { "id": "c", "code": "(Code)" },
-            { "id": "d", "code": "(MieterNr)" },
-            { "id": "e", "code": "(FachNr, Reihe)" },
-            { "id": "f", "code": "(Platz)" }
-          ] },
-        "loesung": { "richtig": ["a", "b"] },
-        "tipps": ["Der Ausschnitt kann täuschen: Entscheidend ist, was die Beschreibung erlaubt – nicht, was zufällig in fünf Zeilen steht."],
-        "erklaerung": [{ "t": "text", "md": "FachNr und (Reihe, Platz) sind eindeutig und minimal. Code ist nur im Ausschnitt eindeutig (Ausschnitt-Falle), MieterNr wiederholt sich, (FachNr, Reihe) ist nicht minimal, Platz allein wiederholt sich je Reihe." }]
+            {
+              "id": "a",
+              "code": "(FachNr)"
+            },
+            {
+              "id": "b",
+              "code": "(Reihe, Platz)"
+            },
+            {
+              "id": "c",
+              "code": "(Code)"
+            },
+            {
+              "id": "d",
+              "code": "(MieterNr)"
+            },
+            {
+              "id": "e",
+              "code": "(FachNr, Reihe)"
+            },
+            {
+              "id": "f",
+              "code": "(Platz)"
+            }
+          ]
+        },
+        "loesung": {
+          "richtig": [
+            "a",
+            "b"
+          ]
+        },
+        "tipps": [
+          "Der Ausschnitt kann täuschen: Entscheidend ist, was die Beschreibung erlaubt – nicht, was zufällig in fünf Zeilen steht."
+        ],
+        "erklaerung": [
+          {
+            "t": "text",
+            "md": "FachNr und (Reihe, Platz) sind eindeutig und minimal. Code ist nur im Ausschnitt eindeutig (Ausschnitt-Falle), MieterNr wiederholt sich, (FachNr, Reihe) ist nicht minimal, Platz allein wiederholt sich je Reihe."
+          }
+        ]
       }
     },
     {
-      "id": "S6", "nr": 6, "titel": "Der Tresor", "niveau": "alle",
+      "id": "S6",
+      "nr": 6,
+      "titel": "Der Tresor",
+      "niveau": "alle",
       "story": "Das letzte Schloss ist beschriftet: „Wie gläsern ist Weserstedt?“ Fünf Rädchen, fünf Grundsätze.",
-      "code": { "teile": [{ "quelle": "zuordnung" }] },
+      "code": {
+        "teile": [
+          {
+            "quelle": "zuordnung"
+          }
+        ]
+      },
       "aufgabe": {
-        "id": "K2-S6", "titel": "Fünf Grundsätze", "stufe": 2, "kategorie": "Datenschutz",
+        "id": "K2-S6",
+        "titel": "Fünf Grundsätze",
+        "stufe": 2,
+        "kategorie": "Datenschutz",
         "inhalt": [
-          { "t": "text", "md": "Ordne jedem Fall aus Weserstedt den Grundsatz der DSGVO zu, gegen den er verstößt." },
-          { "t": "hinweis", "md": "**Schloss:** Die Ziffern sind die Nummern der Grundsätze in der Reihenfolge der Fälle Werbung, Formular, Archiv, Nachtanalyse, Abgleich." }
+          {
+            "t": "text",
+            "md": "Gib zu jedem Fall aus Weserstedt den Grundsatz der DSGVO an, gegen den er verstößt."
+          },
+          {
+            "t": "hinweis",
+            "md": "**Schloss:** Die Ziffern sind die Nummern der Grundsätze in der Reihenfolge der Fälle Werbung, Formular, Archiv, Nachtanalyse, Abgleich."
+          }
         ],
-        "interaktion": { "kind": "match",
+        "interaktion": {
+          "kind": "match",
           "elemente": [
-            { "id": "e1", "md": "**Werbung:** Eine Fitness-App gibt Check-in-Daten an einen Werbepartner weiter, ohne dass die Nutzer gefragt wurden." },
-            { "id": "e2", "md": "**Formular:** Für die Vereinsliste reicht das Geburtsjahr – das Formular fragt aber Geburtsdatum, Größe und Gewicht ab." },
-            { "id": "e3", "md": "**Archiv:** Alle Ausleihdaten des StadtRads liegen nach drei Jahren noch vollständig im Archiv, obwohl die Abrechnung längst erledigt ist." },
-            { "id": "e4", "md": "**Nachtanalyse:** Die Kartenzahlungen vom Stadtfest, erhoben für die Kassenabrechnung, sollen nun zeigen, wer nachts noch unterwegs war." },
-            { "id": "e5", "md": "**Abgleich:** Niemand in Weserstedt erfährt, dass die Stadt App-Check-ins mit dem Einwohnerverzeichnis abgleicht." }
+            {
+              "id": "e1",
+              "md": "**Werbung:** Eine Fitness-App gibt Check-in-Daten an einen Werbepartner weiter, ohne dass die Nutzer gefragt wurden."
+            },
+            {
+              "id": "e2",
+              "md": "**Formular:** Für die Vereinsliste reicht das Geburtsjahr – das Formular fragt aber Geburtsdatum, Größe und Gewicht ab."
+            },
+            {
+              "id": "e3",
+              "md": "**Archiv:** Alle Ausleihdaten des StadtRads liegen nach drei Jahren noch vollständig im Archiv, obwohl die Abrechnung längst erledigt ist."
+            },
+            {
+              "id": "e4",
+              "md": "**Nachtanalyse:** Die Kartenzahlungen vom Stadtfest, erhoben für die Kassenabrechnung, sollen nun zeigen, wer nachts noch unterwegs war."
+            },
+            {
+              "id": "e5",
+              "md": "**Abgleich:** Niemand in Weserstedt erfährt, dass die Stadt App-Check-ins mit dem Einwohnerverzeichnis abgleicht."
+            }
           ],
           "kategorien": [
-            { "id": "g1", "md": "1 Zweckbindung" },
-            { "id": "g2", "md": "2 Datenminimierung" },
-            { "id": "g3", "md": "3 Transparenz" },
-            { "id": "g4", "md": "4 Rechtsgrundlage/Einwilligung" },
-            { "id": "g5", "md": "5 Speicherbegrenzung" }
-          ] },
-        "loesung": { "e1": "g4", "e2": "g2", "e3": "g5", "e4": "g1", "e5": "g3" },
-        "tipps": ["Frag bei jedem Fall: Wurde gefragt? Wird zu viel erhoben? Wird zu lange gespeichert? Wird für etwas anderes genutzt? Weiß es jemand?"],
-        "erklaerung": [{ "t": "text", "md": "Weitergabe ohne Einwilligung (4), zu viele Daten (2), zu lange gespeichert (5), neuer Zweck (1), heimlich (3)." }]
+            {
+              "id": "g1",
+              "md": "1 Zweckbindung"
+            },
+            {
+              "id": "g2",
+              "md": "2 Datenminimierung"
+            },
+            {
+              "id": "g3",
+              "md": "3 Transparenz"
+            },
+            {
+              "id": "g4",
+              "md": "4 Rechtsgrundlage/Einwilligung"
+            },
+            {
+              "id": "g5",
+              "md": "5 Speicherbegrenzung"
+            }
+          ]
+        },
+        "loesung": {
+          "e1": "g4",
+          "e2": "g2",
+          "e3": "g5",
+          "e4": "g1",
+          "e5": "g3"
+        },
+        "tipps": [
+          "Frag bei jedem Fall: Wurde gefragt? Wird zu viel erhoben? Wird zu lange gespeichert? Wird für etwas anderes genutzt? Weiß es jemand?"
+        ],
+        "erklaerung": [
+          {
+            "t": "text",
+            "md": "Weitergabe ohne Einwilligung (4), zu viele Daten (2), zu lange gespeichert (5), neuer Zweck (1), heimlich (3)."
+          }
+        ]
       }
     }
   ]

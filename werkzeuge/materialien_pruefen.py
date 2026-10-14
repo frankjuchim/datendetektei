@@ -8,6 +8,9 @@ Fehler (Exit-Code 1):
   - SQL außerhalb des Absatzformats „SQL-Code“ (Absatz beginnt mit SELECT … FROM) bzw. außerhalb eines Textfelds „SQL“
   - Klarnamen aus werkzeuge/klarnamen.txt (auch in den Dokumenteigenschaften Autor/zuletzt geändert)
   - PDF-Dateinamen mit Umlauten/Sonderzeichen (materialien/**/*.pdf)
+  - Aufgabenstellungen mit Verben, die keine Operatoren der KM-Liste sind (werkzeuge/operatoren.json: „Notiere“,
+    „Überführen Sie“ …; Satzanfang oder nach „,“/„und“/„oder“/„dann“) – nicht in Lehrerhinweisen, Gesamtmaterial
+    und Folien-Notizen (sie sprechen die Lehrkraft an)
   - Schülerfassungen mit Lösungsmarker: Quellen der Schülerfassungen aus seed/arbeitsblaetter.json (docx-Text,
     Dokumenteigenschaft DD-Fassung) und alle PDFs in materialien/Arbeitsblaetter_PDF (PDF-Text)
 Lösungsmarker: „NUR LEHRKRAFT“ (Fußzeile jeder Lösungs-/Lehrkraftfassung, Lösungsfolien), „[NUR LEHRKRAFT]“,
@@ -41,6 +44,30 @@ VERNEINUNG = re.compile(r"\b(statt|nicht|nie|kein|keine|keinen|ohne|verboten|ans
 SQL_ROH = re.compile(r"^\s*SELECT\b.+\bFROM\b", re.S | re.I)
 LOESUNGSMARKER = (MARKER_LEHRKRAFT, NOTIZ_NUR_LEHRKRAFT, LOESUNGSTEIL_WARMUP, "LÖSUNG ·", "ERWARTUNGSHORIZONT ·")
 SCHUELER_ARTEN = {"ab", "kuer", "unplugged", "handbuch"}
+
+
+def _nicht_operator_muster():
+    import json
+    d = json.loads((WERKZEUGE / "operatoren.json").read_text(encoding="utf-8"))
+    du = "|".join(sorted(map(re.escape, d["nicht"]["du"]), key=len, reverse=True))
+    sie = "|".join(sorted(map(re.escape, d["nicht"]["sie"]), key=len, reverse=True))
+    vor = r"(?:^|(?<=[.!?:;)\]\n])\s*|,\s+|\b(?:und|oder|dann)\s+|^\s*[a-z]\)\s*|^\s*\d+\.\s*|[–▸•]\s*)"
+    return re.compile(vor + r"\*{0,2}((?i:" + du + r"))\b\*{0,2}(?! ich\b| wir\b| Sie\b)|" +
+                      vor + r"\*{0,2}((?i:" + sie + r"))\*{0,2} Sie\b", re.M)
+
+
+NICHT_OPERATOR = _nicht_operator_muster()
+
+
+def nicht_operatoren(text):
+    """Verben in Aufgabenstellungen, die keine Operatoren der KM-Liste sind (Markdown-Fettung erlaubt)."""
+    return [m.group(1) or m.group(2) for m in NICHT_OPERATOR.finditer(text)]
+
+
+def _lehrkraft_text(pfad, ort):
+    teile = Path(pfad).parts
+    return "(Notiz)" in ort or "00_Gesamt" in teile or any("Lehrerhinweise" in t for t in teile) or \
+        Path(pfad).stem.endswith("_Lehrkraft")
 
 
 def lade_klarnamen(datei=WERKZEUGE / "klarnamen.txt"):
@@ -141,6 +168,9 @@ def pruefe_datei(pfad, wurzel=REPO, klarnamen=None):
                     break
         if not ist_sql and SQL_ROH.match(t) and ort != "Dokumenteigenschaften":
             fehler.append(f"{ort}: SQL außerhalb des Absatzformats „SQL-Code“ (pptx: Textfeld „SQL“) – wird nicht geprüft: {kurz}")
+        if not ist_sql and ort != "Dokumenteigenschaften" and not _lehrkraft_text(pfad, ort):
+            for verb in nicht_operatoren(t):
+                fehler.append(f"{ort}: „{verb}“ ist kein Operator der KM-Liste (werkzeuge/operatoren.json): {kurz}")
         for name in klarnamen:
             if re.search(r"\b" + re.escape(name) + r"\b", t, re.I):
                 fehler.append(f"{ort}: Klarname „{name}“ (werkzeuge/klarnamen.txt)")

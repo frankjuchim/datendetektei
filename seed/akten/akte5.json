@@ -276,7 +276,7 @@
       ],
       "ab": "AB 5.3 Vom Plan zur Datenbank",
       "niveau": "eA",
-      "briefing": "Der Siegerentwurf steht – jetzt wird aus dem Bauplan eine Datenbank. Überführe das ER-Modell nach den Regeln, setze in der Schema-Werkbank Primärschlüssel und ↑Fremdschlüssel und begründe jede Entscheidung. Danach fragst du die fertige Fall-Datenbank, wen Nora Falter kennt.",
+      "briefing": "Der Siegerentwurf steht – jetzt wird aus dem Bauplan eine Datenbank. Erstelle zu dem ER-Modell nach den Regeln das Relationenschema, setze in der Schema-Werkbank Primärschlüssel und ↑Fremdschlüssel und begründe jede Entscheidung. Danach fragst du die fertige Fall-Datenbank, wen Nora Falter kennt.",
       "intro": [
         {
           "t": "tabelle",
@@ -387,7 +387,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Edda zeigt dir einen alten Bauplan aus dem Polizeiarchiv. Ordne jedem Zeichen den Fachbegriff nach den Ergänzenden Hinweisen zu."
+          "md": "Edda zeigt dir einen alten Bauplan aus dem Polizeiarchiv. Gib zu jedem Zeichen den Fachbegriff nach den Ergänzenden Hinweisen an."
         },
         {
           "t": "er",
@@ -2037,7 +2037,7 @@
         },
         {
           "kind": "kernpunkte",
-          "frage": "b) Die Detektei stellt auf **Schichtbetrieb** um: Ein Wagen wird von mehreren Ermittlern genutzt, und ein Ermittler fährt je nach Schicht verschiedene Wagen. Diskutiere, wie sich das Modell ändert.",
+          "frage": "b) Die Detektei stellt auf **Schichtbetrieb** um: Ein Wagen wird von mehreren Ermittlern genutzt, und ein Ermittler fährt je nach Schicht verschiedene Wagen. Erläutere, wie sich das Modell ändert.",
           "kernpunkte": [
             "stellt fest, dass die vier Zeilen 1:1 nur **stützen** – die Kardinalität folgt aus der Organisationsform (Sachzusammenhang)",
             "Schichtbetrieb: ein Wagen – **mehrere** Ermittler und ein Ermittler – **mehrere** Wagen → **n:m**",
@@ -2203,7 +2203,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Zwischen Person und Fall gibt es hier gleich zwei Beziehungstypen – und einen dritten, an dem auch der Ort beteiligt ist. Ordne **jedes** Element des Bauplans einer Kategorie zu."
+          "md": "Zwischen Person und Fall gibt es hier gleich zwei Beziehungstypen – und einen dritten, an dem auch der Ort beteiligt ist. Gib für **jedes** Element des Bauplans die Kategorie an."
         },
         {
           "t": "er",
@@ -3875,7 +3875,7 @@
         {
           "kind": "er",
           "modus": "ergaenzen",
-          "frage": "a) Modelliere die Komplizenschaft als **zweiten rekursiven Beziehungstyp** an Person (mit Kardinalitäten).",
+          "frage": "a) Erweitere das Modell um die Komplizenschaft als **zweiten rekursiven Beziehungstyp** an Person (mit Kardinalitäten).",
           "start": {
             "graph": {
               "entitaeten": [
@@ -4549,7 +4549,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Ordne jeder Beziehungsart die passende Umsetzungsregel zu."
+          "md": "Gib zu jeder Beziehungsart die passende Umsetzungsregel an."
         }
       ],
       "interaktion": {
@@ -4640,7 +4640,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "**Überführe** den Bauplan in ein Relationenschema. Person und Fall liegen schon in der Werkbank; ergänze, was für *verdaechtig* und *kennt* nötig ist – mit Primärschlüsseln und ↑Fremdschlüsseln. Benenne Fremdschlüssel nach ihrer Rolle."
+          "md": "**Erstelle** zu dem Bauplan das Relationenschema. Person und Fall liegen schon in der Werkbank; ergänze, was für *verdaechtig* und *kennt* nötig ist – mit Primärschlüsseln und ↑Fremdschlüsseln. Wähle für Fremdschlüssel Namen, die ihre Rolle zeigen."
         },
         {
           "t": "er",
@@ -5110,7 +5110,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Der Bauplan ist verloren gegangen, aber das Relationenschema liegt noch vor. **Rekonstruiere** das ER-Diagramm im Bauplan-Tisch: Entitätstypen mit Attributen und Schlüsselattributen, Beziehungstypen mit Kardinalitäten und Attributen."
+          "md": "Der Bauplan ist verloren gegangen, aber das Relationenschema liegt noch vor. **Erstelle** aus dem Relationenschema das ER-Diagramm im Bauplan-Tisch: Entitätstypen mit Attributen und Schlüsselattributen, Beziehungstypen mit Kardinalitäten und Attributen."
         },
         {
           "t": "schema",
@@ -5384,7 +5384,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "**Überführe** den ternären Beziehungstyp *sagtAus* in eine Relation **Aussage**. Achtung: Gesa Ohlendiek hat zu Fall 1 im Fundbüro **zweimal** ausgesagt (am 21. und am 23. September). Wähle den Primärschlüssel so, dass dieselbe Person im selben Fall am selben Ort mehrfach aussagen kann."
+          "md": "**Erstelle** zu dem ternären Beziehungstyp *sagtAus* die Relation **Aussage**. Achtung: Gesa Ohlendiek hat zu Fall 1 im Fundbüro **zweimal** ausgesagt (am 21. und am 23. September). Wähle den Primärschlüssel so, dass dieselbe Person im selben Fall am selben Ort mehrfach aussagen kann."
         },
         {
           "t": "er",
@@ -6045,7 +6045,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen Sie** den Elementen des ER-Diagramms die Fachbegriffe nach den Ergänzenden Hinweisen **zu**. [2 BE]"
+          "md": "**Geben Sie** zu den Elementen des ER-Diagramms die Fachbegriffe nach den Ergänzenden Hinweisen **an**. [2 BE]"
         }
       ],
       "interaktion": {
@@ -6617,7 +6617,7 @@
         },
         {
           "t": "text",
-          "md": "**Ordnen Sie** den Beziehungsarten die Umsetzungsregel **zu**. [2 BE]"
+          "md": "**Geben Sie** zu den Beziehungsarten jeweils die Umsetzungsregel **an**. [2 BE]"
         }
       ],
       "interaktion": {
@@ -7483,7 +7483,7 @@
         },
         {
           "t": "text",
-          "md": "**Überführen** Sie den Beziehungstyp *klettert* mit seinen Attributen in die Kurzschreibweise. Mitglied und Route sind bereits überführt. [3 BE]"
+          "md": "**Erstellen** Sie zu dem Beziehungstyp *klettert* mit seinen Attributen die Relation in Kurzschreibweise. Mitglied und Route sind bereits überführt. [3 BE]"
         }
       ],
       "interaktion": {
@@ -8053,7 +8053,7 @@
         },
         {
           "t": "text",
-          "md": "**Rekonstruieren Sie** aus dem Relationenschema das ER-Diagramm mit Schlüsselattributen, Kardinalitäten und Attributen. [6 BE]"
+          "md": "**Erstellen Sie** aus dem Relationenschema das ER-Diagramm mit Schlüsselattributen, Kardinalitäten und Attributen. [6 BE]"
         }
       ],
       "interaktion": {
@@ -8464,7 +8464,7 @@
         },
         {
           "t": "text",
-          "md": "**Überführen** Sie die ternäre Beziehung *wertet* (Relation **Wertung**) und die rekursive Beziehung *bildetAus* in Relationen. Mitglied und Route sind bereits überführt. [5 BE]"
+          "md": "**Erstellen** Sie zu der ternären Beziehung *wertet* (Relation **Wertung**) und der rekursiven Beziehung *bildetAus* die Relationen. Mitglied und Route sind bereits überführt. [5 BE]"
         }
       ],
       "interaktion": {

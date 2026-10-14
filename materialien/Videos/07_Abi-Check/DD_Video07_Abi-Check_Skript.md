@@ -161,7 +161,7 @@ Und die zehnte Falle betrifft nicht den Inhalt, sondern den Operator. Die Aufgab
 
 **Auf der Folie:**
 
-> Gesucht: Vereine mit **mindestens drei** Mitgliedern – mit Name, Ort und Anzahl. **Finde alle Fallen** in dieser Abfrage:
+> Gesucht: Vereine mit **mindestens drei** Mitgliedern – mit Name, Ort und Anzahl. **Analysiere** die Abfrage auf alle Fallen:
 *✘ ENTHÄLT DREI FALLEN:*
 
 ```sql

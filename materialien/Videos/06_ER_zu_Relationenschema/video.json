@@ -713,11 +713,11 @@
    ],
    "links": [
     {
-     "text": "**Überführe** das ER-Modell aus Video 5 in ein Relationenschema in Kurzschreibweise – mit Primärschlüsseln (unterstrichen) und Fremdschlüsseln (↑)."
+     "text": "**Erstelle** zu dem ER-Modell aus Video 5 das Relationenschema in Kurzschreibweise – mit Primärschlüsseln (unterstrichen) und Fremdschlüsseln (↑)."
     }
    ],
    "pause_s": 40,
-   "sprechertext": "Jetzt du. Hier das Futter-Modell aus dem letzten Video: Lieferant liefert Futtersorte, Tier frisst Futtersorte mit einer Tagesmenge. Überführe es in ein Relationenschema in Kurzschreibweise. Welche Regel gilt bei liefert, welche bei frisst? Halte das Video an."
+   "sprechertext": "Jetzt du. Hier das Futter-Modell aus dem letzten Video: Lieferant liefert Futtersorte, Tier frisst Futtersorte mit einer Tagesmenge. Erstelle dazu das Relationenschema in Kurzschreibweise. Welche Regel gilt bei liefert, welche bei frisst? Halte das Video an."
   },
   {
    "titel": "Auflösung",

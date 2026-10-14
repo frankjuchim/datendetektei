@@ -53,6 +53,18 @@ class BegriffeTest(unittest.TestCase):
         pfad = self.doc("roh.docx", "SELECT Bezeichnung FROM Fundsache WHERE Wert > 3")
         self.assertTrue(any("SQL-Code" in f for f in self.fehler(pfad)))
 
+    def test_operatoren(self):
+        # nur Operatoren der KM-Liste (werkzeuge/operatoren.json); Bedienhinweise bleiben erlaubt
+        pfad = self.doc("op.docx", "Notiere eine Abfrage für alle Fundsachen.", "**Überführen** Sie das Modell in Relationen.",
+                        "Entwirf die Abfrage, prüfe sie in der Konsole.", "Ordne jeder Kennzeichnung ihre Bedeutung zu.")
+        text = "\n".join(self.fehler(pfad))
+        for verb in ("Notiere", "Überführen", "prüfe", "Ordne"):
+            self.assertIn(f"„{verb}“", text)
+        pfad = self.doc("op_ok.docx", "**Entwirf** eine Abfrage und **gib** das Ergebnis **an**.",
+                        "**Erstellen Sie** das Relationenschema. Tippe alle Zellen an und teste sie in der Konsole.",
+                        "Bevor ich dich lasse, prüfe ich, ob du sauber abfragst.")
+        self.assertEqual(self.fehler(pfad), [])
+
     def test_klarnamen(self):
         pfad = self.doc("name.docx", "Frau Erika Beispielreal hat das Fundbuch geführt.")
         self.assertTrue(any("Klarname" in f for f in self.fehler(pfad, klarnamen=["Erika Beispielreal"])))

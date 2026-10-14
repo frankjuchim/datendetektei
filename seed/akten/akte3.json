@@ -49,7 +49,7 @@
       ],
       "ab": "AB 3.2 Die Statistik lügt nicht",
       "niveau": "alle",
-      "briefing": "Finde heraus, wann und bei wem am Kaffeemobil die Positionen mit Menge 0 entstanden sind. Filtere Zeilen mit WHERE und Gruppen mit HAVING, und schau in der Zeitlupe nach, wenn eine Summe plötzlich zu groß wird. Am Ende beschreibst du dein Vorgehen in Worten – wie im Abitur.",
+      "briefing": "Bestimme, wann und bei wem am Kaffeemobil die Positionen mit Menge 0 entstanden sind. Filtere Zeilen mit WHERE und Gruppen mit HAVING, und schau in der Zeitlupe nach, wenn eine Summe plötzlich zu groß wird. Am Ende beschreibst du dein Vorgehen in Worten – wie im Abitur.",
       "intro": [
         {
           "t": "datenbank",
@@ -806,7 +806,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Freie Ermittlung ohne Punkte: Ein Stand taucht in deiner Lösung zu „Bons je Stand“ gar nicht auf. Finde ihn – ohne Unterabfrage. Du darfst in der Konsole mehrere Abfragen ausführen."
+          "md": "Freie Ermittlung ohne Punkte: Ein Stand taucht in deiner Lösung zu „Bons je Stand“ gar nicht auf. Bestimme ihn mit einer Abfrage – ohne Unterabfrage. Du darfst in der Konsole mehrere Abfragen ausführen."
         }
       ],
       "interaktion": [
@@ -1172,7 +1172,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Analysiere die Abfrage: Beschreibe im Sachzusammenhang des Stadtfests, welche Information sie liefert. Schreib deine Antwort auf – sie bleibt auf deinem Gerät. Führe die Abfrage danach in der Konsole aus und prüfe deine Beschreibung am Ergebnis."
+          "md": "Analysiere die Abfrage: Beschreibe im Sachzusammenhang des Stadtfests, welche Information sie liefert. Schreib deine Antwort auf – sie bleibt auf deinem Gerät. Führe die Abfrage danach in der Konsole aus und vergleiche deine Beschreibung mit dem Ergebnis."
         },
         {
           "t": "sql",
@@ -1224,7 +1224,7 @@
         },
         {
           "t": "text",
-          "md": "Finde den Fehler und schreibe eine korrekte Abfrage für den Fehlbetrag."
+          "md": "Analysiere den Fehler und entwirf eine korrekte Abfrage für den Fehlbetrag."
         }
       ],
       "interaktion": {
@@ -1435,7 +1435,7 @@
         },
         {
           "kind": "kernpunkte",
-          "frage": "b) Was fällt an Platz 2 und 3 auf? Was würde `LIMIT 2` liefern? Formuliere eine Frage, die eindeutig beantwortbar ist.",
+          "frage": "b) Was fällt an Platz 2 und 3 auf? Was würde `LIMIT 2` liefern? Gib eine Frage an, die eindeutig beantwortbar ist.",
           "kernpunkte": [
             "erkennt den **Gleichstand**: Grillhütte und Bierwagen haben gleich viele Kartenzahlungen (je 36)",
             "erklärt, dass `LIMIT 2` dann zufällig einen der beiden Stände abschneidet – das Ergebnis ist nicht eindeutig",
@@ -3139,7 +3139,7 @@
         },
         {
           "t": "text",
-          "md": "Frage der Kiosk-AG: „Welche Kategorien brachten bei Kartenzahlungen mehr als 30 € Umsatz ein? Die umsatzstärkste Kategorie zuerst.“\n\n**Bringen Sie** die Schritte zur Beantwortung der Frage in eine sinnvolle Reihenfolge. Ein Schritt gehört nicht dazu. [4 BE]"
+          "md": "Frage der Kiosk-AG: „Welche Kategorien brachten bei Kartenzahlungen mehr als 30 € Umsatz ein? Die umsatzstärkste Kategorie zuerst.“\n\n**Stellen Sie** die Schritte zur Beantwortung der Frage in einer sinnvollen Reihenfolge **dar**. Ein Schritt gehört nicht dazu. [4 BE]"
         }
       ],
       "interaktion": {
