@@ -9,7 +9,7 @@ test('healthz liefert status ok und version aus package.json', async () => {
   const res = await request(app).get('/healthz');
   assert.equal(res.status, 200);
   assert.deepEqual(res.body, { status: 'ok', version: require('../package.json').version });
-  assert.equal(res.body.version, '0.8.1');
+  assert.equal(res.body.version, '0.8.2');
 });
 
 test('CSP ist exakt gesetzt', async () => {
