@@ -152,7 +152,7 @@ a.akte-karte:hover { border-color: var(--rand-stark); }
 .leiste i { display: block; height: 100%; width: var(--wert, 0%); background: var(--messing-grafik); border-radius: inherit; transition: width 600ms var(--kurve); }
 .rang-skala { display: flex; justify-content: space-between; font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-3); }
 
-/* Scoreboard: Rangliste des Kurses (DESIGN §4.9, nur wenn die Lehrkraft es einschaltet) */
+/* Scoreboard: Rangliste des Kurses (DESIGN §4.9; Karte auf dem Stadtplan und Seite /rangliste) */
 .kurs-rangliste { display: flex; flex-direction: column; gap: var(--a-3); }
 .kurs-rangliste-kopf h2 { margin: 0; }
 .kurs-rangliste .rang-liste { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
@@ -170,6 +170,10 @@ a.akte-karte:hover { border-color: var(--rand-stark); }
 .kurs-rangliste .rang-stufe { font-family: var(--schrift-mono); font-size: var(--t-xs); color: var(--tinte-2); }
 .kurs-rangliste .rang-wert { font-family: var(--schrift-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
 .kurs-rangliste .rang-luecke { text-align: center; color: var(--tinte-3); font-family: var(--schrift-mono); line-height: 1.4; }
+.kurs-rangliste-link, .lk-rangliste-link { gap: var(--a-2); align-self: flex-start; }
+.rangliste-seite { max-width: 720px; }
+.rangliste-seite h2 { margin: 0; }
+.rangliste-seite .rang-zeile { min-height: 52px; }
 
 .seitenspalte .steckbrief dd { margin-bottom: var(--a-1); }
 .steckbrief dd.bekannt { color: var(--tinte); letter-spacing: 0; font-weight: 600; }

@@ -133,6 +133,37 @@
     }
   }
 
+  /* ---------- Link „Rangliste“ in der Lern-Navigation ---------- */
+  // Im HTML verborgen (data-rangliste hidden), damit ohne JS und vor /api/ich nichts Falsches erscheint. Lehrkraft und
+  // Superadmin sehen ihn immer (Vorschau); Schüler:innen nur, wenn im aktuellen Kurs die Rangliste eingeschaltet ist.
+  // Aktueller Kurs wie kursKontext (api.js): ?kurs=…, sonst der gemerkte Kurs (dd-kurs), sonst der einzige Kurs.
+  function aktuellerKurs(kurse) {
+    let gewuenscht = null;
+    try {
+      gewuenscht = new URLSearchParams(window.location.search).get('kurs');
+    } catch (e) {
+      gewuenscht = null;
+    }
+    let gemerkt = null;
+    try {
+      gemerkt = window.localStorage.getItem('dd-kurs');
+    } catch (e) {
+      gemerkt = null;
+    }
+    return kurse.find((k) => k.id === gewuenscht) || kurse.find((k) => k.id === gemerkt) || (kurse.length === 1 ? kurse[0] : null);
+  }
+  function zeigeRanglisteLink(ich) {
+    const links = document.querySelectorAll('a[data-rangliste]');
+    if (!links.length || !ich) return;
+    const kurse = Array.isArray(ich.kurse) ? ich.kurse : [];
+    const vorschau = ich.rolle === 'lehrkraft' || ich.rolle === 'superadmin';
+    const kurs = aktuellerKurs(kurse);
+    const sichtbar = vorschau || !!(kurs && kurs.scoreboard === true);
+    links.forEach((a) => {
+      a.hidden = !sichtbar;
+    });
+  }
+
   function start() {
     const knopf = $('thema-knopf');
     if (knopf) knopf.addEventListener('click', themaUmschalten);
@@ -161,6 +192,7 @@
 
     DD.ich.then((daten) => {
       zeigeIch(daten);
+      zeigeRanglisteLink(daten);
       if (daten && daten.portalUrl) setzePortal(daten.portalUrl);
       else DD.plattform.then((m) => setzePortal(m && m.auth && m.auth.portal));
     });

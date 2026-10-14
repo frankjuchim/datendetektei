@@ -109,7 +109,9 @@ Link-Knopf, kein Embed). Sichtprüfung der Phase 7: `docs/screenshots/phase7/`.
 Seiten (Phase 6): `/pinnwand` (Beweisstücke, Indizienkette des Schlussplädoyers, Steckbrief nach Regel E10),
 `/live` (Live-Runde beitreten), `/lehrkraft` (Reiter Übersicht, Einstellungen, Auswertung, Vorschau, Live, Board,
 Urkunden, Materialien; Superadmin zusätzlich System), `/lehrkraft/live` + `/live/<runde>/beamer` (Steuerung, Beamer),
-`/lehrkraft/urkunden` (Druckseite), `/board/<schlüssel>` (Beamer-Board ohne Anmeldung, immer dunkel, nur Anzeigenamen).
+`/lehrkraft/urkunden` (Druckseite), `/board/<schlüssel>` (Beamer-Board ohne Anmeldung, immer dunkel, nur Anzeigenamen),
+`/rangliste` (Phase 8: Rangliste des Kurses, Kurseinstellung `scoreboard`, Standard für neue Kurse an; Link in der
+`lern-nav` aller Lernseiten, für Schüler:innen nur bei eingeschaltetem Schalter – `kopfzeile.js` aus `/api/ich`).
 Fallebene in `seed/fallebene.json`, Live-Inhalte in `seed/live/`, Kür K1 in `seed/akten/kuer.json` (Welt 8, `kuer: true`,
 nur eA, keine Verbund-Welt). Neue Tabellen müssen vom Verbund-Löschauftrag erfasst werden
 (`test/verbund_loeschen_alles.test.js` durchsucht alle Tabellen).

@@ -380,7 +380,8 @@ const SCHUELER_SEITEN = [
   { pfad: '/ermittlung/A12-E3', skript: 'ermittlung' },
   { pfad: '/verhoer/1', skript: 'verhoer' },
   { pfad: '/warmup', skript: 'warmup' },
-  { pfad: '/training', skript: 'training' }
+  { pfad: '/training', skript: 'training' },
+  { pfad: '/rangliste', skript: 'rangliste' }
 ];
 
 for (const { pfad } of SCHUELER_SEITEN) {
@@ -442,7 +443,7 @@ test('Ermittlung und Verhör laden Parser, Regeln, Fehlertexte und die Konsolen-
 test('Lern-Module: ES-Module, nur Textknoten, Mischen von choice/order/match', () => {
   const ordner = path.join(STATIC, 'js', 'lernen');
   // Module laden ihre Bausteine mit derselben ?v=-Version wie die Seite (import(… + V), V aus import.meta.url)
-  for (const datei of ['stadtplan', 'akte', 'ermittlung', 'verhoer', 'warmup', 'training', 'konsole_lern']) {
+  for (const datei of ['stadtplan', 'akte', 'ermittlung', 'verhoer', 'warmup', 'training', 'rangliste', 'rangliste_teile', 'konsole_lern']) {
     const js = fs.readFileSync(path.join(ordner, datei + '.js'), 'utf8');
     assert.match(js, /new URL\(import\.meta\.url\)\.search/, datei);
     assert.match(js, /import\('\.\.\/kern\/render\.js' \+ V\)/, datei);
@@ -455,6 +456,22 @@ test('Lern-Module: ES-Module, nur Textknoten, Mischen von choice/order/match', (
   }
   const ia = fs.readFileSync(path.join(STATIC, 'js', 'kern', 'interaktionen.js'), 'utf8');
   for (const art of ['choice', 'order', 'match']) assert.match(ia, new RegExp(`mische\\([^)]*\\)[^\\n]*// ${art}`), art);
+});
+
+test('Lern-Navigation: Link „Rangliste“ auf allen Seiten mit lern-nav, zwischen Training und Themen, ohne JS verborgen', () => {
+  const seiten = fs.readdirSync(PUBLIC).filter((f) => f.endsWith('.html') && fs.readFileSync(path.join(PUBLIC, f), 'utf8').includes('class="lern-nav"'));
+  assert.ok(seiten.length >= 9, seiten.join(', '));
+  for (const f of seiten) {
+    const html = fs.readFileSync(path.join(PUBLIC, f), 'utf8');
+    const nav = html.match(/<nav class="lern-nav"[\s\S]*?<\/nav>/)[0];
+    const hrefs = [...nav.matchAll(/<a href="([^"]+)"/g)].map((m) => m[1]);
+    const i = hrefs.indexOf('/rangliste');
+    assert.ok(i > 0, `${f}: Rangliste fehlt`);
+    assert.equal(hrefs[i - 1], '/training', f);
+    assert.equal(hrefs[i + 1], '/themen', f);
+    assert.match(nav, /<a href="\/rangliste" data-rangliste hidden><svg class="icon" aria-hidden="true"><use href="\/static\/img\/icons\.svg#i-podest"\/><\/svg>Rangliste<\/a>/, f);
+  }
+  assert.match(fs.readFileSync(path.join(STATIC, 'img', 'icons.svg'), 'utf8'), /<symbol id="i-podest" viewBox="0 0 24 24">/);
 });
 
 /* ---------- Werkzeug Sortierfächer (Phase 4 Task 4) ---------- */
@@ -565,7 +582,7 @@ test('Browser-Skripte schreiben nie HTML aus Zeichenketten (kein innerHTML)', ()
 });
 
 test('?v= in allen HTML-Seiten gleich der package.json-Version', () => {
-  assert.equal(VERSION, '0.8.1');
+  assert.equal(VERSION, '0.8.2');
   let anzahl = 0;
   for (const datei of htmlDateien()) {
     const html = fs.readFileSync(path.join(PUBLIC, datei), 'utf8');

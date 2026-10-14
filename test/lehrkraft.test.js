@@ -50,7 +50,7 @@ test('GET kurse: Lehrkraft sieht nur ihre Kurse mit Einstellungen und Kennzahlen
   assert.equal(k.name, 'Inf-LK 12');
   assert.equal(k.aktiv, true);
   assert.equal(k.nurLesen, false);
-  assert.deepEqual(k.einstellungen, { akten: [9], niveau: 'eA', verhoer: 'auto', verhoerAkten: {}, scoreboard: false, beamer: false });
+  assert.deepEqual(k.einstellungen, { akten: [9], niveau: 'eA', verhoer: 'auto', verhoerAkten: {}, scoreboard: true, beamer: false });
   assert.deepEqual(k.board, { aktiv: false, schluessel: null });
   assert.equal(k.kennzahlen.schueler, 2);
   assert.equal(k.kennzahlen.anteil, 0);

@@ -1,6 +1,7 @@
 'use strict';
 // E2E Scoreboard (Vertrag §4, Kurseinstellung scoreboard): Karte „Rangliste deines Kurses“ auf dem Stadtplan.
-// Schalter aus → keine Karte, keine Anfrage; Schalter an → Top 10 + eigener Platz mit Lücke, eigene Zeile hervorgehoben;
+// Schalter aus → keine Karte, keine Anfrage; Schalter an → kompakt Top 5 + eigener Platz mit Lücke, eigene Zeile
+// hervorgehoben, Link „Ganze Rangliste“ (/rangliste, test/e2e/probelauf8_rangliste.e2e.js);
 // Smartphone 390 px ohne waagerechtes Scrollen; Lehrkraft sieht die Vorschau (gesiezt, ohne eigene Zeile).
 // SCREENSHOTS=1 → docs/screenshots/phase8/scoreboard_*.png.
 
@@ -69,14 +70,14 @@ test('Schalter aus: keine Rangliste und keine Anfrage danach', { timeout: 60000 
   const { kontext, page, fehler, anfragen } = await seite();
   try {
     assert.equal(await page.locator('#kurs-rangliste').count(), 0);
-    assert.ok(!anfragen.some((u) => u.includes('/rangliste')), 'keine Anfrage an /rangliste');
+    assert.ok(!anfragen.some((u) => /\/api\/kurse\/[^/]+\/rangliste/.test(u)), 'keine Anfrage an …/rangliste');
     assert.deepEqual(fehler, []);
   } finally {
     await kontext.close();
   }
 });
 
-test('Schalter an: Top 10, Lücke und eigener Platz – eigene Zeile hervorgehoben', { timeout: 60000 }, async () => {
+test('Schalter an: Top 5, Lücke und eigener Platz – eigene Zeile hervorgehoben, Link zur ganzen Rangliste', { timeout: 60000 }, async () => {
   einstellen({ scoreboard: true });
   const { kontext, page, fehler } = await seite();
   try {
@@ -84,7 +85,7 @@ test('Schalter an: Top 10, Lücke und eigener Platz – eigene Zeile hervorgehob
     await karte.waitFor();
     assert.equal(await karte.locator('h2').textContent(), 'Rangliste deines Kurses');
     const zeilen = karte.locator('.rang-zeile');
-    assert.equal(await zeilen.count(), 11);
+    assert.equal(await zeilen.count(), 6);
     assert.equal(await karte.locator('.rang-luecke').count(), 1);
     const platz = await zeilen.locator('.rang-platz').allTextContents();
     assert.deepEqual(platz.slice(0, 4), ['1.', '2.', '2.', '4.'], 'Gleichstand → gleicher Platz');
@@ -93,6 +94,10 @@ test('Schalter an: Top 10, Lücke und eigener Platz – eigene Zeile hervorgehob
     assert.match(await ich.textContent(), /Lena K\.\s*\(du\)/);
     assert.equal(await ich.getAttribute('aria-current'), 'true');
     assert.equal(await ich.locator('.rang-platz').textContent(), '14.');
+    const link = karte.locator('a.kurs-rangliste-link');
+    assert.equal(await link.getAttribute('href'), '/rangliste');
+    assert.match(await link.textContent(), /Ganze Rangliste/);
+    assert.ok((await link.boundingBox()).height >= 44);
     const rahmen = await ich.evaluate((e) => getComputedStyle(e).outlineWidth);
     assert.equal(rahmen, '2px');
     const hoehe = await ich.evaluate((e) => e.getBoundingClientRect().height);
@@ -130,7 +135,7 @@ test('Lehrkraft: Vorschau der Rangliste (gesiezt, ohne eigene Zeile)', { timeout
     await karte.waitFor();
     assert.equal(await karte.locator('h2').textContent(), 'Rangliste des Kurses');
     assert.equal(await karte.locator('.rang-zeile.ich').count(), 0);
-    assert.equal(await karte.locator('.rang-zeile').count(), 10);
+    assert.equal(await karte.locator('.rang-zeile').count(), 5);
     assert.match(await karte.textContent(), /Vorschau: Schülerinnen und Schüler sehen/);
     assert.ok(!(await karte.textContent()).includes('Frau M.'));
     assert.deepEqual(fehler, []);

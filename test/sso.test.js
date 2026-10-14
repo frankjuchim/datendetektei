@@ -105,7 +105,7 @@ test('gültiges Token mit richtigem state', async () => {
     sub: 's:1042',
     rolle: 'schueler',
     name: 'Lena K.',
-    kurse: [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied', aktiv: true }],
+    kurse: [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied', aktiv: true, scoreboard: true }],
     portalUrl: 'https://labs.example'
   });
 });
@@ -439,5 +439,5 @@ test('/api/ich nach Abmelden bzw. mit Sitzung zeigt gesperrten Kurs als aktiv fa
   const res = await login(t);
   t.db.prepare("UPDATE kurse SET aktiv = 0 WHERE kurs_id = 'k:17'").run();
   const ich = await request(t.app).get('/api/ich').set('Cookie', cookiePaar(res, 'dd_s'));
-  assert.deepEqual(ich.body.kurse, [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied', aktiv: false }]);
+  assert.deepEqual(ich.body.kurse, [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied', aktiv: false, scoreboard: true }]);
 });
