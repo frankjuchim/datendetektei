@@ -162,6 +162,12 @@ const MIGRATIONEN = [
     PRIMARY KEY (sub, kurs_id)
   );
   CREATE INDEX serien_kurs ON serien (kurs_id);
+  `,
+  // 4: Rangliste für bestehende Kurse einmalig einschalten (Entscheidung Frank, Version 0.8.3; neue Kurse haben sie
+  // seit 0.8.2 per Standard). Danach entscheidet die Lehrkraft; ungültiges JSON wird zu {"scoreboard":true}.
+  `
+  UPDATE kurse SET einstellungen = json_set(
+    CASE WHEN json_valid(einstellungen) THEN einstellungen ELSE '{}' END, '$.scoreboard', json('true'));
   `
 ];
 

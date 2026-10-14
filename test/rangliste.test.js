@@ -177,3 +177,32 @@ test('/api/ich nennt je Kurs, ob die Rangliste eingeschaltet ist (für den Link 
   ich = (await s.get('/api/ich')).body;
   assert.deepEqual(ich.kurse.map((k) => [k.id, k.scoreboard]), [['k:17', true]]);
 });
+
+test('Migration 4 (Entscheidung Frank, 0.8.3): bestehende Kurse bekommen die Rangliste einmalig eingeschaltet, übrige Einstellungen bleiben', () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const ordner = fs.mkdtempSync(path.join(os.tmpdir(), 'dd-mig4-'));
+  const datei = path.join(ordner, 'db.sqlite');
+  try {
+    // Stand 0.8.2: Schema 3, Kurs mit gespeichertem scoreboard: false, ein Kurs mit kaputtem JSON
+    let db = oeffneDb(datei);
+    db.prepare("UPDATE meta SET wert = '3' WHERE schluessel = 'schema_version'").run();
+    db.prepare("INSERT INTO kurse (kurs_id, name, einstellungen) VALUES ('k:17', 'Inf-LK 12', ?)").run(
+      JSON.stringify({ akten: [1, 2], niveau: 'gA', verhoer: 'offen', scoreboard: false, beamer: true })
+    );
+    db.prepare("INSERT INTO kurse (kurs_id, name, einstellungen) VALUES ('k:18', 'Inf-GK 12', 'kaputt')").run();
+    db.close();
+    db = oeffneDb(datei);
+    assert.deepEqual(einst(db, 'k:17'), { ...einst(db, 'k:17'), akten: [1, 2], niveau: 'gA', verhoer: 'offen', beamer: true, scoreboard: true });
+    assert.equal(einst(db, 'k:18').scoreboard, true);
+    // Danach wieder ausgeschaltet bleibt aus (die Migration läuft nur einmal)
+    db.prepare('UPDATE kurse SET einstellungen = json_set(einstellungen, \'$.scoreboard\', json(\'false\')) WHERE kurs_id = ?').run('k:17');
+    db.close();
+    db = oeffneDb(datei);
+    assert.equal(einst(db, 'k:17').scoreboard, false);
+    db.close();
+  } finally {
+    fs.rmSync(ordner, { recursive: true, force: true });
+  }
+});
