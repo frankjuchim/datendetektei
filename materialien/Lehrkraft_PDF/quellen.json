@@ -48,7 +48,7 @@
   },
   "DD_A5-Praesentation_Bauplan.pdf": {
    "quelle": "Akte5_Bauplan/1_Praesentation/DD_A5_Bauplan.pptx",
-   "sha256": "1554fa23b8ae2fdd0d48eeb8744e030f61c810d2e5df875963b162ba8c072cfd",
+   "sha256": "cf5fda6170865806f7b803fd490efcbc5430366182a9491ccc74c377a579f39d",
    "verfahren": "notizen"
   },
   "DD_A6-Lehrerhinweise.pdf": {
@@ -63,22 +63,22 @@
   },
   "DD_A7-Generalprobe_eA.pdf": {
    "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_eA.docx",
-   "sha256": "f0c06a67a56326721f5dd7567eae9f4aed4a79513cd2b05051599b100109bde5",
+   "sha256": "8c232ed35b8f6f00d68361659ce89ff57a6ee99562b4fd46b07d84b79473ee6c",
    "verfahren": "pdf"
   },
   "DD_A7-Generalprobe_gA.pdf": {
    "quelle": "Akte7_Generalprobe/2_Generalprobe/DD_A7_Generalprobe_gA.docx",
-   "sha256": "e6c8f050897fb87aa3a2cb37ad8d01da3ee5000b7928cf013126a6bafc592951",
+   "sha256": "60066d6cdcf89695289a3e52e83ef37c9e20f288bd771e29920ed049a21b6cb7",
    "verfahren": "pdf"
   },
   "DD_A7-Klausur_eA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_eA.docx",
-   "sha256": "2a5c32ae6ea71277741f826ff975fb4607ee4f8a83a7aed0eec2b3167252eaf7",
+   "sha256": "3b64699ff1729aae3e3d85ee1e25b58d81969a488180f3e943332eaebe9706d7",
    "verfahren": "pdf"
   },
   "DD_A7-Klausur_gA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Klausur_gA.docx",
-   "sha256": "cb21c01be519e52d5ddeddf385d93dd94f111f041710f047dbdaf2d8c17d1c22",
+   "sha256": "636fe8107ff4a2d7b0e22abacceddb560f8ebb9b8d82e7d2f8371aa116ca740d",
    "verfahren": "pdf"
   },
   "DD_A7-Lehrerhinweise.pdf": {
@@ -88,17 +88,17 @@
   },
   "DD_A7-Nachschreibklausur_eA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_eA.docx",
-   "sha256": "aeb1b884b89dabd56a064c0955291bc5afed31070c95eac924032e3e54db9342",
+   "sha256": "fbb891e29914b6147d0a7de1f28e31126e60015496a1d1a956034b3fbfb3b0b2",
    "verfahren": "pdf"
   },
   "DD_A7-Nachschreibklausur_gA.pdf": {
    "quelle": "Akte7_Generalprobe/3_Klausur/DD_A7_Nachschreibklausur_gA.docx",
-   "sha256": "a8e9364024feac7bde7dc40b7bc5b4d696115a4cac2f4c9ee2fd37b9d686c4f5",
+   "sha256": "a8935372004e8e8a01ce3bdfc30149668d45cf5703a0c25fa1ea80c81ad81032",
    "verfahren": "pdf"
   },
   "DD_A7-Praesentation_Generalprobe.pdf": {
    "quelle": "Akte7_Generalprobe/1_Praesentation/DD_A7_Generalprobe.pptx",
-   "sha256": "ce4a000efe341fe552380e613899b1079dd6848a613594349560d962bf2afde3",
+   "sha256": "4e1ffaf1b2e8ea6195d27b947dea5d2901d6b5761cd8dae3edff39b70821e745",
    "verfahren": "notizen"
   },
   "DD_Abi-Kompass.pdf": {
@@ -138,17 +138,17 @@
   },
   "DD_Video05-ER-Modelle_Folien.pdf": {
    "quelle": "Videos/05_ER-Modelle/DD_Video05_ER-Modelle_Folien.pptx",
-   "sha256": "e0bb20301afa36d309f8dbaa8da965227482c9c03accb47d035de9c40a9667c3",
+   "sha256": "b62d63f966a2b272f437437a9d30cd02b1dc8476362439892fce6691be9d9b85",
    "verfahren": "pdf"
   },
   "DD_Video06-ER_zu_Relationenschema_Folien.pdf": {
    "quelle": "Videos/06_ER_zu_Relationenschema/DD_Video06_ER_zu_Relationenschema_Folien.pptx",
-   "sha256": "feb740130d382bbccf708057b2e6653a4f4e5749d5f0f0e1d66698adf772caf4",
+   "sha256": "bcb1694e04d86469c17c6cae23edfe572c3f03ee70f75827003879086b03a9bf",
    "verfahren": "pdf"
   },
   "DD_Video07-Abi-Check_Folien.pdf": {
    "quelle": "Videos/07_Abi-Check/DD_Video07_Abi-Check_Folien.pptx",
-   "sha256": "b8b7b5f9d257e72acb7b8cec8ed655ea1814c296c0dcc5b267ac2f72ce2475e4",
+   "sha256": "ca1beea4dbfa2e94c66d53c3907b64b4e0cf06e4c09ebb83176cc21a3eec80ed",
    "verfahren": "pdf"
   }
  }

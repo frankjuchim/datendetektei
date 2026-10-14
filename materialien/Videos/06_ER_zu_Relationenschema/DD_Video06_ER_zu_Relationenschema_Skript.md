@@ -9,7 +9,7 @@
 | **Akte** | Akte 5 · Der Bauplan (eA) |
 | **Einsatz** | Akte 5 (eA), DS 11 · Ermittlung 5.3 „Vom Plan zur Datenbank“ (Schema-Werkbank, Verbund mit sich selbst) · AB 5.3 · vor Verhör 5 |
 | **Zielgruppe** | Informatik eA (Datenbanken), Akte 5; Wiederholung vor Verhör 5, Klausur und Abitur |
-| **Länge** | Ziel 8–10 min · Sprechtext ca. 6:41 min (bei 130 Wörtern/min, inkl. Pausen) |
+| **Länge** | Ziel 8–10 min · Sprechtext ca. 6:40 min (bei 130 Wörtern/min, inkl. Pausen) |
 | **Beispieldaten** | eigenes Beispiel „Tierheim“ aus Video 5 – nicht die Detektei des Labs und nicht das Schulbeispiel der Lab-Intro; Diagramme und Werkbank-Bild aus der Plattform |
 | **Folien** | `DD_Video06_ER_zu_Relationenschema_Folien.pptx` (13 Folien, Kamera-Zone unten rechts frei, Sprechertext in den Notizen) |
 
@@ -48,7 +48,7 @@ Kapitel:
 0:55 n:m
 1:59 Rekursiv und ternär
 3:38 Jetzt du
-5:03 Rückrichtung
+5:02 Rückrichtung
 5:32 Fallen
 5:51 Merksätze
 ```
@@ -152,15 +152,15 @@ Hier alle Regeln auf einen Blick. R1: Entitätstyp wird Relation. R2: Bei 1 zu n
 **Auf der Folie:**
 
 *Bild: `bilder/er_pause.png`*
-> **Überführe** das ER-Modell aus Video 5 in ein Relationenschema in Kurzschreibweise – mit Primärschlüsseln (unterstrichen) und Fremdschlüsseln (↑).
+> **Erstelle** zu dem ER-Modell aus Video 5 das Relationenschema in Kurzschreibweise – mit Primärschlüsseln (unterstrichen) und Fremdschlüsseln (↑).
 
 **Sprechertext:**
 
-Jetzt du. Hier das Futter-Modell aus dem letzten Video: Lieferant liefert Futtersorte, Tier frisst Futtersorte mit einer Tagesmenge. Überführe es in ein Relationenschema in Kurzschreibweise. Welche Regel gilt bei liefert, welche bei frisst? Halte das Video an.
+Jetzt du. Hier das Futter-Modell aus dem letzten Video: Lieferant liefert Futtersorte, Tier frisst Futtersorte mit einer Tagesmenge. Erstelle dazu das Relationenschema in Kurzschreibweise. Welche Regel gilt bei liefert, welche bei frisst? Halte das Video an.
 
 *(ca. 40 s Pause zum Mitdenken – im Schnitt den Hinweis „Video anhalten“ einblenden)*
 
-### Folie 9 · 4:35 – Auflösung
+### Folie 9 · 4:34 – Auflösung
 
 **Auf der Folie:**
 
@@ -174,7 +174,7 @@ Jetzt du. Hier das Futter-Modell aus dem letzten Video: Lieferant liefert Futter
 
 Die Auflösung. liefert ist 1 zu n, also Regel R2: Futtersorte bekommt den Fremdschlüssel LieferantNr. frisst ist n zu m, also Regel R3: eine eigene Relation frisst mit TierNr und SorteNr als gemeinsamem Primärschlüssel und der Tagesmenge. Oben das Ganze in der Schema-Werkbank der Datendetektei. Häufige Fehler: der Fremdschlüssel beim Lieferanten statt bei der Futtersorte oder die Tagesmenge beim Tier.
 
-### Folie 10 · 5:03 – Rückrichtung: vom Schema zum ER-Modell · Kapitel „Rückrichtung“
+### Folie 10 · 5:02 – Rückrichtung: vom Schema zum ER-Modell · Kapitel „Rückrichtung“
 
 **Auf der Folie:**
 
@@ -214,7 +214,7 @@ Die Fallen bei der Überführung gehören zu P9: der Fremdschlüssel auf der fal
 
 Das nimmst du mit: Entitätstyp wird Relation. Bei 1 zu n kommt der Fremdschlüssel auf die n-Seite. n zu m bekommt eine eigene Relation mit beiden Fremdschlüsseln als Schlüssel. Bei 1 zu 1 entscheidest du dich begründet für eine Seite. Rekursiv zeigt der Fremdschlüssel auf die eigene Relation und heißt nach seiner Rolle, und ternär bekommt eine eigene Relation mit drei Fremdschlüsseln.
 
-### Folie 13 · 6:20 – Weiter im Lab
+### Folie 13 · 6:19 – Weiter im Lab
 
 **Auf der Folie:**
 

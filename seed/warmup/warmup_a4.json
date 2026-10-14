@@ -6,7 +6,7 @@
       "akte": 4,
       "kategorie": "Anomalien",
       "titel": "Redundanz finden",
-      "aufgabe": "Ausschnitt einer Kursliste der Volkshochschule: `(Kurs: Yoga, Leitung: Frau Brede, Telefon: 0000-111)`, `(Kurs: Pilates, Leitung: Frau Brede, Telefon: 0000-111)`, `(Kurs: Töpfern, Leitung: Herr Kamp, Telefon: 0000-222)`. Benenne die Information, die mehrfach gespeichert ist.",
+      "aufgabe": "Ausschnitt einer Kursliste der Volkshochschule: `(Kurs: Yoga, Leitung: Frau Brede, Telefon: 0000-111)`, `(Kurs: Pilates, Leitung: Frau Brede, Telefon: 0000-111)`, `(Kurs: Töpfern, Leitung: Herr Kamp, Telefon: 0000-222)`. Gib die Information an, die mehrfach gespeichert ist.",
       "loesung": "Die Telefonnummer von Frau Brede (0000-111) steht zweimal – sie hängt von der Leitung ab, nicht vom Kurs. Der Name „Frau Brede“ selbst zeigt nur, wer leitet; die Telefonnummer ist die wiederholte Information.",
       "minuten": 2,
       "kompetenz": [
@@ -19,7 +19,7 @@
       "akte": 4,
       "kategorie": "Anomalien",
       "titel": "Anomalie benennen",
-      "aufgabe": "Ordne zu: (1) In der Kursliste kann ein neuer Kursleiter erst eingetragen werden, wenn er einen Kurs hat. (2) Frau Brede bekommt eine neue Nummer; in einer Zeile bleibt die alte stehen. (3) Der einzige Töpferkurs wird gestrichen – mit ihm verschwindet Herrn Kamps Telefonnummer.",
+      "aufgabe": "Gib jeweils die Anomalie an: (1) In der Kursliste kann ein neuer Kursleiter erst eingetragen werden, wenn er einen Kurs hat. (2) Frau Brede bekommt eine neue Nummer; in einer Zeile bleibt die alte stehen. (3) Der einzige Töpferkurs wird gestrichen – mit ihm verschwindet Herrn Kamps Telefonnummer.",
       "loesung": "(1) Einfügeanomalie · (2) Änderungsanomalie · (3) Löschanomalie.",
       "minuten": 2,
       "kompetenz": [
@@ -50,7 +50,7 @@
       "akte": 4,
       "kategorie": "Anomalien",
       "titel": "Ein Feld, zwei Werte",
-      "aufgabe": "Erkläre, welches Problem diese Abfrage bei der Zelle „Fußball, Tennis“ (Lina Weerts) hat – und wie man im bereinigten Archiv richtig nach Tennis-Mitgliedern fragt.",
+      "aufgabe": "Erläutere, welches Problem diese Abfrage bei der Zelle „Fußball, Tennis“ (Lina Weerts) hat – und wie man im bereinigten Archiv richtig nach Tennis-Mitgliedern fragt.",
       "sql": "SELECT Mitglied\nFROM MitgliederlisteRoh\nWHERE Abteilungen = 'Tennis'",
       "datenbank": "tus",
       "loesung": "`=` vergleicht den ganzen Zellinhalt: „Fußball, Tennis“ ist nicht gleich 'Tennis', Lina Weerts fehlt. `LIKE '%Tennis%'` fände sie, aber auch „Tischtennis“. Erst atomare Werte (eine Zeile je Mitglied und Abteilung) machen die Suche zuverlässig.",
@@ -98,7 +98,7 @@
       "akte": 4,
       "kategorie": "Relationales Modell",
       "titel": "Verlustfrei?",
-      "aufgabe": "Juri zerlegt so: `Mitglied(MitgliedNr, Vorname, Nachname, Geburtsjahr, Eintritt)` und `Beitragsgruppe(Gruppe, Monatsbeitrag)` (Primärschlüssel jeweils das erste Attribut). Prüfe, ob die Zerlegung verlustfrei ist, und korrigiere sie.",
+      "aufgabe": "Juri zerlegt so: `Mitglied(MitgliedNr, Vorname, Nachname, Geburtsjahr, Eintritt)` und `Beitragsgruppe(Gruppe, Monatsbeitrag)` (Primärschlüssel jeweils das erste Attribut). Untersuche, ob die Zerlegung verlustfrei ist, und verändere sie so, dass sie verlustfrei ist.",
       "loesung": "Nicht verlustfrei: Niemand weiß mehr, welches Mitglied zu welcher Beitragsgruppe gehört – der Verweis fehlt. Korrektur: `Mitglied(MitgliedNr, Vorname, Nachname, Geburtsjahr, ↑Beitragsgruppe, Eintritt)` mit Fremdschlüssel Beitragsgruppe → Beitragsgruppe.Gruppe (anderer Name als der Primärschlüssel ist erlaubt).",
       "minuten": 3,
       "kompetenz": [

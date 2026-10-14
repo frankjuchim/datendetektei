@@ -275,7 +275,7 @@
    "kapitel": "Fehlersuche",
    "links": [
     {
-     "text": "Gesucht: Vereine mit **mindestens drei** Mitgliedern – mit Name, Ort und Anzahl. **Finde alle Fallen** in dieser Abfrage:"
+     "text": "Gesucht: Vereine mit **mindestens drei** Mitgliedern – mit Name, Ort und Anzahl. **Analysiere** die Abfrage auf alle Fallen:"
     },
     {
      "sql": "SELECT Name, Ort, COUNT(*) AS Mitglieder\nFROM Spieler, Verein\nWHERE Spieler.VereinNr = Verein.VereinNr\n  AND COUNT(*) >= 3\nGROUP BY VereinNr",

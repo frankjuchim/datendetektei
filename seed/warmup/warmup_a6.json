@@ -9,7 +9,9 @@
       "aufgabe": "Gib zu jeder Situation den betroffenen DSGVO-Grundsatz an:\n\n- Die Rad-Daten von StadtRad, erhoben für die Abrechnung, werden für eine Fahndung genutzt.\n- Die WeserApp hebt minutengenaue Check-ins über Jahre auf.\n- Für eine Ausleihstatistik je Station veröffentlicht die Stadt auch Jahrgang und Tarif.",
       "loesung": "1. **Zweckbindung** – Fahndung ist ein neuer Zweck. 2. **Speicherbegrenzung** – Daten werden nach Zweckerfüllung nicht gelöscht. 3. **Datenminimierung** – Jahrgang und Tarif sind für die Statistik nicht nötig.",
       "minuten": 2,
-      "kompetenz": ["DB-K44"],
+      "kompetenz": [
+        "DB-K44"
+      ],
       "falle": []
     },
     {
@@ -17,10 +19,12 @@
       "akte": 6,
       "kategorie": "Datenschutz",
       "titel": "Quasi-Identifikator",
-      "aufgabe": "Im RadExport steht kein Name, nur ein Token. Erkläre, warum Jahrgang + Stadtteil + Tarif eine Person trotzdem identifizieren können.",
+      "aufgabe": "Im RadExport steht kein Name, nur ein Token. Erläutere, warum Jahrgang + Stadtteil + Tarif eine Person trotzdem identifizieren können.",
       "loesung": "Jedes Merkmal allein ist harmlos, zusammen bilden sie sehr **kleine Gruppen** – oft mit nur einer Person (in Weserstedt: nur ein Token mit 1988, Hafenviertel, Plus). Solche Merkmale heißen **Quasi-Identifikatoren**: Wer sie kennt oder mit anderen Daten verknüpft, bestimmt die Person so eindeutig wie mit einem Namen.",
       "minuten": 2,
-      "kompetenz": ["DB-K46"],
+      "kompetenz": [
+        "DB-K46"
+      ],
       "falle": []
     },
     {
@@ -28,10 +32,12 @@
       "akte": 6,
       "kategorie": "Datenschutz",
       "titel": "Pseudonym oder anonym?",
-      "aufgabe": "Entscheide und begründe, ob der Datensatz pseudonym oder anonym ist:\n\n- `WA-5208 | Lindenweg 12 | 2026-09-14 18:20`\n- „Am Stadtfest-Wochenende gab es am Festplatz insgesamt 21 Check-ins.“",
+      "aufgabe": "Beurteile, ob der Datensatz pseudonym oder anonym ist:\n\n- `WA-5208 | Lindenweg 12 | 2026-09-14 18:20`\n- „Am Stadtfest-Wochenende gab es am Festplatz insgesamt 21 Check-ins.“",
       "loesung": "Der erste Datensatz ist **pseudonym**: Die Gerätekennung ersetzt den Namen, mit Zusatzwissen (z. B. Einwohnerverzeichnis) ist die Person bestimmbar – er bleibt personenbezogen. Die Summe ist **anonym**: Sie lässt keinen Rückschluss auf einzelne Personen zu.",
       "minuten": 2,
-      "kompetenz": ["DB-K46"],
+      "kompetenz": [
+        "DB-K46"
+      ],
       "falle": []
     },
     {
@@ -39,10 +45,12 @@
       "akte": 6,
       "kategorie": "Datenschutz",
       "titel": "Schutz oder Sicherheit?",
-      "aufgabe": "Ordne jede Maßnahme dem **Datenschutz** oder der **Datensicherheit** zu: Verschlüsselung der Exporte · Veröffentlichung nur von Summen je Stadtteil · Zugriffsrechte nach Rollen · Einwilligung vor der Weitergabe.",
+      "aufgabe": "Gib für jede Maßnahme an, ob sie zum **Datenschutz** oder zur **Datensicherheit** gehört: Verschlüsselung der Exporte · Veröffentlichung nur von Summen je Stadtteil · Zugriffsrechte nach Rollen · Einwilligung vor der Weitergabe.",
       "loesung": "**Datensicherheit** (schützt die Daten): Verschlüsselung, Zugriffsrechte nach Rollen. **Datenschutz** (schützt die Personen und ihre Rechte): Veröffentlichung nur von Summen (Datenminimierung), Einwilligung vor der Weitergabe (Rechtmäßigkeit).",
       "minuten": 2,
-      "kompetenz": ["DB-K46"],
+      "kompetenz": [
+        "DB-K46"
+      ],
       "falle": []
     },
     {
@@ -53,21 +61,30 @@
       "aufgabe": "Eine App will Nutzungsdaten für personalisierte Werbung verwenden. Nenne zwei Voraussetzungen, unter denen das erlaubt ist, und fälle ein kurzes Urteil für den Fall, dass die Werbung nur in den AGB steht.",
       "loesung": "Voraussetzungen: eine **freiwillige, ausdrückliche Einwilligung**, die jederzeit **widerrufen** werden kann, und vorherige **Information** (Transparenz: welche Daten, welcher Zweck, welche Empfänger). Urteil: Steht die Werbung nur in den AGB, die „durch Nutzung“ gelten, liegt keine wirksame Einwilligung vor – die Verwendung ist unzulässig. Ein Urteil gehört zum Operator **beurteilen** dazu.",
       "minuten": 2,
-      "kompetenz": ["DB-K45"],
-      "falle": ["P10"]
+      "kompetenz": [
+        "DB-K45"
+      ],
+      "falle": [
+        "P10"
+      ]
     },
     {
       "id": "W-A6-06",
       "akte": 6,
       "kategorie": "SQL Aggregation",
       "titel": "Kleine Gruppen finden",
-      "aufgabe": "Notiere eine Abfrage auf der Tabelle `Einwohner(EinwohnerNr, Vorname, Nachname, Jahrgang, Stadtteil, Strasse)`: alle Kombinationen aus Jahrgang und Stadtteil mit weniger als 3 Einwohnern, mit der Anzahl.",
+      "aufgabe": "Entwirf eine Abfrage auf der Tabelle `Einwohner(EinwohnerNr, Vorname, Nachname, Jahrgang, Stadtteil, Strasse)`: alle Kombinationen aus Jahrgang und Stadtteil mit weniger als 3 Einwohnern, mit der Anzahl.",
       "datenbank": "datenspuren",
       "loesung": "Gruppieren nach beiden Merkmalen, die Bedingung über die Gruppengröße steht in **HAVING** (nicht in WHERE, P1) und wiederholt das Aggregat (kein Alias in HAVING).",
       "loesungSql": "SELECT Jahrgang, Stadtteil, COUNT(*) AS Anzahl\nFROM Einwohner\nGROUP BY Jahrgang, Stadtteil\nHAVING COUNT(*) < 3",
       "minuten": 3,
-      "kompetenz": ["DB-K27", "DB-K46"],
-      "falle": ["P1"]
+      "kompetenz": [
+        "DB-K27",
+        "DB-K46"
+      ],
+      "falle": [
+        "P1"
+      ]
     }
   ]
 }

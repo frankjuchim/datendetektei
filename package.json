@@ -1,6 +1,6 @@
 {
   "name": "datendetektei",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "private": true,
   "description": "Datendetektei Weserstedt – Ermitteln mit Datenbanken (Plattform im Verbund InfoLabs)",
   "main": "src/server.js",

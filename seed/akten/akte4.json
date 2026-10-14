@@ -45,7 +45,7 @@
       ],
       "ab": "AB 4.2 Ordnung ins Archiv",
       "niveau": "alle",
-      "briefing": "Jetzt räumst du das Vereinsarchiv auf: Beurteile Schlüssel und zerlege die Rohliste verlustfrei in redundanzfreie Tabellen. Schließe nie aus einem kleinen Datenausschnitt, dass ein Attribut eindeutig ist. Im Zerlegungs-Puzzle siehst du sofort, wo noch Redundanz steckt.",
+      "briefing": "Jetzt räumst du das Vereinsarchiv auf: Beurteile Schlüssel und entwickle aus der Rohliste ein redundanzfreies Relationenschema, das nichts verliert. Schließe nie aus einem kleinen Datenausschnitt, dass ein Attribut eindeutig ist. Im Zerlegungs-Puzzle siehst du sofort, wo noch Redundanz steckt.",
       "intro": [
         {
           "t": "hinweis",
@@ -287,7 +287,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "Vier Dinge passieren im TuS. Ordne jedem Szenario die Anomalie zu, die in der Rohliste `MitgliederlisteRoh` dabei droht."
+          "md": "Vier Dinge passieren im TuS. Gib zu jedem Szenario die Anomalie an, die in der Rohliste `MitgliederlisteRoh` dabei droht."
         }
       ],
       "interaktion": [
@@ -1278,7 +1278,7 @@
         },
         {
           "t": "text",
-          "md": "**Erläutere**, wie die widersprüchlichen Monatsbeiträge entstanden sind und warum ausgerechnet der Eintrag „Nora Falter, 0,00 €“ darin nicht auffiel. Beziehe dich auf konkrete Zeilen. Schreib deine Antwort zuerst auf – sie bleibt auf deinem Gerät –, dann deck die Kernpunkte auf und hake ab."
+          "md": "**Erläutere**, wie die widersprüchlichen Monatsbeiträge entstanden sind und warum ausgerechnet der Eintrag „Nora Falter, 0,00 €“ darin nicht auffiel. Gehe dabei auf konkrete Zeilen ein. Schreib deine Antwort zuerst auf – sie bleibt auf deinem Gerät –, dann deck die Kernpunkte auf und hake ab."
         }
       ],
       "interaktion": {
@@ -1328,7 +1328,7 @@
         },
         {
           "t": "text",
-          "md": "Die erste liefert 9, die zweite 23. **Erläutere**, warum die Frage mit der Rohliste per SQL nicht zuverlässig beantwortet werden kann, und **skizziere** eine bessere Speicherung. Probier die Abfragen gern in der Konsole aus. Deine Antwort bleibt auf deinem Gerät."
+          "md": "Die erste liefert 9, die zweite 23. **Erläutere**, warum die Frage mit der Rohliste per SQL nicht zuverlässig beantwortet werden kann, und **beschreibe** eine bessere Speicherung. Probier die Abfragen gern in der Konsole aus. Deine Antwort bleibt auf deinem Gerät."
         }
       ],
       "interaktion": {
@@ -2780,7 +2780,7 @@
         },
         {
           "t": "text",
-          "md": "Freie Ermittlung ohne Punkte. Eine **funktionale Abhängigkeit** A → B bedeutet: Zu jedem Wert von A gehört genau ein Wert von B (z. B. `Beitragsgruppe → Monatsbeitrag`).\n\n- **1. NF:** nur atomare Werte\n- **2. NF:** 1. NF und kein Nicht-Schlüssel-Attribut hängt von einem **Teil** eines zusammengesetzten Schlüssels ab\n- **3. NF:** 2. NF und keine **transitive** Abhängigkeit (Nicht-Schlüssel-Attribut hängt über ein anderes Nicht-Schlüssel-Attribut vom Schlüssel ab)\n\n**Bestimme** in der Rohliste drei funktionale Abhängigkeiten und **prüfe** die Rohliste und deine Zerlegung aus „Das neue Archiv“ auf 1., 2. und 3. Normalform. Deine Antwort bleibt auf deinem Gerät."
+          "md": "Freie Ermittlung ohne Punkte. Eine **funktionale Abhängigkeit** A → B bedeutet: Zu jedem Wert von A gehört genau ein Wert von B (z. B. `Beitragsgruppe → Monatsbeitrag`).\n\n- **1. NF:** nur atomare Werte\n- **2. NF:** 1. NF und kein Nicht-Schlüssel-Attribut hängt von einem **Teil** eines zusammengesetzten Schlüssels ab\n- **3. NF:** 2. NF und keine **transitive** Abhängigkeit (Nicht-Schlüssel-Attribut hängt über ein anderes Nicht-Schlüssel-Attribut vom Schlüssel ab)\n\n**Bestimme** in der Rohliste drei funktionale Abhängigkeiten und **untersuche** die Rohliste und deine Zerlegung aus „Das neue Archiv“ auf 1., 2. und 3. Normalform. Deine Antwort bleibt auf deinem Gerät."
         }
       ],
       "interaktion": {
@@ -3251,7 +3251,7 @@
         },
         {
           "t": "text",
-          "md": "**Führen Sie** die Änderung im Simulator so **aus**, wie die Liste es erlaubt, **ordnen Sie** die entstehende Anomalie **zu** und markieren Sie alle Zellen, die bei dieser Änderung angepasst werden müssten. [2 BE]"
+          "md": "**Führen Sie** die Änderung im Simulator so **aus**, wie die Liste es erlaubt, **geben Sie** die entstehende Anomalie **an** und markieren Sie alle Zellen, die bei dieser Änderung angepasst werden müssten. [2 BE]"
         }
       ],
       "interaktion": {
@@ -3784,7 +3784,7 @@
         },
         {
           "t": "text",
-          "md": "**Führen Sie** den Auftrag im Simulator so **aus**, wie die Liste es erlaubt, **ordnen Sie** die Anomalie **zu** und markieren Sie in der neuen Zeile die Zellen, die leer bleiben müssten. [3 BE]"
+          "md": "**Führen Sie** den Auftrag im Simulator so **aus**, wie die Liste es erlaubt, **geben Sie** die Anomalie **an** und markieren Sie in der neuen Zeile die Zellen, die leer bleiben müssten. [3 BE]"
         }
       ],
       "interaktion": {
@@ -4282,7 +4282,7 @@
         },
         {
           "t": "text",
-          "md": "**Zerlegen Sie** die Liste verlustfrei in redundanzfreie Tabellen und **kennzeichnen Sie** in jeder Tabelle den Schlüssel. [5 BE]"
+          "md": "**Entwickeln Sie** aus der Liste ein redundanzfreies Relationenschema, das alle Informationen verlustfrei enthält, und **geben Sie** für jede Tabelle den Schlüssel **an**. [5 BE]"
         }
       ],
       "interaktion": {

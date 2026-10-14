@@ -21,7 +21,7 @@
       "akte": 3,
       "kategorie": "SQL Aggregation",
       "titel": "Regel-Check",
-      "aufgabe": "Prüfe, ob die Abfrage die GROUP-BY-Regel erfüllt, und korrigiere sie.",
+      "aufgabe": "Untersuche, ob die Abfrage die GROUP-BY-Regel erfüllt, und verändere sie so, dass sie die Regel erfüllt.",
       "sql": "SELECT Stand.Name, Bon.Zahlart, COUNT(*) AS Bons\nFROM Stand, Bon\nWHERE Stand.StandNr = Bon.StandNr\nGROUP BY Stand.Name",
       "datenbank": "stadtfest",
       "loesung": "`Bon.Zahlart` ist weder aggregiert noch gruppiert – Verstoß. Korrektur: nach dem Schlüssel des Standes, dem Namen **und** der Zahlart gruppieren.",
@@ -73,7 +73,7 @@
       "akte": 3,
       "kategorie": "SQL Aggregation",
       "titel": "WHERE oder HAVING?",
-      "aufgabe": "Entscheide für jede Bedingung, ob sie in WHERE oder HAVING gehört, und nenne je einen Grund: `Bon.Zahlart = 'Karte'` · `COUNT(*) > 20` · `Produkt.Preis < 3` · `SUM(Position.Menge) >= 50`.",
+      "aufgabe": "Gib für jede Bedingung an, ob sie in WHERE oder HAVING gehört, und begründe jeweils kurz: `Bon.Zahlart = 'Karte'` · `COUNT(*) > 20` · `Produkt.Preis < 3` · `SUM(Position.Menge) >= 50`.",
       "loesung": "WHERE: `Bon.Zahlart = 'Karte'` und `Produkt.Preis < 3` – sie prüfen einzelne Zeilen vor dem Gruppieren. HAVING: `COUNT(*) > 20` und `SUM(Position.Menge) >= 50` – sie enthalten ein Aggregat und prüfen ganze Gruppen.",
       "minuten": 2,
       "kompetenz": [
@@ -88,7 +88,7 @@
       "akte": 3,
       "kategorie": "SQL Aggregation",
       "titel": "Reihenfolge",
-      "aufgabe": "Notiere die Auswertungsreihenfolge der Klauseln SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT. Erkläre damit, warum in HAVING kein Alias aus dem SELECT verwendet wird, in ORDER BY aber schon.",
+      "aufgabe": "Gib die Auswertungsreihenfolge der Klauseln SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT an. Erläutere damit, warum in HAVING kein Alias aus dem SELECT verwendet wird, in ORDER BY aber schon.",
       "loesung": "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Der Alias entsteht erst im SELECT; HAVING wird vorher ausgewertet und wiederholt deshalb das Aggregat (EH). ORDER BY kommt nach SELECT und darf den Alias nutzen.",
       "minuten": 2,
       "kompetenz": [

@@ -2697,7 +2697,7 @@
         },
         {
           "t": "text",
-          "md": "**Überführen** Sie den abgebildeten Ausschnitt des ER-Modells in ein Relationenschema in Kurzschreibweise. Gericht ist bereits überführt. [5 BE]"
+          "md": "**Erstellen** Sie zu dem abgebildeten Ausschnitt des ER-Modells das Relationenschema in Kurzschreibweise. Gericht ist bereits überführt. [5 BE]"
         }
       ],
       "interaktion": {

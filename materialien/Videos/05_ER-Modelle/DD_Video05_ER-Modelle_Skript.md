@@ -47,8 +47,8 @@ Kapitel:
 0:58 Kardinalitäten
 2:12 Rekursiv und ternär
 3:16 Jetzt du
-4:54 Fallen
-5:18 Merksätze
+4:55 Fallen
+5:19 Merksätze
 ```
 
 _Zeitmarken aus der Textlänge geschätzt – nach dem Schnitt anpassen._
@@ -124,18 +124,18 @@ Und wenn drei Dinge zusammengehören? Bevor jemand ein Tier adoptiert, gibt es K
 
 **Auf der Folie:**
 
-> Modelliere in Chen-Notation:
+> Entwirf ein ER-Modell in Chen-Notation:
 - Jede **Futtersorte** (SorteNr, Bezeichnung) wird von genau **einem Lieferanten** (LieferantNr, Firma) geliefert; ein Lieferant liefert mehrere Sorten.
 - Jedes **Tier** bekommt mehrere Futtersorten, eine Sorte wird an mehrere Tiere verfüttert – jeweils mit einer **Tagesmenge**.
 - *Tipp:* Zwei Fragen je Raute. · Zu wem gehört die Tagesmenge?
 
 **Sprechertext:**
 
-Jetzt du. Modelliere: Jede Futtersorte wird von genau einem Lieferanten geliefert, ein Lieferant liefert mehrere Sorten. Jedes Tier bekommt mehrere Futtersorten, und eine Sorte wird an mehrere Tiere verfüttert – jeweils mit einer Tagesmenge. Zeichne das ER-Modell mit Schlüsselattributen und Kardinalitäten. Halte das Video an – oder zeichne es direkt im Bauplan-Tisch.
+Jetzt du. Entwirf ein ER-Modell: Jede Futtersorte wird von genau einem Lieferanten geliefert, ein Lieferant liefert mehrere Sorten. Jedes Tier bekommt mehrere Futtersorten, und eine Sorte wird an mehrere Tiere verfüttert – jeweils mit einer Tagesmenge. Zeichne das ER-Modell mit Schlüsselattributen und Kardinalitäten. Halte das Video an – oder zeichne es direkt im Bauplan-Tisch.
 
 *(ca. 45 s Pause zum Mitdenken – im Schnitt den Hinweis „Video anhalten“ einblenden)*
 
-### Folie 8 · 4:25 – Auflösung
+### Folie 8 · 4:26 – Auflösung
 
 **Auf der Folie:**
 
@@ -146,7 +146,7 @@ Jetzt du. Modelliere: Jede Futtersorte wird von genau einem Lieferanten geliefer
 
 Die Auflösung: Lieferant und Futtersorte sind über liefert verbunden – eine Futtersorte hat genau einen Lieferanten, also steht die 1 beim Lieferanten und das n bei der Futtersorte. Tier und Futtersorte sind n zu m verbunden, und die Tagesmenge gehört zum Paar aus Tier und Sorte, also an die Raute frisst. Typische Fehler: 1 und n vertauscht, die Tagesmenge am Tier, ein vergessenes Schlüsselattribut.
 
-### Folie 9 · 4:54 – Die Falle P9 im ER-Modell · Kapitel „Fallen“
+### Folie 9 · 4:55 – Die Falle P9 im ER-Modell · Kapitel „Fallen“
 
 **Auf der Folie:**
 
@@ -159,7 +159,7 @@ Die Auflösung: Lieferant und Futtersorte sind über liefert verbunden – eine 
 
 Die Falle im ER-Modell heißt P9. Kardinalitäten werden vertauscht oder vergessen – stell immer die zwei Fragen. Ein Entitätstyp ohne unterstrichenes Schlüsselattribut. Und ein Beziehungsattribut am falschen Ort. Wenn im Abitur verlangt wird, eine Kardinalität zu begründen, schreib beide Richtungen im Sachzusammenhang auf – ein Satz pro Richtung. Sonst droht P10.
 
-### Folie 10 · 5:18 – Das nimmst du mit · Kapitel „Merksätze“
+### Folie 10 · 5:19 – Das nimmst du mit · Kapitel „Merksätze“
 
 **Auf der Folie:**
 
@@ -173,7 +173,7 @@ Die Falle im ER-Modell heißt P9. Kardinalitäten werden vertauscht oder vergess
 
 Das nimmst du mit: Rechteck, Ellipse, Raute – Entitätstyp im Singular, Attribut, Beziehungstyp als Verb. Schlüsselattribute werden unterstrichen. Kardinalitäten bestimmst du mit zwei Fragen, in beide Richtungen. Attribute eines Paars gehören an die Raute. Und bei rekursiven Beziehungen schreibst du Rollen an die Kanten, bei ternären n, m und p.
 
-### Folie 11 · 5:41 – Weiter im Lab
+### Folie 11 · 5:42 – Weiter im Lab
 
 **Auf der Folie:**
 

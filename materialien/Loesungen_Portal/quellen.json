@@ -3,42 +3,42 @@
  "dateien": {
   "DD_A1-AB1_Der_erste_Auftrag_Loesung.pdf": {
    "quelle": "Akte1_Fundbuero/5_Loesungen/DD_A1_AB1_Der_erste_Auftrag_LSG.docx",
-   "sha256": "658ac273b4aad488c818c345387e2ca73a17710373246e149cbc74b3f61d6f77",
+   "sha256": "a80c000633ba0e4842f9c514143c03a0da7b5a982d0e89ece10683152eaa727a",
    "verfahren": "pdf"
   },
   "DD_A1-AB2_Das_verschwundene_Fundstueck_Loesung.pdf": {
    "quelle": "Akte1_Fundbuero/5_Loesungen/DD_A1_AB2_Das_verschwundene_Fundstueck_LSG.docx",
-   "sha256": "a536939e3be2b63b74cf99bd5f81c1f412a839b117d56b1300a68c94d12e990e",
+   "sha256": "cdeae33279d3ca0a0942a9620f23bb8fce3942413344c15690300efc63d66201",
    "verfahren": "pdf"
   },
   "DD_A1-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A1.docx",
-   "sha256": "5c76d35060b26a39d27678fa3277d4d8109ed4f7d9510bb705f045297cc9cda1",
+   "sha256": "2a8663e450b724668195a1d356e06736ee66e0b17bb44766f511f93f63d49b31",
    "verfahren": "pdf"
   },
   "DD_A2-AB1_Der_rote_Faden_Loesung.pdf": {
    "quelle": "Akte2_Raeder/5_Loesungen/DD_A2_AB1_Der_rote_Faden_LSG.docx",
-   "sha256": "6f8f1f1f8bba9fbdc085cdc31eb5e04664ab6db6142d3c5627ce3916bfd2ffb4",
+   "sha256": "0c30fd85a84dde1c954e3ff0e866bf0288eaed41a72b961ed6f48c35c642d53f",
    "verfahren": "pdf"
   },
   "DD_A2-AB2_Nachtfahrten_Loesung.pdf": {
    "quelle": "Akte2_Raeder/5_Loesungen/DD_A2_AB2_Nachtfahrten_LSG.docx",
-   "sha256": "6e55739045dc3cc88c54a70bb07d59527a5943e73b13bfe3096561047fb3a26e",
+   "sha256": "afe6e6ddc865b5af966bdae809c31b722e104f11d055db126f689590ce3449c7",
    "verfahren": "pdf"
   },
   "DD_A2-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A2.docx",
-   "sha256": "352608ba7613f77ee6077653e5952f0ec7f06a41f2fce1bf120e8abfb5733e5b",
+   "sha256": "b7844e25953e70b630a0dc4c3c836caff6ffc0e5d5ad5e22d1f0ecd2b2a808b8",
    "verfahren": "pdf"
   },
   "DD_A3-AB1_Kassensturz_Loesung.pdf": {
    "quelle": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB1_Kassensturz_LSG.docx",
-   "sha256": "e68a9a4b4e88edb9185cdd2777685a260845503ba06570257aa36229c3a54433",
+   "sha256": "fe87d3cae0e74c6bfaceeb1daab131cd2b4901b35a96add22055e509d1a0fd46",
    "verfahren": "pdf"
   },
   "DD_A3-AB2_Die_Statistik_luegt_nicht_Loesung.pdf": {
    "quelle": "Akte3_Stadtfest/5_Loesungen/DD_A3_AB2_Die_Statistik_luegt_nicht_LSG.docx",
-   "sha256": "944e30f94e8c62754b34cfbf483c00971dac0600a6fe8c69368a73fb1a698080",
+   "sha256": "6bcb3ce17c0df5b1388a23dbc4a20817effdd15c3007acc37a7f5e7f540664ba",
    "verfahren": "pdf"
   },
   "DD_A3-Unplugged_GROUP_BY_Karten_Loesung.pdf": {
@@ -53,17 +53,17 @@
   },
   "DD_A3-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A3.docx",
-   "sha256": "498e6c384d532b7c9c46e0fefc84940f88af31777df7e7aae432e13704a6e191",
+   "sha256": "5e5d98fdc610bfe9ae7330724b1eee344a6de7941e4893b26264c373b3a4a2c2",
    "verfahren": "pdf"
   },
   "DD_A4-AB1_Die_Excel-Liste_Loesung.pdf": {
    "quelle": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB1_Die_Excel-Liste_LSG.docx",
-   "sha256": "8fe2c003562c5c027ae4fd6bf9afd0ffda42a1067bfbfb41334c09f0c32ff506",
+   "sha256": "55d1c97009a3ba44d772df541401f52fa2f477d185b7ebe74d1c58ce2e78748b",
    "verfahren": "pdf"
   },
   "DD_A4-AB2_Ordnung_ins_Archiv_Loesung.pdf": {
    "quelle": "Akte4_Vereinsarchiv/5_Loesungen/DD_A4_AB2_Ordnung_ins_Archiv_LSG.docx",
-   "sha256": "f636a29dea2c2defd1d0d87126c9468ae78dec08134ab3cdccea392c0aa2feb4",
+   "sha256": "5dc61f705b5dd5caa908b262b8899b67fc2e4935a858658e27d076aae0b9eb10",
    "verfahren": "pdf"
   },
   "DD_A4-Unplugged_Anomalie-Rennen_Loesung.pdf": {
@@ -78,32 +78,32 @@
   },
   "DD_A4-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A4.docx",
-   "sha256": "912b4b7e808e17d330b5e957df547fa6dce3d96d573c85a33661c7271c7ef9af",
+   "sha256": "c6ef3eab1dbbb18ce586c17ef956b311c4d5d1d30cacd2dfe36dc4bfb9c87501",
    "verfahren": "pdf"
   },
   "DD_A5-AB1_Bauplaene_lesen_Loesung.pdf": {
    "quelle": "Akte5_Bauplan/5_Loesungen/DD_A5_AB1_Bauplaene_lesen_LSG.docx",
-   "sha256": "10267700f83f563d88ce7a604342ea1516cfdbecb9a12a708d0789119c4cb57e",
+   "sha256": "15a25922d6db07448dc55d9050878f80f61cd226aae993676ea020032e14fe37",
    "verfahren": "pdf"
   },
   "DD_A5-AB2_Der_Architekturwettbewerb_Loesung.pdf": {
    "quelle": "Akte5_Bauplan/5_Loesungen/DD_A5_AB2_Der_Architekturwettbewerb_LSG.docx",
-   "sha256": "13448f1bad830a610fb700d5bf08fcc3f6d7b21dc5ce6a46411856a0f12c01a1",
+   "sha256": "e35984dd7420e982c7272cee390c6b3021fa5aaf6a8722d7dafccc703270ec3b",
    "verfahren": "pdf"
   },
   "DD_A5-AB3_Vom_Plan_zur_Datenbank_Loesung.pdf": {
    "quelle": "Akte5_Bauplan/5_Loesungen/DD_A5_AB3_Vom_Plan_zur_Datenbank_LSG.docx",
-   "sha256": "7ed5810e22c81d8e3196dc37072217e13b42db8911a5206fd855c0824ff300b9",
+   "sha256": "d2c994ca69c8134a9240f792c30fcab4b377af0a06fd7f27d06ad66aafcb9c4c",
    "verfahren": "pdf"
   },
   "DD_A5-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A5.docx",
-   "sha256": "de3770fb1e6b425fc3862e3487b6f24a38eaf7bc83ec876d15b082feb0b15719",
+   "sha256": "6448dad6a5f0e35aa256851611e9ea7bfd87e37eb8ac44486d143638183a0b8d",
    "verfahren": "pdf"
   },
   "DD_A6-AB1_Das_Phantom_Loesung.pdf": {
    "quelle": "Akte6_Datenspuren/5_Loesungen/DD_A6_AB1_Das_Phantom_LSG.docx",
-   "sha256": "dc94afb0e142a414890207e90c167a61c1dd84f272efd1bcf3cca3c6797f5fc5",
+   "sha256": "9800c8a640d3f8ceac4927b3d01eb47b6de90ea8c34a30d8e2990f8c6e22f633",
    "verfahren": "pdf"
   },
   "DD_A6-Unplugged_Rollenkarten-Debatte_Loesung.pdf": {
@@ -118,12 +118,12 @@
   },
   "DD_A6-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A6.docx",
-   "sha256": "44563ad12d37897af01908fac5b06332b5ffb8f28274442934c79317ee2b4e7c",
+   "sha256": "4eb510f5fb04783c7a934ecb36d892e8a7158e1cc281d92526ea7e282d8371fe",
    "verfahren": "pdf"
   },
   "DD_A7-Generalprobe_eA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Generalprobe_eA_Erwartungshorizont.docx",
-   "sha256": "3293ff51affa401e1f9774640d031fff2aded93b61205f9131d73fef26fca6fe",
+   "sha256": "41a8d24a0e6a6fce8e9d00618902bf61c4ce9319cfc9437454bc1be7bfd1a404",
    "verfahren": "pdf"
   },
   "DD_A7-Generalprobe_gA_Erwartungshorizont.pdf": {
@@ -138,27 +138,27 @@
   },
   "DD_A7-Klausur_gA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Klausur_gA_Erwartungshorizont.docx",
-   "sha256": "d03b006aa19aa1c3463845fcdd270eead1ac8ca54b50bff98c8789ed316aa20a",
+   "sha256": "34497979bf122694bc6a350ce01528eade6989ef1b9731f3e4aae9628937d1b0",
    "verfahren": "pdf"
   },
   "DD_A7-Nachschreibklausur_eA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_eA_Erwartungshorizont.docx",
-   "sha256": "557bed214b5d023f5989b94228dd9c4c02c3f6577f4c2ca8fcd11bb5624de8bd",
+   "sha256": "6c6f06d3099a532cef5e9a5ee0c56cf51527060142232cf3387973a2d00f8cec",
    "verfahren": "pdf"
   },
   "DD_A7-Nachschreibklausur_gA_Erwartungshorizont.pdf": {
    "quelle": "Akte7_Generalprobe/5_Erwartungshorizonte/DD_A7_Nachschreibklausur_gA_Erwartungshorizont.docx",
-   "sha256": "60fcd084e1941bd49b703e4a2ee5a470b6049d5e6c691055aa519a4d4baf08a4",
+   "sha256": "9d2bd8a045ec097c4a99c4f2eebf358bbf32b26d7e054fa12cfd83098ee4760a",
    "verfahren": "pdf"
   },
   "DD_A7-Warm-up-Karten_Loesungen.pdf": {
    "quelle": "Warm-up/DD_Warm-up-Karten_A7.docx",
-   "sha256": "5036ab8c863d43525e7e0f65dbdf4fc43af73cc65c86cae3ebe73beb1922cfa7",
+   "sha256": "b5a3e011758de59b12a756b4968ab4b056f5f1d1a56f0ba23b0dab0f5c1f07e5",
    "verfahren": "pdf"
   },
   "DD_K1-Eigene_Datenbank_Loesung.pdf": {
    "quelle": "Kuer/K1_Eigene_Datenbank/DD_K1_Eigene_Datenbank_LSG.docx",
-   "sha256": "8aff52d65a03abe0bc8ff508592f22bf461977c24a4e3087228c4d4e87d0f864",
+   "sha256": "eee71fe3dc4e27cd0dd8941a62f1d6539ba42e780e348a6869f01bd6d25920f7",
    "verfahren": "pdf"
   },
   "DD_K2-Escape_Room_Stationen_Loesung.pdf": {

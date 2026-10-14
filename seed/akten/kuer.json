@@ -142,7 +142,7 @@
       "inhalt": [
         {
           "t": "text",
-          "md": "**KÜR – nicht im Abitur.** Die Tabelle Ermittler steht schon (Startschema), sie ist aber noch leer. Trage mit `INSERT INTO` **drei** Ermittler ein: **Edda Lorenz** mit dem Dienstgrad **Leitung** und zwei weitere deiner Wahl. Kontrolliere am Ende mit einem `SELECT`, was in der Tabelle steht."
+          "md": "**KÜR – nicht im Abitur.** Die Tabelle Ermittler steht schon (Startschema), sie ist aber noch leer. Trage mit `INSERT INTO` **drei** Ermittler ein: **Edda Lorenz** mit dem Dienstgrad **Leitung** und zwei weitere deiner Wahl. Lass dir am Ende mit einem `SELECT` anzeigen, was in der Tabelle steht."
         },
         {
           "t": "schema",
@@ -242,7 +242,7 @@
         },
         {
           "t": "text",
-          "md": "Füge dann den Fall 10 „Das Phantom“ mit **LeiterNr 7** ein und führe aus: Was meldet die Datenbank? Ändere den Datensatz danach so, dass **Edda Lorenz** den Fall leitet, und prüfe."
+          "md": "Füge dann den Fall 10 „Das Phantom“ mit **LeiterNr 7** ein und führe aus: Was meldet die Datenbank? Ändere den Datensatz danach so, dass **Edda Lorenz** den Fall leitet, und teste das Ergebnis."
         }
       ],
       "interaktion": [
