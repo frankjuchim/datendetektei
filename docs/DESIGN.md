@@ -671,6 +671,16 @@ Auflösung, Steckbrief-Stempel „ENTTARNT“ und Überleitung zur Erörterung.
 - **Einstellungen:** Niveau eA/gA (gA blendet Akte 5 aus: Zeile ausgegraut, Schalter deaktiviert, „bei gA
   ausgeblendet“), Akten-Schalter, Verhöre automatisch ab 60 % / offen / gesperrt, Scoreboard, Beamer-Board, Board-Link.
 - Weitere Reiter (Phase 6): Aufgabenstatistik, häufige Fehlabfragen (anonym), Vorschau, Live, Urkunden, Materialien.
+- **Aufbau des Lehrkraft-Bereichs wie Algo Quest (Phase 8, Auftrag Frank):** Lehrkräfte arbeiten in mehreren Labs
+  des Verbunds InfoLabs; derselbe Aufbau sorgt für Wiedererkennung, das Design bleibt „Akten-Noir“. Kopf-Navigation
+  (Stil `lern-nav`, `aria-current="page"`, scrollt auf dem Smartphone in sich) **Kurse · Aufgaben · Materialien ·
+  Themen · Verwaltung** (nur Superadmin; Begriffe und Reihenfolge wie Algo Quest). Start `#/` = Tabelle „Meine Kurse“
+  bzw. „Alle Kurse“ (Kurs · Niveau · Schüler:innen · Fortschritt Ø · zuletzt aktiv · Öffnen) mit Hinweis aufs Portal.
+  Kursseite `#/kurs/<id>/<reiter>`: Brotkrumen „Kurse › Name“, h1 mit Niveau-Etikett, rechts Knöpfe Urkunden und
+  Live-Runde, Kennzahlen, Reiter **Schüler · Beitritt · Auswertung · Scoreboard · Einstellungen** (wie Algo Quest) und
+  **Live** am Ende (gemeinsame Reiter behalten ihre Position). Beitritt = Portal-Hinweis + Beamer-Board. Aufgaben:
+  Akten-Karten (Akten-Farbe als linker Rand) → Akte mit Tabellen je Ermittlung und Verhör-Pool → Aufgabe mit Lösung,
+  Tipps, vorherige/nächste. Verwaltung mit Reitern Inhalte und Sicherung. Hash-Routing: Zurück-Knopf und Deep-Links.
 
 ### 5.12 Beamer-Board (`/board/:schluessel`, 1920 × 1080)
 ```

@@ -107,8 +107,11 @@ Verzeichnisse mitcommitten. Neue Materialien immer über `seed/arbeitsblaetter.j
 Link-Knopf, kein Embed). Sichtprüfung der Phase 7: `docs/screenshots/phase7/`.
 
 Seiten (Phase 6): `/pinnwand` (Beweisstücke, Indizienkette des Schlussplädoyers, Steckbrief nach Regel E10),
-`/live` (Live-Runde beitreten), `/lehrkraft` (Reiter Übersicht, Einstellungen, Auswertung, Vorschau, Live, Board,
-Urkunden, Materialien; Superadmin zusätzlich System), `/lehrkraft/live` + `/live/<runde>/beamer` (Steuerung, Beamer),
+`/live` (Live-Runde beitreten), `/lehrkraft` (Aufbau wie Algo Quest, Hash-Routen: Kopf-Navigation Kurse · Aufgaben ·
+Materialien · Themen · Verwaltung (nur Superadmin); `#/` Kursliste, `#/kurs/<id>/<reiter>` mit Schüler · Beitritt
+(+ Beamer-Board) · Auswertung · Scoreboard · Einstellungen · Live und Knopf Urkunden; `#/aufgaben…` kursunabhängig über
+`/api/lehrkraft/vorschau`; `#/materialien`; `#/verwaltung/inhalte|sicherung`; alte `?kurs=…#reiter`-Adressen werden
+umgeleitet), `/lehrkraft/live` + `/live/<runde>/beamer` (Steuerung, Beamer),
 `/lehrkraft/urkunden` (Druckseite), `/board/<schlüssel>` (Beamer-Board ohne Anmeldung, immer dunkel, nur Anzeigenamen),
 `/rangliste` (Phase 8: Rangliste des Kurses, Kurseinstellung `scoreboard`, Standard für neue Kurse an; Link in der
 `lern-nav` aller Lernseiten, für Schüler:innen nur bei eingeschaltetem Schalter – `kopfzeile.js` aus `/api/ich`).
