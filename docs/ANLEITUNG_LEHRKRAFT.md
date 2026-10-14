@@ -45,7 +45,7 @@ die Kennzahlen. Reiter (gleiche Reihenfolge wie in Algo Quest, *Live* zusätzlic
 | **Schüler** | Schüler:innen mit Platz, Rang, Punkten, Anteil und „zuletzt aktiv“; Akten-Fortschritt des Kurses; Link zur Schüleransicht (Vorschau). Namen und Codes ändern Sie im Portal. |
 | **Beitritt** | Beitritt läuft über das Portal (Kurscode des Portals). Darunter das **Beamer-Board**: einschalten, Link kopieren/öffnen, neuen Link erzeugen, Vorschau. |
 | **Auswertung** | Siehe Abschnitt 5. |
-| **Scoreboard** | Rangliste des Kurses (die besten 10) wie auf der Schülerseite „Rangliste“, mit Hinweis, ob sie für Schüler:innen sichtbar ist. |
+| **Scoreboard** | Rangliste des Kurses (die besten 10) wie auf der Schülerseite „Rangliste“, mit Hinweis, ob sie für Schüler:innen sichtbar ist; aktualisiert sich alle 20 Sekunden selbst (wie in Algo Quest). |
 | **Einstellungen** | Akten, Niveau, Verhöre, Scoreboard und Beamer-Board (Tabelle unten). |
 | **Live** | Live-Runden (Duell, Escape Room) für diesen Kurs. |
 
