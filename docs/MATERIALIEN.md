@@ -278,7 +278,7 @@ Ziffern, `_ - . ( ) + ,` und Leerzeichen, beginnend mit Buchstabe/Ziffer/`_`, ke
 kein `\`; Endungen: PDF-Stufen nur `.pdf`, Originale `.docx`, `.pptx`, `.md`. Beim Ausliefern prüft der Server
 zusätzlich, dass die Datei (auch nach Symlinks) unter `materialien/` liegt; `sendFile` immer mit `root`.
 
-**Gast-Auswahl** `Gast_PDF/verzeichnis.json` (Standard leer, Frank wählt aus): Einträge zusätzlich mit
+**Gast-Auswahl** `Gast_PDF/verzeichnis.json` (von Hand gepflegt, Auswahl von Frank – Stand 2026-10-14: 7 PDFs, Spec §18): Einträge zusätzlich mit
 `"ordner": "Arbeitsblaetter_PDF" | "Lehrkraft_PDF" | "Loesungen_Portal"` und optional `"fassung": "schueler" | "lehrkraft"`;
 `datei` relativ zu diesem Ordner. Was nach Lösung, Erwartungshorizont oder Klausur aussieht (Ordner
 `Loesungen_Portal`, `art` loesung/pruefung/erwartungshorizont/klausur, `fassung: "loesung"` oder Dateiname mit `LSG`,

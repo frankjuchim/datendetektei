@@ -4,7 +4,7 @@
 |---|---|
 | **Bezug** | Spec Abschnitt 4 (DB-K01…K48), 5 (P1–P10), 7.5 (Interaktionen), 10 (Zielgrößen), 2.4 (Abi-Befunde) |
 | **Quelle der Zuordnungen** | `docs/DS_PLANUNG.md` (Lab-, Verhör-, Warm-up-, Prüfungs-Blueprints); beide Dateien wurden aus demselben Datenmodell erzeugt und per Skript gegengeprüft |
-| **Stand** | 2026-10-12 · Phase 0 · Akten 1–3 (Lab, Verhör 1–3, Warm-up A1–A3) gegen `seed/akten/` und `seed/warmup/` (Feld `kompetenzen`/`fallen`) geprüft: Zuordnungen und Zählungen stimmen (Phase 3) |
+| **Stand** | 2026-10-14: K12 → AB 4.2/4, K22 → AB 3.2/4 (Spec §18) · 2026-10-12 · Phase 0 · Akten 1–3 (Lab, Verhör 1–3, Warm-up A1–A3) gegen `seed/akten/` und `seed/warmup/` (Feld `kompetenzen`/`fallen`) geprüft: Zuordnungen und Zählungen stimmen (Phase 3) |
 
 **Erfolgskriterium 1 der Spec:** Jede abiturverbindliche Kompetenz (alle außer Kür K06, K13, K48) ist mindestens einer DS, einer Lab-Aufgabe und einer Prüfungsaufgabe (Verhör, Generalprobe oder Klausur) zugeordnet → Abschnitt 2.
 
@@ -23,7 +23,7 @@
 | **K09** | Gegebenes Schema auf Anomalien untersuchen (auch „keine Anomalie möglich“) | gA/eA | 8 | – | A4-E2-03, A4-E2-05 | AB 4.2/2, AB 4.2/3, AB 4.2/Abi-Ecke | W-A4-08 | A4-V-08, A4-V-09, A7-V-11 | GP-eA-b, GP-gA-b | KL-A-c, NK-A-c | 4 |
 | **K10** | Zusammenhang Redundanz ↔ Anomalie erläutern | gA/eA | 7 | – | A4-E1-07 | AB 4.1/5, AB 4.1/Abi-Ecke | W-A4-03 | A4-V-07 | GP-eA-b, GP-gA-b | KL-A-c, NK-A-c | 4 |
 | **K11** | Tabelle verlustfrei in ein redundanzfreies Schema zerlegen | eA | 8 | – | A4-E2-06, A4-E2-07, A4-E2-08, A4-E2-CC | AB 4.2/4, AB 4.2/5 | W-A4-07 | A4-V-11 | – | – | 4 |
-| **K12** | Redundanzfreiheit eines Schemas begründen | eA | 8 | – | A4-E2-08 | – | – | A4-V-12 | – | – | 4 |
+| **K12** | Redundanzfreiheit eines Schemas begründen | eA | 8 | – | A4-E2-08 | AB 4.2/4 | – | A4-V-12 | – | – | 4 |
 | **K13** | Funktionale/volle/transitive Abhängigkeit; 1.–3. NF als Prüfwerkzeug | Kür | 8 | – | A4-E2-CC | AB 4.2/Cold Case | – | – | – | – | 4 (Hinweis) |
 | **K14** | Nicht-atomare Werte erkennen und Folgen für Auswertungen erläutern | gA/eA | 7 | – | A4-E1-06, A4-E1-08 | AB 4.1/Cold Case | W-A4-04 | A4-V-04 | – | KL-BgA-a | 4 |
 | **K15** | SELECT … FROM … WHERE, `*`, DISTINCT | gA/eA | 1 | 2, 12 | A1-E1-03, A1-E1-04, A1-E2-02, A1-E2-06, A6-E1-10, A6-E1-12, A6-E1-13, A1-E1-CC | AB 1.1/4, AB 1.1/Abi-Ecke, AB 1.1/Cold Case, AB 1.2/4 | W-A1-03 | A1-V-03, A1-V-10, A7-V-03 | – | KL-A-d | 1 |
@@ -33,7 +33,7 @@
 | **K19** | LIKE mit `_` und `%` | gA/eA | 2 | 4 | A1-E2-01, A1-E2-06, A1-E2-07, A2-E2-02, A1-E2-CC, A4-E1-CC | AB 1.2/1 | W-A1-05 | A1-V-06 | – | NK-A-g | 1 |
 | **K20** | Berechnungen in Spalten und Bedingungen | gA/eA | 2 | 5 | A1-E2-05, A3-E1-07 | AB 1.2/Cold Case | – | A1-V-09 | – | – | 1 |
 | **K21** | ORDER BY ASC/DESC, mehrstufig, auch über Alias/Aggregat | gA/eA | 1 | 5, 6, 12 | A1-E1-04, A1-E1-07, A1-E1-08, A3-E1-08, A3-E2-05, A6-E1-09, A6-E1-12, A1-E1-CC, A3-E2-CC | AB 1.1/4, AB 1.1/5, AB 1.2/Abi-Ecke | W-A1-03, W-A1-08 | A1-V-08, A1-V-10, A3-V-08 | GP-eA-e, GP-gA-c | KL-A-d, KL-A-f | 1 |
-| **K22** | LIMIT (Top-n, „die meisten“) | gA/eA | 2, 6 | 4 | A1-E2-05, A2-E2-08, A3-E2-05, A3-E2-CC | – | W-A1-08, W-A3-08 | A1-V-11, A2-V-11, A3-V-08, A7-V-13 | GP-eA-g | KL-A-g, NK-A-f | 1, 3 |
+| **K22** | LIMIT (Top-n, „die meisten“) | gA/eA | 2, 6 | 4 | A1-E2-05, A2-E2-08, A3-E2-05, A3-E2-CC | AB 3.2/4 | W-A1-08, W-A3-08 | A1-V-11, A2-V-11, A3-V-08, A7-V-13 | GP-eA-g | KL-A-g, NK-A-f | 1, 3 |
 | **K23** | Verbund über 2 Tabellen (implizit, FK = PK) | gA/eA | 3 | 4, 5, 12, K1 | A2-E1-03, A2-E1-05, A2-E1-06, A2-E1-07, A2-E1-08, A2-E2-02, A3-E1-03, A3-E1-05, A6-E1-06, A6-E1-11, K1-E1-04, K1-E1-05, A2-E1-CC, A3-E1-CC | AB 2.1/2, AB 2.1/4, AB 2.1/5, AB 2.1/Cold Case, AB 5.3/4 | W-A2-02, W-A2-03, W-A2-07 | A2-V-03, A2-V-04, A2-V-05, A2-V-06, A2-V-10, A3-V-06, A7-V-04 | GP-eA-e, GP-gA-c | KL-A-f, NK-A-d | 2 |
 | **K24** | Verbund über ≥ 3 Tabellen; zwei FKs auf dieselbe Tabelle (Tabellenalias) | gA/eA | 4 | 5, 6, 11, 12 | A2-E2-01, A2-E2-03, A2-E2-04, A2-E2-05, A2-E2-07, A2-E2-08, A3-E1-07, A3-E2-07, A5-E3-08, A6-E1-14, A2-E2-CC, A5-E3-CC | AB 2.2/1, AB 2.2/2, AB 2.2/3, AB 2.2/4, AB 2.2/5, AB 2.2/Abi-Ecke, AB 3.1/Abi-Ecke, AB 3.2/5, AB 5.3/Cold Case, AB 6.1/3 | W-A2-05, W-A2-06, W-A2-08, W-A5-12, W-A7-02 | A2-V-07, A2-V-08, A2-V-09, A2-V-11, A2-V-12, A3-V-11, A7-V-07, A7-V-09, A7-V-13 | GP-eA-f, GP-gA-d | KL-A-e, NK-A-e, NK-A-g | 2 |
 | **K25** | Aggregatfunktionen AVG, COUNT, MAX, MIN, SUM (auch ohne GROUP BY) | gA/eA | 5 | 6, 12 | A3-E1-01, A3-E1-02, A3-E1-03, A3-E1-07, A3-E1-08, A3-E2-07, A6-E1-03 | AB 3.1/1, AB 3.1/3, AB 3.1/Abi-Ecke, AB 3.1/Cold Case, AB 3.2/Cold Case | W-A3-01, W-A7-04 | A3-V-01, A3-V-02, A7-V-08 | GP-eA-f | KL-A-f | 3 |

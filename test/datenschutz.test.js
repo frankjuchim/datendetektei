@@ -112,17 +112,25 @@ test('Gerätespeicher: jeder Schlüssel des Frontends ist auf der Seite genannt'
   }
 });
 
-test('Datenschutzseite: Entwurfs-Hinweis, Platzhalter der Schule, Live, Board, Kür, Sicherung, Logs, Empfänger, Lizenz', async () => {
+test('Datenschutzseite: Verantwortlicher, Hoster, Rechtsgrundlage, Live, Board, Kür, Sicherung, Logs, Empfänger, Lizenz', async () => {
   const { app } = testApp();
   const res = await request(app).get('/datenschutz');
   assert.equal(res.status, 200);
   const t = res.text;
-  assert.match(t, /Entwurf/);
-  // Schulangaben nur als Platzhalter
+  // Angaben von Frank (Spec §18, 2026-10-14): kein Entwurf mehr, Platzhalter nur noch für die Kontaktadresse
+  assert.doesNotMatch(t, /Entwurf/);
   const platzhalter = [...t.matchAll(/<span class="platzhalter">\[([^\]]+)\]<\/span>/g)].map((m) => m[1]);
-  for (const p of ['Name und Anschrift der Schule', 'Datenschutzbeauftragte', 'Rechtsgrundlage', 'Hoster', 'Sicherungskopien']) {
-    assert.ok(platzhalter.some((x) => x.includes(p)), `Platzhalter „${p}“`);
-  }
+  assert.ok(platzhalter.every((x) => /Kontakt/.test(x)), `nur Kontakt-Platzhalter: ${platzhalter.join(' · ')}`);
+  for (const id of ['ds-verantwortlich', 'ds-hoster', 'ds-rechtsgrundlage', 'ds-rechte']) assert.ok(passage(id), `Passage #${id}`);
+  assert.match(passage('ds-verantwortlich'), /Frank Juchim/);
+  assert.match(passage('ds-verantwortlich'), /§ 38 BDSG/);
+  assert.match(passage('ds-hoster'), /IONOS SE/);
+  assert.match(passage('ds-hoster'), /Art\. 28 DSGVO/);
+  assert.match(passage('ds-rechtsgrundlage'), /Art\. 6 Abs\. 1 lit\. e DSGVO/);
+  assert.match(passage('ds-rechtsgrundlage'), /§ 25 Abs\. 2 Nr\. 2 TDDDG/);
+  assert.match(passage('ds-rechte'), /Landesbeauftragte für den Datenschutz Niedersachsen/);
+  assert.match(passage('ds-sicherung'), /30 Tage/);
+  assert.match(passage('ds-logs'), /7 Tage/);
   for (const id of ['ds-live', 'ds-board', 'ds-kuer', 'ds-sicherung', 'ds-logs', 'ds-empfaenger', 'ds-loeschung', 'ds-extern', 'lizenz']) {
     assert.ok(passage(id), `Passage #${id}`);
   }

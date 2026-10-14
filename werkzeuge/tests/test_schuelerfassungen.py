@@ -19,13 +19,11 @@ import materialien_pruefen as M
 ORDNER = REPO / "materialien" / "Arbeitsblaetter_PDF"
 
 LOESUNG = M.LOESUNGSMARKER + ("Auch richtig", "Typische Fehler")
-AUFLOESUNG = ("Falkenrath", "Datenschutzbeauftragte", "Kranstraße 7")
+AUFLOESUNG = ("Falkenrath", "Datenschutzbeauftragte", "Kranstraße 7", "WA-3917")
 
-# (PDF, Begriff) → Begründung. W-A6-03 (Warm-up Akte 6, „Pseudonym oder anonym?“) zeigt den Datensatz
-# „WA-3917 | Kranstraße 7 | …“ als Aufgabe – die Adresse der Auflösung, aber ohne Namen; offen für Frank (Spec §18).
-AUSNAHMEN = {
-    ("DD_A6-Warm-up-Karten.pdf", "Kranstraße 7"): "W-A6-03 Aufgabentext (Spec §18, offene Frage)",
-}
+# (PDF, Begriff) → Begründung. Leer: W-A6-03 zeigt seit der Entscheidung von Frank (Spec §18, 2026-10-14) einen
+# neutralen Datensatz statt der Adresse der Auflösung.
+AUSNAHMEN = {}
 
 
 def kompakt(text):

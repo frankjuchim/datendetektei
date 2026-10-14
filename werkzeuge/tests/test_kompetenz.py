@@ -71,10 +71,10 @@ class AbdeckungTest(unittest.TestCase):
         self.assertIn("K01", veraltet[0])
 
     def test_echtes_repo_streng_ohne_fehler(self):
-        # Abnahme Phase 7: echte Matrix, Akten und Materialien – nur begründete Ausnahmen (K12, K22), keine Lücken
+        # Echte Matrix, Akten und Materialien – keine Lücken, keine Ausnahmen mehr (K12/K22 seit 2026-10-14 zugeordnet)
         b = K.analysiere(REPO)
         self.assertEqual([x.text for x in b if x.art not in ("offen", "ausnahme")], [])
-        self.assertEqual(sorted(k for k, _ in K.AUSNAHMEN), ["K12", "K22"])
+        self.assertEqual(sorted(k for k, _ in K.AUSNAHMEN), [])
 
     def test_echtes_repo_laeuft(self):
         b = K.analysiere(REPO)

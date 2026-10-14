@@ -33,16 +33,10 @@ from akten_design import lese_eigenschaften  # noqa: E402
 
 LEER = {"", "–", "-", "—"}
 
-# Begründete Ausnahmen der Abnahme Phase 7 (Spec §18, Eintrag „Phase 7, Umsetzungsentscheidungen“, offene Frage an
-# Frank): Die Matrix nennt für K12 und K22 kein Arbeitsblatt. Inhaltlich behandeln AB 4.2 (Beweisstück 4
-# „Redundanzfreiheit begründen“, Auftrag 4) und AB 3.2 (Beweisstück 3 „Top-n mit LIMIT“, Auftrag 4) beide
-# Kompetenzen; ohne Entscheidung von Frank wird weder die Matrix noch die Zuordnung im Material geändert.
-# Schlüssel: (Kompetenz, fehlender Teil) → Begründung. Eine Ausnahme gilt nur, solange die Lücke besteht
-# (sonst Befund „ausnahme_veraltet“).
-AUSNAHMEN = {
-    ("K12", "Arbeitsblatt"): "Matrix ohne AB-Bezug; Inhalt in AB 4.2 (Beweisstück 4, Auftrag 4) – Spec §18, offene Frage",
-    ("K22", "Arbeitsblatt"): "Matrix ohne AB-Bezug; Inhalt in AB 3.2 (Beweisstück 3, Auftrag 4) – Spec §18, offene Frage",
-}
+# Begründete Ausnahmen: (Kompetenz, fehlender Teil) → Begründung. Eine Ausnahme gilt nur, solange die Lücke besteht
+# (sonst Befund „ausnahme_veraltet“). Leer seit 2026-10-14: K12 und K22 sind AB 4.2/4 bzw. AB 3.2/4 zugeordnet
+# (Entscheidung Frank, Spec §18).
+AUSNAHMEN = {}
 
 
 @dataclass
