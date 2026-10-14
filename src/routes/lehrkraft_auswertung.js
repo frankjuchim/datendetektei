@@ -6,6 +6,8 @@
 //   GET  /api/lehrkraft/kurse/:kurs/auswertung.csv            CSV (UTF-8 mit BOM, Semikolon)
 //   GET  /api/lehrkraft/kurse/:kurs/vorschau                  alle Akten/Ermittlungen/Aufgaben/Verhör-Pools
 //   GET  /api/lehrkraft/kurse/:kurs/vorschau/aufgaben/:id     eine Aufgabe mit Lösung, Erklärung, Tipps
+//   GET  /api/lehrkraft/vorschau[/aufgaben/:id]               dasselbe ohne Kurs (Seite „Aufgaben“, wie Algo Quest):
+//                                                             Superadmin; Lehrkraft nur mit mindestens einem eigenen Kurs
 //   GET  /api/board/:schluessel                               öffentlich: Beamer-Board (nur wenn eingeschaltet)
 //   GET  /api/admin/seed-bericht                              Superadmin: letzter Seed-Bericht
 //   POST /api/admin/inhalte-neu-laden                         Superadmin: Akten neu einspielen
@@ -65,7 +67,29 @@ function lehrkraftAuswertungRouten({ db, inhalte = null, stand = null, konfig })
     return kursId;
   }
 
+  /** Kursunabhängige Vorschau: Superadmin, Lehrkraft nur mit mindestens einem Kurs als Lehrkraft (sonst 403). */
+  function vorschauOhneKurs(req) {
+    if (req.sitzung.rolle !== 'superadmin') {
+      const m = db.prepare("SELECT 1 AS ja FROM mitgliedschaften WHERE sub = ? AND rolle = 'lehrkraft' LIMIT 1").get(req.sitzung.sub);
+      if (!m) throw new Fehler(403, 'Kein Zugriff – Ihnen ist noch kein Kurs zugeordnet.');
+    }
+    if (!vorschau) throw new Fehler(503, 'Die Inhalte sind gerade nicht geladen.');
+  }
+
   /* ---------- Lehrkraft ---------- */
+
+  router.get('/api/lehrkraft/vorschau', lehrkraft, keinCache, (req, res) => {
+    vorschauOhneKurs(req);
+    res.json(vorschau.uebersicht(null));
+  });
+
+  router.get('/api/lehrkraft/vorschau/aufgaben/:id', lehrkraft, keinCache, (req, res) => {
+    vorschauOhneKurs(req);
+    const id = req.params.id;
+    const a = AUFGABEN_ID.test(id) ? vorschau.aufgabe(null, id) : null;
+    if (!a) throw new Fehler(404, 'Aufgabe nicht gefunden.');
+    res.json(a);
+  });
 
   router.get('/api/lehrkraft/kurse/:kurs/auswertung', lehrkraft, keinCache, (req, res) => {
     res.json(auswertung.auswertung(kursLesen(req)));

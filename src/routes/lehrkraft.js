@@ -109,16 +109,21 @@ function lehrkraftRouten({ db, stand = null }) {
     return !!m && m.rolle === 'lehrkraft';
   }
 
-  /** Kennzahlen ohne Namen: Anzahl Schüler (Rolle mitglied) und Durchschnitt der Rang-Anteile. */
+  /**
+   * Kennzahlen ohne Namen: Anzahl Schüler (Rolle mitglied), Durchschnitt der Rang-Anteile und die späteste Aktivität
+   * („zuletzt aktiv“ der Kursliste, sekundengenau wie Vertrag §6; ohne Schüler:innen null).
+   */
   function kennzahlen(kursId) {
     const subs = db
       .prepare("SELECT sub FROM mitgliedschaften WHERE kurs_id = ? AND rolle = 'mitglied' ORDER BY sub")
       .all(kursId)
       .map((z) => z.sub);
-    if (!subs.length || !stand) return { schueler: subs.length, anteil: 0 };
+    if (!subs.length || !stand) return { schueler: subs.length, anteil: 0, zuletzt: null };
     const kz = stand.kennzahlen(kursId, subs);
-    const summe = [...kz.schueler.values()].reduce((s, w) => s + w.anteil, 0);
-    return { schueler: subs.length, anteil: summe / subs.length };
+    const werte = [...kz.schueler.values()];
+    const summe = werte.reduce((s, w) => s + w.anteil, 0);
+    const zuletzt = werte.reduce((m, w) => (w.zuletzt && (!m || w.zuletzt > m) ? w.zuletzt : m), null);
+    return { schueler: subs.length, anteil: summe / subs.length, zuletzt };
   }
 
   function kursSicht(z) {

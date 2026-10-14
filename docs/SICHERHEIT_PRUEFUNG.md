@@ -48,6 +48,7 @@ Ergebnis unten, Abschnitt 3).
 | GET /api/live/:runde · POST …/steuerung | 401 · 401 | 200 · 403 | 403 · 403 | 200 · 200 | 403 · 403 | 200 · 200 |
 | GET /api/lehrkraft/kurse | 401 | 403 | 403 | 200 | 200 (nur eigene) | 200 (alle) |
 | GET …/auswertung, …/auswertung.csv, …/vorschau, …/vorschau/aufgaben/:id | 401 | 403 | 403 | 200 | 403 | 200 |
+| GET /api/lehrkraft/vorschau, …/vorschau/aufgaben/:id (ohne Kurs, Seite „Aufgaben“; Lehrkraft ohne eigenen Kurs 403) | 401 | 403 | 403 | 200 | 200 | 200 |
 | PUT …/einstellungen · POST …/board-schluessel | 401 | 403 | 403 | 200 | 403 | 200 |
 | GET /api/admin/seed-bericht · POST inhalte-neu-laden · GET sicherung | 401 | 403 | 403 | 403 | 403 | 200 |
 | GET /lehrkraft, /lehrkraft/live, /live/:runde/beamer (Seiten ohne Daten) | 302 | 403 | 403 | 200 | 200 | 200 |
@@ -81,6 +82,7 @@ Gesperrter Kurs (G): Schüler:innen 403 auf alle Kurs-APIs, Lehrkraft/Superadmin
 | `GET /api/lehrkraft/kurse`, `PUT …/einstellungen`, `POST …/board-schluessel` | alle, G | keine | Felder streng geprüft | ok (`lehrkraft.test.js`) |
 | `…/auswertung`, `…/auswertung.csv` | alle | – | – | ok: CSV ohne `sub`, Formel-Schutz (`=+-@`) (`auswertung.test.js`) |
 | `…/vorschau`, `…/vorschau/aufgaben/:id` | alle | Lösungen nur für L/SA | ID-Muster | ok (`rechte.test.js` Matrix Phase 6) |
+| `GET /api/lehrkraft/vorschau[/aufgaben/:id]` (ohne Kurs) | alle | Lösungen nur für SA und Lehrkräfte mit mindestens einem eigenen Kurs | ID-Muster | ok (`rechte.test.js`, `auswertung.test.js`) |
 | `GET /api/board/:schluessel`, `GET /board/:schluessel` | A | nur Anzeigenamen/Punkte, keine `sub` | 60/min je IP; Schlüssel 192 Bit | ok: gleiche 404 für falsch/aus/gesperrt; `Referrer-Policy: no-referrer` |
 | `GET /lehrkraft/urkunden?kurs=` | alle | – | – | ok (`lehrkraft_seiten.test.js`) |
 | `/api/admin/seed-bericht`, `inhalte-neu-laden`, `sicherung` | alle | – | Sicherung 6/min je Konto | ok + B6 |

@@ -252,3 +252,20 @@ test('Rechte-Matrix Phase 6: Auswertung, CSV, Vorschau, Einstellungen, Board-Sch
   H.einstellen(u.db, 'k:17', { beamer: true });
   assert.equal((await request(u.app).get('/api/board/' + k)).status, 200);
 });
+
+test('Rechte: kursunabhängige Vorschau (Lehrkraft-Bereich „Aufgaben“) – anonym 401, Schüler 403, Lehrkraft ohne Kurs 403, Lehrkraft mit Kurs und Superadmin 200', async () => {
+  const { u, s, fremd, l, admin } = await start();
+  const ohneKurs = await H.client(u, { sub: 'l:9', rolle: 'lehrkraft', name: 'Frau O.', kurse: [] });
+  const adminOhne = await H.client(u, { sub: 'a:2', rolle: 'superadmin', name: 'Admin', kurse: [] });
+  const PFADE = ['/api/lehrkraft/vorschau', '/api/lehrkraft/vorschau/aufgaben/A9-E1-02'];
+  const loesung = u.inhalte.aufgabe('A9-E1-02').loesung.sql;
+  for (const p of PFADE) {
+    assert.equal((await request(u.app).get(p)).status, 401, p);
+    for (const c of [s, fremd, ohneKurs]) {
+      const r = await c.get(p);
+      assert.equal(r.status, 403, p);
+      assert.ok(!JSON.stringify(r.body).includes(loesung), 'keine Lösung');
+    }
+    for (const c of [l, admin, adminOhne]) assert.equal((await c.get(p)).status, 200, p);
+  }
+});
