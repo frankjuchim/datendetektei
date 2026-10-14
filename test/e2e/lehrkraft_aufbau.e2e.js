@@ -343,3 +343,33 @@ test('Smartphone 390 px hell und dunkel: kein waagerechtes Scrollen, Kopf-Naviga
     }
   }
 });
+
+test('Scoreboard aktualisiert sich alle 20 Sekunden selbst (wie Algo Quest) und hört beim Reiterwechsel auf', async () => {
+  const { kontext, page, fehler } = await seite(cookies.lehrkraft);
+  try {
+    await page.clock.install();
+    let abrufe = 0;
+    page.on('request', (r) => {
+      if (/\/api\/kurse\/[^/]+\/rangliste$/.test(new URL(r.url()).pathname)) abrufe++;
+    });
+    await page.goto(server.url + `/lehrkraft#/kurs/${K17}/scoreboard`);
+    await bereit(page);
+    await page.waitForSelector('#sb-liste .rang-zeile');
+    assert.match(await page.textContent('#sb-stand'), /alle 20 Sekunden/);
+    const vorher = abrufe;
+    await page.clock.runFor(20000);
+    for (const bis = Date.now() + 5000; abrufe <= vorher && Date.now() < bis; ) await new Promise((ok) => setTimeout(ok, 20));
+    assert.ok(abrufe > vorher, 'nach 20 s neu geladen');
+    await page.waitForSelector('#sb-liste .rang-zeile');
+    // anderer Reiter: keine weiteren Abrufe
+    await page.click('#reiter-einstellungen');
+    await bereit(page);
+    const danach = abrufe;
+    await page.clock.runFor(60000);
+    await new Promise((ok) => setTimeout(ok, 300));
+    assert.equal(abrufe, danach, 'kein Abruf mehr außerhalb des Reiters');
+    assert.deepEqual(fehler, []);
+  } finally {
+    await kontext.close();
+  }
+});
