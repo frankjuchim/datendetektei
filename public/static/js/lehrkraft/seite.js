@@ -524,6 +524,9 @@ async function route() {
   }
   if (nr === lauf) {
     $('lk-status').hidden = true;
+    // Für welche Adresse die Ansicht steht: hashchange kommt erst nach dem Klick (asynchron), so lässt sich ein
+    // Wechsel, der noch nicht begonnen hat, von einem fertigen unterscheiden (E2E-Tests warten darauf).
+    document.documentElement.dataset.route = window.location.hash;
     document.documentElement.dataset.lehrkraft = 'bereit';
   }
 }

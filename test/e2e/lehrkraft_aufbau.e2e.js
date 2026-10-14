@@ -81,7 +81,13 @@ async function seite(cookie, { breite = 1280, hoehe = 900, thema = 'light' } = {
   return { kontext, page, fehler };
 }
 
-const bereit = (page) => page.waitForFunction(() => document.documentElement.dataset.lehrkraft === 'bereit' && !document.querySelector('main .lk-laedt'));
+// bereit = die Ansicht gehört zur aktuellen Adresse (data-route) und ist fertig geladen – sonst wäre nach einem Klick
+// der alte Zustand „bereit“ schon erfüllt, bevor hashchange überhaupt feuert (auf langsamen Rechnern sichtbar).
+const bereit = (page) =>
+  page.waitForFunction(() => {
+    const d = document.documentElement.dataset;
+    return d.lehrkraft === 'bereit' && d.route === window.location.hash && !document.querySelector('main .lk-laedt');
+  });
 const hash = (page) => new URL(page.url()).hash;
 const navTexte = (page) => page.$$eval('#lk-nav a', (as) => as.filter((a) => !a.hidden).map((a) => a.textContent.trim()));
 const reiterTexte = (page, sel = '#lk-reiter') => page.$$eval(`${sel} [role="tab"]`, (ts) => ts.filter((t) => !t.hidden).map((t) => t.textContent.trim()));
