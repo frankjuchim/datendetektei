@@ -121,7 +121,7 @@ test('/lehrkraft als Lehrkraft und als Superadmin liefert die Seite', async () =
     const cookie = await anmelden(t, nutzer);
     const res = await request(t.app).get('/lehrkraft').set('Cookie', cookie);
     assert.equal(res.status, 200, nutzer.rolle);
-    assert.match(res.text, /role="tablist"/);
+    assert.match(res.text, /id="lk-nav"/);
     assert.match(res.text, /<script type="module" src="\/static\/js\/lehrkraft\/seite\.js\?v=/);
   }
 });

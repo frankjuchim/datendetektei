@@ -1,6 +1,6 @@
-// Reiter „Materialien“ (Spec §7.11, §12.4, E13): Downloads je Akte aus den Whitelists (GET /api/material?kurs=…):
-// Schülerfassungen, Lehrkraft-Material (Lösungen, Hinweise, Prüfungen) und – nur Superadmin – Originale (docx/pptx)
-// samt ZIP je Akte. eA-Material ist bei einem gA-Kurs ausgeblendet (Filter des Servers).
+// Seite „Materialien“ des Lehrkraft-Bereichs (#/materialien, wie Algo Quest; Spec §7.11, §12.4, E13): Downloads je Akte
+// aus den Whitelists (GET /api/material, kursunabhängig – alle Niveaus, eA/gA-Material markiert): Schülerfassungen,
+// Lehrkraft-Material (Lösungen, Hinweise, Prüfungen) und – nur Superadmin – Originale (docx/pptx) samt ZIP je Akte.
 
 const V = new URL(import.meta.url).search;
 const G = await import('./gemeinsam.js' + V);
@@ -22,7 +22,7 @@ function akteName(akte, akten) {
 }
 
 export async function zeige(panel, ctx) {
-  const d = await A.holen('/api/material?kurs=' + encodeURIComponent(ctx.kurs.id));
+  const d = await A.holen('/api/material');
   const stufen = d.stufen || {};
   const gruppen = new Map();
   for (const [stufe] of STUFEN) {
@@ -33,9 +33,18 @@ export async function zeige(panel, ctx) {
     }
   }
   const reihenfolge = [...gruppen.keys()].sort((a, b) => (a === 'kuer' ? 99 : a) - (b === 'kuer' ? 99 : b));
-  const { karte } = G.karte('Materialien', `Arbeitsblätter, Lösungen und Lehrkraft-Material für diesen Kurs (Niveau ${d.niveau || ctx.kurs.einstellungen.niveau}). PDFs öffnen sich im Browser.`, { id: 'ma-titel' });
+  const kopf = h(
+    'div',
+    'seiten-kopf',
+    el('span', 'etikett', 'Lehrkraft-Bereich'),
+    el('h1', null, 'Materialien'),
+    el('p', null, 'Arbeitsblätter, Lösungen, Präsentationen, Lehrerhinweise und Prüfungen als PDF – sortiert nach Akten. Material nur für ein Niveau ist mit „nur eA“ bzw. „nur gA“ markiert. Die Schülerfassungen finden angemeldete Schülerinnen und Schüler zusätzlich auf der Seite „Themen“.')
+  );
+  const warnung = el('p', 'banner');
+  warnung.append(el('strong', null, 'Bitte nicht an Schülerinnen und Schüler weitergeben: '), document.createTextNode('Das Lehrkraft-Material enthält Lösungen bzw. Prüfungen.'));
+  const { karte } = G.karte('Downloads nach Akten', 'PDFs öffnen sich im Browser.', { id: 'ma-titel' });
   if (!reihenfolge.length) {
-    karte.appendChild(G.notiz('Noch keine Materialien', 'Für diesen Kurs sind noch keine Downloads hinterlegt. Sie entstehen in Phase 7 und erscheinen dann automatisch hier.'));
+    karte.appendChild(G.notiz('Noch keine Materialien', 'Auf diesem Server sind noch keine Downloads hinterlegt.'));
   }
   // Erklärvideos (YouTube, Spec §13): nur Link-Knöpfe, nur Videos mit eingetragenem Link.
   const videos = (Array.isArray(d.videos) ? d.videos : []).map((v) => {
@@ -86,5 +95,5 @@ export async function zeige(panel, ctx) {
     }
     karte.appendChild(sektion);
   }
-  panel.replaceChildren(karte);
+  panel.replaceChildren(kopf, warnung, karte);
 }

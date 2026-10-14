@@ -86,6 +86,8 @@ function urkunde(s, { kurs, niveau, datum, lehrkraft, beweisMax, jahr, kursNr })
 }
 
 async function start() {
+  // „Zurück zum Kurs“ führt auf die Kursseite (#/kurs/<id>/schueler), ohne gültigen Kurs zur Kursliste
+  if (/^k:\d{1,12}$/.test(kursId || '')) $('ur-zurueck').href = `/lehrkraft#/kurs/${encodeURIComponent(kursId)}/schueler`;
   let ich;
   let d;
   let akten;

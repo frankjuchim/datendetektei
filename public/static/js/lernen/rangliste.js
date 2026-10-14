@@ -23,7 +23,7 @@ function vorschauHinweisAus(kurs) {
     document.createTextNode(' Ihre Schülerinnen und Schüler sehen sie nicht. Einschalten können Sie sie im Lehrkraft-Bereich unter „Einstellungen“ → „Scoreboard“. ')
   );
   const a = el('a', 'banner-link', 'Zu den Einstellungen');
-  a.href = `/lehrkraft?kurs=${encodeURIComponent(kurs.id)}#einstellungen`;
+  a.href = `/lehrkraft#/kurs/${encodeURIComponent(kurs.id)}/einstellungen`;
   box.appendChild(a);
   return box;
 }

@@ -50,8 +50,15 @@
     </div>
   </header>
   <main class="inhalt live-lehrkraft" id="inhalt" tabindex="-1">
+    <nav class="lern-nav lk-nav" id="lk-nav" aria-label="Lehrkraft-Bereich">
+      <a href="/lehrkraft#/" data-bereich="kurse" aria-current="page"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-person"/></svg>Kurse</a>
+      <a href="/lehrkraft#/aufgaben" data-bereich="aufgaben"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-auge"/></svg>Aufgaben</a>
+      <a href="/lehrkraft#/materialien" data-bereich="materialien"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-liste"/></svg>Materialien</a>
+      <a href="/themen" data-bereich="themen"><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-notiz"/></svg>Themen</a>
+      <a href="/lehrkraft#/verwaltung" data-bereich="verwaltung" data-nur-admin hidden><svg class="icon" aria-hidden="true"><use href="/static/img/icons.svg#i-hantel"/></svg>Verwaltung</a>
+    </nav>
     <div class="seiten-kopf">
-      <p class="etikett"><a class="link-ziel" href="/lehrkraft">Lehrkraft-Bereich</a> · Live</p>
+      <p class="etikett"><a class="link-ziel" id="lk-zum-kurs" href="/lehrkraft">Lehrkraft-Bereich</a> · Live</p>
       <h1>Live-Modus: Duell und Escape Room</h1>
       <p class="hinweis-klein">Ihre Schülerinnen und Schüler treten unter <strong>/live</strong> bei. Live-Runden bringen keine Lab-Punkte; alle Antworten werden nach dem Ende verworfen.</p>
     </div>

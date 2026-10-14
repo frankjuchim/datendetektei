@@ -1,5 +1,6 @@
-// Reiter „System“ (nur Superadmin, Spec §7.11): Seed-Bericht (Dateien, Status, Fehler, Umfang je Akte), Inhalte neu laden
-// (mit Bestätigung), Sicherung der Plattform-DB herunterladen, Originale als ZIP je Akte.
+// Verwaltung (nur Superadmin, Spec §7.11; bis 0.8.3 Reiter „System“): Reiter „Inhalte“ – Seed-Bericht (Dateien, Status,
+// Fehler, Umfang je Akte), Inhalte neu laden (mit Bestätigung), Originale als ZIP je Akte; Reiter „Sicherung“ – Kopie der
+// Plattform-DB herunterladen.
 
 const V = new URL(import.meta.url).search;
 const G = await import('./gemeinsam.js' + V);
@@ -68,7 +69,7 @@ function berichtTeile(b) {
   return teile;
 }
 
-export async function zeige(panel, ctx) {
+export async function inhalte(panel, ctx) {
   const [bericht, material] = await Promise.all([A.holen('/api/admin/seed-bericht'), A.holen('/api/material').catch(() => ({}))]);
   const teile = [];
 
@@ -108,15 +109,8 @@ export async function zeige(panel, ctx) {
   seed.append(h('div', 'knopf-reihe', neu), bestaetigung, rueck);
   teile.push(seed);
 
-  const { karte: sicherung } = G.karte('Sicherung', 'Kopie der Plattform-Datenbank (Konten, Kurse, Lernstand) als SQLite-Datei. Vertraulich behandeln.', { id: 'sy-sicherung' });
-  const dl = A.linkKnopf('Sicherung herunterladen', '/api/admin/sicherung', 'knopf');
-  dl.id = 'sy-sicherung-link';
-  dl.setAttribute('download', '');
-  sicherung.appendChild(h('div', 'knopf-reihe', dl));
-  teile.push(sicherung);
-
   const zips = Array.isArray(material.zips) ? material.zips : [];
-  const { karte: originale } = G.karte('Originale (docx/pptx)', 'Alle Originale einer Akte als ZIP. Einzelne Dateien stehen im Reiter „Materialien“.', { id: 'sy-originale' });
+  const { karte: originale } = G.karte('Originale (docx/pptx)', 'Alle Originale einer Akte als ZIP. Einzelne Dateien stehen unter „Materialien“.', { id: 'sy-originale' });
   if (!zips.length) originale.appendChild(el('p', 'hinweis-klein', 'Keine Originale hinterlegt.'));
   const ul = el('ul', 'material-liste');
   for (const z of zips) {
@@ -129,4 +123,13 @@ export async function zeige(panel, ctx) {
   teile.push(originale);
 
   panel.replaceChildren(...teile);
+}
+
+export async function sicherung(panel) {
+  const { karte } = G.karte('Sicherung', 'Kopie der Plattform-Datenbank (Konten, Kurse, Lernstand) als SQLite-Datei. Vertraulich behandeln.', { id: 'sy-sicherung' });
+  const dl = A.linkKnopf('Sicherung herunterladen', '/api/admin/sicherung', 'knopf');
+  dl.id = 'sy-sicherung-link';
+  dl.setAttribute('download', '');
+  karte.appendChild(h('div', 'knopf-reihe', dl));
+  panel.replaceChildren(karte);
 }
