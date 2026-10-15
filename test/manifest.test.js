@@ -1,16 +1,16 @@
 'use strict';
-// Manifest GET /api/plattform (Vertrag v1.2 §7, Spec §7.13 in der Fassung nach Spec §18).
+// Manifest GET /api/plattform (Vertrag v1.3 §7, Spec §7.13 in der Fassung nach Spec §18).
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
 const { testApp, ssoToken } = require('./helpers');
-const { pruefeManifest } = require('../scripts/vertrag_pruefen');
+const { pruefeManifest, pruefeSsoStart } = require('../scripts/vertrag_pruefen');
 const { baueManifest } = require('../src/kern/manifest');
 
 /** Erwartetes Manifest exakt nach Spec §7.13 (basis/portal aus der Konfiguration). */
 function erwartet(basis, portal) {
   return {
-    vertrag: '1.2',
+    vertrag: '1.3',
     id: 'datendetektei',
     name: 'Datendetektei',
     titel: 'Datendetektei Weserstedt – Ermitteln mit Datenbanken',
@@ -19,7 +19,7 @@ function erwartet(basis, portal) {
     niveaus: ['eA', 'gA'],
     beschreibung: 'SQL, Schlüssel und Anomalien, ER-Modell und Datenschutz – als Ermittlungsfälle mit Live-SQL.',
     farbe: '#B3261E',
-    version: '0.8.7',
+    version: '0.8.8',
     basis,
     icon: '/static/favicon.svg',
     urls: {
@@ -44,11 +44,13 @@ function erwartet(basis, portal) {
       { nr: 6, titel: 'Datenspuren' },
       { nr: 7, titel: 'Generalprobe' }
     ],
-    faehigkeiten: ['gast', 'themen', 'lehrkraft-materialien', 'sql-konsole', 'live']
+    // nur Namen aus der Liste in Vertrag §7 (v1.3)
+    faehigkeiten: ['gast', 'themen', 'lehrkraft-materialien', 'boss', 'training', 'warmup', 'scoreboard', 'beamer', 'urkunden',
+      'fallen-profil', 'sql-konsole', 'live']
   };
 }
 
-test('Manifest hat exakt die Felder aus Spec §7.13 (Vertrag v1.2)', async () => {
+test('Manifest hat exakt die Felder aus Spec §7.13 (Vertrag v1.3)', async () => {
   const { app } = testApp();
   const res = await request(app).get('/api/plattform');
   assert.equal(res.status, 200);
@@ -65,6 +67,27 @@ test('pruefeManifest liefert keine Fehler', async () => {
   const { app } = testApp();
   const res = await request(app).get('/api/plattform');
   assert.deepEqual(pruefeManifest(res.body), []);
+});
+
+test('v1.3: pruefeSsoStart – /sso/start leitet ohne Anmeldung zum Portal (ohne Fehler und Hinweise)', async () => {
+  const { app } = testApp();
+  const manifest = (await request(app).get('/api/plattform')).body;
+  // fetch-Ersatz über supertest (kein Netz): nur Pfad und Status/Location werden gebraucht
+  const holen = async (url) => {
+    const u = new URL(url);
+    const r = await request(app).get(u.pathname + u.search);
+    return { status: r.status, headers: { get: (h) => r.headers[h.toLowerCase()] || null } };
+  };
+  assert.deepEqual(await pruefeSsoStart(manifest.basis, manifest, holen), { fehler: [], hinweise: [] });
+});
+
+test('v1.3: faehigkeiten nur mit Namen aus Vertrag §7', async () => {
+  const BEKANNT = ['gast', 'themen', 'lehrkraft-materialien', 'boss', 'training', 'warmup', 'scoreboard', 'beamer', 'urkunden',
+    'fallen-profil', 'sql-konsole', 'live'];
+  const { app } = testApp();
+  const m = (await request(app).get('/api/plattform')).body;
+  assert.ok(m.faehigkeiten.includes('gast'));
+  for (const f of m.faehigkeiten) assert.ok(BEKANNT.includes(f), f);
 });
 
 test('CORS *', async () => {

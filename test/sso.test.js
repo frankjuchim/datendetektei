@@ -268,8 +268,16 @@ test('fehler=keine_berechtigung', async () => {
   const s = await starte(t.app, '/');
   const res = await ende(t.app, { fehler: 'keine_berechtigung', state: s.state }, s.cookie);
   assertAbgelehnt(res, t.db, 403, 'keine_berechtigung');
-  assert.match(res.text, /Kein Zugang – deine Lehrkraft hat die Datendetektei für deinen Kurs nicht freigeschaltet\./);
+  // Vertrag v1.3 / INTEGRATION §3.2: rollenneutraler Text (ohne Token kennt die Plattform die Rolle nicht)
+  const text = res.text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  assert.ok(text.includes('Kein Zugang. Diese Plattform ist für dieses Konto noch nicht freigeschaltet. ' +
+    'Schülerinnen und Schüler: Die Lehrkraft muss die Plattform im Portal für den Kurs freischalten. ' +
+    'Lehrkräfte: Die Freischaltung der Plattform erteilt die Administration im Portal; danach die Plattform ' +
+    'beim Kurs ankreuzen.'), 'rollenneutraler Text');
+  assert.doesNotMatch(res.text, /deine Lehrkraft/);
   assert.match(res.text, /href="https:\/\/labs\.example"/);
+  // ohne JavaScript sichtbar: der passende Abschnitt kommt nicht versteckt vom Server
+  assert.match(res.text, /data-fall="keine_berechtigung">/);
 });
 
 test('fehler=abgebrochen', async () => {
@@ -440,4 +448,66 @@ test('/api/ich nach Abmelden bzw. mit Sitzung zeigt gesperrten Kurs als aktiv fa
   t.db.prepare("UPDATE kurse SET aktiv = 0 WHERE kurs_id = 'k:17'").run();
   const ich = await request(t.app).get('/api/ich').set('Cookie', cookiePaar(res, 'dd_s'));
   assert.deepEqual(ich.body.kurse, [{ id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied', aktiv: false, scoreboard: true }]);
+});
+
+/* ---------- Vertrag v1.3 §5: Einstieg aus dem Portal holt immer ein frisches Token ---------- */
+
+test('v1.3: /sso/start mit bestehender Sitzung → 302 zum Portal (nicht direkt auf ziel)', async () => {
+  const t = testApp();
+  const sitzung = cookiePaar(await login(t), 'dd_s');
+  const res = await request(t.app).get('/sso/start?ziel=%2Fthemen').set('Cookie', sitzung);
+  assert.equal(res.status, 302);
+  assert.ok(res.headers.location.startsWith('https://labs.example/sso/autorisieren?'), res.headers.location);
+  assert.ok(setCookie(res, 'dd_sso_state'), 'neuer state');
+  assert.equal(setCookie(res, 'dd_s'), undefined, 'Sitzung bleibt unangetastet');
+});
+
+test('v1.3: bestehende Sitzung, danach Rücksprung mit ungültigem Token → 401, alte Sitzung gilt weiter', async () => {
+  const t = testApp();
+  const sitzung = cookiePaar(await login(t), 'dd_s');
+  const s = await starte(t.app, '/');
+  const fremd = neuesSchluesselpaar();
+  const token = ssoToken(fremd, t.konfig);
+  const res = await ende(t.app, { token, state: s.state, ziel: '/' }, s.cookie + '; ' + sitzung);
+  assert.equal(res.status, 401);
+  assert.equal(setCookie(res, 'dd_s'), undefined, 'Sitzung weder ersetzt noch gelöscht');
+  const ich = await request(t.app).get('/api/ich').set('Cookie', sitzung);
+  assert.equal(ich.status, 200);
+  assert.equal(ich.body.sub, 's:1042');
+});
+
+test('v1.3: bestehende Sitzung bleibt auch bei falschem state, Wiederverwendung und fehler=keine_berechtigung', async () => {
+  const t = testApp();
+  const s0 = await starte(t.app, '/');
+  const token = ssoToken(t.schluessel, t.konfig);
+  const ok = await ende(t.app, { token, state: s0.state, ziel: '/' }, s0.cookie);
+  const sitzung = cookiePaar(ok, 'dd_s');
+  const s1 = await starte(t.app, '/');
+  const faelle = [
+    ende(t.app, { token: ssoToken(t.schluessel, t.konfig), state: 'B'.repeat(22), ziel: '/' }, s1.cookie + '; ' + sitzung),
+    ende(t.app, { token, state: s1.state, ziel: '/' }, s1.cookie + '; ' + sitzung),
+    ende(t.app, { fehler: 'keine_berechtigung', state: s1.state }, s1.cookie + '; ' + sitzung)
+  ];
+  for (const res of await Promise.all(faelle)) {
+    assert.ok(res.status >= 400, String(res.status));
+    assert.equal(setCookie(res, 'dd_s'), undefined, 'Sitzung unverändert');
+  }
+  assert.equal((await request(t.app).get('/api/ich').set('Cookie', sitzung)).status, 200);
+});
+
+test('v1.3: Schüler tritt im Portal einem zweiten Kurs bei, erneut /sso/start → Plattform kennt beide Kurse', async () => {
+  const t = testApp();
+  const erster = { id: 'k:17', name: 'Inf-LK 12', rolle: 'mitglied' };
+  const zweiter = { id: 'k:18', name: 'Inf-GK 12', rolle: 'mitglied' };
+  const alt = cookiePaar(await login(t, { kurse: [erster] }), 'dd_s');
+  // erneuter Einstieg aus dem Portal mit noch gültiger Sitzung
+  const s = await starte(t.app, '/');
+  const token = ssoToken(t.schluessel, t.konfig, { kurse: [erster, zweiter] });
+  const res = await ende(t.app, { token, state: s.state, ziel: '/' }, s.cookie + '; ' + alt);
+  assert.equal(res.status, 302);
+  const neu = cookiePaar(res, 'dd_s');
+  assert.ok(neu, 'Sitzung ersetzt');
+  const ich = await request(t.app).get('/api/ich').set('Cookie', neu);
+  assert.deepEqual(ich.body.kurse.map((k) => k.id), ['k:17', 'k:18']);
+  assert.deepEqual(t.db.prepare('SELECT kurs_id FROM mitgliedschaften WHERE sub = ? ORDER BY kurs_id').all('s:1042').map((r) => r.kurs_id), ['k:17', 'k:18']);
 });
