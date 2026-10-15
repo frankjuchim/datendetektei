@@ -1,5 +1,5 @@
 'use strict';
-// Manifest GET /api/plattform nach Vertrag v1.2 §7 (Spec §7.13 in der Fassung von Spec §18).
+// Manifest GET /api/plattform nach Vertrag v1.3 §7 (Spec §7.13 in der Fassung von Spec §18).
 // Enthält nur Stammdaten der Plattform – nie Konten- oder Kursdaten.
 
 const { version: VERSION } = require('../../package.json');
@@ -9,7 +9,7 @@ const STANDARD_UMFANG = Object.freeze({ welten: 7, level: 13, aufgaben: 0, bosse
 
 function baueManifest(konfig, umfang = STANDARD_UMFANG) {
   return {
-    vertrag: '1.2',
+    vertrag: '1.3',
     id: konfig.plattformId,
     name: 'Datendetektei',
     titel: 'Datendetektei Weserstedt – Ermitteln mit Datenbanken',
@@ -35,7 +35,9 @@ function baueManifest(konfig, umfang = STANDARD_UMFANG) {
     auth: { modus: 'portal', portal: konfig.portalUrl, sso: true },
     umfang: { welten: umfang.welten, level: umfang.level, aufgaben: umfang.aufgaben, bosse: umfang.bosse },
     welten: AKTEN.map((a) => ({ nr: a.nr, titel: a.titel })),
-    faehigkeiten: ['gast', 'themen', 'lehrkraft-materialien', 'sql-konsole', 'live']
+    // nur Namen aus Vertrag §7 (v1.3): Verhör = boss, Trainingsplatz = training, Auswertung P1–P10 = fallen-profil
+    faehigkeiten: ['gast', 'themen', 'lehrkraft-materialien', 'boss', 'training', 'warmup', 'scoreboard', 'beamer', 'urkunden',
+      'fallen-profil', 'sql-konsole', 'live']
   };
 }
 
