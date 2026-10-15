@@ -20,7 +20,10 @@ const escapeHtml = (s) =>
 /** Fehlerseite: Vorlage mit festem Code aus der Whitelist (nie Eingaben oder Prüfgründe einsetzen). */
 function fehlerSeite(konfig, code) {
   const fall = FEHLER_CODES.includes(code) ? code : 'ungueltig';
-  return FEHLER_VORLAGE.replaceAll('__FEHLER__', fall).replaceAll('__PORTAL_URL__', escapeHtml(konfig.portalUrl));
+  // Abschnitt zum Fehlercode schon vom Server sichtbar (auch ohne JavaScript); sso-fehler.js bleibt als Rückfall
+  return FEHLER_VORLAGE.replaceAll('__FEHLER__', fall)
+    .replace(`data-fall="${fall}" hidden>`, `data-fall="${fall}">`)
+    .replaceAll('__PORTAL_URL__', escapeHtml(konfig.portalUrl));
 }
 
 function ssoRouten(konfig, db) {

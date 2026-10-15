@@ -10,13 +10,13 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/static/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/static/fonts/barlow-condensed-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.8.7">
-  <link rel="stylesheet" href="/static/css/tokens.css?v=0.8.7">
-  <link rel="stylesheet" href="/static/css/basis.css?v=0.8.7">
-  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.8.7">
-  <script src="/static/js/kern/thema.js?v=0.8.7"></script>
-  <script src="/static/js/kern/kopfzeile.js?v=0.8.7" defer></script>
-  <script src="/static/js/sso-fehler.js?v=0.8.7" defer></script>
+  <link rel="stylesheet" href="/static/fonts/fonts.css?v=0.8.8">
+  <link rel="stylesheet" href="/static/css/tokens.css?v=0.8.8">
+  <link rel="stylesheet" href="/static/css/basis.css?v=0.8.8">
+  <link rel="stylesheet" href="/static/css/komponenten.css?v=0.8.8">
+  <script src="/static/js/kern/thema.js?v=0.8.8"></script>
+  <script src="/static/js/kern/kopfzeile.js?v=0.8.8" defer></script>
+  <script src="/static/js/sso-fehler.js?v=0.8.8" defer></script>
 </head>
 <body>
   <a class="springen" href="#inhalt">Zum Inhalt springen</a>
@@ -59,7 +59,9 @@
         </section>
         <section data-fall="keine_berechtigung" hidden>
           <div class="fehler-kopf"><h1>Kein Zugang</h1><span class="stempel">Gesperrt</span></div>
-          <p>Kein Zugang – deine Lehrkraft hat die Datendetektei für deinen Kurs nicht freigeschaltet.</p>
+          <p><strong>Kein Zugang.</strong> Diese Plattform ist für dieses Konto noch nicht freigeschaltet.</p>
+          <p>Schülerinnen und Schüler: Die Lehrkraft muss die Plattform im Portal für den Kurs freischalten.</p>
+          <p>Lehrkräfte: Die Freischaltung der Plattform erteilt die Administration im Portal; danach die Plattform beim Kurs ankreuzen.</p>
           <div class="knopf-reihe"><a class="knopf primaer" href="__PORTAL_URL__">Zurück zum Portal</a><a class="knopf" href="/gast">Gastmodus</a></div>
         </section>
         <section data-fall="abgebrochen" hidden>
@@ -67,11 +69,6 @@
           <p>Du hast die Anmeldung abgebrochen. Ohne Anmeldung kannst du die Datendetektei im Gastmodus ausprobieren.</p>
           <div class="knopf-reihe"><a class="knopf primaer" href="/gast">Gastmodus</a><a class="knopf" href="/">Zur Startseite</a></div>
         </section>
-        <noscript>
-          <h1>Anmeldung nicht abgeschlossen</h1>
-          <p>Die Anmeldung über InfoLabs wurde nicht abgeschlossen.</p>
-          <p><a href="/sso/start">Erneut anmelden</a> · <a href="/">Zur Startseite</a> · <a href="/gast">Gastmodus</a></p>
-        </noscript>
       </div>
     </section>
   </main>
