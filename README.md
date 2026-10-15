@@ -36,7 +36,7 @@ und am Ende führt das Verknüpfen von Daten zum „Phantom“ und zur Frage, wa
 ## Verbund InfoLabs
 
 Verbindlich ist der Vertrag [`frankjuchim/labs/VERTRAG.md`](https://github.com/frankjuchim/labs/blob/main/VERTRAG.md)
-(Version 1.2) mit der Anschlussanleitung `docs/INTEGRATION.md`. Die Plattform baut kein eigenes Login: Single Sign-on
+(Version 1.3) mit der Anschlussanleitung `docs/INTEGRATION.md`. Die Plattform baut kein eigenes Login: Single Sign-on
 nach §5 (Ed25519-JWT), Manifest `GET /api/plattform` (§7), Verbund-API (§6).
 
 **Begründete Abweichungen von SOLL-Regeln (Vertrag §9):**

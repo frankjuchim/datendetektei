@@ -11,8 +11,9 @@ Leistungskurs (eA, Grundkurs-Pfad gA) in Niedersachsen, Abitur ab 2027 (KC 2017 
 2. **Unterrichtsmaterial** (`materialien/`, docx/pptx = maßgebliche Fassung) und **Planung** (`docs/`).
 
 > ⚠️ Verbindlich ist der **Vertrag des Plattform-Verbunds** `https://github.com/frankjuchim/labs/blob/main/VERTRAG.md`
-> (Version 1.2) mit der Anschlussanleitung `docs/INTEGRATION.md` desselben Repos. Abweichungen nie still: als Text für
-> VERTRAG.md vorschlagen (neue Version, Eintrag in §14) – siehe `docs/VERTRAG_VORSCHLAG_1.3.md`.
+> (Version 1.3) mit der Anschlussanleitung `docs/INTEGRATION.md` desselben Repos. Abweichungen nie still: als Text für
+> VERTRAG.md vorschlagen (neue Version, Eintrag in §14) – Vorschlag 1.3 ist seit 2026-10-15 angenommen
+> (`docs/VERTRAG_VORSCHLAG_1.3.md`, nur noch Archiv).
 
 > ⚠️ **`main` ist direkt mit CapRover verbunden (Webhook): Jeder Push auf `main` startet sofort den Live-Build –
 > auch wenn die GitHub-Prüfung rot ist.** Nur auf Feature-Branches arbeiten; nach `main` nur nach ausdrücklicher

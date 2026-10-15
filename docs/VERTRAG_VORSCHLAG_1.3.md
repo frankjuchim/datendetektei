@@ -1,5 +1,8 @@
 # Vorschlag: VERTRAG.md Version 1.3 (für `frankjuchim/labs`)
 
+> **Angenommen (2026-10-15):** Vertrag v1.3 ist im Portal-Repo verbindlich; dieses Dokument ist nur noch Archiv.
+> Umsetzung in der Datendetektei: Spec §18, Eintrag 2026-10-15.
+
 **Anlass:** Die Datendetektei ist die zweite Plattform mit SSO im Verbund. Sie entsteht als eigenes Produkt (eigene
 Codebasis, eigenes Design) statt als Kopie von Algo Quest, erfüllt aber alle MUSS-Regeln §5–§10. Damit das nicht still
 vom Vertrag abweicht, schlägt dieses Dokument die folgenden Änderungen vor. Alle Änderungen sind **Nebenversion**
