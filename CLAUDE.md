@@ -226,4 +226,4 @@ P10 Operator verfehlt.
 | Akte 7 auf dem Stadtplan | am Detektei-Gebäude (zweiter Ring) |
 | Kontrastprüfung in CI | ja, `scripts/kontrast_pruefen.js` (Phase 1, Design-Grundlagen) |
 | Lizenz | **entschieden** (`LIZENZ.md`): Materialien/Inhalte CC BY-NC-SA 4.0, Code alle Rechte vorbehalten |
-| Angaben `/datenschutz` | **entschieden:** Verantwortlicher Frank Juchim, Hoster IONOS (Spec §18); offen nur die Kontaktadresse (Platzhalter `[…]`) |
+| Angaben `/datenschutz` | **entschieden:** Verantwortlicher Frank Juchim (Bad Zwischenahn, info@frankjuchim.de), Hoster IONOS (Spec §18); keine Platzhalter mehr |
