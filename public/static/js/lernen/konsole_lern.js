@@ -85,7 +85,7 @@ export function erzeugeLernKonsole({ datenbank = null, dbTitel = '', entwurf = n
   const overlay = el('pre', 'editor-hl');
   overlay.setAttribute('aria-hidden', 'true');
   const zeilen = el('div', 'editor-zeilen');
-  const hinweisListe = el('div', 'nur-sr');
+  const hinweisListe = el('div', 'nur-sr editor-hinweise');
   hinweisListe.id = `editor-hinweise-${nr}`;
   hinweisListe.setAttribute('aria-live', 'polite');
   const label = el('label', 'nur-sr', 'SQL-Abfrage');

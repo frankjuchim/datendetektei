@@ -224,3 +224,13 @@
   .skript-protokoll li { grid-template-columns: 2rem minmax(0, 1fr); }
   .skript-protokoll .protokoll-text, .skript-protokoll .protokoll-zeile { grid-column: 2; }
 }
+
+/* ---------- Touch (iPad): Hinweise des Live-Parsers sichtbar unter dem Editor ----------
+   Die Randmarken zeigen ihren Text sonst nur als Tooltip (Maus); am iPad gibt es kein Überfahren (Spec §18, 2026-10-20). */
+@media (pointer: coarse) {
+  :root .nur-sr.editor-hinweise {
+    position: static; width: auto; height: auto; margin: 0; padding: 0 var(--a-4); overflow: visible;
+    clip: auto; clip-path: none; white-space: normal;
+  }
+  .editor-hinweise ul { margin: var(--a-2) 0; padding-left: 1.2em; font-size: var(--t-s); color: var(--konsole-text); }
+}

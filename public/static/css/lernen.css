@@ -620,6 +620,8 @@ button.puzzle-teil:hover { background: var(--flaeche); }
 .fach-name { font-family: var(--schrift-mono); font-size: 0.6875rem; color: var(--tinte-3); white-space: nowrap; }
 
 /* ---------- Trainingsplatz ---------- */
+.typ-wahl-box { display: flex; flex-direction: column; gap: var(--a-2); min-width: 0; }
+.typ-beschreibung { margin: 0; }
 .typ-wahl { align-self: flex-start; }
 .typ-wahl .segment-knopf { min-height: 48px; }
 .training-platz { min-width: 0; display: flex; flex-direction: column; gap: var(--a-4); }
