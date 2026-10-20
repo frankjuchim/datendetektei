@@ -582,7 +582,7 @@ test('Browser-Skripte schreiben nie HTML aus Zeichenketten (kein innerHTML)', ()
 });
 
 test('?v= in allen HTML-Seiten gleich der package.json-Version', () => {
-  assert.equal(VERSION, '0.8.8');
+  assert.equal(VERSION, '0.8.9');
   let anzahl = 0;
   for (const datei of htmlDateien()) {
     const html = fs.readFileSync(path.join(PUBLIC, datei), 'utf8');

@@ -37,6 +37,10 @@ Je Gerät eine Ermittlung in Akte 1 lösen (Konsole: Ausführen, Prüfen, Tipp),
 
 - [ ] Schulnetz sperrt WebAssembly? Dann muss „Ausführen“ trotzdem Ergebnisse zeigen (Server-Ausführung).
 - [ ] Bauplan-Tisch (Akte 5) mit Finger/Stift auf dem iPad: Entitätstyp anlegen, verbinden, verschieben.
+- [ ] iPad/Safari (die meisten Schülerinnen und Schüler): Antippen eines Eingabefelds (SQL-Editor, Lücke, Ergebniszeile)
+      zoomt die Seite **nicht** hinein; die Bildschirmtastatur verdeckt beim Tippen nicht dauerhaft Editor und Knöpfe.
+- [ ] iPad: ER-Diagramm in Akte 5 (z. B. „Bauplan lesen“) antippen und seitlich wischen; Hinweise des Editors (rote
+      Punkte am Zeilenrand) stehen als Text unter dem Editor.
 
 ## D. Unterricht (eine Doppelstunde)
 
