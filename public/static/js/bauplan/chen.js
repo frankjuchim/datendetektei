@@ -10,6 +10,8 @@
 // Positionen nur über SVG-Attribute (CSP: keine Inline-Styles). Farben kommen aus bauplan.css (Tokens).
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+// Rand des unsichtbaren Tippbereichs bedienbarer Elemente (SVG-Einheiten; Diagramme werden am iPad verkleinert)
+const TIPP_RAND = 10;
 
 export const MASSE = Object.freeze({
   entB: 160,
@@ -420,6 +422,8 @@ export function zeichne(ziel, graph, layout, opt = {}) {
       g.setAttribute('aria-label', beschreibung(e, g0) + (etiketten.get(e.id) ? `, zugeordnet: ${etiketten.get(e.id)}` : ''));
       if (gedrueckt) g.setAttribute('aria-pressed', gedrueckt.has(e.id) ? 'true' : 'false');
       g.appendChild(fokusRahmen(hb, hh));
+      // unsichtbarer Tippbereich: mindestens 44 px am iPad, auch wenn das Diagramm verkleinert ist (Spec §18, 2026-10-20)
+      g.appendChild(svgEl('rect', { x: -hb - TIPP_RAND, y: -hh - TIPP_RAND, width: 2 * (hb + TIPP_RAND), height: 2 * (hh + TIPP_RAND) }, 'chen-tippbereich'));
     }
     if (e.art === 'entitaet') {
       g.appendChild(svgEl('rect', { x: -hb, y: -hh, width: 2 * hb, height: 2 * hh }, 'chen-form'));

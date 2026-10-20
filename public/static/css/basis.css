@@ -237,3 +237,16 @@ svg.icon.gefuellt { fill: currentColor; stroke: none; }
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Touch-Geräte (iPad): Schülerinnen und Schüler arbeiten meist am iPad (Spec §18, 2026-10-20) ----------
+   Safari zoomt beim Antippen in die Seite, wenn ein Eingabefeld weniger als 16 px Schrift hat; Tippziele ≥ 44 px.
+   Der SQL-Editor (Textfeld + Farbebene) wächst gemeinsam über .editor. :root hebt die Spezifität über die
+   Seiten-Stylesheets (lernen.css, modellierung.css …), die nach basis.css geladen werden. Geprüft: test/e2e/ipad.e2e.js */
+@media (pointer: coarse) {
+  :root :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select) { font-size: max(1rem, 16px); }
+  :root .editor { font-size: 1rem; }
+  :root :is(.luecke, select.luecke, .zelle-eingabe) { min-height: 44px; }
+  :root :is(.titel-link, .etikett-link) { display: inline-flex; align-items: center; min-height: 44px; }
+  :root .lk-krumen a { min-width: 44px; }
+  :root kbd.taste { display: none; } /* Tastenkürzel-Anzeige ohne Tastatur sinnlos */
+}
