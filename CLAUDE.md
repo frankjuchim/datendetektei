@@ -146,6 +146,16 @@ startet der Server nicht mit dem Entwicklungsschlüssel aus `test/fixtures`.
 - Fachbegriffe nach EH: Entitätstyp, Beziehungstyp, Schlüsselattribut, Kardinalität, Primär-/Fremdschlüssel, Verbund.
   Nie „Entitätsmenge“. Story-Begriffe ersetzen nie Fachbegriffe.
 
+### Geräte: iPad zuerst
+- Schülerinnen und Schüler arbeiten **meist am iPad**, nicht an großen Monitoren. Jede Ansicht muss im iPad-Hoch- und
+  -Querformat (768–1180 px) per Finger voll bedienbar sein: kein horizontales Scrollen der Seite, Tippziele ≥ 44 × 44 px,
+  Eingabefelder auf Touch-Geräten ≥ 16 px Schrift (sonst zoomt Safari beim Antippen), nichts nur per Maus-Überfahren
+  (Tooltips/`title` nur als Zusatz), kein HTML5-Drag-and-drop und keine reinen Maus-Ereignisse (Pointer-Events).
+- Touch-Regeln zentral in `basis.css` (`@media (pointer: coarse)`); antippbare ER-Diagramme höchstens auf 3/4 verkleinert.
+- `test/e2e/ipad.e2e.js` prüft alle Ansichten (iPad mini hoch, iPad Air quer, Touch, Retina) – **neue Seiten und
+  Interaktionsarten dort in die Listen aufnehmen**. Safari selbst fehlt in der Testumgebung: Sichtprüfung am echten iPad
+  im Probelauf (`docs/PROBELAUF.md`).
+
 ### Notation (EH §7)
 - Kurzschreibweise: PK **unterstrichen**, FK mit vorangestelltem **↑**: `Ausleihe(AusleihID, ↑RadID, …)`.
 - ER: Chen-Notation, Kardinalitäten nur `1`/`n`/`m` (ternär `p`), Schlüsselattribute unterstrichen, Beziehungstypen als

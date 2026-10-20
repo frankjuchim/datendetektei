@@ -29,6 +29,8 @@ function zeichneTag(heute, max) {
 
 function waehler() {
   const seg = el('div', 'segment typ-wahl');
+  const beschreibung = el('p', 'typ-beschreibung hinweis-klein');
+  beschreibung.setAttribute('aria-live', 'polite');
   seg.setAttribute('role', 'group');
   seg.setAttribute('aria-label', 'Aufgabenart');
   for (const g of info.generatoren) {
@@ -41,13 +43,17 @@ function waehler() {
     b.addEventListener('click', () => {
       if (g.typ === typ) return;
       typ = g.typ;
+      beschreibung.textContent = g.beschreibung || '';
       A.schreib(TYP_SCHLUESSEL, typ);
       seg.querySelectorAll('.segment-knopf').forEach((x) => x.setAttribute('aria-pressed', x.dataset.typ === typ ? 'true' : 'false'));
       neu();
     });
     seg.appendChild(b);
   }
-  return seg;
+  // Beschreibung der gewählten Aufgabenart sichtbar (am iPad gibt es keinen Tooltip)
+  const aktuell = info.generatoren.find((g) => g.typ === typ);
+  beschreibung.textContent = (aktuell && aktuell.beschreibung) || '';
+  return h('div', 'typ-wahl-box', seg, beschreibung);
 }
 
 async function neu() {

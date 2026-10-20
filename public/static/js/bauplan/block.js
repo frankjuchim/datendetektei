@@ -71,6 +71,9 @@ function elementListe(graph, knopf) {
   return box;
 }
 
+const TOUCH = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(pointer: coarse)') : null;
+const TOUCH_MIN_SKALA = 0.75;
+
 /**
  * Block `er`.
  * @param {object} b { graph, layout, markiert? }
@@ -95,6 +98,9 @@ export function erBlock(b, wahl = null) {
   }
   flaeche.appendChild(svg);
   figur.appendChild(flaeche);
+  const wischHinweis = el('p', 'er-wisch-hinweis', 'Das Diagramm ist breiter als der Bildschirm – zum Weiterlesen seitlich wischen.');
+  wischHinweis.hidden = true;
+  figur.appendChild(wischHinweis);
 
   let zustand = { gedrueckt: null, klassen: new Map(), etiketten: new Map() };
   const listenKnoepfe = new Map();
@@ -108,6 +114,15 @@ export function erBlock(b, wahl = null) {
   function zeichne() {
     const fokus = document.activeElement && svg.contains(document.activeElement) ? document.activeElement.getAttribute('data-id') : null;
     C.zeichne(svg, graph, layout, { bedienbar: !!wahl, klassen: klassenFuer(), etiketten: zustand.etiketten, gedrueckt: wahl ? zustand.gedrueckt || new Set() : null, viewBox: true });
+    // Touch (iPad): antippbare Diagramme höchstens auf 3/4 verkleinern (Tippziele ≥ 44 px, lesbare Schrift); breitere
+    // Diagramme lassen sich in der Fläche seitlich wischen (Spec §18, 2026-10-20)
+    if (wahl && TOUCH && TOUCH.matches) {
+      const vb = svg.viewBox && svg.viewBox.baseVal;
+      if (vb && vb.width) svg.setAttribute('width', String(Math.round(vb.width * TOUCH_MIN_SKALA)));
+      if (vb && vb.height) svg.setAttribute('height', String(Math.round(vb.height * TOUCH_MIN_SKALA)));
+      svg.classList.add('touch-mindestgroesse');
+      requestAnimationFrame(() => { wischHinweis.hidden = flaeche.scrollWidth <= flaeche.clientWidth + 1; });
+    }
     if (fokus) {
       const neu = svg.querySelector(`[data-id="${CSS.escape(fokus)}"]`);
       if (neu) neu.focus();

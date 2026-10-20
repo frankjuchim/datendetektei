@@ -20,6 +20,7 @@
 .chen-rolle { fill: var(--tinte-2); font-style: italic; font-size: 14px; }
 .chen-etikett-flaeche { fill: var(--blau-flaeche); stroke: var(--blau); stroke-width: 1; }
 .chen-etikett-text { fill: var(--tinte); font-family: var(--schrift-mono); font-size: 12px; font-weight: 600; }
+.chen-tippbereich { fill: transparent; stroke: none; pointer-events: all; }
 .chen-fokusrahmen { fill: none; stroke: var(--fokus); stroke-width: 3; visibility: hidden; }
 .chen-el:focus { outline: none; }
 .chen-el:focus-visible .chen-fokusrahmen { visibility: visible; }
@@ -44,6 +45,8 @@
 }
 .er-flaeche .chen-svg, .er-flaeche .mengen-svg { max-width: 100%; height: auto; min-width: min(440px, 100%); margin-inline: auto; }
 .er-block.waehlbar .er-flaeche .chen-svg { min-width: 440px; }
+.er-block.waehlbar .er-flaeche .chen-svg.touch-mindestgroesse { max-width: none; min-width: 100%; }
+.er-wisch-hinweis { margin: 0; font-size: var(--t-s); color: var(--tinte-2); }
 .er-alternative summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-size: var(--t-s); font-weight: 600; color: var(--tinte-2); }
 .er-liste { display: flex; flex-direction: column; gap: var(--a-2); padding: var(--a-2) 0; font-size: var(--t-s); }
 .er-liste-gruppe, .er-liste-attribute { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--a-1); }
