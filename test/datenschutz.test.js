@@ -117,10 +117,13 @@ test('Datenschutzseite: Verantwortlicher, Hoster, Rechtsgrundlage, Live, Board, 
   const res = await request(app).get('/datenschutz');
   assert.equal(res.status, 200);
   const t = res.text;
-  // Angaben von Frank (Spec §18, 2026-10-14): kein Entwurf mehr, Platzhalter nur noch für die Kontaktadresse
+  // Angaben von Frank (Spec §18, 2026-10-14/20): kein Entwurf, keine Platzhalter mehr; Kontakt mit E-Mail-Adresse
   assert.doesNotMatch(t, /Entwurf/);
   const platzhalter = [...t.matchAll(/<span class="platzhalter">\[([^\]]+)\]<\/span>/g)].map((m) => m[1]);
-  assert.ok(platzhalter.every((x) => /Kontakt/.test(x)), `nur Kontakt-Platzhalter: ${platzhalter.join(' · ')}`);
+  assert.deepEqual(platzhalter, [], 'keine Platzhalter');
+  assert.doesNotMatch(t, /class="platzhalter"/);
+  assert.match(passage('ds-verantwortlich'), /Bad Zwischenahn/);
+  assert.match(passage('ds-verantwortlich'), /<a href="mailto:info@frankjuchim\.de">info@frankjuchim\.de<\/a>/);
   for (const id of ['ds-verantwortlich', 'ds-hoster', 'ds-rechtsgrundlage', 'ds-rechte']) assert.ok(passage(id), `Passage #${id}`);
   assert.match(passage('ds-verantwortlich'), /Frank Juchim/);
   assert.match(passage('ds-verantwortlich'), /§ 38 BDSG/);
